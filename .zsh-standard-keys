@@ -1,0 +1,30 @@
+bindkey '^H' backward-delete-char
+bindkey '^?' backward-delete-char
+
+for keymap in emacs viins vicmd
+do
+    bindkey -M $keymap '^[[H' vi-beginning-of-line
+    bindkey -M $keymap '^[[F' vi-end-of-line
+
+    bindkey -M $keymap '^[[5~' beginning-of-buffer
+    bindkey -M $keymap '^[[6~' end-of-buffer
+done
+
+zle -N beginning-of-buffer
+zle -N end-of-buffer
+function beginning-of-buffer()
+{
+    case $LBUFFER in *$'\n'*)
+        zle beginning-of-buffer-or-history
+        return
+    esac
+    zle beginning-of-line
+}
+function end-of-buffer()
+{
+    case $RBUFFER in *$'\n'*)
+        zle end-of-buffer-or-history
+        return
+    esac
+    zle end-of-line
+}

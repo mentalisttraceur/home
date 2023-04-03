@@ -1,0 +1,7 @@
+function vi-put-before()
+{
+    local cursor_position=$CURSOR &&
+    zle .vi-put-before &&
+    CURSOR=$cursor_position
+}
+zle -N vi-put-before

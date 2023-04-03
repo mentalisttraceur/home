@@ -1,0 +1,36 @@
+[user]
+    name = Alexander Kozhevnikov
+    email = mentalisttraceur@gmail.com
+[init]
+    defaultBranch = main
+[core]
+    pager = delta
+[diff]
+    colorMoved = zebra
+    colorMovedWs = allow-indentation-change
+[merge]
+    conflictStyle = diff3
+[interactive]
+    diffFilter = \
+        unused=`command -v delta` \
+        || exec cat \
+        && exec delta --color-only --features=interactive
+[delta]
+    line-numbers = true
+    line-numbers-zero-style = black
+    file-modified-label = "file modified:"
+    file-added-label = "file added:"
+    file-removed-label = "file removed:"
+    file-renamed-label = "file renamed:"
+    hunk-label = "line"
+    minus-style = syntax "#500000"
+    plus-style = syntax "#005000"
+    minus-emph-style = syntax "#800000"
+    plus-emph-style = syntax "#008000"
+    map-styles = \
+        bold purple => syntax "#400040", \
+        bold cyan => syntax "#004040", \
+        bold blue => syntax "#503050", \
+        bold yellow => syntax "#305050"
+[delta "interactive"]
+    keep-plus-minus-markers = false
