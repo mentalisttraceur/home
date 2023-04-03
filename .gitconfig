@@ -3,6 +3,8 @@
     email = mentalisttraceur@gmail.com
 [init]
     defaultBranch = main
+[pull]
+    rebase = true
 [core]
     pager = delta
 [diff]
