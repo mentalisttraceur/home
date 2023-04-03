@@ -1,0 +1,3 @@
+#!/bin/sh -
+exec /usr/bin/emacsclient --frame-parameters \
+    '((background-color . "#000000") (foreground-color . "#A0A0A0"))' "$@"
