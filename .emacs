@@ -45,23 +45,21 @@
 (use-package undo-tree
     :config
     (global-undo-tree-mode 1)
-    (define-key undo-tree-visualizer-mode-map
-        "a" 'undo-tree-visualizer-abort)
-    (define-key undo-tree-visualizer-mode-map
-        "h" 'undo-tree-visualize-switch-branch-left)
-    (define-key undo-tree-visualizer-mode-map
-        "j" 'undo-tree-visualize-redo)
-    (define-key undo-tree-visualizer-mode-map
-        "k" 'undo-tree-visualize-undo)
-    (define-key undo-tree-visualizer-mode-map
-        "l" 'undo-tree-visualize-switch-branch-right)
-    (define-key viper-vi-global-user-map "U" 'undo-tree-redo)
-    (define-key viper-vi-global-user-map " u" 'undo-tree-visualize))
+    :bind ( :map undo-tree-visualizer-mode-map
+            ("a" . 'undo-tree-visualizer-abort)
+            ("h" . 'undo-tree-visualize-switch-branch-left)
+            ("j" . 'undo-tree-visualize-redo)
+            ("k" . 'undo-tree-visualize-undo)
+            ("l" . 'undo-tree-visualize-switch-branch-right)
+            :map viper-vi-global-user-map
+            ("U" . 'undo-tree-redo)
+            ("SPC u" . 'undo-tree-visualize)))
 (use-package vertico
     :config
     (vertico-mode 1)
-    (define-key viper-minibuffer-map "\C-m" 'vertico-exit)
-    (define-key viper-minibuffer-map "\C-j" 'vertico-exit))
+    :bind ( :map viper-minibuffer-map
+            ("\C-m" . 'vertico-exit)
+            ("\C-j" . 'vertico-exit)))
 (use-package eat
     :config
     (eat-eshell-mode 1))
