@@ -1,0 +1,6 @@
+#!/bin/sh -
+export TZ=utc
+case $GIT_CEILING_DIRECTORIES in '')
+    GIT_CEILING_DIRECTORIES=~ exec /usr/bin/git "$@"
+esac
+GIT_CEILING_DIRECTORIES=~:$GIT_CEILING_DIRECTORIES exec /usr/bin/git "$@"
