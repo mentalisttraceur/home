@@ -14,6 +14,11 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file 'noerror)
 
+(setq init-gc-cons-threshold gc-cons-threshold
+      init-file-name-handler-alist file-name-handler-alist)
+(setq gc-cons-threshold (* 1024 1024 1024)
+      file-name-handler-alist nil)
+
 (setq viper-mode t)
 (setq viper-want-ctl-h-help t)
 (setq viper-inhibit-startup-message t)
@@ -82,3 +87,6 @@
                 ([?\s-d] . message-date)
                 ([?\s-b] . message-battery)))
             (exwm-enable))))))
+
+(setq gc-cons-threshold init-gc-cons-threshold
+      file-name-handler-alist init-file-name-handler-alist)
