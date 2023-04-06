@@ -71,7 +71,8 @@
     (define-key evil-motion-state-map " u" 'undo-tree-visualize)
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
     (define-key evil-motion-state-map " n" 'universal-argument)
-    (define-key evil-motion-state-map " t" 'eat))
+    (define-key evil-motion-state-map " t" 'eat)
+    (add-to-list 'evil-emacs-state-modes 'eat-mode))
 
 (when (display-graphic-p)
     (add-to-list 'command-switch-alist '("-exwm" . (lambda (_option)
