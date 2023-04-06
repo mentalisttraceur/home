@@ -48,6 +48,22 @@
     (vertico-mode 1))
 (use-package eat
     :config
+    (set-face-foreground 'eat-term-color-0  "#505050")
+    (set-face-foreground 'eat-term-color-1  "#C00000")
+    (set-face-foreground 'eat-term-color-2  "#00C000")
+    (set-face-foreground 'eat-term-color-3  "#C0C000")
+    (set-face-foreground 'eat-term-color-4  "#6060C0")
+    (set-face-foreground 'eat-term-color-5  "#C000C0")
+    (set-face-foreground 'eat-term-color-6  "#00C0C0")
+    (set-face-foreground 'eat-term-color-7  "#E0E0E0")
+    (set-face-foreground 'eat-term-color-8  "#707070")
+    (set-face-foreground 'eat-term-color-9  "#FF0000")
+    (set-face-foreground 'eat-term-color-10 "#00FF00")
+    (set-face-foreground 'eat-term-color-11 "#FFFF00")
+    (set-face-foreground 'eat-term-color-12 "#8080FF")
+    (set-face-foreground 'eat-term-color-13 "#FF00FF")
+    (set-face-foreground 'eat-term-color-14 "#00FFFF")
+    (set-face-foreground 'eat-term-color-15 "#FFFFFF")
     (eat-eshell-mode 1))
 (use-package evil
     :init
