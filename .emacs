@@ -19,25 +19,6 @@
 (setq gc-cons-threshold (* 1024 1024 1024)
       file-name-handler-alist nil)
 
-(setq viper-mode t)
-(setq viper-want-ctl-h-help t)
-(setq viper-inhibit-startup-message t)
-(setq viper-expert-level 5)
-(require 'viper)
-(defun fixed-viper-Put-back (arg) (interactive "P")
-    (save-excursion (viper-Put-back arg)))
-(define-key viper-vi-global-user-map "P" 'fixed-viper-Put-back)
-(define-key viper-vi-global-user-map "u" 'undo)
-(setq viper-vi-state-id "V")
-(setq viper-emacs-state-id "E")
-(setq viper-insert-state-id "I")
-(setq viper-replace-state-id "R")
-(setq mode-line-front-space
-    '(:eval (if (boundp 'viper-mode-string) viper-mode-string " ")))
-(delq 'viper-mode-string global-mode-string)
-(define-key viper-vi-global-user-map " b" 'switch-to-buffer)
-(define-key viper-vi-global-user-map " n" 'universal-argument)
-
 (defun message-time () (interactive)
     (message "%s" (format-time-string "%H:%M:%S")))
 (defun message-date () (interactive)
@@ -61,18 +42,36 @@
     (define-key undo-tree-visualizer-mode-map
         "k" 'undo-tree-visualize-undo)
     (define-key undo-tree-visualizer-mode-map
-        "l" 'undo-tree-visualize-switch-branch-right)
-    (define-key viper-vi-global-user-map "U" 'undo-tree-redo)
-    (define-key viper-vi-global-user-map " u" 'undo-tree-visualize))
+        "l" 'undo-tree-visualize-switch-branch-right))
 (use-package vertico
     :config
-    (vertico-mode 1)
-    (define-key viper-minibuffer-map "\C-m" 'vertico-exit)
-    (define-key viper-minibuffer-map "\C-j" 'vertico-exit))
+    (vertico-mode 1))
 (use-package eat
     :config
-    (eat-eshell-mode 1)
-    (define-key viper-vi-global-user-map " t" 'eat))
+    (eat-eshell-mode 1))
+(use-package evil
+    :init
+    (setq evil-undo-system 'undo-tree)
+    (setq evil-want-C-u-scroll t)
+    :config
+    (evil-mode 1)
+    (setq evil-want-minibuffer t)
+    (defun fixed-evil-paste-before (arg) (interactive "*P<x>")
+        (save-excursion (evil-paste-before arg)))
+    (define-key evil-normal-state-map "P" 'fixed-evil-paste-before)
+    (define-key evil-normal-state-map "U" 'evil-redo)
+    (define-key evil-normal-state-map "v" 'find-file)
+    (setq mode-line-front-space '(:eval
+        (if (boundp 'evil-mode-line-tag)
+            (substring evil-mode-line-tag 2 3)
+            " ")))
+    (setq evil-mode-line-format nil)
+    (setq evil-cross-lines t)
+    (define-key evil-motion-state-map " " nil)
+    (define-key evil-normal-state-map " u" 'undo-tree-visualize)
+    (define-key evil-normal-state-map " b" 'switch-to-buffer)
+    (define-key evil-normal-state-map " n" 'universal-argument)
+    (define-key evil-normal-state-map " t" 'eat))
 
 (when (display-graphic-p)
     (add-to-list 'command-switch-alist '("-exwm" . (lambda (_option)
