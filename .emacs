@@ -36,6 +36,7 @@
     '(:eval (if (boundp 'viper-mode-string) viper-mode-string " ")))
 (delq 'viper-mode-string global-mode-string)
 (define-key viper-vi-global-user-map " b" 'switch-to-buffer)
+(define-key viper-vi-global-user-map " n" 'universal-argument)
 
 (defun message-time () (interactive)
     (message "%s" (format-time-string "%H:%M:%S")))
