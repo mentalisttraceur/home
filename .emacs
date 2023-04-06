@@ -70,7 +70,8 @@
     (define-key viper-minibuffer-map "\C-j" 'vertico-exit))
 (use-package eat
     :config
-    (eat-eshell-mode 1))
+    (eat-eshell-mode 1)
+    (define-key viper-vi-global-user-map " t" 'eat))
 
 (when (display-graphic-p)
     (add-to-list 'command-switch-alist '("-exwm" . (lambda (_option)
