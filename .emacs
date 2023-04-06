@@ -83,6 +83,7 @@
             " ")))
     (setq evil-mode-line-format nil)
     (setq evil-cross-lines t)
+    (setq evil-want-fine-undo t)
     (define-key evil-motion-state-map " " nil)
     (define-key evil-motion-state-map " u" 'undo-tree-visualize)
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
