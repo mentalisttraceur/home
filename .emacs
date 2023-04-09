@@ -88,6 +88,8 @@
     (define-key evil-motion-state-map " u" 'undo-tree-visualize)
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
     (define-key evil-motion-state-map " n" 'universal-argument)
+    (define-key evil-normal-state-map "q" nil)
+    (define-key evil-motion-state-map " q" 'evil-record-macro)
     (define-key evil-motion-state-map " t" 'eat)
     (add-to-list 'evil-emacs-state-modes 'eat-mode))
 
