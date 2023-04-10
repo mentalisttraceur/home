@@ -121,7 +121,7 @@
 (defun message-time () (interactive)
     (message "%s" (format-time-string "%H:%M:%S")))
 (defun message-date () (interactive)
-    (message "%s" (format-time-string "%Y-%m-%d")))    
+    (message "%s" (format-time-string "%Y-%m-%d")))
 (defun message-battery () (interactive)
     (require 'battery)
     (message "%s" (battery-format "%p%%" (funcall battery-status-function))))
