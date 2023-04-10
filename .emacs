@@ -1,3 +1,9 @@
+(setq backup-inhibited t) 
+(setq create-lockfiles nil)
+(setq auto-save-default nil)
+(setq auto-save-list-file-prefix nil)
+
+
 (menu-bar-mode -1)
 (defun init-graphic-frame (frame)
     (when (display-graphic-p frame)
