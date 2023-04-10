@@ -76,7 +76,6 @@
     (setq evil-want-C-u-scroll t)
     :config
     (evil-mode 1)
-    (setq evil-want-minibuffer t)
     (defun fixed-evil-paste-before (arg) (interactive "*P<x>")
         (save-excursion (evil-paste-before arg)))
     (define-key evil-normal-state-map "P" 'fixed-evil-paste-before)
@@ -86,6 +85,7 @@
             (substring evil-mode-line-tag 2 3)
             " ")))
     (setq evil-mode-line-format nil)
+    (setq evil-want-minibuffer t)
     (defun evil-show-minibuffer-state ()
         (when (minibufferp)
             (set-face-foreground 'minibuffer-prompt (cond
