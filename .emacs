@@ -83,7 +83,6 @@
         (save-excursion (evil-paste-before arg)))
     (define-key evil-normal-state-map "P" 'fixed-evil-paste-before)
     (define-key evil-normal-state-map "U" 'evil-redo)
-    (define-key evil-normal-state-map "v" 'find-file)
     (setq mode-line-front-space '(:eval
         (if (boundp 'evil-mode-line-tag)
             (substring evil-mode-line-tag 2 3)
@@ -110,6 +109,7 @@
     (define-key evil-motion-state-map " " nil)
     (define-key evil-motion-state-map " u" 'undo-tree-visualize)
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
+    (define-key evil-normal-state-map " f" 'find-file)
     (define-key evil-motion-state-map " n" 'universal-argument)
     (define-key universal-argument-map " n" 'universal-argument-more)
     (define-key evil-normal-state-map "q" nil)
