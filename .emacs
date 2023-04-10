@@ -11,13 +11,16 @@
 (init-graphic-frame (selected-frame))
 (add-hook 'after-make-frame-functions 'init-graphic-frame)
 
+
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file 'noerror)
+
 
 (setq init-gc-cons-threshold gc-cons-threshold
       init-file-name-handler-alist file-name-handler-alist)
 (setq gc-cons-threshold (* 1024 1024 1024)
       file-name-handler-alist nil)
+
 
 (defun message-time () (interactive)
     (message "%s" (format-time-string "%H:%M:%S")))
@@ -26,6 +29,7 @@
 (defun message-battery () (interactive)
     (require 'battery)
     (message "%s" (battery-format "%p%%" (funcall battery-status-function))))
+
 
 (unless (package-installed-p 'use-package)
     (defmacro use-package (&rest _)))
@@ -43,9 +47,11 @@
         "k" 'undo-tree-visualize-undo)
     (define-key undo-tree-visualizer-mode-map
         "l" 'undo-tree-visualize-switch-branch-right))
+
 (use-package vertico
     :config
     (vertico-mode 1))
+
 (use-package eat
     :config
     (set-face-foreground 'eat-term-color-0  "#505050")
@@ -65,6 +71,7 @@
     (set-face-foreground 'eat-term-color-14 "#00FFFF")
     (set-face-foreground 'eat-term-color-15 "#FFFFFF")
     (eat-eshell-mode 1))
+
 (use-package evil
     :init
     (setq evil-undo-system 'undo-tree)
@@ -110,6 +117,7 @@
     (define-key evil-motion-state-map " t" 'eat)
     (add-to-list 'evil-emacs-state-modes 'eat-mode))
 
+
 (when (display-graphic-p)
     (add-to-list 'command-switch-alist '("-exwm" . (lambda (_option)
         (windmove-default-keybindings 'meta)
@@ -125,6 +133,7 @@
                 ([?\s-d] . message-date)
                 ([?\s-b] . message-battery)))
             (exwm-enable))))))
+
 
 (setq gc-cons-threshold init-gc-cons-threshold
       file-name-handler-alist init-file-name-handler-alist)
