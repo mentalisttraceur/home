@@ -114,6 +114,7 @@
     (add-to-list 'evil-motion-state-modes 'package-menu-mode)
     (define-key evil-motion-state-map " n" 'universal-argument)
     (define-key universal-argument-map " n" 'universal-argument-more)
+    (define-key evil-normal-state-map " e" 'eval-last-sexp)
     (define-key evil-normal-state-map "q" nil)
     (define-key evil-motion-state-map " q" 'evil-record-macro)
     (define-key evil-motion-state-map " t" 'eat)
