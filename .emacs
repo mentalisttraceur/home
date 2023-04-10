@@ -28,15 +28,6 @@
       file-name-handler-alist nil)
 
 
-(defun message-time () (interactive)
-    (message "%s" (format-time-string "%H:%M:%S")))
-(defun message-date () (interactive)
-    (message "%s" (format-time-string "%Y-%m-%d")))    
-(defun message-battery () (interactive)
-    (require 'battery)
-    (message "%s" (battery-format "%p%%" (funcall battery-status-function))))
-
-
 (unless (package-installed-p 'use-package)
     (defmacro use-package (&rest _)))
 
@@ -125,6 +116,15 @@
     (define-key evil-motion-state-map " q" 'evil-record-macro)
     (define-key evil-motion-state-map " t" 'eat)
     (add-to-list 'evil-emacs-state-modes 'eat-mode))
+
+
+(defun message-time () (interactive)
+    (message "%s" (format-time-string "%H:%M:%S")))
+(defun message-date () (interactive)
+    (message "%s" (format-time-string "%Y-%m-%d")))    
+(defun message-battery () (interactive)
+    (require 'battery)
+    (message "%s" (battery-format "%p%%" (funcall battery-status-function))))
 
 
 (when (display-graphic-p)
