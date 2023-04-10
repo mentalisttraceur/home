@@ -110,6 +110,7 @@
     (define-key evil-motion-state-map " u" 'undo-tree-visualize)
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
     (define-key evil-normal-state-map " f" 'find-file)
+    (define-key evil-normal-state-map " d" 'dired)
     (define-key evil-motion-state-map " n" 'universal-argument)
     (define-key universal-argument-map " n" 'universal-argument-more)
     (define-key evil-normal-state-map "q" nil)
