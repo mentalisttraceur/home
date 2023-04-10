@@ -111,6 +111,7 @@
     (define-key evil-normal-state-map " f" 'find-file)
     (define-key evil-normal-state-map " d" 'dired)
     (define-key evil-normal-state-map " p" 'list-packages)
+    (add-to-list 'evil-motion-state-modes 'package-menu-mode)
     (define-key evil-motion-state-map " n" 'universal-argument)
     (define-key universal-argument-map " n" 'universal-argument-more)
     (define-key evil-normal-state-map "q" nil)
