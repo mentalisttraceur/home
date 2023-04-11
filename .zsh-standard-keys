@@ -8,6 +8,9 @@ function bindkey-all
     bindkey -M vicmd "$@"
 }
 
+bindkey-all '^[[1;5C' forward-word
+bindkey-all '^[[1;5D' backward-word
+
 bindkey-all '^[[H' vi-beginning-of-line
 bindkey-all '^[[F' vi-end-of-line
 
