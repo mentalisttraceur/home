@@ -1,0 +1,9 @@
+keycode 58 = Escape
+control keycode 103 = F103
+control keycode 105 = F105
+control keycode 106 = F106
+control keycode 108 = F108
+string F103 = "\033[1;5A"
+string F105 = "\033[1;5D"
+string F106 = "\033[1;5C"
+string F108 = "\033[1;5B"
