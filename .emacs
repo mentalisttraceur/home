@@ -111,6 +111,9 @@
     (define-key evil-motion-state-map " k" 'kill-buffer)
     (define-key evil-motion-state-map " f" 'find-file)
     (define-key evil-motion-state-map " d" 'dired)
+    (use-package dired
+        :config
+        (define-key dired-mode-map " " nil))
     (define-key evil-motion-state-map " h" 'help-command)
     (define-key evil-motion-state-map " p" 'list-packages)
     (add-to-list 'evil-motion-state-modes 'package-menu-mode)
