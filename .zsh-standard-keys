@@ -1,14 +1,18 @@
 bindkey '^H' backward-delete-char
 bindkey '^?' backward-delete-char
 
-for keymap in emacs viins vicmd
-do
-    bindkey -M $keymap '^[[H' vi-beginning-of-line
-    bindkey -M $keymap '^[[F' vi-end-of-line
+function bindkey-all
+{
+    bindkey -M emacs "$@"
+    bindkey -M viins "$@"
+    bindkey -M vicmd "$@"
+}
 
-    bindkey -M $keymap '^[[5~' beginning-of-buffer
-    bindkey -M $keymap '^[[6~' end-of-buffer
-done
+bindkey-all '^[[H' vi-beginning-of-line
+bindkey-all '^[[F' vi-end-of-line
+
+bindkey-all '^[[5~' beginning-of-buffer
+bindkey-all '^[[6~' end-of-buffer
 
 zle -N beginning-of-buffer
 zle -N end-of-buffer
