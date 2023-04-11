@@ -119,7 +119,8 @@
     (define-key evil-normal-state-map "q" nil)
     (define-key evil-motion-state-map " q" 'evil-record-macro)
     (define-key evil-motion-state-map " t" 'eat)
-    (add-to-list 'evil-emacs-state-modes 'eat-mode))
+    (add-to-list 'evil-emacs-state-modes 'eat-mode)
+    (define-key eat-semi-char-mode-map "\C-c\C-z" 'eat-self-input))
 
 
 (defun message-time () (interactive)
