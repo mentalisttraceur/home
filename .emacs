@@ -16,6 +16,7 @@
         (set-cursor-color "#FFFFFF")))
 (init-graphic-frame (selected-frame))
 (add-hook 'after-make-frame-functions 'init-graphic-frame)
+(setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
