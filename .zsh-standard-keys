@@ -1,3 +1,8 @@
+function bindkey-vi
+{
+    bindkey -M viins "$@"
+    bindkey -M vicmd "$@"
+}
 function bindkey-edit
 {
     bindkey -M emacs "$@"
@@ -12,6 +17,8 @@ function bindkey-all
 
 bindkey-edit '^H' backward-delete-char
 bindkey-edit '^?' backward-delete-char
+bindkey-vi '^[[3~' vi-delete-char
+bindkey -M emacs '^[[3~' delete-char
 
 bindkey-all '^[[1;5C' forward-word
 bindkey-all '^[[1;5D' backward-word
