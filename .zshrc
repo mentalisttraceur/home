@@ -9,7 +9,7 @@ HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 setopt sharehistory interactivecomments histignorealldups histignorespace
-bindkey-edit '^I' expand-or-complete-prefix
+bindkey '^I' expand-or-complete-prefix
 
 case ${TERMUX_VERSION+x} in x)
     PATH=$PREFIX/local/bin:$PATH
