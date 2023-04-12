@@ -110,6 +110,7 @@
     (define-key evil-motion-state-map " u" 'undo-tree-visualize)
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
     (define-key evil-motion-state-map " k" 'kill-buffer)
+    (define-key evil-motion-state-map " o" 'other-window)
     (define-key evil-motion-state-map " f" 'find-file)
     (define-key evil-motion-state-map " F" 'find-alternate-file)
     (define-key evil-motion-state-map " d" 'dired)
