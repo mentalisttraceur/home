@@ -69,7 +69,8 @@
     (set-face-foreground 'eat-term-color-13 "#FF00FF")
     (set-face-foreground 'eat-term-color-14 "#00FFFF")
     (set-face-foreground 'eat-term-color-15 "#FFFFFF")
-    (eat-eshell-mode 1))
+    (eat-eshell-mode 1)
+    (eat-eshell-visual-command-mode 1))
 
 (use-package evil
     :init
