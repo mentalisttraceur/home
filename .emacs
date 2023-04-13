@@ -150,9 +150,30 @@
             (add-hook 'exwm-update-title-hook
                 (lambda () (rename-buffer exwm-title t)))
             (setq exwm-input-global-keys `(
+                ([?\s-r] . exwm-reset)
+                ([?\s-w] . exwm-workspace-switch)
+                ([?\s-&] . (lambda (command)
+                    (interactive (list (read-shell-command "$ ")))
+                    (start-process-shell-command command nil command)))
+                ,@(mapcar
+                    (lambda (i) `(,(kbd (format "s-%d" i)) .
+                        (lambda () (interactive)
+                            (exwm-workspace-switch-create ,i))))
+                    (number-sequence 0 9))
                 ([?\s-t] . message-time)
                 ([?\s-d] . message-date)
                 ([?\s-b] . message-battery)))
+            (setq exwm-input-simulation-keys
+                '(([?\C-b] . [left])
+                  ([?\C-f] . [right])
+                  ([?\C-p] . [up])
+                  ([?\C-n] . [down])
+                  ([?\C-a] . [home])
+                  ([?\C-e] . [end])
+                  ([?\M-v] . [prior])
+                  ([?\C-v] . [next])
+                  ([?\C-d] . [delete])
+                  ([?\C-k] . [S-end delete])))
             (exwm-enable))))))
 
 
