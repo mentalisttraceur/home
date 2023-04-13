@@ -107,6 +107,11 @@
     (setq evil-want-fine-undo t)
     (define-key evil-motion-state-map " " nil)
     (define-key evil-motion-state-map " e" 'eval-last-sexp)
+    (define-key evil-motion-state-map " g" (lambda () (interactive)
+        (let ((quit (lookup-key (current-local-map) "\C-g" t)))
+            (unless quit
+                (setq quit (lookup-key (current-global-map) "\C-g" t)))
+            (funcall quit))))
     (define-key evil-motion-state-map " u" 'undo-tree-visualize)
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
     (define-key evil-motion-state-map " k" 'kill-buffer)
