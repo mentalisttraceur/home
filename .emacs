@@ -51,6 +51,17 @@
     :config
     (vertico-mode 1))
 
+(use-package eshell
+    :config
+    (setq eshell-highlight-prompt nil)
+    (setq eshell-prompt-regexp "^[$#] ")
+    (setq eshell-prompt-function (lambda ()
+        (propertize
+            (if (= (user-uid) 0) "# " "$ ")
+            'read-only t
+            'field 'prompt
+            'rear-nonsticky t))))
+
 (use-package eat
     :config
     (set-face-foreground 'eat-term-color-0  "#505050")
