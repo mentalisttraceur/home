@@ -163,17 +163,6 @@
                 ([?\s-t] . message-time)
                 ([?\s-d] . message-date)
                 ([?\s-b] . message-battery)))
-            (setq exwm-input-simulation-keys
-                '(([?\C-b] . [left])
-                  ([?\C-f] . [right])
-                  ([?\C-p] . [up])
-                  ([?\C-n] . [down])
-                  ([?\C-a] . [home])
-                  ([?\C-e] . [end])
-                  ([?\M-v] . [prior])
-                  ([?\C-v] . [next])
-                  ([?\C-d] . [delete])
-                  ([?\C-k] . [S-end delete])))
             (exwm-enable))))))
 
 
