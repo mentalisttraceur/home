@@ -145,6 +145,8 @@
     (define-key evil-motion-state-map " T" 'eat)
     (add-to-list 'evil-emacs-state-modes 'eat-mode)
     (define-key eat-semi-char-mode-map "\C-c\C-z" 'eat-self-input)
+    (setq-default display-fill-column-indicator-column 79)
+    (define-key evil-motion-state-map " i" 'display-fill-column-indicator-mode)
     (add-to-list 'evil-motion-state-modes 'debugger-mode))
 
 
