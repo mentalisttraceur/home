@@ -155,6 +155,7 @@
         (if display-fill-column-indicator-mode
             (highlight-regexp   ".\\{79\\}\\(.*\\)" 'hi-yellow 1)
             (unhighlight-regexp ".\\{79\\}\\(.*\\)")))
+    (evil-declare-not-repeat 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " i" 'toggle-show-80+-characters)
     (add-to-list 'evil-motion-state-modes 'debugger-mode))
 
