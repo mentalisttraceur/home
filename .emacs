@@ -116,7 +116,6 @@
     (add-hook 'evil-visual-state-entry-hook   'evil-show-minibuffer-state)
     (add-hook 'evil-emacs-state-entry-hook    'evil-show-minibuffer-state)
     (setq evil-cross-lines t)
-    (setq evil-want-fine-undo t)
     (define-key evil-motion-state-map " " nil)
     (define-key evil-motion-state-map " e" 'eval-last-sexp)
     (define-key evil-motion-state-map " g" (lambda () (interactive)
