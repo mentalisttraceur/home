@@ -158,6 +158,11 @@
     (define-key evil-motion-state-map " i" 'toggle-show-80+-characters)
     (add-to-list 'evil-motion-state-modes 'debugger-mode))
 
+(use-package with-editor
+    :config
+    (add-hook 'eshell-mode-hook 'with-editor-export-editor)
+    (shell-command-with-editor-mode 1))
+
 
 (defun message-time () (interactive)
     (message "%s" (format-time-string "%H:%M:%S")))
