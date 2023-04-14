@@ -146,7 +146,12 @@
     (add-to-list 'evil-emacs-state-modes 'eat-mode)
     (define-key eat-semi-char-mode-map "\C-c\C-z" 'eat-self-input)
     (setq-default display-fill-column-indicator-column 79)
-    (define-key evil-motion-state-map " i" 'display-fill-column-indicator-mode)
+    (defun toggle-show-80+-characters () (interactive)
+        (display-fill-column-indicator-mode 'toggle)
+        (if display-fill-column-indicator-mode
+            (highlight-regexp   ".\\{79\\}\\(.*\\)" 'hi-yellow 1)
+            (unhighlight-regexp ".\\{79\\}\\(.*\\)")))
+    (define-key evil-motion-state-map " i" 'toggle-show-80+-characters)
     (add-to-list 'evil-motion-state-modes 'debugger-mode))
 
 
