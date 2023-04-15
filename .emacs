@@ -81,7 +81,8 @@
     (set-face-foreground 'eat-term-color-14 "#00FFFF")
     (set-face-foreground 'eat-term-color-15 "#FFFFFF")
     (eat-eshell-mode 1)
-    (eat-eshell-visual-command-mode 1))
+    (eat-eshell-visual-command-mode 1)
+    (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil))))
 
 (use-package evil
     :init
