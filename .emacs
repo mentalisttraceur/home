@@ -81,8 +81,7 @@
     (set-face-foreground 'eat-term-color-14 "#00FFFF")
     (set-face-foreground 'eat-term-color-15 "#FFFFFF")
     (eat-eshell-mode 1)
-    (eat-eshell-visual-command-mode 1)
-    (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil))))
+    (eat-eshell-visual-command-mode 1))
 
 (use-package evil
     :init
@@ -144,6 +143,7 @@
     (define-key evil-motion-state-map " t" 'eshell)
     (define-key evil-motion-state-map " T" 'eat)
     (add-to-list 'evil-emacs-state-modes 'eat-mode)
+    (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil)))
     (define-key eat-semi-char-mode-map "\C-c\C-z" 'eat-self-input)
     (evil-set-register ?r (string-join (make-list 8 "1234567890")))
     (evil-set-register ?R "\n")
