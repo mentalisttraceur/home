@@ -13,4 +13,5 @@ bindkey '^I' expand-or-complete-prefix
 
 case ${TERMUX_VERSION+x} in x)
     PATH=$PREFIX/local/bin:$PATH
+    export XDG_RUNTIME_DIR=$PREFIX/var/run
 esac
