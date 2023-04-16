@@ -140,6 +140,9 @@
     (define-key universal-argument-map " n" 'universal-argument-more)
     (define-key evil-normal-state-map "q" nil)
     (define-key evil-motion-state-map " q" 'evil-record-macro)
+    (use-package consult
+         :config
+         (define-key evil-motion-state-map "gh" 'consult-history))
     (define-key evil-motion-state-map " t" 'eshell)
     (define-key evil-motion-state-map " T" 'eat)
     (add-to-list 'evil-emacs-state-modes 'eat-mode)
