@@ -161,7 +161,8 @@
             (unhighlight-regexp ".\\{79\\}\\(.*\\)")))
     (evil-declare-not-repeat 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " i" 'toggle-show-80+-characters)
-    (add-to-list 'evil-motion-state-modes 'debugger-mode))
+    (add-to-list 'evil-motion-state-modes 'debugger-mode)
+    (add-to-list 'evil-normal-state-modes 'eshell-mode))
 
 (use-package with-editor
     :config
