@@ -29,6 +29,12 @@
       file-name-handler-alist nil)
 
 
+(defmacro save-mutation (&rest body)
+    `(let ((buffer-undo-list ()))
+        (unwind-protect (progn ,@body)
+            (primitive-undo (length buffer-undo-list) buffer-undo-list))))
+
+
 (unless (package-installed-p 'use-package)
     (defmacro use-package (&rest _)))
 
@@ -42,6 +48,18 @@
             'read-only t
             'field 'prompt
             'rear-nonsticky t))))
+
+(defun get-command-line-at-point ()
+    (let ((start   (save-excursion (beginning-of-line) (point)))
+          (end     (save-excursion (end-of-line)       (point))))
+        (buffer-substring-no-properties start end)))
+(defun delete-command-line-at-point ()
+    (let ((start   (save-excursion (beginning-of-line) (point)))
+          (end     (save-excursion (end-of-line)       (point))))
+        (delete-region start end)))
+(defun replace-command-line-at-point (command)
+    (delete-command-line-at-point)
+    (insert command))
 
 (use-package undo-tree
     :config
@@ -61,6 +79,20 @@
 (use-package vertico
     :config
     (vertico-mode 1))
+
+(use-package consult
+    :config
+    (defun fixed-consult-history () (interactive)
+        (let ((command (get-command-line-at-point)))
+            (save-excursion (save-mutation
+                (end-of-buffer)
+                (replace-command-line-at-point command)
+                (beginning-of-line)
+                (consult-history)
+                (setq command (get-command-line-at-point))))
+            (end-of-buffer)
+            (replace-command-line-at-point command)
+            command)))
 
 (use-package eat
     :config
@@ -141,9 +173,17 @@
     (define-key universal-argument-map " n" 'universal-argument-more)
     (define-key evil-normal-state-map "q" nil)
     (define-key evil-motion-state-map " q" 'evil-record-macro)
-    (use-package consult
-         :config
-         (define-key evil-motion-state-map "gh" 'consult-history))
+    (defun search-history-and-run () (interactive)
+        (let ((command (fixed-consult-history))
+              (run-key (listify-key-sequence (kbd "RET"))))
+            (evil-repeat-start)
+            (add-to-list 'evil-repeat-info `((lambda ()
+                (replace-command-line-at-point ,command)
+                (setq unread-command-events '(?a ,@run-key)))))
+            (evil-repeat-stop)
+            (evil-insert-state)
+            (setq unread-command-events run-key)))
+    (define-key evil-motion-state-map "gh" 'search-history-and-run)
     (define-key evil-motion-state-map " t" 'eshell)
     (define-key evil-motion-state-map " T" 'eat)
     (add-to-list 'evil-emacs-state-modes 'eat-mode)
