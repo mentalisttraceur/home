@@ -189,7 +189,7 @@
         (setq consult-history-execute nil)
         (vertico-exit))
     (add-hook 'minibuffer-setup-hook (lambda ()
-	(if (eq this-command 'consult-history-execute)
+        (if (eq this-command 'consult-history-execute)
             (evil-local-set-key 'normal "q"
                 'consult-history-execute-quit)
             (evil-local-set-key 'normal "q" nil))))
