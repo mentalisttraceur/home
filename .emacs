@@ -200,6 +200,8 @@
             (evil-local-set-key 'normal "q" nil))))
     (define-key evil-motion-state-map "gh" 'consult-history-execute)
     (define-key evil-motion-state-map " t" 'eshell)
+    (add-hook 'eshell-pre-command-hook 'evil-insert-state)
+    (add-hook 'eshell-post-command-hook 'evil-normal-state)
     (evil-declare-not-repeat 'eshell-send-input)
     (evil-declare-not-repeat 'eshell-interrupt-process)
     (define-key evil-motion-state-map " T" 'eat)
