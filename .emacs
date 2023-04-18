@@ -175,7 +175,7 @@
     (defun consult-history-execute () (interactive)
         (let* ((consult-history-execute t)
                (command (fixed-consult-history))
-               (run-key (listify-key-sequence (kbd "RET"))))
+               (run-key (listify-key-sequence "\C-m")))
             (evil-repeat-start)
             (add-to-list 'evil-repeat-info `((lambda ()
                 (end-of-buffer)
