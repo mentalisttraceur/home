@@ -194,7 +194,7 @@
             (evil-local-set-key 'normal "q"
                 'consult-history-execute-quit)
             (evil-local-set-key 'normal "q" nil))))
-    (define-key evil-motion-state-map "gh" 'search-history-and-run)
+    (define-key evil-motion-state-map "gh" 'consult-history-execute)
     (define-key evil-motion-state-map " t" 'eshell)
     (evil-declare-not-repeat 'eshell-send-input)
     (define-key evil-motion-state-map " T" 'eat)
