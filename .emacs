@@ -197,6 +197,7 @@
     (define-key evil-motion-state-map "gh" 'consult-history-execute)
     (define-key evil-motion-state-map " t" 'eshell)
     (evil-declare-not-repeat 'eshell-send-input)
+    (evil-declare-not-repeat 'eshell-interrupt-process)
     (define-key evil-motion-state-map " T" 'eat)
     (add-to-list 'evil-emacs-state-modes 'eat-mode)
     (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil)))
