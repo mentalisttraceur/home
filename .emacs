@@ -218,6 +218,7 @@
     (define-key evil-motion-state-map " sbh" 'evil-window-split)
     (define-key evil-motion-state-map " sbi" 'evil-window-vsplit)
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
+    (add-to-list 'evil-motion-state-modes 'completion-list-mode)
     (add-to-list 'evil-normal-state-modes 'eshell-mode))
 
 (use-package with-editor
