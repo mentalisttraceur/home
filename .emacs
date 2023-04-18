@@ -213,6 +213,10 @@
             (unhighlight-regexp ".\\{79\\}\\(.*\\)")))
     (evil-declare-not-repeat 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " i" 'toggle-show-80+-characters)
+    (define-key evil-motion-state-map " sh" 'split-window-below)
+    (define-key evil-motion-state-map " si" 'split-window-right)
+    (define-key evil-motion-state-map " sbh" 'evil-window-split)
+    (define-key evil-motion-state-map " sbi" 'evil-window-vsplit)
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
     (add-to-list 'evil-normal-state-modes 'eshell-mode))
 
