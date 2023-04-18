@@ -181,15 +181,10 @@
                 (end-of-buffer)
                 (replace-command-line-at-point ,command)
                 (when ,consult-history-execute
-                    (add-hook 'post-command-hook 'evil-replay-insert-state)
                     (setq unread-command-events '(,@run-key))))))
             (evil-repeat-stop)
             (when consult-history-execute
-                (evil-insert-state)
                 (setq unread-command-events run-key))))
-    (defun evil-replay-insert-state ()
-        (remove-hook 'post-command-hook 'evil-replay-enter-insert-state)
-	(evil-insert-state))
     (defun consult-history-execute-quit () (interactive)
         (setq consult-history-execute nil)
         (vertico-exit))
