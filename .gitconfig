@@ -6,7 +6,10 @@
 [pull]
     rebase = true
 [core]
-    pager = delta
+    pager = \
+        unused=`command -v delta` \
+        || exec less \
+        && exec delta
 [diff]
     colorMoved = zebra
     colorMovedWs = allow-indentation-change
