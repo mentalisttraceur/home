@@ -246,12 +246,10 @@
 
 (when (display-graphic-p)
     (add-to-list 'command-switch-alist '("-exwm" . (lambda (_option)
-        (windmove-default-keybindings 'meta)
-
-        (set-frame-parameter nil 'fullscreen 'fullboth)
-
         (use-package exwm
             :config
+            (windmove-default-keybindings 'meta)
+            (set-frame-parameter nil 'fullscreen 'fullboth)
             (add-hook 'exwm-update-title-hook
                 (lambda () (rename-buffer exwm-title t)))
             (setq exwm-input-global-keys `(
