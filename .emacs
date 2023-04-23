@@ -213,6 +213,7 @@
     (add-to-list 'evil-emacs-state-modes 'eat-mode)
     (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil)))
     (define-key eat-semi-char-mode-map "\C-c\C-z" 'eat-self-input)
+    (define-key evil-motion-state-map " rp" 'run-python)
     (evil-set-register ?r (string-join (make-list 8 "1234567890")))
     (evil-set-register ?R "\n")
     (evil-set-register ?r (propertize (evil-get-register ?r)
