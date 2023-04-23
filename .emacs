@@ -158,7 +158,7 @@
     (define-key evil-motion-state-map " " nil)
     (define-key evil-motion-state-map " e" 'eval-last-sexp)
     (define-key evil-motion-state-map " g" (lambda () (interactive)
-        (setq unread-command-events (listify-key-sequence (kbd "C-g")))))
+        (setq unread-command-events (listify-key-sequence "\C-g"))))
     (define-key evil-motion-state-map " u" 'undo-tree-visualize)
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
     (define-key evil-motion-state-map " k" 'kill-buffer)
