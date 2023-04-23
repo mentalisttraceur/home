@@ -49,6 +49,12 @@
             'field 'prompt
             'rear-nonsticky t))))
 
+(use-package python
+    :config
+    (add-hook 'python-shell-first-prompt-hook (lambda ()
+        (let ((inhibit-read-only t))
+            (add-text-properties (buffer-end -1) (buffer-end 1) '(field output))))))
+
 (defun get-command-line-at-point ()
     (let ((start   (save-excursion (beginning-of-line) (point)))
           (end     (save-excursion (end-of-line)       (point))))
