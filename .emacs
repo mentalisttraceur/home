@@ -164,7 +164,6 @@
     (define-key evil-motion-state-map " k" 'kill-buffer)
     (define-key evil-motion-state-map " o" 'other-window)
     (define-key evil-motion-state-map " f" 'find-file)
-    (define-key evil-motion-state-map " F" 'find-alternate-file)
     (define-key evil-motion-state-map " d" 'dired)
     (use-package dired
         :config
@@ -228,8 +227,6 @@
     (define-key evil-motion-state-map " i" 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " sh" 'split-window-below)
     (define-key evil-motion-state-map " si" 'split-window-right)
-    (define-key evil-motion-state-map " sbh" 'evil-window-split)
-    (define-key evil-motion-state-map " sbi" 'evil-window-vsplit)
     (add-to-list 'evil-motion-state-modes 'Buffer-menu-mode)
     (add-to-list 'evil-motion-state-modes 'completion-list-mode)
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
