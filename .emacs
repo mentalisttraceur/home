@@ -100,6 +100,10 @@
             (replace-command-line-at-point command)
             command)))
 
+(use-package orderless
+    :config
+    (add-to-list 'completion-styles 'orderless))
+
 (use-package eat
     :config
     (set-face-foreground 'eat-term-color-0  "#505050")
