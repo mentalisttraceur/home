@@ -47,6 +47,7 @@
             (if (= (user-uid) 0) "# " "$ ")
             'read-only t
             'field 'prompt
+            'front-sticky '(read-only)
             'rear-nonsticky t))))
 
 (use-package python
