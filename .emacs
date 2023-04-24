@@ -235,6 +235,7 @@
     (add-hook 'eat-exec-hook (lambda (_process)
         (setq unread-command-events (listify-key-sequence "\C-z"))))
     (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil)))
+    (evil-define-key 'emacs eat-semi-char-mode-map "\C-[" 'eat-self-input)
     (define-key eat-semi-char-mode-map "\C-c\C-z" 'eat-self-input)
     (define-key evil-motion-state-map " rp" 'run-python)
     (evil-set-register ?r (string-join (make-list 8 "1234567890")))
