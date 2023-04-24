@@ -52,6 +52,9 @@
 
 (use-package python
     :config
+    (defun fixed-run-python (run-python &rest arguments)
+        (with-temp-buffer (apply run-python arguments)))
+    (advice-add 'run-python :around 'fixed-run-python)
     (add-hook 'python-shell-first-prompt-hook (lambda ()
         (let ((inhibit-read-only t))
             (add-text-properties
