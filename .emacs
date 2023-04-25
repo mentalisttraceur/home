@@ -57,16 +57,6 @@
     (add-hook 'comint-preoutput-filter-functions (lambda (output)
         (propertize output 'read-only t))))
 
-(use-package python
-    :config
-    (defun fixed-run-python (run-python &rest arguments)
-        (with-temp-buffer (apply run-python arguments)))
-    (advice-add 'run-python :around 'fixed-run-python)
-    (add-hook 'python-shell-first-prompt-hook (lambda ()
-        (let ((inhibit-read-only t))
-            (add-text-properties
-                (buffer-end -1) (buffer-end 1) '(field output))))))
-
 (defun get-command-line-at-point ()
     (let ((start (line-beginning-position))
           (end   (line-end-position)))
@@ -241,7 +231,6 @@
     (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil)))
     (evil-define-key 'emacs eat-semi-char-mode-map "\C-[" 'eat-self-input)
     (define-key eat-semi-char-mode-map "\C-c\C-z" 'eat-self-input)
-    (define-key evil-motion-state-map " rp" 'run-python)
     (evil-set-register ?r (string-join (make-list 8 "1234567890")))
     (evil-set-register ?R "\n")
     (evil-set-register ?r (propertize (evil-get-register ?r)
