@@ -251,6 +251,7 @@
     (define-key evil-motion-state-map " sh" 'evil-window-split)
     (define-key evil-motion-state-map " si" 'evil-window-vsplit)
     (define-key evil-motion-state-map " sk" 'evil-window-delete)
+    (define-key evil-motion-state-map " sK" 'delete-other-windows)
     (add-to-list 'evil-motion-state-modes 'Buffer-menu-mode)
     (add-to-list 'evil-motion-state-modes 'completion-list-mode)
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
