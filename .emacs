@@ -53,8 +53,6 @@
 
 (use-package comint
     :config
-    (set-face-foreground 'comint-highlight-prompt
-        (face-foreground 'minibuffer-prompt))
     (add-hook 'comint-preoutput-filter-functions (lambda (output)
         (propertize output 'read-only t))))
 
@@ -168,8 +166,6 @@
     (add-hook 'evil-replace-state-entry-hook  'color-code-vi-state)
     (add-hook 'evil-visual-state-entry-hook   'color-code-vi-state)
     (add-hook 'evil-emacs-state-entry-hook    'color-code-vi-state)
-    (add-hook 'post-command-hook (lambda ()
-        (while-no-input (color-code-vi-state))))
     (set-face-foreground 'mode-line "#010101")
     (setq evil-cross-lines t)
     (define-key evil-insert-state-map "\C-d" nil)
@@ -227,8 +223,7 @@
     (evil-declare-not-repeat 'eshell-send-input)
     (evil-declare-not-repeat 'eshell-interrupt-process)
     (define-key evil-motion-state-map " T" 'eat)
-    (add-hook 'eat-exec-hook (lambda (_process)
-        (setq unread-command-events (listify-key-sequence "\C-z"))))
+    (add-to-list 'evil-emacs-state-modes 'eat-mode)
     (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil)))
     (evil-define-key 'emacs eat-semi-char-mode-map "\C-[" 'eat-self-input)
     (define-key eat-semi-char-mode-map "\C-c\C-z" 'eat-self-input)
