@@ -220,7 +220,7 @@
     (add-hook 'minibuffer-setup-hook (lambda ()
         (if (eq this-command 'consult-history-execute)
             (evil-local-set-key 'normal "q" 'consult-history-execute-quit)
-            (evil-local-set-key 'normal "q" nil))))
+            (evil-local-set-key 'normal "q" 'abort-minibuffers))))
     (define-key evil-motion-state-map "gh" 'consult-history-execute)
     (define-key evil-motion-state-map " t" 'eshell)
     (defvar evil-state-before-eshell-command evil-state)
