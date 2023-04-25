@@ -174,6 +174,7 @@
     (add-hook 'evil-emacs-state-entry-hook    'color-code-vi-state)
     (add-hook 'post-command-hook (lambda ()
         (while-no-input (color-code-vi-state))))
+    (set-face-foreground 'mode-line "#010101")
     (setq evil-cross-lines t)
     (define-key evil-insert-state-map "\C-d" nil)
     (define-key evil-insert-state-map "\C-t" nil)
