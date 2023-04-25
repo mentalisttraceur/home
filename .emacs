@@ -34,6 +34,7 @@
         (unwind-protect (progn ,@body)
             (primitive-undo (length buffer-undo-list) buffer-undo-list))))
 
+
 (unless (and (fboundp 'package-installed-p)
              (package-installed-p 'use-package))
     (defmacro use-package (&rest _)))
