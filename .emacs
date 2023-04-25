@@ -191,6 +191,7 @@
     (use-package dired
         :config
         (define-key dired-mode-map " " nil))
+    (define-key evil-motion-state-map " y" 'execute-extended-command)
     (define-key evil-motion-state-map " h" help-map)
     (define-key evil-motion-state-map " x" ctl-x-map)
     (define-key evil-motion-state-map " c" mode-specific-map)
