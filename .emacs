@@ -53,7 +53,9 @@
 (use-package comint
     :config
     (set-face-foreground 'comint-highlight-prompt
-        (face-foreground 'minibuffer-prompt)))
+        (face-foreground 'minibuffer-prompt))
+    (add-hook 'comint-preoutput-filter-functions (lambda (output)
+        (propertize output 'read-only t))))
 
 (use-package python
     :config
