@@ -146,7 +146,7 @@
     (setq evil-want-minibuffer t)
     (defun color-code-vi-state ()
         (if (minibufferp)
-            (set-face-foreground 'minibuffer-prompt (cond
+            (face-remap-add-relative 'minibuffer-prompt :foreground (cond
                 ((evil-normal-state-p)   "#FF0000")
                 ((evil-operator-state-p) "#FF8000")
                 ((evil-insert-state-p)   "#00FF00")
@@ -154,7 +154,7 @@
                 ((evil-visual-state-p)   "#8080FF")
                 ((evil-emacs-state-p)    "#8000FF")
                 (t                       "#FFFFFF")))
-            (set-face-background 'mode-line (cond
+            (face-remap-add-relative 'mode-line :background (cond
                 ((evil-normal-state-p)   "#FF4040")
                 ((evil-operator-state-p) "#FFA060")
                 ((evil-insert-state-p)   "#40FF40")
