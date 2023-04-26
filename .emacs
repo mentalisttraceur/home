@@ -110,6 +110,10 @@
 (use-package ace-window
     :config
     (setq aw-dispatch-when-more-than 1)
+    (setq aw-dispatch-alist '(
+        (?o aw-flip-window)
+        (?q aw--done)
+        (?? aw-show-dispatch-help)))
     (define-key global-map "\C-xo" 'ace-window))
 
 (use-package eat
