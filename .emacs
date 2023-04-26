@@ -269,8 +269,11 @@
     (defun fixed-with-editor-return (with-editor-return &rest arguments)
         (unwind-protect
             (progn
+                (when (car arguments)
+                    (advice-add 'save-buffer :around 'ignore))
                 (advice-add 'delete-file :around 'ignore)
                 (apply with-editor-return arguments))
+            (advice-remove 'save-buffer 'ignore)
             (advice-remove 'delete-file 'ignore)))
     (advice-add 'with-editor-return :around 'fixed-with-editor-return)
     (add-hook 'eshell-mode-hook 'with-editor-export-editor)
