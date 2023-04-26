@@ -266,6 +266,13 @@
 
 (use-package with-editor
     :config
+    (defun fixed-with-editor-return (with-editor-return &rest arguments)
+        (unwind-protect
+            (progn
+                (advice-add 'delete-file :around 'ignore)
+                (apply with-editor-return arguments))
+            (advice-remove 'delete-file 'ignore)))
+    (advice-add 'with-editor-return :around 'fixed-with-editor-return)
     (add-hook 'eshell-mode-hook 'with-editor-export-editor)
     (shell-command-with-editor-mode 1))
 
