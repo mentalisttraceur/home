@@ -151,6 +151,7 @@
                 ((evil-replace-state-p)  "#FFFF00")
                 ((evil-visual-state-p)   "#8080FF")
                 ((evil-emacs-state-p)    "#8000FF")
+                ((evil-motion-state-p)   "#20E0FF")
                 (t                       "#FFFFFF")))
             (face-remap-add-relative 'mode-line :background (cond
                 ((evil-normal-state-p)   "#FF4040")
@@ -159,6 +160,7 @@
                 ((evil-replace-state-p)  "#FFFF80")
                 ((evil-visual-state-p)   "#C0C0FF")
                 ((evil-emacs-state-p)    "#C040FF")
+                ((evil-motion-state-p)   "#80FFFF")
                 (t                       "#FFFFFF")))))
     (add-hook 'evil-normal-state-entry-hook   'color-code-vi-state)
     (add-hook 'evil-operator-state-entry-hook 'color-code-vi-state)
@@ -166,6 +168,7 @@
     (add-hook 'evil-replace-state-entry-hook  'color-code-vi-state)
     (add-hook 'evil-visual-state-entry-hook   'color-code-vi-state)
     (add-hook 'evil-emacs-state-entry-hook    'color-code-vi-state)
+    (add-hook 'evil-motion-state-entry-hook   'color-code-vi-state)
     (set-face-foreground 'mode-line "#010101")
     (setq evil-cross-lines t)
     (define-key evil-insert-state-map "\C-d" nil)
