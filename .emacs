@@ -109,6 +109,7 @@
 
 (use-package ace-window
     :config
+    (setq aw-dispatch-when-more-than 1)
     (define-key global-map "\C-xo" 'ace-window))
 
 (use-package eat
