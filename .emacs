@@ -51,6 +51,7 @@
             'field 'prompt
             'front-sticky '(read-only)
             'rear-nonsticky t)))
+    (setq eshell-hist-ignoredups 'erase)
     (setq eshell-history-size 65536))
 
 (use-package comint
