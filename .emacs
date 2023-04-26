@@ -50,7 +50,8 @@
             'read-only t
             'field 'prompt
             'front-sticky '(read-only)
-            'rear-nonsticky t))))
+            'rear-nonsticky t)))
+    (setq eshell-history-size 65536))
 
 (use-package comint
     :config
