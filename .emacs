@@ -92,11 +92,11 @@
 
 (use-package consult
     :config
-    (defun fixed-consult-history (arg) (interactive "P")
-        (let ((command (when arg (get-command-line-at-point))))
+    (defun fixed-consult-history (prefix-argument) (interactive "P")
+        (let ((command (when prefix-argument (get-command-line-at-point))))
             (save-excursion (save-mutation
                 (end-of-buffer)
-                (when arg
+                (when prefix-argument
                     (replace-command-line-at-point command))
                 (beginning-of-line)
                 (consult-history)
@@ -146,8 +146,8 @@
     (setq evil-want-C-u-scroll t)
     :config
     (evil-mode 1)
-    (defun fixed-evil-paste-before (arg) (interactive "*P<x>")
-        (save-excursion (evil-paste-before arg)))
+    (defun fixed-evil-paste-before (prefix-argument) (interactive "*P<x>")
+        (save-excursion (evil-paste-before prefix-argument)))
     (define-key evil-normal-state-map "P" 'fixed-evil-paste-before)
     (define-key evil-normal-state-map "U" 'evil-redo)
     (setq mode-line-front-space '(:eval
@@ -209,9 +209,9 @@
     (define-key universal-argument-map " n" 'universal-argument-more)
     (define-key evil-normal-state-map "q" nil)
     (define-key evil-motion-state-map " q" 'evil-record-macro)
-    (defun consult-history-execute (arg) (interactive "P")
+    (defun consult-history-execute (prefix-argument) (interactive "P")
         (let* ((consult-history-execute t)
-               (command (fixed-consult-history arg))
+               (command (fixed-consult-history prefix-argument))
                (run-key (listify-key-sequence "\C-m")))
             (evil-repeat-start)
             (add-to-list 'evil-repeat-info `((lambda ()
