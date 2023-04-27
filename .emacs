@@ -115,7 +115,7 @@
     (setq aw-dispatch-alist '(
         (?o aw-flip-window)
         (?m delete-other-windows "Maximize Window")
-        (?q aw--done)
+        (?q ignore)
         (?? aw-show-dispatch-help)))
     (define-key global-map "\C-xo" 'ace-window))
 
