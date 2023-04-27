@@ -112,6 +112,8 @@
 (use-package ace-window
     :config
     (setq aw-dispatch-when-more-than 1)
+    (setq aw-scope 'frame)
+    (setq aw-make-frame-char nil)
     (setq aw-dispatch-alist '(
         (?o aw-flip-window)
         (?m delete-other-windows "Maximize Window")
