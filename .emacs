@@ -115,6 +115,9 @@
     (setq aw-dispatch-alist '(
         (?o aw-flip-window)
         (?m delete-other-windows "Maximize Window")
+        (?x aw-swap-window "Swap Window")
+        (?c aw-copy-window "Copy Window")
+        (?n aw-switch-to-window "Window")
         (?q ignore)
         (?? aw-show-dispatch-help)))
     (define-key global-map "\C-xo" 'ace-window))
