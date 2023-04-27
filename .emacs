@@ -92,11 +92,12 @@
 
 (use-package consult
     :config
-    (defun fixed-consult-history () (interactive)
-        (let ((command (get-command-line-at-point)))
+    (defun fixed-consult-history (arg) (interactive "P")
+        (let ((command (when arg (get-command-line-at-point))))
             (save-excursion (save-mutation
                 (end-of-buffer)
-                (replace-command-line-at-point command)
+                (when arg
+                    (replace-command-line-at-point command))
                 (beginning-of-line)
                 (consult-history)
                 (setq command (get-command-line-at-point))))
@@ -208,9 +209,9 @@
     (define-key universal-argument-map " n" 'universal-argument-more)
     (define-key evil-normal-state-map "q" nil)
     (define-key evil-motion-state-map " q" 'evil-record-macro)
-    (defun consult-history-execute () (interactive)
+    (defun consult-history-execute (arg) (interactive "P")
         (let* ((consult-history-execute t)
-               (command (fixed-consult-history))
+               (command (fixed-consult-history arg))
                (run-key (listify-key-sequence "\C-m")))
             (evil-repeat-start)
             (add-to-list 'evil-repeat-info `((lambda ()
