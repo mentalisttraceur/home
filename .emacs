@@ -116,7 +116,7 @@
     (setq aw-make-frame-char nil)
     (setq aw-leading-char-style 'path)
     (setq aw-dispatch-alist '(
-        (?z aw-switch-to-window "Window")
+        (?o aw-switch-to-window "Window")
         (?x aw-swap-window "Swap Window")
         (?c aw-copy-window "Copy Window")
         (?m delete-other-windows "Maximize Window")
