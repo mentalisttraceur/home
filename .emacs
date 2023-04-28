@@ -116,10 +116,10 @@
     (setq aw-make-frame-char nil)
     (setq aw-dispatch-alist '(
         (?o aw-flip-window)
-        (?m delete-other-windows "Maximize Window")
+        (?z aw-switch-to-window "Window")
         (?x aw-swap-window "Swap Window")
         (?c aw-copy-window "Copy Window")
-        (?z aw-switch-to-window "Window")
+        (?m delete-other-windows "Maximize Window")
         (?q ignore)
         (?? aw-show-dispatch-help)))
     (define-key global-map "\C-xo" 'ace-window))
