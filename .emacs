@@ -109,37 +109,6 @@
     :config
     (add-to-list 'completion-styles 'orderless))
 
-(use-package ace-window
-    :config
-    (setq aw-dispatch-when-more-than 1)
-    (setq aw-scope 'frame)
-    (setq aw-make-frame-char nil)
-    (setq aw-leading-char-style 'path)
-    (defun colored-ace-select-window () (interactive)
-         (set-face-foreground 'aw-leading-char-face "#00FF00")
-         (aw--done)
-	 (aw-select " Ace - Window" 'aw-switch-to-window))
-    (defun colored-ace-swap-window () (interactive)
-         (set-face-foreground 'aw-leading-char-face "#A0E0FF")
-         (aw--done)
-	 (aw-select " Ace - Swap Window" 'aw-swap-window))
-    (defun colored-ace-copy-window () (interactive)
-         (set-face-foreground 'aw-leading-char-face "#FFFF00")
-         (aw--done)
-	 (aw-select " Ace - Copy Window" 'aw-copy-window))
-    (defun colored-ace-maximize-window () (interactive)
-         (set-face-foreground 'aw-leading-char-face "#FF8000")
-         (aw--done)
-	 (aw-select " Ace - Maximize Window" 'delete-other-windows))
-    (setq aw-dispatch-alist '(
-        (?o colored-ace-select-window)
-        (?x colored-ace-swap-window)
-        (?c colored-ace-copy-window)
-        (?m colored-ace-maximize-window)
-        (?q ignore)
-        (?? aw-show-dispatch-help)))
-    (define-key global-map "\C-xo" 'colored-ace-select-window))
-
 (use-package eat
     :config
     (set-face-foreground 'eat-term-color-0  "#505050")
@@ -171,10 +140,13 @@
         (save-excursion (evil-paste-before prefix-argument)))
     (define-key evil-normal-state-map "P" 'fixed-evil-paste-before)
     (define-key evil-normal-state-map "U" 'evil-redo)
+    (defvar override-evil-mode-line-tag nil)
     (setq mode-line-front-space '(:eval
-        (if (boundp 'evil-mode-line-tag)
-            (substring evil-mode-line-tag 2 3)
-            " ")))
+        (if override-evil-mode-line-tag
+            override-evil-mode-line-tag
+            (if (boundp 'evil-mode-line-tag)
+                (substring evil-mode-line-tag 2 3)
+                " "))))
     (setq evil-mode-line-format nil)
     (setq evil-want-minibuffer t)
     (defun color-code-vi-state ()
@@ -221,18 +193,6 @@
     (define-key evil-motion-state-map " u" 'undo-tree-visualize)
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
     (define-key evil-motion-state-map " k" 'kill-buffer)
-    (define-key evil-motion-state-map " o" 'colored-ace-select-window)
-    (defun ace-delete-window-loop (window)
-        (when (window-parent window)
-            (aw-switch-to-window window)
-            (evil-window-delete)
-            (aw--done)
-            (aw-select " Ace - Delete Window" 'ace-delete-window-loop)))
-    (defun colored-ace-delete-window-loop () (interactive)
-         (set-face-foreground 'aw-leading-char-face "#FF0000")
-         (aw--done)
-         (aw-select " Ace - Delete Window" 'ace-delete-window-loop))
-    (add-to-list 'aw-dispatch-alist '(?k colored-ace-delete-window-loop))
     (define-key evil-motion-state-map " f" 'find-file)
     (define-key evil-motion-state-map " d" 'dired)
     (use-package dired
@@ -309,6 +269,46 @@
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
     (add-to-list 'evil-motion-state-modes 'tar-mode)
     (add-to-list 'evil-normal-state-modes 'eshell-mode))
+
+(use-package ace-window
+    :config
+    (setq aw-dispatch-when-more-than 1)
+    (setq aw-scope 'frame)
+    (setq aw-make-frame-char nil)
+    (setq aw-leading-char-style 'path)
+    (defun evil-aw-select (color tag text action)
+        (set-face-foreground 'aw-leading-char-face color)
+        (setq override-evil-mode-line-tag (propertize tag
+            'help-echo text 'mouse-face 'mode-line-highlight))
+        (aw--done)
+        (aw-select "" (lambda (window)
+            (setq override-evil-mode-line-tag nil)
+            (funcall action window))))
+    (defun evil-ace-select-window () (interactive)
+        (evil-aw-select "#00FF00" "S" "Select window" 'aw-switch-to-window))
+    (defun evil-ace-swap-window () (interactive)
+        (evil-aw-select "#A0E0FF" "X" "Swap window" 'aw-swap-window))
+    (defun evil-ace-copy-window () (interactive)
+        (evil-aw-select "#FFFF00" "C" "Copy window" 'aw-copy-window))
+    (defun evil-ace-maximize-window () (interactive)
+        (evil-aw-select "#FF8000" "M" "Maximize window" 'delete-other-windows))
+    (defun evil-ace-delete-window-loop () (interactive)
+        (evil-aw-select "#FF0000" "D" "Delete window" (lambda (window)
+            (when (window-parent window)
+                (aw-switch-to-window window)
+                (evil-window-delete)
+                (evil-ace-delete-window-loop)))))
+    (setq aw-dispatch-alist '(
+        (?o evil-ace-select-window)
+        (?x evil-ace-swap-window)
+        (?c evil-ace-copy-window)
+        (?m evil-ace-maximize-window)
+        (?k evil-ace-delete-window-loop)
+        (?q (lambda () (setq override-evil-mode-line-tag nil)))
+        (?\e (lambda () (setq override-evil-mode-line-tag nil)))
+        (?? aw-show-dispatch-help)))
+    (define-key global-map "\C-xo" 'evil-ace-select-window)
+    (define-key evil-motion-state-map " o" 'evil-ace-select-window))
 
 (use-package with-editor
     :config
