@@ -115,7 +115,6 @@
     (setq aw-scope 'frame)
     (setq aw-make-frame-char nil)
     (setq aw-dispatch-alist '(
-        (?o aw-flip-window)
         (?z aw-switch-to-window "Window")
         (?x aw-swap-window "Swap Window")
         (?c aw-copy-window "Copy Window")
