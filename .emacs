@@ -122,7 +122,7 @@
         (?m delete-other-windows "Maximize Window")
         (?q ignore)
         (?? aw-show-dispatch-help)))
-    (define-key global-map "\C-xo" 'ace-window))
+    (define-key global-map "\C-xo" 'ace-select-window))
 
 (use-package eat
     :config
@@ -205,7 +205,7 @@
     (define-key evil-motion-state-map " u" 'undo-tree-visualize)
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
     (define-key evil-motion-state-map " k" 'kill-buffer)
-    (define-key evil-motion-state-map " o" 'ace-window)
+    (define-key evil-motion-state-map " o" 'ace-select-window)
     (define-key evil-motion-state-map " f" 'find-file)
     (define-key evil-motion-state-map " d" 'dired)
     (use-package dired
