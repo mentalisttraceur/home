@@ -170,7 +170,7 @@
                 ((evil-replace-state-p)  "#FFFF00")
                 ((evil-visual-state-p)   "#8080FF")
                 ((evil-emacs-state-p)    "#8000FF")
-                ((evil-motion-state-p)   "#20E0FF")
+                ((evil-motion-state-p)   "#A0E0FF")
                 (t                       "#FFFFFF")))
             (face-remap-add-relative 'mode-line :background (cond
                 ((evil-normal-state-p)   "#FF4040")
