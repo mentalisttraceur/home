@@ -294,8 +294,9 @@
 	        (if (= window-1-top-edge window-2-top-edge)
 	            (< window-1-left-edge window-2-left-edge)
 	            (< window-1-top-edge window-2-top-edge)))))
-    (defun evil-aw-select (color tag text action)
-        (set-face-foreground 'aw-leading-char-face color)
+    (defun evil-aw-select (leading-char-color background-color tag text action)
+        (set-face-foreground 'aw-leading-char-face leading-char-color)
+        (set-face-foreground 'aw-background-face background-color)
         (setq override-evil-mode-line-tag (propertize tag
             'help-echo text 'mouse-face 'mode-line-highlight))
         (aw--done)
@@ -303,17 +304,21 @@
             (setq override-evil-mode-line-tag nil)
             (funcall action window))))
     (defun evil-ace-select-window () (interactive)
-        (evil-aw-select "#00FF00" "S" "Select window" 'aw-switch-to-window))
+        (evil-aw-select "#00FF00" "#006000" "S" "Select window"
+            'aw-switch-to-window))
     (defun evil-ace-swap-window () (interactive)
-        (evil-aw-select "#A0E0FF" "X" "Exchange window" 'aw-swap-window))
+        (evil-aw-select "#A0E0FF" "#006060" "X" "Exchange window"
+            'aw-swap-window))
     (defun evil-ace-copy-window () (interactive)
-        (evil-aw-select "#FFFF00" "C" "Copy window" 'aw-copy-window))
+        (evil-aw-select "#FFFF00" "#606000" "C" "Copy window"
+            'aw-copy-window))
     (defun evil-ace-delete-window-loop () (interactive)
-        (evil-aw-select "#FF0000" "D" "Delete window" (lambda (window)
-            (when (window-parent window)
-                (aw-switch-to-window window)
-                (evil-window-delete)
-                (evil-ace-delete-window-loop)))))
+        (evil-aw-select "#FF0000" "#802020" "D" "Delete window"
+            (lambda (window)
+                (when (window-parent window)
+                    (aw-switch-to-window window)
+                    (evil-window-delete)
+                    (evil-ace-delete-window-loop)))))
     (setq aw-dispatch-alist '(
         (?o evil-ace-select-window)
         (?x evil-ace-swap-window)
