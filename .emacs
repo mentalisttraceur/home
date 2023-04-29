@@ -30,6 +30,9 @@
       file-name-handler-alist nil)
 
 
+(define-key help-map "t" 'describe-face)
+
+
 (defmacro save-mutation (&rest body)
     `(let ((buffer-undo-list ()))
         (unwind-protect (progn ,@body)
