@@ -304,7 +304,7 @@
             (setq override-evil-mode-line-tag nil)
             (funcall action window))))
     (defun evil-ace-select-window () (interactive)
-        (evil-aw-select "#00FF00" "#006000" "S" "Select window"
+        (evil-aw-select "#00FF00" "#606060" "S" "Select window"
             'aw-switch-to-window))
     (defun evil-ace-swap-window () (interactive)
         (evil-aw-select "#A0E0FF" "#006060" "X" "Exchange window"
