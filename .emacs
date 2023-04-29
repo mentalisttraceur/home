@@ -307,16 +307,16 @@
                     (funcall action window))))
             (setq override-evil-mode-line-tag nil)))
     (defun evil-ace-select-window () (interactive)
-        (evil-aw-select "#00FF00" "#606060" "S" "Select window"
+        (evil-aw-select "#00FF00" "#606060" "W" "Window state"
             'aw-switch-to-window))
     (defun evil-ace-swap-window () (interactive)
-        (evil-aw-select "#A0E0FF" "#006060" "X" "Exchange window"
+        (evil-aw-select "#A0E0FF" "#006060" "X" "Exchange window state"
             'aw-swap-window))
     (defun evil-ace-copy-window () (interactive)
-        (evil-aw-select "#FFFF00" "#606000" "C" "Copy window"
+        (evil-aw-select "#FFFF00" "#606000" "C" "Copy window state"
             'aw-copy-window))
     (defun evil-ace-delete-window-loop () (interactive)
-        (evil-aw-select "#FF0000" "#802020" "D" "Delete window"
+        (evil-aw-select "#FF0000" "#802020" "D" "Delete window state"
             (lambda (window)
                 (when (window-parent window)
                     (aw-switch-to-window window)
