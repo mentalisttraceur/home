@@ -228,6 +228,7 @@
             (evil-local-set-key 'normal "q" 'abort-minibuffers))))
     (define-key evil-motion-state-map "gh" 'consult-history-execute)
     (define-key evil-motion-state-map " t" 'eshell)
+    (add-to-list 'evil-normal-state-modes 'eshell-mode)
     (defvar evil-state-before-eshell-command 'normal)
     (make-variable-buffer-local 'evil-state-before-eshell-command)
     (add-hook 'eshell-pre-command-hook (lambda ()
@@ -272,8 +273,7 @@
     (add-to-list 'evil-motion-state-modes 'Buffer-menu-mode)
     (add-to-list 'evil-motion-state-modes 'completion-list-mode)
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
-    (add-to-list 'evil-motion-state-modes 'tar-mode)
-    (add-to-list 'evil-normal-state-modes 'eshell-mode))
+    (add-to-list 'evil-motion-state-modes 'tar-mode))
 
 (use-package ace-window
     :config
