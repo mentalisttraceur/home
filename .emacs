@@ -324,6 +324,8 @@
                     (evil-ace-delete-window-loop)))))
     (setq aw-dispatch-alist '(
         (?o evil-ace-select-window)
+        (?h (lambda () (evil-window-split) (evil-ace-select-window)))
+        (?i (lambda () (evil-window-vsplit) (evil-ace-select-window)))
         (?x evil-ace-swap-window)
         (?c evil-ace-copy-window)
         (?k evil-ace-delete-window-loop)
