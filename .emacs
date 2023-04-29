@@ -295,11 +295,11 @@
                 (if (= window-1-top-edge window-2-top-edge)
                     (< window-1-left-edge window-2-left-edge)
                     (< window-1-top-edge window-2-top-edge)))))
-    (defun evil-aw-select (leading-char-color background-color tag text action)
+    (defun evil-aw-select (hint-color tint-color tag text action)
         (unwind-protect
             (progn
-                (set-face-foreground 'aw-leading-char-face leading-char-color)
-                (set-face-foreground 'aw-background-face background-color)
+                (set-face-foreground 'aw-leading-char-face hint-color)
+                (set-face-foreground 'aw-background-face tint-color)
                 (setq override-evil-mode-line-tag (propertize tag
                     'help-echo text 'mouse-face 'mode-line-highlight))
                 (aw--done)
