@@ -295,7 +295,7 @@
                 (if (= window-1-top-edge window-2-top-edge)
                     (< window-1-left-edge window-2-left-edge)
                     (< window-1-top-edge window-2-top-edge)))))
-    (defun evil-aw-select (hint-color tint-color tag text action)
+    (defun evil-aw-select (hint-color tint-color tag text action next)
         (unwind-protect
             (progn
                 (set-face-foreground 'aw-leading-char-face hint-color)
@@ -304,24 +304,24 @@
                     'help-echo text 'mouse-face 'mode-line-highlight))
                 (aw--done)
                 (aw-select "" (lambda (window)
-                    (funcall action window))))
+                    (funcall action window)
+                    (let ((windows-remaining (length (aw-window-list))))
+                        (when (> windows-remaining aw-dispatch-when-more-than)
+                            (funcall next))))))
             (setq override-evil-mode-line-tag nil)))
     (defun evil-ace-select-window () (interactive)
         (evil-aw-select "#00FF00" "#606060" "W" "Window state"
-            'aw-switch-to-window))
+            'aw-switch-to-window 'ignore))
     (defun evil-ace-swap-window () (interactive)
         (evil-aw-select "#A0E0FF" "#006060" "X" "Exchange window state"
-            'aw-swap-window))
+            'aw-swap-window 'ignore))
     (defun evil-ace-copy-window () (interactive)
         (evil-aw-select "#FFFF00" "#606000" "C" "Copy window state"
-            'aw-copy-window))
+            'aw-copy-window 'ignore))
     (defun evil-ace-delete-window-loop () (interactive)
         (evil-aw-select "#FF0000" "#802020" "D" "Delete window state"
-            (lambda (window)
-                (when (window-parent window)
-                    (aw-switch-to-window window)
-                    (evil-window-delete)
-                    (evil-ace-delete-window-loop)))))
+            (lambda (window) (aw-switch-to-window window) (evil-window-delete))
+            'evil-ace-delete-window-loop))
     (setq aw-dispatch-alist '(
         (?o evil-ace-select-window)
         (?h (lambda () (evil-window-split) (evil-ace-select-window)))
