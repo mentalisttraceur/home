@@ -309,6 +309,9 @@
                         (when (> windows-remaining aw-dispatch-when-more-than)
                             (funcall next))))))
             (setq override-evil-mode-line-tag nil)))
+    (defun evil-aw-delete-window (window)
+        (aw-switch-to-window window)
+        (evil-window-delete))
     (defun evil-ace-select-window () (interactive)
         (evil-aw-select "#00FF00" "#606060" "W" "Window state"
             'aw-switch-to-window 'ignore))
@@ -320,8 +323,7 @@
             'aw-copy-window 'ignore))
     (defun evil-ace-delete-window-loop () (interactive)
         (evil-aw-select "#FF0000" "#802020" "D" "Delete window state"
-            (lambda (window) (aw-switch-to-window window) (evil-window-delete))
-            'evil-ace-delete-window-loop))
+            'evil-aw-window-delete 'evil-ace-delete-window))
     (defun evil-ace-split-window () (interactive)
         (evil-window-split)
         (evil-ace-select-window))
