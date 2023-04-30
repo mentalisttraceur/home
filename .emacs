@@ -322,10 +322,16 @@
         (evil-aw-select "#FF0000" "#802020" "D" "Delete window state"
             (lambda (window) (aw-switch-to-window window) (evil-window-delete))
             'evil-ace-delete-window-loop))
+    (defun evil-ace-split-window () (interactive)
+        (evil-window-split)
+        (evil-ace-select-window))
+    (defun evil-ace-vsplit-window () (interactive)
+        (evil-window-vsplit)
+        (evil-ace-select-window))
     (setq aw-dispatch-alist '(
         (?o evil-ace-select-window)
-        (?h (lambda () (evil-window-split) (evil-ace-select-window)))
-        (?i (lambda () (evil-window-vsplit) (evil-ace-select-window)))
+        (?h evil-ace-split-window)
+        (?i evil-ace-vsplit-window)
         (?x evil-ace-swap-window)
         (?c evil-ace-copy-window)
         (?k evil-ace-delete-window-loop)
