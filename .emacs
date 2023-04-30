@@ -371,10 +371,19 @@
     (define-prefix-command 'space-o-single-window-map)
     (define-key space-o-single-window-map "h" 'evil-ace-split-window)
     (define-key space-o-single-window-map "i" 'evil-ace-vsplit-window)
+    (defun evil-ace-single-window-fake-dispatch () (interactive)
+	(set-face-foreground 'aw-background-face "#606060")
+	(setq override-evil-mode-line-tag (propertize "W"
+	    'help-echo "Window state" 'mouse-face 'mode-line-highlight))
+	(aw--make-backgrounds (list (selected-window)))
+	(set-transient-map space-o-single-window-map (lambda ()
+            (aw--done)
+            (setq override-evil-mode-line-tag nil)
+            nil)))
     (define-key evil-motion-state-map " o" (lambda () (interactive)
         (if (evil-aw-enough-windows-to-dispatch)
             (evil-ace-select-window)
-            (set-transient-map space-o-single-window-map)))))
+            (evil-ace-single-window-fake-dispatch)))))
 
 (use-package with-editor
     :config
