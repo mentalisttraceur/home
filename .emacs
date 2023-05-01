@@ -415,6 +415,7 @@
     (define-key space-o-single-window-map "q" 'ignore)
     (define-key space-o-single-window-map "\C-[" 'ignore)
     (define-key space-o-single-window-map "\C-g" 'ignore)
+    (define-key space-o-single-window-map "?" 'aw-show-dispatch-help)
     (define-key space-o-single-window-map [t] 'ignore)
     (defun evil-ace-single-window-fake-dispatch () (interactive)
         (evil-aw-select-setup evil-ace-window-state-markers
@@ -428,7 +429,7 @@
                 (when (stringp key)
                     (setq key (string-to-char key)))
                 (if (alist-get key space-o-single-window-map)
-                    (if (member key '(?o ?l ?s ?S ?c ?C ?k ?K ?t))
+                    (if (member key '(?o ?l ?s ?S ?c ?C ?k ?K ?t ??))
                         t
                         (aw--done)
                         (setq override-evil-mode-line-tag nil)
