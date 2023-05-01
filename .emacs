@@ -383,7 +383,11 @@
             'help-echo "Window state" 'mouse-face 'mode-line-highlight))
         (aw--make-backgrounds (list (selected-window)))
         (set-transient-map space-o-single-window-map (lambda ()
-            (let ((key (string-to-char (substring (this-command-keys) -1))))
+            (let ((key (substring (this-command-keys) -1)))
+                (when (equal key [escape])
+                    (setq key "\C-["))
+                (when (stringp key)
+                    (setq key (string-to-char key)))
                 (if (alist-get key space-o-single-window-map)
                     (if (equal key ?t)
                         t
