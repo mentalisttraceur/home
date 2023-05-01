@@ -415,7 +415,9 @@
     (define-key space-o-single-window-map "q" 'ignore)
     (define-key space-o-single-window-map "\C-[" 'ignore)
     (define-key space-o-single-window-map "\C-g" 'ignore)
-    (define-key space-o-single-window-map "?" 'aw-show-dispatch-help)
+    (define-key space-o-single-window-map "?" (lambda () (interactive)
+        (aw-show-dispatch-help)
+        (aw--make-backgrounds (list (selected-window)))))
     (define-key space-o-single-window-map [t] 'ignore)
     (defun evil-ace-single-window-fake-dispatch () (interactive)
         (evil-aw-select-setup evil-ace-window-state-markers
