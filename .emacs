@@ -344,10 +344,10 @@
             'evil-aw-delete-window 'evil-ace-delete-window-loop))
     (defun evil-ace-split-window () (interactive)
         (evil-window-split)
-        (evil-ace-select-window))
+        (apply 'evil-aw-select evil-aw-select-arguments))
     (defun evil-ace-vsplit-window () (interactive)
         (evil-window-vsplit)
-        (evil-ace-select-window))
+        (apply 'evil-aw-select evil-aw-select-arguments))
     (defun toggle-evil-auto-balance-windows() (interactive)
         (setq evil-auto-balance-windows (not evil-auto-balance-windows))
         (message "evil-auto-balance-windows: %s" evil-auto-balance-windows))
@@ -381,6 +381,9 @@
         (set-face-foreground 'aw-background-face "#606060")
         (setq override-evil-mode-line-tag (propertize "W"
             'help-echo "Window state" 'mouse-face 'mode-line-highlight))
+        (setq evil-aw-select-arguments
+            '("#00FF00" "#606060" "W" "Window state"
+                aw-switch-to-window ignore))
         (aw--make-backgrounds (list (selected-window)))
         (set-transient-map space-o-single-window-map (lambda ()
             (let ((key (substring (this-command-keys) -1)))
