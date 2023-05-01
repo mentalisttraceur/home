@@ -298,18 +298,17 @@
     (defun evil-aw-enough-windows-to-dispatch ()
         (> (length (aw-window-list)) aw-dispatch-when-more-than))
     (defvar evil-aw-select-arguments nil)
-    (defun evil-aw-select-setup (hint-color tint-color tag text action next)
-        (setq evil-aw-select-arguments
-            (list hint-color tint-color tag text action next))
-        (set-face-foreground 'aw-leading-char-face hint-color)
-        (set-face-foreground 'aw-background-face tint-color)
-        (setq override-evil-mode-line-tag (propertize tag
-            'help-echo text 'mouse-face 'mode-line-highlight)))
-    (defun evil-aw-select (hint-color tint-color tag text action next)
+    (defun evil-aw-select-setup (state-markers action next)
+        (setq evil-aw-select-arguments (list state-markers action next))
+        (set-face-foreground 'aw-leading-char-face (car state-markers))
+        (set-face-foreground 'aw-background-face (cadr state-markers))
+        (setq override-evil-mode-line-tag (propertize (caddr state-markers)
+            'help-echo (cadddr state-markers)
+            'mouse-face 'mode-line-highlight)))
+    (defun evil-aw-select (state-markers action next)
         (unwind-protect
             (progn
-                (evil-aw-select-setup
-                    hint-color tint-color tag text action next)
+                (evil-aw-select-setup state-markers action next)
                 (aw--done)
                 (aw-select "" (lambda (window)
                     (funcall action window)
@@ -319,31 +318,41 @@
     (defun evil-aw-delete-window (window)
         (aw-switch-to-window window)
         (evil-window-delete))
+    (defconst evil-ace-window-state-markers
+        '("#00FF00" "#606060" "W" "Window state"))
+    (defconst evil-ace-latched-window-state-markers
+        '("#00FF00" "#206020" "W" "Window state"))
+    (defconst evil-ace-swap-window-state-markers
+        '("#A0E0FF" "#006060" "S" "Swap window state"))
+    (defconst evil-ace-copy-window-state-markers
+        '("#FFFF00" "#606000" "C" "Copy window state"))
+    (defconst evil-ace-kill-window-state-markers
+        '("#FF0000" "#802020" "K" "Kill window state"))
     (defun evil-ace-select-window () (interactive)
-        (evil-aw-select "#00FF00" "#606060" "W" "Window state"
+        (evil-aw-select evil-ace-window-state-markers
             'aw-switch-to-window 'ignore))
     (defun evil-ace-select-window-and-resume () (interactive)
         (let ((interrupted-select-arguments evil-aw-select-arguments))
-            (evil-aw-select "#00FF00" "#206020" "W" "Window state"
+            (evil-aw-select evil-ace-latched-window-state-markers
                 'aw-switch-to-window (lambda ()
                     (apply 'evil-aw-select interrupted-select-arguments)))))
     (defun evil-ace-swap-window () (interactive)
-        (evil-aw-select "#A0E0FF" "#006060" "S" "Swap window state"
+        (evil-aw-select evil-ace-swap-window-state-markers
             'aw-swap-window 'ignore))
     (defun evil-ace-swap-window-loop () (interactive)
-        (evil-aw-select "#A0E0FF" "#006060" "S" "Swap window state"
+        (evil-aw-select evil-ace-swap-window-state-markers
             'aw-swap-window 'evil-ace-swap-window-loop))
     (defun evil-ace-copy-window () (interactive)
-        (evil-aw-select "#FFFF00" "#606000" "C" "Copy window state"
+        (evil-aw-select evil-ace-copy-window-state-markers
             'aw-copy-window 'ignore))
     (defun evil-ace-copy-window-loop () (interactive)
-        (evil-aw-select "#FFFF00" "#606000" "C" "Copy window state"
+        (evil-aw-select evil-ace-copy-window-state-markers
             'aw-copy-window 'evil-ace-copy-window-loop))
     (defun evil-ace-delete-window () (interactive)
-        (evil-aw-select "#FF0000" "#802020" "K" "Kill window state"
+        (evil-aw-select evil-ace-kill-window-state-markers
             'evil-aw-delete-window 'ignore))
     (defun evil-ace-delete-window-loop () (interactive)
-        (evil-aw-select "#FF0000" "#802020" "K" "Kill window state"
+        (evil-aw-select evil-ace-kill-window-state-markers
             'evil-aw-delete-window 'evil-ace-delete-window-loop))
     (defun evil-ace-split-window () (interactive)
         (evil-window-split)
@@ -375,29 +384,29 @@
     (define-key space-o-single-window-map "h" 'evil-ace-split-window)
     (define-key space-o-single-window-map "i" 'evil-ace-vsplit-window)
     (define-key space-o-single-window-map "o" (lambda () (interactive)
-        (evil-aw-select-setup "#00FF00" "#606060" "W" "Window state"
+        (evil-aw-select-setup evil-ace-window-state-markers
             'aw-switch-to-window 'ignore)))
     (define-key space-o-single-window-map "l" (lambda () (interactive)
-        (evil-aw-select-setup "#00FF00" "#206020" "W" "Window state"
+        (evil-aw-select-setup evil-ace-latched-window-state-markers
             'aw-switch-to-window `(lambda ()
                 (apply 'evil-aw-select ,evil-aw-select-arguments)))))
     (define-key space-o-single-window-map "s" (lambda () (interactive)
-        (evil-aw-select-setup "#A0E0FF" "#006060" "S" "Swap window state"
+        (evil-aw-select-setup evil-ace-swap-window-state-markers
             'aw-swap-window 'ignore)))
     (define-key space-o-single-window-map "S" (lambda () (interactive)
-        (evil-aw-select-setup "#A0E0FF" "#006060" "S" "Swap window state"
+        (evil-aw-select-setup evil-ace-swap-window-state-markers
             'aw-swap-window 'evil-ace-swap-window-loop)))
     (define-key space-o-single-window-map "c" (lambda () (interactive)
-        (evil-aw-select-setup "#FFFF00" "#606000" "C" "Copy window state"
+        (evil-aw-select-setup evil-ace-copy-window-state-markers
             'aw-copy-window 'ignore)))
     (define-key space-o-single-window-map "C" (lambda () (interactive)
-        (evil-aw-select-setup "#FFFF00" "#606000" "C" "Copy window state"
+        (evil-aw-select-setup evil-ace-copy-window-state-markers
             'aw-copy-window 'evil-ace-copy-window-loop)))
     (define-key space-o-single-window-map "k" (lambda () (interactive)
-        (evil-aw-select-setup "#FF0000" "#802020" "K" "Kill window state"
+        (evil-aw-select-setup evil-ace-kill-window-state-markers
             'evil-aw-delete-window 'ignore)))
     (define-key space-o-single-window-map "K" (lambda () (interactive)
-        (evil-aw-select-setup "#FF0000" "#802020" "K" "Kill window state"
+        (evil-aw-select-setup evil-ace-kill-window-state-markers
             'evil-aw-delete-window 'evil-ace-delete-window-loop)))
     (define-key space-o-single-window-map "t"
         'toggle-evil-auto-balance-windows)
@@ -406,7 +415,7 @@
     (define-key space-o-single-window-map "\C-g" 'ignore)
     (define-key space-o-single-window-map [t] 'ignore)
     (defun evil-ace-single-window-fake-dispatch () (interactive)
-        (evil-aw-select-setup "#00FF00" "#606060" "W" "Window state"
+        (evil-aw-select-setup evil-ace-window-state-markers
             'aw-switch-to-window 'ignore)
         (aw--make-backgrounds (list (selected-window)))
         (set-transient-map space-o-single-window-map (lambda ()
