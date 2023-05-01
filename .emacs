@@ -364,10 +364,10 @@
         (setq evil-auto-balance-windows (not evil-auto-balance-windows))
         (message "evil-auto-balance-windows: %s" evil-auto-balance-windows))
     (setq aw-dispatch-alist '(
-        (?o evil-ace-select-window)
-        (?l evil-ace-select-window-and-resume)
         (?h evil-ace-split-window)
         (?i evil-ace-vsplit-window)
+        (?o evil-ace-select-window)
+        (?l evil-ace-select-window-and-resume)
         (?s evil-ace-swap-window)
         (?S evil-ace-swap-window-loop)
         (?c evil-ace-copy-window)
