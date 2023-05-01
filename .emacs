@@ -298,15 +298,18 @@
     (defun evil-aw-enough-windows-to-dispatch ()
         (> (length (aw-window-list)) aw-dispatch-when-more-than))
     (defvar evil-aw-select-arguments nil)
-    (defun evil-aw-select (hint-color tint-color tag text action next)
+    (defun evil-aw-select-setup (hint-color tint-color tag text action next)
         (setq evil-aw-select-arguments
             (list hint-color tint-color tag text action next))
+        (set-face-foreground 'aw-leading-char-face hint-color)
+        (set-face-foreground 'aw-background-face tint-color)
+        (setq override-evil-mode-line-tag (propertize tag
+            'help-echo text 'mouse-face 'mode-line-highlight)))
+    (defun evil-aw-select (hint-color tint-color tag text action next)
         (unwind-protect
             (progn
-                (set-face-foreground 'aw-leading-char-face hint-color)
-                (set-face-foreground 'aw-background-face tint-color)
-                (setq override-evil-mode-line-tag (propertize tag
-                    'help-echo text 'mouse-face 'mode-line-highlight))
+                (evil-aw-select-setup
+                    hint-color tint-color tag text action next)
                 (aw--done)
                 (aw-select "" (lambda (window)
                     (funcall action window)
@@ -371,6 +374,31 @@
     (define-prefix-command 'space-o-single-window-map)
     (define-key space-o-single-window-map "h" 'evil-ace-split-window)
     (define-key space-o-single-window-map "i" 'evil-ace-vsplit-window)
+    (define-key space-o-single-window-map "o" (lambda () (interactive)
+        (evil-aw-select-setup "#00FF00" "#606060" "W" "Window state"
+            'aw-switch-to-window 'ignore)))
+    (define-key space-o-single-window-map "l" (lambda () (interactive)
+        (evil-aw-select-setup "#00FF00" "#206020" "W" "Window state"
+            'aw-switch-to-window `(lambda ()
+                (apply 'evil-aw-select ,evil-aw-select-arguments)))))
+    (define-key space-o-single-window-map "s" (lambda () (interactive)
+        (evil-aw-select-setup "#A0E0FF" "#006060" "S" "Swap window state"
+            'aw-swap-window 'ignore)))
+    (define-key space-o-single-window-map "S" (lambda () (interactive)
+        (evil-aw-select-setup "#A0E0FF" "#006060" "S" "Swap window state"
+            'aw-swap-window 'evil-ace-swap-window-loop)))
+    (define-key space-o-single-window-map "c" (lambda () (interactive)
+        (evil-aw-select-setup "#FFFF00" "#606000" "C" "Copy window state"
+            'aw-copy-window 'ignore)))
+    (define-key space-o-single-window-map "C" (lambda () (interactive)
+        (evil-aw-select-setup "#FFFF00" "#606000" "C" "Copy window state"
+            'aw-copy-window 'evil-ace-copy-window-loop)))
+    (define-key space-o-single-window-map "k" (lambda () (interactive)
+        (evil-aw-select-setup "#FF0000" "#802020" "K" "Kill window state"
+            'evil-aw-delete-window 'ignore)))
+    (define-key space-o-single-window-map "K" (lambda () (interactive)
+        (evil-aw-select-setup "#FF0000" "#802020" "K" "Kill window state"
+            'evil-aw-delete-window 'evil-ace-delete-window-loop)))
     (define-key space-o-single-window-map "t"
         'toggle-evil-auto-balance-windows)
     (define-key space-o-single-window-map "q" 'ignore)
@@ -378,12 +406,8 @@
     (define-key space-o-single-window-map "\C-g" 'ignore)
     (define-key space-o-single-window-map [t] 'ignore)
     (defun evil-ace-single-window-fake-dispatch () (interactive)
-        (set-face-foreground 'aw-background-face "#606060")
-        (setq override-evil-mode-line-tag (propertize "W"
-            'help-echo "Window state" 'mouse-face 'mode-line-highlight))
-        (setq evil-aw-select-arguments
-            '("#00FF00" "#606060" "W" "Window state"
-                aw-switch-to-window ignore))
+        (evil-aw-select-setup "#00FF00" "#606060" "W" "Window state"
+            'aw-switch-to-window 'ignore)
         (aw--make-backgrounds (list (selected-window)))
         (set-transient-map space-o-single-window-map (lambda ()
             (let ((key (substring (this-command-keys) -1)))
@@ -392,7 +416,7 @@
                 (when (stringp key)
                     (setq key (string-to-char key)))
                 (if (alist-get key space-o-single-window-map)
-                    (if (equal key ?t)
+                    (if (member key '(?o ?l ?s ?S ?c ?C ?k ?K ?t))
                         t
                         (aw--done)
                         (setq override-evil-mode-line-tag nil)
