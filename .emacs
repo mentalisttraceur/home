@@ -410,6 +410,8 @@
             'evil-aw-delete-window 'evil-ace-delete-window-loop)))
     (define-key space-o-single-window-map "t"
         'toggle-evil-auto-balance-windows)
+    (define-key space-o-single-window-map "1" (lambda () (interactive)
+        (funcall (cadr evil-aw-select-arguments) (selected-window))))
     (define-key space-o-single-window-map "q" 'ignore)
     (define-key space-o-single-window-map "\C-[" 'ignore)
     (define-key space-o-single-window-map "\C-g" 'ignore)
@@ -418,6 +420,7 @@
         (evil-aw-select-setup evil-ace-window-state-markers
             'aw-switch-to-window 'ignore)
         (aw--make-backgrounds (list (selected-window)))
+        (aw--lead-overlay "1" (cons (point) (selected-window)))
         (set-transient-map space-o-single-window-map (lambda ()
             (let ((key (substring (this-command-keys) -1)))
                 (when (equal key [escape])
