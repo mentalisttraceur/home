@@ -151,6 +151,14 @@
     (define-key evil-normal-state-map "P" 'fixed-evil-paste-before)
     (define-key evil-normal-state-map "U" 'evil-redo)
     (defvar override-evil-mode-line-tag nil)
+    (defmacro save-override-evil-mode-line-tag (tag help-string &rest body)
+        `(unwind-protect
+            (progn
+                (setq override-evil-mode-line-tag (propertize ,tag
+                    'help-echo ,help-string
+                    'mouse-face 'mode-line-highlight))
+                ,@body)
+            (setq override-evil-mode-line-tag nil)))
     (setq mode-line-front-space '(:eval
         (if override-evil-mode-line-tag
             override-evil-mode-line-tag
@@ -312,20 +320,15 @@
         (let* ((hint-color   (car    state-markers))
                (tint-color   (cadr   state-markers))
                (tag          (caddr  state-markers))
-               (text         (cadddr state-markers)))
+               (help-string  (cadddr state-markers)))
             (setq evil-aw-select-arguments (list state-markers action next))
             (set-face-foreground 'aw-leading-char-face hint-color)
             (set-face-foreground 'aw-background-face   tint-color)
             (aw--done)
-            (unwind-protect
-                (progn
-                    (setq override-evil-mode-line-tag (propertize tag
-                        'help-echo text
-                        'mouse-face 'mode-line-highlight))
-                    (aw-select "" (lambda (window)
-                        (funcall action window)
-                        (funcall next))))
-                (setq override-evil-mode-line-tag nil))))
+            (save-override-evil-mode-line-tag tag help-string
+                (aw-select "" (lambda (window)
+                    (funcall action window)
+                    (funcall next))))))
     (defun evil-aw-delete-window (window)
         (aw-switch-to-window window)
         (evil-window-delete))
