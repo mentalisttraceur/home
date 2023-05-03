@@ -283,7 +283,9 @@
         (display-fill-column-indicator-mode 'toggle)
         (if display-fill-column-indicator-mode
             (highlight-regexp   ".\\{79\\}\\(.*\\)" 'hi-yellow 1)
-            (unhighlight-regexp ".\\{79\\}\\(.*\\)")))
+            (unhighlight-regexp ".\\{79\\}\\(.*\\)"))
+        (message "display-fill-column-indicator-mode %s"
+            display-fill-column-indicator-mode))
     (evil-declare-not-repeat 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " i" 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " sh" 'evil-window-split)
