@@ -385,7 +385,6 @@
     (define-key global-map "\C-xo" 'evil-ace-select-window)
     (define-key evil-motion-state-map " o" 'evil-ace-select-window))
 
-
 (use-package with-editor
     :config
     (defun fixed-with-editor-return (with-editor-return &rest arguments)
