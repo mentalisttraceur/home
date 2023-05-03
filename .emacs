@@ -242,7 +242,7 @@
         (setq consult-history-execute nil)
         (vertico-exit))
     (add-hook 'minibuffer-setup-hook (lambda ()
-        (evil-local-set-key 'normal [escape] 'abort-minibuffers)
+        (evil-local-set-key 'motion [escape] 'abort-minibuffers)
         (if (eq this-command 'consult-history-execute)
             (evil-local-set-key 'normal "q" 'consult-history-execute-quit)
             (evil-local-set-key 'normal "q" 'abort-minibuffers))))
