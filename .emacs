@@ -341,13 +341,13 @@
     (defconst evil-ace-window-state-markers
         '("#00FF00" "#606060" "W" "Window state"))
     (defconst evil-ace-latched-window-state-markers
-        '("#00FF00" "#206020" "W" "Window state"))
+        '("#00FF00" "#406040" "W" "Window state"))
     (defconst evil-ace-swap-window-state-markers
-        '("#A0E0FF" "#006060" "S" "Swap window state"))
+        '("#A0E0FF" "#406060" "S" "Swap window state"))
     (defconst evil-ace-copy-window-state-markers
-        '("#FFFF00" "#606000" "C" "Copy window state"))
+        '("#FFFF00" "#606040" "C" "Copy window state"))
     (defconst evil-ace-kill-window-state-markers
-        '("#FF0000" "#802020" "K" "Kill window state"))
+        '("#FF0000" "#604040" "K" "Kill window state"))
     (defun evil-ace-select-window () (interactive)
         (evil-aw-select evil-ace-window-state-markers
             'aw-switch-to-window 'ignore))
