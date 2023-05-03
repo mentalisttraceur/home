@@ -38,6 +38,13 @@
         (unwind-protect (progn ,@body)
             (primitive-undo (length buffer-undo-list) buffer-undo-list))))
 
+(defmacro save-advice (symbol where function &rest body)
+    `(unwind-protect
+        (progn
+            (advice-add ,symbol ,where ,function)
+            ,@body)
+        (advice-remove ,symbol ,function)))
+
 
 (unless (and (fboundp 'package-installed-p)
              (package-installed-p 'use-package))
@@ -388,14 +395,9 @@
 (use-package with-editor
     :config
     (defun fixed-with-editor-return (with-editor-return cancel)
-        (unwind-protect
-            (progn
-                (when cancel
-                    (advice-add 'save-buffer :around 'ignore))
-                (advice-add 'delete-file :around 'ignore)
-                (funcall with-editor-return cancel))
-            (advice-remove 'save-buffer 'ignore)
-            (advice-remove 'delete-file 'ignore)))
+        (save-advice 'delete-file :around 'ignore
+            (save-advice (if cancel 'save-buffer nil) :around 'ignore
+                (funcall with-editor-return cancel))))
     (advice-add 'with-editor-return :around 'fixed-with-editor-return)
     (add-hook 'eshell-mode-hook 'with-editor-export-editor)
     (shell-command-with-editor-mode 1))
