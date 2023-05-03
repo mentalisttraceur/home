@@ -387,13 +387,13 @@
 
 (use-package with-editor
     :config
-    (defun fixed-with-editor-return (with-editor-return &rest arguments)
+    (defun fixed-with-editor-return (with-editor-return cancel)
         (unwind-protect
             (progn
-                (when (car arguments)
+                (when cancel
                     (advice-add 'save-buffer :around 'ignore))
                 (advice-add 'delete-file :around 'ignore)
-                (apply with-editor-return arguments))
+                (funcall with-editor-return cancel))
             (advice-remove 'save-buffer 'ignore)
             (advice-remove 'delete-file 'ignore)))
     (advice-add 'with-editor-return :around 'fixed-with-editor-return)
