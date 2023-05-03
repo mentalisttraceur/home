@@ -342,7 +342,7 @@
     (defconst evil-ace-window-state-markers
         '("#00FF00" "#606060" "W" "Window state"))
     (defconst evil-ace-latched-window-state-markers
-        '("#00FF00" "#206020" "W" "Window state"))
+        '("#00FF00" "#208020" "W" "Window state"))
     (defconst evil-ace-swap-window-state-markers
         '("#A0E0FF" "#006060" "S" "Swap window state"))
     (defconst evil-ace-copy-window-state-markers
