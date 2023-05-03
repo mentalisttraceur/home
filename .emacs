@@ -311,16 +311,17 @@
                 (if (= window-1-top-edge window-2-top-edge)
                     (< window-1-left-edge window-2-left-edge)
                     (< window-1-top-edge window-2-top-edge)))))
-    (defvar hack-aw-window-list '(nil))
     (defun hack-aw-window-list (window-list)
         (if (= (length window-list) 1)
-            (setq hack-aw-window-list (cons (car window-list) window-list))
+            (cons (car window-list) window-list)
             window-list))
-    (defun hack-avy-tree (candidate-list _keys)
-        (when (eq (cdar candidate-list) (car hack-aw-window-list))
-            (advice-remove 'aw-window-list 'hack-aw-window-list)
-            (advice-remove 'avy-tree 'hack-avy-tree)
-            (setcdr candidate-list nil)))
+    (defun hack-avy-tree (arguments)
+        (let ((candidate-list (car arguments)))
+            (when (eq (cdar candidate-list) (cdadr candidate-list))
+                (advice-remove 'aw-window-list 'hack-aw-window-list)
+                (advice-remove 'avy-tree 'hack-avy-tree)
+                (setcar arguments (cdr candidate-list))))
+        arguments)
     (defvar evil-aw-select-arguments nil)
     (defun evil-aw-select (state-markers action next)
         (let* ((hint-color  (car    state-markers))
@@ -332,7 +333,7 @@
             (set-face-foreground 'aw-background-face   tint-color)
             (aw--done)
             (save-advice 'aw-window-list :filter-return 'hack-aw-window-list
-                (save-advice 'avy-tree :before 'hack-avy-tree
+                (save-advice 'avy-tree :filter-args 'hack-avy-tree
                     (save-override-evil-mode-line-tag tag help-string
                         (aw-select "" (lambda (window)
                             (funcall action window)
