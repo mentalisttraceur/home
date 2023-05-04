@@ -46,6 +46,29 @@
         (advice-remove ,symbol ,function)))
 
 
+(defmacro unpack (names list)
+    `(let ((--unpack-- ,list))
+        (dolist (name ',names)
+            (eval (list 'setq name '(car --unpack--)))
+            (setq --unpack-- (cdr --unpack--)))))
+
+(defmacro let-unpack-1 (names list &rest body)
+    `(let ,names
+        (unpack ,names ,list)
+        ,@body))
+
+(defmacro let-unpack (unpack-list &rest body)
+    (let* ((forms (list 'unused)) (next-form nil) (last-form forms))
+        (while unpack-list
+            (let-unpack-1 (names list) unpack-list
+                (setq next-form `(let-unpack-1 ,names ,list))
+                (setcdr (last last-form) (list next-form))
+                (setq last-form next-form))
+            (setq unpack-list (cddr unpack-list)))
+        (setcdr (last last-form) body)
+        (cadr forms)))
+
+
 (unless (and (fboundp 'package-installed-p)
              (package-installed-p 'use-package))
     (defmacro use-package (&rest _)))
