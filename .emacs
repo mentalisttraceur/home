@@ -327,6 +327,10 @@
                 (advice-remove 'avy-tree 'hack-avy-tree)
                 (setcar arguments (cdr candidate-list))))
         arguments)
+    (defun fixed-aw-select (action)
+        (save-advice 'aw-window-list :filter-return 'hack-aw-window-list
+            (save-advice 'avy-tree :filter-args 'hack-avy-tree
+                (aw-select "" action))))
     (defvar evil-aw-select-arguments nil)
     (defun evil-aw-select (state-markers action next)
         (let ((hint-color  (car    state-markers))
@@ -337,12 +341,10 @@
             (set-face-foreground 'aw-leading-char-face hint-color)
             (set-face-foreground 'aw-background-face   tint-color)
             (aw--done)
-            (save-advice 'aw-window-list :filter-return 'hack-aw-window-list
-                (save-advice 'avy-tree :filter-args 'hack-avy-tree
-                    (save-override-evil-mode-line-tag tag help-string
-                        (aw-select "" (lambda (window)
-                            (funcall action window)
-                            (funcall next))))))))
+            (save-override-evil-mode-line-tag tag help-string
+                (fixed-aw-select (lambda (window)
+                    (funcall action window)
+                    (funcall next))))))
     (defun evil-aw-delete-window (window)
         (aw-switch-to-window window)
         (evil-window-delete))
