@@ -86,7 +86,8 @@
             'front-sticky '(read-only)
             'rear-nonsticky t)))
     (setq eshell-hist-ignoredups 'erase)
-    (setq eshell-history-size 65536))
+    (setq eshell-history-size 65536)
+    (add-to-list 'eshell-modules-list 'eshell-tramp))
 
 (use-package comint
     :config
