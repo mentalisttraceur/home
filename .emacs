@@ -364,7 +364,7 @@
     (defconst window-state-select-latched
         '("#00FF00" "#208020" "W" "Window state"))
     (defconst window-state-swap
-        '("#A0E0FF" "#006060" "S" "Swap window state"))
+        '("#8000FF" "#402060" "S" "Swap window state"))
     (defconst window-state-copy
         '("#FFFF00" "#606000" "C" "Copy window state"))
     (defconst window-state-kill
