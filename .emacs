@@ -272,7 +272,9 @@
                          'consult-history-execute-quit
                          'abort-minibuffers)))
             (evil-local-set-key 'normal "q" quit)
-            (evil-local-set-key 'normal [escape] quit))))
+            (evil-local-set-key 'normal [escape] quit)
+            (evil-local-set-key 'operator "q" 'evil-force-normal-state)
+            (evil-local-set-key 'operator [escape] 'evil-force-normal-state))))
     (define-key evil-motion-state-map "gh" 'consult-history-execute)
     (define-key evil-motion-state-map " t" 'eshell)
     (add-to-list 'evil-normal-state-modes 'eshell-mode)
