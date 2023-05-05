@@ -18,6 +18,7 @@
 (add-hook 'after-make-frame-functions 'init-graphic-frame)
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 (setq enable-recursive-minibuffers t)
+(setq scroll-conservatively 101)
 
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
