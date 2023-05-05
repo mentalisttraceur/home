@@ -239,6 +239,7 @@
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
     (define-key evil-motion-state-map " k" 'kill-buffer)
     (define-key evil-motion-state-map " f" 'find-file)
+    (define-key evil-motion-state-map " r" 'revert-buffer)
     (define-key evil-motion-state-map " d" 'dired)
     (use-package dired
         :config
