@@ -106,6 +106,10 @@
     (delete-command-line-at-point)
     (insert command))
 
+(use-package dired
+    :config
+    (setq dired-dwim-target t))
+
 (use-package undo-tree
     :config
     (global-undo-tree-mode 1)
