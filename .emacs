@@ -246,7 +246,6 @@
     (define-key evil-motion-state-map " f" 'find-file)
     (define-key evil-motion-state-map " r" 'revert-buffer)
     (define-key evil-motion-state-map " d" 'dired)
-    (define-key dired-mode-map " " nil)
     (define-key evil-motion-state-map " y" 'execute-extended-command)
     (define-key evil-motion-state-map " h" help-map)
     (define-key evil-motion-state-map " p" 'list-packages)
@@ -328,6 +327,7 @@
     (add-to-list 'evil-motion-state-modes 'Buffer-menu-mode)
     (add-to-list 'evil-motion-state-modes 'completion-list-mode)
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
+    (add-to-list 'evil-motion-state-modes 'dired-mode)
     (add-to-list 'evil-motion-state-modes 'tar-mode))
 
 (use-package ace-window
