@@ -246,9 +246,7 @@
     (define-key evil-motion-state-map " f" 'find-file)
     (define-key evil-motion-state-map " r" 'revert-buffer)
     (define-key evil-motion-state-map " d" 'dired)
-    (use-package dired
-        :config
-        (define-key dired-mode-map " " nil))
+    (define-key dired-mode-map " " nil)
     (define-key evil-motion-state-map " y" 'execute-extended-command)
     (define-key evil-motion-state-map " h" help-map)
     (define-key evil-motion-state-map " p" 'list-packages)
