@@ -87,13 +87,18 @@
             'rear-nonsticky t)))
     (setq eshell-hist-ignoredups 'erase)
     (setq eshell-history-size 65536)
+    (defun hack-ring-empty-p (ring-empty-p ring)
+        (if (eq ring eshell-history-ring)
+            nil
+            (funcall ring-empty-p ring)))
     (defun hack-ring-remove (ring-remove ring &optional index)
         (when index
             (funcall ring-remove ring index)))
     (defun fixed-eshell-add-input-to-history
             (eshell-add-input-to-history &rest arguments)
-        (save-advice 'ring-remove :around 'hack-ring-remove
-            (apply eshell-add-input-to-history arguments)))
+        (save-advice 'ring-empty-p :around 'hack-ring-empty-p
+            (save-advice 'ring-remove :around 'hack-ring-remove
+                (apply eshell-add-input-to-history arguments))))
     (advice-add 'eshell-add-input-to-history :around
         'fixed-eshell-add-input-to-history)
     (defun in-eshell-scrollback-p () (interactive)
