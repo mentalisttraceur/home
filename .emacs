@@ -295,30 +295,6 @@
     (defun consult-history-execute-quit () (interactive)
         (setq consult-history-execute nil)
         (vertico-exit))
-    (evil-define-motion evil-vertico-next-line (count)
-        (unless count
-            (setq count 1))
-        (dotimes (_ count)
-            (condition-case nil
-                (evil-next-line)
-                (end-of-buffer (vertico-next)))))
-    (evil-define-motion evil-vertico-previous-line (count)
-        (unless count
-            (setq count 1))
-        (dotimes (_ count)
-            (condition-case _error
-                (evil-previous-line)
-                (beginning-of-buffer (vertico-previous)))))
-    (add-hook 'minibuffer-setup-hook (lambda ()
-        (evil-local-set-key 'normal "j" 'evil-vertico-next-line)
-        (evil-local-set-key 'normal "k" 'evil-vertico-previous-line)
-        (let ((quit (if (eq this-command 'consult-history-execute)
-                         'consult-history-execute-quit
-                         'abort-minibuffers)))
-            (evil-local-set-key 'normal "q" quit)
-            (evil-local-set-key 'normal [escape] quit)
-            (evil-local-set-key 'operator "q" 'evil-force-normal-state)
-            (evil-local-set-key 'operator [escape] 'evil-force-normal-state))))
     (define-key evil-motion-state-map "gh" 'consult-history-execute)
     (define-key evil-motion-state-map " t" 'eshell)
     (add-to-list 'evil-normal-state-modes 'eshell-mode)
@@ -365,6 +341,30 @@
     (define-key evil-motion-state-map " si" 'evil-window-vsplit)
     (define-key evil-motion-state-map " sk" 'evil-window-delete)
     (define-key evil-motion-state-map " so" 'other-window)
+    (evil-define-motion evil-vertico-next-line (count)
+        (unless count
+            (setq count 1))
+        (dotimes (_ count)
+            (condition-case nil
+                (evil-next-line)
+                (end-of-buffer (vertico-next)))))
+    (evil-define-motion evil-vertico-previous-line (count)
+        (unless count
+            (setq count 1))
+        (dotimes (_ count)
+            (condition-case _error
+                (evil-previous-line)
+                (beginning-of-buffer (vertico-previous)))))
+    (add-hook 'minibuffer-setup-hook (lambda ()
+        (evil-local-set-key 'normal "j" 'evil-vertico-next-line)
+        (evil-local-set-key 'normal "k" 'evil-vertico-previous-line)
+        (let ((quit (if (eq this-command 'consult-history-execute)
+                         'consult-history-execute-quit
+                         'abort-minibuffers)))
+            (evil-local-set-key 'normal "q" quit)
+            (evil-local-set-key 'normal [escape] quit)
+            (evil-local-set-key 'operator "q" 'evil-force-normal-state)
+            (evil-local-set-key 'operator [escape] 'evil-force-normal-state))))
     (add-to-list 'evil-motion-state-modes 'Buffer-menu-mode)
     (add-to-list 'evil-motion-state-modes 'completion-list-mode)
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
