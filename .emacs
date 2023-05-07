@@ -303,6 +303,8 @@
     (add-to-list 'evil-normal-state-modes 'eshell-mode)
     (defvar evil-state-before-eshell-command 'normal)
     (make-variable-buffer-local 'evil-state-before-eshell-command)
+    (advice-add 'eshell-send-input :before (lambda ()
+        (setq evil-state-before-eshell-command evil-state)))
     (add-hook 'eshell-pre-command-hook (lambda ()
         (setq evil-state-before-eshell-command evil-state)
         (evil-insert-state)))
