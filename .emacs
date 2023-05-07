@@ -310,7 +310,7 @@
         (evil-insert-state)))
     (add-hook 'eshell-post-command-hook (lambda ()
         (evil-change-state evil-state-before-eshell-command)))
-    (evil-declare-not-repeat 'eshell-send-input)
+    (evil-declare-not-repeat 'fixed-eshell-send-input)
     (evil-declare-not-repeat 'eshell-interrupt-process)
     (define-key evil-motion-state-map " T" 'eat)
     (add-to-list 'evil-emacs-state-modes 'eat-mode)
