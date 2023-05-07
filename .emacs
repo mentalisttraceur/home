@@ -290,7 +290,23 @@
     (defun consult-history-execute-quit () (interactive)
         (setq consult-history-execute nil)
         (vertico-exit))
+    (evil-define-motion evil-vertico-next-line (count)
+        (unless count
+            (setq count 1))
+        (dotimes (_ count)
+            (condition-case nil
+                (evil-next-line)
+                (end-of-buffer (vertico-next)))))
+    (evil-define-motion evil-vertico-previous-line (count)
+        (unless count
+            (setq count 1))
+        (dotimes (_ count)
+            (condition-case _error
+                (evil-previous-line)
+                (beginning-of-buffer (vertico-previous)))))
     (add-hook 'minibuffer-setup-hook (lambda ()
+        (evil-local-set-key 'normal "j" 'evil-vertico-next-line)
+        (evil-local-set-key 'normal "k" 'evil-vertico-previous-line)
         (let ((quit (if (eq this-command 'consult-history-execute)
                          'consult-history-execute-quit
                          'abort-minibuffers)))
