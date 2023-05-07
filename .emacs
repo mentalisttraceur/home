@@ -96,6 +96,13 @@
             (apply eshell-add-input-to-history arguments)))
     (advice-add 'eshell-add-input-to-history :around
         'fixed-eshell-add-input-to-history)
+    (defun in-eshell-scrollback-p () (interactive)
+        (text-property-any (point) (buffer-end 1) 'field 'prompt))
+    (defun fixed-eshell-send-input () (interactive)
+        (if (in-eshell-scrollback-p)
+            (message "not in input")
+            (eshell-send-input)))
+    (define-key eshell-mode-map "\C-m" 'fixed-eshell-send-input)
     (add-to-list 'eshell-modules-list 'eshell-tramp))
 
 (use-package comint
