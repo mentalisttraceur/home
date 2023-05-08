@@ -107,8 +107,10 @@
         (if (in-eshell-scrollback-p)
             (message "not in input")
             (eshell-send-input)))
-    (define-key eshell-mode-map "\C-m" 'fixed-eshell-send-input)
     (add-to-list 'eshell-modules-list 'eshell-tramp))
+(use-package esh-mode
+    :config
+    (define-key eshell-mode-map "\C-m" 'fixed-eshell-send-input))
 
 (use-package comint
     :config
