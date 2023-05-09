@@ -1,4 +1,4 @@
-(setq backup-inhibited t) 
+(setq backup-inhibited t)
 (setq create-lockfiles nil)
 (setq auto-save-default nil)
 (setq auto-save-list-file-prefix nil)
