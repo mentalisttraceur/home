@@ -383,6 +383,8 @@
             (evil-local-set-key 'normal [escape] quit)
             (evil-local-set-key 'operator "q" 'evil-force-normal-state)
             (evil-local-set-key 'operator [escape] 'evil-force-normal-state))))
+    (add-hook 'Info-mode-hook (lambda ()
+        (evil-local-set-key 'motion " " 'space-map)))
     (add-to-list 'evil-motion-state-modes 'Buffer-menu-mode)
     (add-to-list 'evil-motion-state-modes 'completion-list-mode)
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
