@@ -31,6 +31,16 @@
       file-name-handler-alist nil)
 
 
+(cl-defmethod gui-backend-get-selection
+        (_selection-type _data-type &context (window-system nil))
+    (with-temp-buffer
+        (insert-file-contents "~/.clipboard-fix")
+        (buffer-string)))
+(advice-add 'gui-select-text :before (lambda (text)
+    (with-temp-file "~/.clipboard-fix"
+        (insert text))))
+
+
 (define-key help-map "t" 'describe-face)
 
 
