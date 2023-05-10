@@ -129,11 +129,11 @@
         (propertize output 'read-only t))))
 
 (defun get-command-line-at-point ()
-    (let ((start (line-beginning-position))
+    (let ((start (max (line-beginning-position) (field-beginning)))
           (end   (line-end-position)))
         (buffer-substring-no-properties start end)))
 (defun delete-command-line-at-point ()
-    (let ((start (line-beginning-position))
+    (let ((start (max (line-beginning-position) (field-beginning)))
           (end   (line-end-position)))
         (delete-region start end)))
 (defun replace-command-line-at-point (command)
