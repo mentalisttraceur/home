@@ -323,6 +323,7 @@
         (evil-force-normal-state)
         (setq evil-eshell-state-for-next-input evil-state))
     (add-hook 'eshell-mode-hook (lambda ()
+        (evil-local-set-key 'normal [escape] 'eshell-interrupt-process)
         (evil-local-set-key 'insert [escape] 'evil-eshell-force-normal-state)))
     (add-hook 'eshell-pre-command-hook (lambda ()
         (setq evil-eshell-state-for-next-input evil-state)
