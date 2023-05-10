@@ -42,6 +42,9 @@
             (insert text)))))
 
 
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+
 (define-key help-map "t" 'describe-face)
 
 
