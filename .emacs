@@ -209,9 +209,9 @@
     (setq evil-want-C-u-scroll t)
     :config
     (evil-mode 1)
-    (defun fixed-evil-paste-before (prefix-argument) (interactive "*P<x>")
-        (save-excursion (evil-paste-before prefix-argument)))
-    (define-key evil-normal-state-map "P" 'fixed-evil-paste-before)
+    (defun fixed-evil-paste-before (evil-paste-before &rest arguments)
+        (save-excursion (apply evil-paste-before arguments)))
+    (advice-add 'evil-paste-before :around 'fixed-evil-paste-before)
     (define-key evil-normal-state-map "U" 'evil-redo)
     (defvar override-evil-mode-line-tag nil)
     (defmacro save-override-evil-mode-line-tag (tag help-string &rest body)
