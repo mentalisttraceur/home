@@ -213,8 +213,21 @@
     :config
     (evil-mode 1)
     (defun fixed-evil-paste-before (evil-paste-before &rest arguments)
-        (save-excursion (apply evil-paste-before arguments)))
+        (evil-save-column
+            (apply evil-paste-before arguments)))
     (advice-add 'evil-paste-before :around 'fixed-evil-paste-before)
+    (defun fixed-evil-yank-line-handler (yank-handler &rest arguments)
+        (evil-save-column
+            (apply yank-handler arguments)
+            (when (eq (car evil-last-paste) 'evil-paste-after)
+                (goto-char (nth 4 evil-last-paste)))))
+    (advice-add 'evil-yank-line-handler :around 'fixed-evil-yank-line-handler)
+    (defun fixed-evil-yank-block-handler (yank-handler &rest arguments)
+        (evil-save-column
+            (apply yank-handler arguments))
+        (when (eq (car evil-last-paste) 'evil-paste-after)
+            (move-to-column (+ (current-column) (nth 4 evil-last-paste)))))
+    (advice-add 'evil-yank-block-handler :around 'fixed-evil-yank-block-handler)
     (define-key evil-normal-state-map "U" 'evil-redo)
     (defvar override-evil-mode-line-tag nil)
     (defmacro save-override-evil-mode-line-tag (tag help-string &rest body)
