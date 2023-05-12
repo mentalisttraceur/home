@@ -373,10 +373,6 @@
             display-fill-column-indicator-mode))
     (evil-declare-not-repeat 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " i" 'toggle-show-80+-characters)
-    (define-key evil-motion-state-map " sh" 'evil-window-split)
-    (define-key evil-motion-state-map " si" 'evil-window-vsplit)
-    (define-key evil-motion-state-map " sk" 'evil-window-delete)
-    (define-key evil-motion-state-map " so" 'other-window)
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
             (setq count 1))
