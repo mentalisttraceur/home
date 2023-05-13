@@ -147,6 +147,10 @@
     (delete-command-line-at-point)
     (insert command))
 
+(use-package tramp
+    :config
+    (setq tramp-default-method "sshx"))
+
 (use-package dired
     :config
     (setq dired-dwim-target t))
