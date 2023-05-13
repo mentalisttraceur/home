@@ -84,6 +84,13 @@
         (cadr forms)))
 
 
+(defun list-interject (list separator)
+    (let ((next list))
+        (dotimes (_ (length (cdr list)))
+            (setcdr next (cons separator (cdr next)))
+            (setq next (cddr next)))))
+
+
 (unless (and (fboundp 'package-installed-p)
              (package-installed-p 'use-package))
     (defmacro use-package (&rest _)))
