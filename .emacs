@@ -169,6 +169,7 @@
 (use-package consult
     :config
     (setq consult-line-start-from-top t)
+    (setq consult-find-args "find .")
     (defun fixed-consult-history (prefix-argument) (interactive "P")
         (let ((command (when prefix-argument (get-command-line-at-point))))
             (save-excursion (save-mutation
