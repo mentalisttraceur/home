@@ -207,6 +207,22 @@
     :config
     (setq consult-line-start-from-top t)
     (setq consult-find-args "find .")
+    (defun consult-fd (&optional directory initial-query) (interactive "P")
+        (let-unpack ((prompt paths directory)
+                         (consult--directory-prompt "Fd" directory))
+            (let* ((default-directory directory)
+                   (file (consult--find
+                             prompt 'consult--fd-builder initial-query)))
+                (find-file file))))
+    (defun consult--fd-builder (query)
+        (let-uncons (patterns options (consult--command-split query)
+                     patterns highlight-function (funcall
+                         consult--regexp-compiler patterns 'extended t))
+            (when patterns
+                (list-interject patterns "--and")
+                (cons
+                    `("fd" "--color=never" "--full-path" ,@patterns ,@options)
+                    highlight-function))))
     (defun fixed-consult-history (prefix-argument) (interactive "P")
         (let ((command (when prefix-argument (get-command-line-at-point))))
             (save-excursion (save-mutation
