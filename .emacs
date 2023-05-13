@@ -83,6 +83,28 @@
         (setcdr (last last-form) body)
         (cadr forms)))
 
+(defmacro uncons (car-name cdr-name cell)
+    `(progn
+        (setq ,car-name (car ,cell))
+        (setq ,cdr-name (cdr ,cell))
+        nil))
+
+(defmacro let-uncons-1 (car-name cdr-name cell &rest body)
+    `(let ((--let-uncons-1-- ,cell) ,car-name ,cdr-name)
+        (uncons ,car-name ,cdr-name --let-uncons-1--)
+        ,@body))
+
+(defmacro let-uncons (uncons-list &rest body)
+    (let* ((forms (list 'unused)) (next-form nil) (last-form forms))
+        (while uncons-list
+            (let-unpack-1 (car-name cdr-name cell) uncons-list
+                (setq next-form `(let-uncons-1 ,car-name ,cdr-name ,cell))
+                (setcdr (last last-form) (list next-form))
+                (setq last-form next-form))
+            (setq uncons-list (cdddr uncons-list)))
+        (setcdr (last last-form) body)
+        (cadr forms)))
+
 
 (defun list-interject (list separator)
     (let ((next list))
