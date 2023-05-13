@@ -121,6 +121,10 @@
         (if (in-eshell-scrollback-p)
             (message "not in input")
             (eshell-send-input)))
+    (defun eshell/vi (&rest paths)
+        (dolist (path paths)
+            (find-file path)))
+    (defalias 'eshell/e 'eshell/vi)
     (add-to-list 'eshell-modules-list 'eshell-tramp))
 (use-package esh-mode
     :config

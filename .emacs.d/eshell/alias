@@ -1,2 +1,0 @@
-alias e for file in {nreverse $*} { find-file $file }
-alias vi for file in {nreverse $*} { find-file $file }
