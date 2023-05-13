@@ -373,6 +373,9 @@
             display-fill-column-indicator-mode))
     (evil-declare-not-repeat 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " i" 'toggle-show-80+-characters)
+    (define-key evil-motion-state-map " l" 'consult-line)
+    (define-key evil-motion-state-map " sl" 'consult-grep)
+    (define-key evil-motion-state-map " sf" 'consult-find)
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
             (setq count 1))
