@@ -461,6 +461,10 @@
             (evil-local-set-key 'normal   "q"      quit)
             (evil-local-set-key 'operator [escape] 'evil-force-normal-state)
             (evil-local-set-key 'operator "q"      'evil-force-normal-state))))
+    (add-hook 'isearch-mode-hook (lambda ()
+        (define-key overriding-terminal-local-map [escape]
+            (lambda () (interactive)
+                (isearch-done)))))
     (add-hook 'Info-mode-hook (lambda ()
         (evil-local-set-key 'motion " " 'space-map)))
     (add-to-list 'evil-motion-state-modes 'Buffer-menu-mode)
