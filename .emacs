@@ -417,6 +417,7 @@
     (add-to-list 'evil-motion-state-modes 'Buffer-menu-mode)
     (add-to-list 'evil-motion-state-modes 'completion-list-mode)
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
+    (add-to-list 'evil-motion-state-modes 'shortdoc-mode)
     (add-to-list 'evil-motion-state-modes 'tar-mode))
 
 (use-package ace-window
