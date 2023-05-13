@@ -451,7 +451,9 @@
                 (beginning-of-buffer (vertico-previous)))))
     (add-hook 'minibuffer-setup-hook (lambda ()
         (evil-local-set-key 'normal "j" 'evil-vertico-next-line)
+        (evil-local-set-key 'normal [down] 'evil-vertico-next-line)
         (evil-local-set-key 'normal "k" 'evil-vertico-previous-line)
+        (evil-local-set-key 'normal [up]   'evil-vertico-previous-line)
         (let ((quit (if (eq this-command 'consult-history-execute)
                          'consult-history-execute-quit
                          'abort-minibuffers)))
