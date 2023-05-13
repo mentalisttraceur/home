@@ -387,6 +387,7 @@
     (define-key evil-motion-state-map " l" 'consult-line)
     (define-key evil-motion-state-map " sl" 'consult-grep)
     (define-key evil-motion-state-map " sf" 'consult-find)
+    (define-key evil-motion-state-map " x" 'tramp-cleanup-connection)
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
             (setq count 1))
