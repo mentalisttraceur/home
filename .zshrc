@@ -1,4 +1,4 @@
-PS1='$ '
+PS1='%(!.#.$) '
 bindkey -v
 source ~/.zsh-vi-ps1
 source ~/.zsh-vi-search
