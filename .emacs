@@ -68,8 +68,8 @@
             (setq --unpack-- (cdr --unpack--)))))
 
 (defmacro let-unpack-1 (names list &rest body)
-    `(let ,names
-        (unpack ,names ,list)
+    `(let ((--let-unpack-1-- ,list) ,@names)
+        (unpack ,names --let-unpack-1--)
         ,@body))
 
 (defmacro let-unpack (unpack-list &rest body)
