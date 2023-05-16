@@ -330,6 +330,7 @@
     (add-hook 'evil-motion-state-entry-hook   'color-code-vi-state)
     (set-face-foreground 'mode-line "#010101")
     (setq evil-cross-lines t)
+    (evil-declare-not-repeat 'ignore)
     (define-key evil-insert-state-map "\C-d" nil)
     (define-key evil-insert-state-map "\C-t" nil)
     (define-key evil-motion-state-map "\C-m" nil)
