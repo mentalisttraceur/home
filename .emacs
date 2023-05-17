@@ -146,10 +146,16 @@
         'fixed-eshell-add-input-to-history)
     (defun in-eshell-scrollback-p () (interactive)
         (text-property-any (point) (buffer-end 1) 'field 'prompt))
+    (defun hack-insert-before-markers-and-inherit (arguments)
+        (if (and (equal (length arguments) 1) (equal (car arguments) ?\n))
+            (list (propertize "\n" 'field 'end-of-input 'rear-nonsticky t))
+            arguments))
     (defun fixed-eshell-send-input () (interactive)
         (if (in-eshell-scrollback-p)
             (message "not in input")
-            (eshell-send-input)))
+            (save-advice 'insert-before-markers-and-inherit
+                    :filter-args 'hack-insert-before-markers-and-inherit
+                (eshell-send-input))))
     (defun eshell/vi (&rest paths)
         (dolist (path paths)
             (find-file path)))
