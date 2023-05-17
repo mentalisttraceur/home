@@ -170,16 +170,12 @@
     (add-hook 'comint-preoutput-filter-functions (lambda (output)
         (propertize output 'read-only t))))
 
-(defun get-command-line-at-point ()
-    (let ((start (max (line-beginning-position) (field-beginning)))
-          (end   (line-end-position)))
-        (buffer-substring-no-properties start end)))
-(defun delete-command-line-at-point ()
-    (let ((start (max (line-beginning-position) (field-beginning)))
-          (end   (line-end-position)))
-        (delete-region start end)))
-(defun replace-command-line-at-point (command)
-    (delete-command-line-at-point)
+(defun get-command-at-point ()
+    (buffer-substring-no-properties (field-beginning) (field-end)))
+(defun delete-command-at-point ()
+    (delete-region (field-beginning) (field-end)))
+(defun replace-command-at-point (command)
+    (delete-command-at-point)
     (insert command))
 
 (use-package tramp
@@ -230,16 +226,17 @@
                     `("fd" "--color=never" "--full-path" ,@patterns ,@options)
                     highlight-function))))
     (defun fixed-consult-history (prefix-argument) (interactive "P")
-        (let ((command (when prefix-argument (get-command-line-at-point))))
-            (save-excursion (save-mutation
-                (end-of-buffer)
-                (when prefix-argument
-                    (replace-command-line-at-point command))
-                (beginning-of-line)
-                (consult-history)
-                (setq command (get-command-line-at-point))))
+        (let ((command (when prefix-argument (get-command-at-point))))
+            (save-advice 'pos-eol :override 'field-end
+                (save-excursion (save-mutation
+                    (end-of-buffer)
+                    (when prefix-argument
+                        (replace-command-at-point command))
+                    (goto-char (field-beginning))
+                    (consult-history)
+                    (setq command (get-command-at-point)))))
             (end-of-buffer)
-            (replace-command-line-at-point command)
+            (replace-command-at-point command)
             command)))
 
 (use-package orderless
@@ -383,7 +380,7 @@
             (evil-repeat-start)
             (add-to-list 'evil-repeat-info `((lambda ()
                 (end-of-buffer)
-                (replace-command-line-at-point ,command)
+                (replace-command-at-point ,command)
                 (when ,consult-history-execute
                     (setq unread-command-events '(,@run-key))))))
             (evil-repeat-stop)
