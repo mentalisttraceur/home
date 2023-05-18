@@ -292,6 +292,15 @@
         (setq prefix-arg current-prefix-arg)
         return-value)
     (advice-add 'evil-use-register :filter-return 'fixed-evil-use-register)
+    (use-package nhexl-mode)
+    (evil-define-command evil-paste-overwrite (count &optional register)
+        (interactive "*P<x>")
+        (evil-with-single-undo
+            (nhexl-overwrite--yank-wrapper (lambda ()
+                (save-advice 'fixed-evil-paste-before :override 'funcall
+                    (evil-paste-before count register))
+                (evil-forward-char)))))
+    (define-key evil-normal-state-map "gp" 'evil-paste-overwrite)
     (define-key evil-normal-state-map "U" 'evil-redo)
     (defvar override-evil-mode-line-tag nil)
     (defmacro save-override-evil-mode-line-tag (tag help-string &rest body)
