@@ -618,8 +618,8 @@
 (use-package with-editor
     :config
     (defun fixed-with-editor-return (with-editor-return cancel)
-        (save-advice 'delete-file :around 'ignore
-            (save-advice (if cancel 'save-buffer nil) :around 'ignore
+        (save-advice 'delete-file :override 'ignore
+            (save-advice (if cancel 'save-buffer nil) :override 'ignore
                 (funcall with-editor-return cancel))))
     (advice-add 'with-editor-return :around 'fixed-with-editor-return)
     (add-hook 'eshell-mode-hook 'with-editor-export-editor)
