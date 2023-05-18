@@ -480,7 +480,8 @@
     (add-to-list 'evil-motion-state-modes 'completion-list-mode)
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
     (add-to-list 'evil-motion-state-modes 'shortdoc-mode)
-    (add-to-list 'evil-motion-state-modes 'tar-mode))
+    (add-to-list 'evil-motion-state-modes 'tar-mode)
+    (add-to-list 'evil-motion-state-modes 'vc-annotate-mode))
 
 (use-package ace-window
     :config
