@@ -19,6 +19,8 @@
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 (setq enable-recursive-minibuffers t)
 (setq scroll-conservatively 101)
+(setq hscroll-step 1)
+(setq hscroll-margin 1)
 
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
