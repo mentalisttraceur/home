@@ -292,16 +292,66 @@
         (setq prefix-arg current-prefix-arg)
         return-value)
     (advice-add 'evil-use-register :filter-return 'fixed-evil-use-register)
-    (use-package nhexl-mode)
-    (evil-define-command evil-paste-overwrite (count &optional register)
-        (interactive "*P<x>")
-        (evil-with-single-undo
-            (nhexl-overwrite--yank-wrapper (lambda ()
-                (save-advice 'fixed-evil-paste-before :override 'funcall
-                    (evil-paste-before count register))
-                (evil-forward-char)))))
-    (define-key evil-normal-state-map "gp" 'evil-paste-overwrite)
     (define-key evil-normal-state-map "U" 'evil-redo)
+    (evil-define-command evil-replacing-paste-before (count &optional register)
+        (interactive "*P<x>")
+        (evil-replacing-paste count register nil))
+    (evil-define-command evil-replacing-paste-after (count &optional register)
+        (interactive "*P<x>")
+        (evil-replacing-paste count register t))
+    (defvar hack-evil-last-paste)
+    (defun hack-evil-set-marker (character &rest _)
+        (when (equal character ?\[)
+            (setq hack-evil-last-paste evil-last-paste)))
+    (defvar evil-replacing-paste--line-or-block)
+    (defun hack-evil-yank-line-handler (&rest _)
+        (setq evil-replacing-paste--line-or-block 'line))
+    (defun hack-evil-yank-block-handler (&rest _)
+        (setq evil-replacing-paste--line-or-block 'block))
+    (defun evil-replacing-paste (count register move-point)
+        (evil-with-single-undo
+            (setq evil-replacing-paste--line-or-block nil)
+            (save-advice 'evil-set-marker :before 'hack-evil-set-marker
+                (save-advice 'evil-yank-line-handler
+                        :before 'hack-evil-yank-line-handler
+                    (save-advice 'evil-yank-block-handler
+                            :before 'hack-evil-yank-block-handler
+                        (evil-paste-before count register))))
+            (when (eq evil-replacing-paste--line-or-block nil)
+                (let* ((end     (nth 4 hack-evil-last-paste))
+                       (columns (- end (nth 3 hack-evil-last-paste))))
+                    (delete-forward-in-line end columns)
+                    (when move-point
+                        (goto-char end))))
+            (when (eq evil-replacing-paste--line-or-block 'line)
+                (let* ((end   (nth 4 hack-evil-last-paste))
+                       (lines (count-lines (nth 3 hack-evil-last-paste) end)))
+                    (delete-lines end lines)
+                    (when move-point
+                        (evil-save-column
+                            (goto-char end)))))
+            (when (eq evil-replacing-paste--line-or-block 'block)
+                (let ((lines   (nth 3 hack-evil-last-paste))
+                      (columns (nth 4 hack-evil-last-paste)))
+                    (dotimes (line lines)
+                        (save-excursion
+                            (evil-line-move line)
+                            (move-to-column (+ (current-column) columns))
+                            (delete-forward-in-line (point) columns)))
+                    (when move-point
+                        (move-to-column (+ (current-column) columns)))))
+            (setq evil-last-paste nil)))
+    (defun delete-forward-in-line (start count)
+        (delete-region start (save-excursion
+            (goto-char start)
+            (move-to-column (+ (current-column) count))
+            (point))))
+    (defun delete-lines (start count)
+        (save-excursion
+            (goto-char start)
+            (delete-region (pos-bol) (pos-bol (+ count 1)))))
+    (define-key evil-normal-state-map "gp" 'evil-replacing-paste-after)
+    (define-key evil-normal-state-map "gP" 'evil-replacing-paste-before)
     (defvar override-evil-mode-line-tag nil)
     (defmacro save-override-evil-mode-line-tag (tag help-string &rest body)
         `(unwind-protect
