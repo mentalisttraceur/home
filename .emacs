@@ -549,7 +549,8 @@
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
     (add-to-list 'evil-motion-state-modes 'shortdoc-mode)
     (add-to-list 'evil-motion-state-modes 'tar-mode)
-    (add-to-list 'evil-motion-state-modes 'vc-annotate-mode))
+    (add-to-list 'evil-motion-state-modes 'vc-annotate-mode)
+    (add-to-list 'evil-motion-state-modes 'vc-git-log-view-mode))
 
 (use-package ace-window
     :config
