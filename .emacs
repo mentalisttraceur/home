@@ -21,6 +21,7 @@
 (setq scroll-conservatively 101)
 (setq hscroll-step 1)
 (setq hscroll-margin 1)
+(setq-default indent-tabs-mode nil)
 
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
