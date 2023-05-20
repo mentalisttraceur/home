@@ -56,13 +56,6 @@
         (unwind-protect (progn ,@body)
             (primitive-undo (length buffer-undo-list) buffer-undo-list))))
 
-(defmacro save-advice (symbol where function &rest body)
-    `(unwind-protect
-        (progn
-            (advice-add ,symbol ,where ,function)
-            ,@body)
-        (advice-remove ,symbol ,function)))
-
 
 (defmacro unpack (names list)
     `(let ((--unpack-- ,list))
@@ -109,6 +102,25 @@
         (cadr forms)))
 
 
+(defmacro with-advice-1 (symbol where function &rest body)
+    `(unwind-protect
+        (progn
+            (advice-add ,symbol ,where ,function)
+            ,@body)
+        (advice-remove ,symbol ,function)))
+
+(defmacro with-advice (advice-list &rest body)
+    (let* ((forms (list 'unused)) (next-form nil) (last-form forms))
+        (while advice-list
+            (let-unpack-1 (symbol where function) advice-list
+                (setq next-form `(with-advice-1 ,symbol ,where ,function))
+                (setcdr (last last-form) (list next-form))
+                (setq last-form next-form))
+            (setq advice-list (cdddr advice-list)))
+        (setcdr (last last-form) body)
+        (cadr forms)))
+
+
 (defun list-interject (list separator)
     (let ((next list))
         (dotimes (_ (length (cdr list)))
@@ -142,9 +154,9 @@
             (funcall ring-remove ring index)))
     (defun fixed-eshell-add-input-to-history
             (eshell-add-input-to-history &rest arguments)
-        (save-advice 'ring-empty-p :around 'hack-ring-empty-p
-            (save-advice 'ring-remove :around 'hack-ring-remove
-                (apply eshell-add-input-to-history arguments))))
+        (with-advice ('ring-empty-p :around 'hack-ring-empty-p
+                      'ring-remove  :around 'hack-ring-remove)
+            (apply eshell-add-input-to-history arguments)))
     (advice-add 'eshell-add-input-to-history :around
         'fixed-eshell-add-input-to-history)
     (defun in-eshell-scrollback-p () (interactive)
@@ -156,8 +168,8 @@
     (defun fixed-eshell-send-input () (interactive)
         (if (in-eshell-scrollback-p)
             (message "not in input")
-            (save-advice 'insert-before-markers-and-inherit
-                    :filter-args 'hack-insert-before-markers-and-inherit
+            (with-advice ('insert-before-markers-and-inherit
+                    :filter-args 'hack-insert-before-markers-and-inherit)
                 (eshell-send-input))))
     (defun eshell/vi (&rest paths)
         (dolist (path paths)
@@ -230,7 +242,7 @@
                     highlight-function))))
     (defun fixed-consult-history (prefix-argument) (interactive "P")
         (let ((command (when prefix-argument (get-command-at-point))))
-            (save-advice 'pos-eol :override 'field-end
+            (with-advice ('pos-eol :override 'field-end)
                 (save-excursion (save-mutation
                     (end-of-buffer)
                     (when prefix-argument
@@ -312,12 +324,12 @@
     (defun evil-replacing-paste (count register move-point)
         (evil-with-single-undo
             (setq evil-replacing-paste--line-or-block nil)
-            (save-advice 'evil-set-marker :before 'hack-evil-set-marker
-                (save-advice 'evil-yank-line-handler
-                        :before 'hack-evil-yank-line-handler
-                    (save-advice 'evil-yank-block-handler
-                            :before 'hack-evil-yank-block-handler
-                        (evil-paste-before count register))))
+            (with-advice ('evil-set-marker :before 'hack-evil-set-marker
+                          'evil-yank-line-handler
+                              :before 'hack-evil-yank-line-handler
+                          'evil-yank-block-handler
+                              :before 'hack-evil-yank-block-handler)
+                (evil-paste-before count register))
             (when (eq evil-replacing-paste--line-or-block nil)
                 (let* ((end     (nth 4 hack-evil-last-paste))
                        (columns (- end (nth 3 hack-evil-last-paste))))
@@ -580,9 +592,9 @@
                 (setcar arguments (cdr candidate-list))))
         arguments)
     (defun fixed-aw-select (action)
-        (save-advice 'aw-window-list :filter-return 'hack-aw-window-list
-            (save-advice 'avy-tree :filter-args 'hack-avy-tree
-                (aw-select "" action))))
+        (with-advice ('aw-window-list :filter-return 'hack-aw-window-list
+                      'avy-tree :filter-args 'hack-avy-tree)
+            (aw-select "" action)))
     (defun evil-aw-delete-window (window)
         (aw-switch-to-window window)
         (evil-window-delete))
@@ -687,9 +699,9 @@
 (use-package with-editor
     :config
     (defun fixed-with-editor-return (with-editor-return cancel)
-        (save-advice 'delete-file :override 'ignore
-            (save-advice (if cancel 'save-buffer nil) :override 'ignore
-                (funcall with-editor-return cancel))))
+        (with-advice ('delete-file :override 'ignore
+                      (if cancel 'save-buffer nil) :override 'ignore)
+            (funcall with-editor-return cancel)))
     (advice-add 'with-editor-return :around 'fixed-with-editor-return)
     (add-hook 'eshell-mode-hook 'with-editor-export-editor)
     (shell-command-with-editor-mode 1))
