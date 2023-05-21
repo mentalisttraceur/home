@@ -478,6 +478,7 @@
         (setq evil-eshell-state-for-next-input evil-state)
         (evil-insert-state)))
     (add-hook 'eshell-post-command-hook (lambda ()
+        (evil-force-normal-state)
         (evil-change-state evil-eshell-state-for-next-input)))
     (evil-declare-not-repeat 'fixed-eshell-send-input)
     (evil-declare-not-repeat 'eshell-interrupt-process)
