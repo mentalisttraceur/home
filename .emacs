@@ -337,7 +337,7 @@
                     (dotimes (line lines)
                         (save-excursion
                             (evil-save-repeat-info
-                                (evil-line-move line))
+                                (evil-next-line line))
                             (move-to-column (+ (current-column) columns))
                             (delete-forward-in-line (point) columns)))
                     (when move-point
