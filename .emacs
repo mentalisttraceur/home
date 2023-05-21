@@ -336,7 +336,8 @@
                       (columns (nth 4 hack-evil-last-paste)))
                     (dotimes (line lines)
                         (save-excursion
-                            (evil-line-move line)
+                            (evil-save-repeat-info
+                                (evil-line-move line))
                             (move-to-column (+ (current-column) columns))
                             (delete-forward-in-line (point) columns)))
                     (when move-point
