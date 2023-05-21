@@ -407,6 +407,7 @@
     (advice-add 'evil-paste-after :around 'fixed-evil-paste-after)
     (define-key evil-replace-state-map [escape] 'evil-insert-state)
     (define-key evil-motion-state-map "\C-m" nil)
+    (define-key evil-normal-state-map "\C-?" nil)
     (define-key evil-normal-state-map "\C-r" nil)
     (define-key evil-motion-state-map [escape] 'quit-window)
     (define-key evil-operator-state-map [escape] 'evil-force-normal-state)
