@@ -51,6 +51,18 @@
 (define-key help-map "t" 'describe-face)
 
 
+(defmacro apply-split-nest (callable arguments count body)
+    (setq count (- count 1))
+    (let* ((forms (list 'unused)) (next-form nil) (last-cons forms))
+        (while arguments
+            (setq next-form (cons callable arguments))
+            (setcdr last-cons (list next-form))
+            (setq last-cons (nthcdr count arguments))
+            (setq arguments (cdr last-cons)))
+        (setcdr last-cons body)
+        (cadr forms)))
+
+
 (defmacro save-mutation (&rest body)
     `(let ((buffer-undo-list ()))
         (unwind-protect (progn ,@body)
@@ -69,15 +81,7 @@
         ,@body))
 
 (defmacro let-unpack (unpack-list &rest body)
-    (let* ((forms (list 'unused)) (next-form nil) (last-form forms))
-        (while unpack-list
-            (let-unpack-1 (names list) unpack-list
-                (setq next-form `(let-unpack-1 ,names ,list))
-                (setcdr (last last-form) (list next-form))
-                (setq last-form next-form))
-            (setq unpack-list (cddr unpack-list)))
-        (setcdr (last last-form) body)
-        (cadr forms)))
+    `(apply-split-nest let-unpack-1 ,unpack-list 2 ,body))
 
 (defmacro uncons (car-name cdr-name cell)
     `(progn
@@ -91,15 +95,7 @@
         ,@body))
 
 (defmacro let-uncons (uncons-list &rest body)
-    (let* ((forms (list 'unused)) (next-form nil) (last-form forms))
-        (while uncons-list
-            (let-unpack-1 (car-name cdr-name cell) uncons-list
-                (setq next-form `(let-uncons-1 ,car-name ,cdr-name ,cell))
-                (setcdr (last last-form) (list next-form))
-                (setq last-form next-form))
-            (setq uncons-list (cdddr uncons-list)))
-        (setcdr (last last-form) body)
-        (cadr forms)))
+    `(apply-split-nest let-uncons-1 ,uncons-list 3 ,body))
 
 
 (defmacro with-advice-1 (symbol where function &rest body)
@@ -110,15 +106,7 @@
         (advice-remove ,symbol ,function)))
 
 (defmacro with-advice (advice-list &rest body)
-    (let* ((forms (list 'unused)) (next-form nil) (last-form forms))
-        (while advice-list
-            (let-unpack-1 (symbol where function) advice-list
-                (setq next-form `(with-advice-1 ,symbol ,where ,function))
-                (setcdr (last last-form) (list next-form))
-                (setq last-form next-form))
-            (setq advice-list (cdddr advice-list)))
-        (setcdr (last last-form) body)
-        (cadr forms)))
+    `(apply-split-nest with-advice-1 ,advice-list 3 ,body))
 
 
 (defun list-interject (list separator)
