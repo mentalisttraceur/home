@@ -116,6 +116,18 @@
             (setq next (cddr next)))))
 
 
+(defun delete-forward-in-line (start count)
+    (delete-region start (save-excursion
+        (goto-char start)
+        (move-to-column (+ (current-column) count))
+        (point))))
+
+(defun delete-lines (start count)
+    (save-excursion
+        (goto-char start)
+        (delete-region (pos-bol) (pos-bol (+ count 1)))))
+
+
 (unless (and (fboundp 'package-installed-p)
              (package-installed-p 'use-package))
     (defmacro use-package (&rest _)))
@@ -400,15 +412,6 @@
                     (when move-point
                         (move-to-column (+ (current-column) columns)))))
             (setq evil-last-paste nil)))
-    (defun delete-forward-in-line (start count)
-        (delete-region start (save-excursion
-            (goto-char start)
-            (move-to-column (+ (current-column) count))
-            (point))))
-    (defun delete-lines (start count)
-        (save-excursion
-            (goto-char start)
-            (delete-region (pos-bol) (pos-bol (+ count 1)))))
     (define-key evil-normal-state-map "gp" 'evil-replacing-paste-after)
     (define-key evil-normal-state-map "gP" 'evil-replacing-paste-before)
     (define-prefix-command 'space-map)
