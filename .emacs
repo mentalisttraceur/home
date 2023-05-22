@@ -51,6 +51,12 @@
 (define-key help-map "t" 'describe-face)
 
 
+(defmacro save-mutation (&rest body)
+    `(let ((buffer-undo-list ()))
+        (unwind-protect (progn ,@body)
+            (primitive-undo (length buffer-undo-list) buffer-undo-list))))
+
+
 (defmacro apply-split-nest (callable arguments count body)
     (setq count (- count 1))
     (let* ((forms (list 'unused)) (next-form nil) (last-cons forms))
@@ -61,12 +67,6 @@
             (setq arguments (cdr last-cons)))
         (setcdr last-cons body)
         (cadr forms)))
-
-
-(defmacro save-mutation (&rest body)
-    `(let ((buffer-undo-list ()))
-        (unwind-protect (progn ,@body)
-            (primitive-undo (length buffer-undo-list) buffer-undo-list))))
 
 
 (defmacro unpack (names list)
