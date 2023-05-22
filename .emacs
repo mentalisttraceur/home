@@ -534,7 +534,7 @@
         (unless count
             (setq count 1))
         (dotimes (_ count)
-            (condition-case nil
+            (condition-case _error
                 (evil-next-line)
                 (end-of-buffer (vertico-next)))))
     (evil-define-motion evil-vertico-previous-line (count)
