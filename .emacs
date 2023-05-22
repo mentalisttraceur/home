@@ -359,6 +359,7 @@
     (add-hook 'evil-visual-state-entry-hook   'color-code-vi-state)
     (add-hook 'evil-emacs-state-entry-hook    'color-code-vi-state)
     (add-hook 'evil-motion-state-entry-hook   'color-code-vi-state)
+    (setq evil-insert-state-cursor '(bar . 3))
     (set-face-foreground 'mode-line "#010101")
     (setq evil-cross-lines t)
     (defun fixed-evil-goto-line (evil-goto-count &optional count)
