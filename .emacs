@@ -440,6 +440,18 @@
     (define-key evil-motion-state-map [?\C- ] 'space-map)
     (define-key evil-emacs-state-map "\C-@" 'space-map)
     (define-key evil-emacs-state-map [?\C- ] 'space-map)
+    (defun fixed-last-s-expression (function &rest arguments)
+        (save-excursion
+            (condition-case _error
+                (forward-char)
+                (end-of-buffer nil))
+            (apply function arguments)))
+    (use-package elisp-mode
+        :config
+        (advice-remove 'elisp--preceding-sexp 'evil)
+        (advice-add 'elisp--preceding-sexp :around 'fixed-last-s-expression))
+    (setq evil-highlight-closing-paren-at-point-states '(not))
+    (setq evil-show-paren-range 1)
     (define-key evil-motion-state-map " e" 'eval-last-sexp)
     (define-key evil-motion-state-map " g" (lambda () (interactive)
         (setq unread-command-events (listify-key-sequence "\C-g"))))
