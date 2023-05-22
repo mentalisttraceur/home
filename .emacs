@@ -352,6 +352,17 @@
     (add-hook 'evil-motion-state-entry-hook   'color-code-vi-state)
     (set-face-foreground 'mode-line "#010101")
     (setq evil-cross-lines t)
+    (defun fixed-evil-goto-line (evil-goto-count &optional count)
+        (if count
+            (funcall evil-goto-count count)
+            (let* ((end   (point-max))
+                   (end-1 (- end 1))
+                   (last  (buffer-substring-no-properties end-1 end)))
+                (evil-ensure-column
+                    (if (equal last "\n")
+                        (goto-char end-1)
+                        (goto-char end))))))
+    (advice-add 'evil-goto-line :around 'fixed-evil-goto-line)
     (setq evil-move-cursor-back nil)
     (defun fixed-evil-paste-after (evil-paste-after &rest arguments)
         (let ((evil-move-cursor-back t))
