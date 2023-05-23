@@ -84,9 +84,9 @@
     `(apply-split-nest let-unpack-1 ,unpack-list 2 ,body))
 
 (defmacro uncons (car-name cdr-name cell)
-    `(progn
-        (setq ,car-name (car ,cell))
-        (setq ,cdr-name (cdr ,cell))
+    `(let ((--uncons-- ,cell))
+        (setq ,car-name (car --uncons--)
+              ,cdr-name (cdr --uncons--))
         nil))
 
 (defmacro let-uncons-1 (car-name cdr-name cell &rest body)
