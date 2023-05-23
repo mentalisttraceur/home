@@ -556,6 +556,13 @@
     (define-key evil-motion-state-map " c" 'fixed-diff-buffer-with-file)
     (define-key evil-motion-state-map " vl" 'vc-print-log)
     (add-to-list 'evil-motion-state-modes 'vc-git-log-view-mode)
+    (define-key evil-motion-state-map " vd" (lambda () (interactive)
+        (let ((vc-suppress-confirm t))
+            (vc-diff))))
+    (define-key evil-motion-state-map " vs" (lambda () (interactive)
+        (let ((vc-suppress-confirm t)
+              (vc-git-diff-switches '("--cached")))
+            (vc-diff))))
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
             (setq count 1))
