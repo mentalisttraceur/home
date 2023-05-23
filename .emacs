@@ -563,6 +563,12 @@
         (let ((vc-suppress-confirm t)
               (vc-git-diff-switches '("--cached")))
             (vc-diff))))
+    (setq magit-blame-echo-style 'headings)
+    (add-to-list 'evil-motion-state-modes 'magit-diff-mode)
+    (define-key evil-motion-state-map " mb" (lambda () (interactive)
+        (if magit-blame-mode
+            (call-interactively 'magit-blame-quit)
+            (call-interactively 'magit-blame-echo))))
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
             (setq count 1))
