@@ -554,6 +554,8 @@
         (diff-buffer-with-file)
         (select-window (get-lru-window)))
     (define-key evil-motion-state-map " c" 'fixed-diff-buffer-with-file)
+    (define-key evil-motion-state-map " vl" 'vc-print-log)
+    (add-to-list 'evil-motion-state-modes 'vc-git-log-view-mode)
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
             (setq count 1))
@@ -592,8 +594,7 @@
     (add-to-list 'evil-motion-state-modes 'debugger-mode)
     (add-to-list 'evil-motion-state-modes 'shortdoc-mode)
     (add-to-list 'evil-motion-state-modes 'tar-mode)
-    (add-to-list 'evil-motion-state-modes 'vc-annotate-mode)
-    (add-to-list 'evil-motion-state-modes 'vc-git-log-view-mode))
+    (add-to-list 'evil-motion-state-modes 'vc-annotate-mode))
 
 (use-package ace-window
     :config
