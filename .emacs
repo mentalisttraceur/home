@@ -550,6 +550,10 @@
     (define-key evil-motion-state-map " sl" 'consult-ripgrep)
     (define-key evil-motion-state-map " sf" 'consult-fd)
     (define-key evil-motion-state-map " x" 'tramp-cleanup-connection)
+    (defun fixed-diff-buffer-with-file () (interactive)
+        (diff-buffer-with-file)
+        (select-window (get-lru-window)))
+    (define-key evil-motion-state-map " c" 'fixed-diff-buffer-with-file)
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
             (setq count 1))
