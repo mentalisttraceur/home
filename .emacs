@@ -58,11 +58,11 @@
 
 
 (defmacro apply-split-nest (callable arguments count body)
-    (setq count (- count 1))
-    (let* ((forms (list 'unused)) (next-form nil) (last-cons forms))
+    (setq count (1- count))
+    (let* ((forms '(unused))
+           (last-cons forms))
         (while arguments
-            (setq next-form (cons callable arguments))
-            (setcdr last-cons (list next-form))
+            (setcdr last-cons (list (cons callable arguments)))
             (setq last-cons (nthcdr count arguments))
             (setq arguments (cdr last-cons)))
         (setcdr last-cons body)
