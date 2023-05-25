@@ -585,6 +585,8 @@
     (define-key evil-motion-state-map " c" 'fixed-diff-buffer-with-file)
     (define-key evil-motion-state-map " vl" (lambda () (interactive)
         (pop-evil-eat-window '("git" "log") (vc-root-dir))))
+    (define-key evil-motion-state-map " vL" (lambda () (interactive)
+        (pop-evil-eat-window '("git" "log" "-p") (vc-root-dir))))
     (define-key evil-motion-state-map " vd" (lambda () (interactive)
         (pop-evil-eat-window '("git" "diff") (vc-root-dir))))
     (define-key evil-motion-state-map " vs" (lambda () (interactive)
