@@ -74,14 +74,10 @@
 
 
 (defmacro unpack (names list)
-    (let* ((last-cons '(setq))
-           (forms     `(let ((--unpack-- ,list)) ,last-cons nil)))
-        (dolist (name names)
-            (setcdr last-cons `(,name ,unpack--get-next-item-and-iterate))
-            (setq last-cons (cddr last-cons)))
-        forms))
-(defconst unpack--get-next-item-and-iterate
-    '(prog1 (car --unpack--) (setq --unpack-- (cdr --unpack--))))
+    `(let ((--unpack-- ,list))
+        (dolist (name ',names)
+            (eval (list 'setq name '(car --unpack--)))
+            (setq --unpack-- (cdr --unpack--)))))
 
 (defmacro let-unpack-1 (names list &rest body)
     `(let ((--let-unpack-1-- ,list) ,@names)
