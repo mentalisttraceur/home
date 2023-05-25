@@ -48,6 +48,7 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 
+(setq help-window-select t)
 (define-key help-map "t" 'describe-face)
 
 
