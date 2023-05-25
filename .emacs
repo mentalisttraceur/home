@@ -306,7 +306,12 @@
                (program   (car command))
                (arguments (cdr command))
                (buffer    (apply 'eat-make name program nil arguments)))
-            (pop-to-buffer buffer)))
+            (pop-to-buffer buffer)
+            (sleep-for 0.1)
+            (let ((process (get-buffer-process buffer)))
+                (when process
+                    (eat--adjust-process-window-size process
+                        (get-buffer-window-list buffer))))))
     (eat-eshell-mode 1)
     (eat-eshell-visual-command-mode 1))
 
