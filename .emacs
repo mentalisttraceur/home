@@ -52,6 +52,9 @@
 (define-key help-map "t" 'describe-face)
 
 
+(blink-cursor-mode 0)
+
+
 (defmacro save-mutation (&rest body)
     `(let ((buffer-undo-list ()))
         (unwind-protect (progn ,@body)
