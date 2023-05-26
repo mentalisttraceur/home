@@ -303,7 +303,7 @@
                (arguments (cdr command))
                (buffer    (apply 'eat-make name program nil arguments)))
             (pop-to-buffer buffer)
-            (sleep-for 0.01)
+            (sleep-for 0.03125)
             (let ((process (get-buffer-process buffer)))
                 (when process
                     (eat--adjust-process-window-size process
