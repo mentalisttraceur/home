@@ -311,6 +311,12 @@
     (eat-eshell-mode 1)
     (eat-eshell-visual-command-mode 1))
 
+(use-package magit
+    :config
+    (magit-auto-revert-mode -1)
+    (setq magit-save-repository-buffers nil)
+    (setq magit-diff-refine-hunk 'all))
+
 (use-package evil
     :init
     (setq evil-undo-system 'undo-tree)
@@ -591,9 +597,11 @@
         (pop-evil-eat-window '("git" "log") (vc-root-dir))))
     (define-key evil-motion-state-map " vL" (lambda () (interactive)
         (pop-evil-eat-window '("git" "log" "-p") (vc-root-dir))))
-    (define-key evil-motion-state-map " vd" (lambda () (interactive)
+    (define-key evil-motion-state-map " vd" 'magit-diff-unstaged)
+    (define-key evil-motion-state-map " vD" (lambda () (interactive)
         (pop-evil-eat-window '("git" "diff") (vc-root-dir))))
-    (define-key evil-motion-state-map " vs" (lambda () (interactive)
+    (define-key evil-motion-state-map " vs" 'magit-diff-staged)
+    (define-key evil-motion-state-map " vS" (lambda () (interactive)
         (pop-evil-eat-window '("git" "diff" "--staged") (vc-root-dir))))
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
