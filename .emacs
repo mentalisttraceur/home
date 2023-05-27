@@ -179,7 +179,27 @@
         (dolist (path paths)
             (find-file path)))
     (defalias 'eshell/e 'eshell/vi)
-    (add-to-list 'eshell-modules-list 'eshell-tramp))
+    (add-to-list 'eshell-modules-list 'eshell-tramp)
+    (defun pop-to-eshell-buffer (command &optional id setup)
+        (let* ((eshell-history-size 1)
+               (eshell-history-file-name "/dev/null")
+               (eshell-buffer-name (if id
+                   (concat "*" command "*<" id ">")
+                   (concat "*" command "*")))
+               (buffer (eshell)))
+           (previous-buffer)
+           (pop-to-buffer buffer))
+        (when eshell-process-list
+            (eshell-interrupt-process))
+        (funcall setup)
+        (end-of-buffer)
+        (insert command)
+        (eshell-send-input)
+        nil)
+    (defun eshell-interrupt-process-or-quit-window () (interactive)
+        (if eshell-process-list
+            (eshell-interrupt-process)
+            (quit-window))))
 (use-package esh-mode
     :config
     (define-key eshell-mode-map "\C-m" 'fixed-eshell-send-input))
@@ -561,6 +581,13 @@
     (defun pop-evil-eat-window--keys ()
         (evil-local-set-key 'normal "q" 'quit-window)
         (evil-local-set-key 'normal [escape] 'quit-window))
+    (defun pop-to-evil-eshell-buffer (command &optional id)
+        (pop-to-eshell-buffer command id 'pop-to-evil-eshell-buffer--keys))
+    (defun pop-to-evil-eshell-buffer--keys ()
+        (evil-local-set-key 'normal "q"
+            'eshell-interrupt-process-or-quit-window)
+        (evil-local-set-key 'normal [escape]
+            'eshell-interrupt-process-or-quit-window))
     (add-hook 'comint-exit-hook (lambda (_process) (evil-normal-state nil)))
     (evil-set-register ?r (string-join (make-list 8 "1234567890")))
     (evil-set-register ?R "\n")
