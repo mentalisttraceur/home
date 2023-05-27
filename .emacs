@@ -315,7 +315,8 @@
     :config
     (magit-auto-revert-mode -1)
     (setq magit-save-repository-buffers nil)
-    (setq magit-diff-refine-hunk 'all))
+    (setq magit-diff-refine-hunk 'all)
+    (setq magit-blame-echo-style 'headings))
 
 (use-package evil
     :init
@@ -603,6 +604,10 @@
     (define-key evil-motion-state-map " vs" 'magit-diff-staged)
     (define-key evil-motion-state-map " vS" (lambda () (interactive)
         (pop-evil-eat-window '("git" "diff" "--staged") (vc-root-dir))))
+    (define-key evil-motion-state-map " vb" (lambda () (interactive)
+        (if magit-blame-mode
+            (call-interactively 'magit-blame-quit)
+            (call-interactively 'magit-blame-echo))))
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
             (setq count 1))
