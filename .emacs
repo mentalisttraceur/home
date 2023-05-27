@@ -463,6 +463,9 @@
             (setq evil-last-paste nil)))
     (define-key evil-normal-state-map "gp" 'evil-replacing-paste-after)
     (define-key evil-normal-state-map "gP" 'evil-replacing-paste-before)
+    (setq evil-motion-state-modes (append
+        evil-motion-state-modes evil-emacs-state-modes))
+    (setq evil-emacs-state-modes nil)
     (define-prefix-command 'space-map)
     (define-key evil-motion-state-map " " 'space-map)
     (define-key evil-motion-state-map "\C-@" 'space-map)
@@ -625,12 +628,7 @@
     (add-hook 'Info-mode-hook (lambda ()
         (evil-local-set-key 'motion " " 'space-map)))
     (evil-declare-not-repeat 'ignore)
-    (add-to-list 'evil-motion-state-modes 'Buffer-menu-mode)
-    (add-to-list 'evil-motion-state-modes 'completion-list-mode)
-    (add-to-list 'evil-motion-state-modes 'debugger-mode)
-    (add-to-list 'evil-motion-state-modes 'shortdoc-mode)
-    (add-to-list 'evil-motion-state-modes 'tar-mode)
-    (add-to-list 'evil-motion-state-modes 'vc-annotate-mode))
+    (add-to-list 'evil-motion-state-modes 'shortdoc-mode))
 
 (use-package ace-window
     :config
