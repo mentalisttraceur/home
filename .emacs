@@ -194,7 +194,9 @@
                (buffer    (get-buffer name)))
             (if buffer
                 (with-current-buffer buffer
-                    (eshell-kill-process))
+                    (when eshell-process-list
+                        (eshell-kill-process)
+                        (sleep-for 0.04)))
                 (setq buffer (get-buffer-create name))
                 (set-buffer buffer)
                 (let ((eshell-non-interactive-p t))
