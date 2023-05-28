@@ -207,13 +207,6 @@
 (use-package esh-mode
     :config
     (define-key eshell-mode-map "\C-m" 'fixed-eshell-send-input))
-(use-package vc
-    :config
-    (defun fixed-vc-deduce-backend (vc-deduce-backend &rest arguments)
-        (if (derived-mode-p 'eshell-mode)
-            (ignore-errors (vc-responsible-backend default-directory))
-            (apply vc-deduce-backend arguments)))
-    (advice-add 'vc-deduce-backend :around 'fixed-vc-deduce-backend))
 
 (use-package comint
     :config
@@ -244,6 +237,14 @@
 (use-package dired
     :config
     (setq dired-dwim-target t))
+
+(use-package vc
+    :config
+    (defun fixed-vc-deduce-backend (vc-deduce-backend &rest arguments)
+        (if (derived-mode-p 'eshell-mode 'eat-mode)
+            (ignore-errors (vc-responsible-backend default-directory))
+            (apply vc-deduce-backend arguments)))
+    (advice-add 'vc-deduce-backend :around 'fixed-vc-deduce-backend))
 
 (use-package undo-tree
     :config
