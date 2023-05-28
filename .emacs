@@ -637,6 +637,8 @@
         (pop-to-command-eshell '("git" "reset" "-p") (vc-root-dir))))
     (define-key evil-motion-state-map " ve" (lambda () (interactive)
         (pop-to-command-eshell '("git" "stash" "-p") (vc-root-dir))))
+    (define-key evil-motion-state-map " vp" (lambda () (interactive)
+        (pop-to-command-eshell '("git" "stash" "list" "-p") (vc-root-dir))))
     (define-key evil-motion-state-map " vb" (lambda () (interactive)
         (if magit-blame-mode
             (call-interactively 'magit-blame-quit)
