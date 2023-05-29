@@ -627,6 +627,7 @@
                 (pop-to-command-eshell ',command (vc-root-dir)))))
     (define-key evil-motion-state-map " vl" (git log))
     (define-key evil-motion-state-map " vL" (git log -p))
+    (define-key evil-motion-state-map " vo" (git reflog))
     (define-key evil-motion-state-map " vd" 'magit-diff-unstaged)
     (define-key evil-motion-state-map " vD" (git diff))
     (define-key evil-motion-state-map " vs" 'magit-diff-staged)
