@@ -535,6 +535,7 @@
     (add-hook 'undo-tree-visualizer-mode-hook (lambda ()
         (evil-local-set-key 'motion [escape] 'undo-tree-visualizer-quit)))
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
+    (define-key evil-motion-state-map " B" 'ibuffer)
     (define-key evil-motion-state-map " k" 'kill-buffer)
     (define-key evil-motion-state-map " f" 'find-file)
     (define-key evil-motion-state-map " r" 'revert-buffer)
