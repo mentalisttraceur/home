@@ -550,6 +550,8 @@
     (define-key universal-argument-map [escape] 'ignore)
     (define-key evil-normal-state-map "q" nil)
     (define-key evil-motion-state-map " q" 'evil-record-macro)
+    (define-key evil-motion-state-map "K" nil)
+    (define-key evil-motion-state-map " L" 'evil-lookup)
     (define-key evil-motion-state-map " w" 'same-window-prefix)
     (define-key evil-motion-state-map " W" 'other-window-prefix)
     (defun consult-history-execute (prefix-argument) (interactive "P")
