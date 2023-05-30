@@ -152,10 +152,12 @@
 
 
 (defvar pop-to-command-setup-hook nil)
-(defun pop-to-command-buffer-name (type command &optional context)
+(defun pop-to-command-buffer-name (type command &optional context name)
+    (unless name
+        (setq name (concat type ": " (string-join command " "))))
     (if context
-        (concat "*" type ": " (string-join command " ") " (" context ")*")
-        (concat "*" type ": " (string-join command " ") "*")))
+        (concat "*" name " (" context ")*")
+        (concat "*" name "*")))
 
 
 (unless (and (fboundp 'package-installed-p)
@@ -206,11 +208,11 @@
             (find-file path)))
     (defalias 'eshell/e 'eshell/vi)
     (add-to-list 'eshell-modules-list 'eshell-tramp)
-    (defun pop-to-command-eshell (command &optional context)
-        (let* ((name      (pop-to-command-buffer-name "eshell" command context))
-               (program   (car command))
-               (arguments (cdr command))
-               (buffer    (get-buffer name)))
+    (defun pop-to-command-eshell (command &optional context name)
+        (setq name (pop-to-command-buffer-name "eshell" command context name))
+        (let ((program   (car command))
+              (arguments (cdr command))
+              (buffer    (get-buffer name)))
             (if buffer
                 (with-current-buffer buffer
                     (when eshell-process-list
@@ -342,11 +344,11 @@
     (set-face-foreground 'eat-term-color-13 "#FF00FF")
     (set-face-foreground 'eat-term-color-14 "#00FFFF")
     (set-face-foreground 'eat-term-color-15 "#FFFFFF")
-    (defun pop-to-command-eat (command &optional context)
-        (let* ((name      (pop-to-command-buffer-name "eat" command context))
-               (program   (car command))
-               (arguments (cdr command))
-               (buffer    (get-buffer name)))
+    (defun pop-to-command-eat (command &optional context name)
+        (setq name (pop-to-command-buffer-name "eat" command context name))
+        (let ((program   (car command))
+              (arguments (cdr command))
+              (buffer    (get-buffer name)))
             (if buffer
                 (with-current-buffer buffer
                     (eat-kill-process))
