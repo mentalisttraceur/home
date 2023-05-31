@@ -151,6 +151,8 @@
         (delete-region (pos-bol) (pos-bol (+ count 1)))))
 
 
+(defconst pop-to-command-buffer nil)
+(make-variable-buffer-local 'pop-to-command-buffer)
 (defvar pop-to-command-setup-hook nil)
 (defun pop-to-command-buffer-name (type command &optional context name)
     (unless name
@@ -230,7 +232,7 @@
                 (eshell-eval-command parsed-command))
             buffer))
     (add-hook 'eshell-post-command-hook (lambda ()
-        (when (boundp 'pop-to-command-buffer)
+        (when pop-to-command-buffer
             (insert "\nCommand " (buffer-name) " done.\n")))))
 (use-package esh-mode
     :config
@@ -363,6 +365,7 @@
                 (set-buffer buffer)
                 (eat-mode))
             (pop-to-buffer buffer)
+            (setq-local pop-to-command-buffer t)
             (run-hooks 'pop-to-command-setup-hook)
             (eat-exec buffer name program nil arguments)
             buffer))
