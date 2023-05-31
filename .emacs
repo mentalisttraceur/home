@@ -223,10 +223,14 @@
                 (let ((eshell-non-interactive-p t))
                     (eshell-mode)))
             (pop-to-buffer buffer)
+            (setq-local pop-to-command-buffer t)
             (run-hooks 'pop-to-command-setup-hook)
             (let ((parsed-command (eshell-parse-command program arguments t)))
                 (eshell-eval-command parsed-command))
-            buffer)))
+            buffer))
+    (add-hook 'eshell-post-command-hook (lambda ()
+        (when (boundp 'pop-to-command-buffer)
+            (insert "\nCommand " (buffer-name) " done.\n")))))
 (use-package esh-mode
     :config
     (define-key eshell-mode-map "\C-m" 'fixed-eshell-send-input))
