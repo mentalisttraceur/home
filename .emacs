@@ -679,6 +679,8 @@
     (define-key evil-motion-state-map " vw" (git reset -p))
     (define-key evil-motion-state-map " ve" (git stash -p))
     (define-key evil-motion-state-map " vp" (git stash list -p))
+    (define-key evil-motion-state-map " vc" (git commit))
+    (define-key evil-motion-state-map " vC" (git commit --amend))
     (define-key evil-motion-state-map " vb" 'vc-annotate)
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
