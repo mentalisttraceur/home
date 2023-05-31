@@ -233,7 +233,8 @@
             buffer))
     (add-hook 'eshell-post-command-hook (lambda ()
         (when pop-to-command-buffer
-            (insert "\nCommand " (buffer-name) " done.\n")))))
+            (insert "\nCommand " (buffer-name) " done.\n")
+            (end-of-buffer)))))
 (use-package esh-mode
     :config
     (define-key eshell-mode-map "\C-m" 'fixed-eshell-send-input))
