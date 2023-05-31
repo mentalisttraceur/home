@@ -364,13 +364,6 @@
     (eat-eshell-mode 1)
     (eat-eshell-visual-command-mode 1))
 
-(use-package magit
-    :config
-    (magit-auto-revert-mode -1)
-    (setq magit-save-repository-buffers nil)
-    (setq magit-diff-refine-hunk 'all)
-    (setq magit-blame-echo-style 'headings))
-
 (use-package evil
     :init
     (setq evil-undo-system 'undo-tree)
@@ -678,10 +671,7 @@
     (define-key evil-motion-state-map " vw" (git reset -p))
     (define-key evil-motion-state-map " ve" (git stash -p))
     (define-key evil-motion-state-map " vp" (git stash list -p))
-    (define-key evil-motion-state-map " vb" (lambda () (interactive)
-        (if magit-blame-mode
-            (call-interactively 'magit-blame-quit)
-            (call-interactively 'magit-blame-echo))))
+    (define-key evil-motion-state-map " vb" 'vc-annotate)
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
             (setq count 1))
