@@ -225,7 +225,7 @@
             (pop-to-buffer buffer)
             (run-hooks 'pop-to-command-setup-hook)
             (let ((parsed-command (eshell-parse-command program arguments t)))
-                (eshell-eval-command `(eshell-commands ,parsed-command)))
+                (eshell-eval-command parsed-command))
             buffer)))
 (use-package esh-mode
     :config
