@@ -224,6 +224,7 @@
                     (eshell-mode)))
             (pop-to-buffer buffer)
             (setq-local pop-to-command-buffer t)
+            (end-of-buffer)
             (run-hooks 'pop-to-command-setup-hook)
             (let ((parsed-command (eshell-parse-command program arguments t)))
                 (eshell-eval-command parsed-command))
