@@ -267,7 +267,9 @@
         (if (derived-mode-p 'eshell-mode 'eat-mode)
             (ignore-errors (vc-responsible-backend default-directory))
             (apply vc-deduce-backend arguments)))
-    (advice-add 'vc-deduce-backend :around 'fixed-vc-deduce-backend))
+    (advice-add 'vc-deduce-backend :around 'fixed-vc-deduce-backend)
+    (add-hook 'vc-annotate-mode-hook (lambda ()
+        (setq truncate-lines nil))))
 
 (use-package undo-tree
     :config
