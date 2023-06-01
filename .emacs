@@ -672,6 +672,7 @@
         (let ((command (cons "git" (mapcar 'symbol-name arguments))))
             `(lambda () (interactive)
                 (pop-to-command-eshell ',command (vc-root-dir)))))
+    (define-key evil-motion-state-map " vv" (git status))
     (define-key evil-motion-state-map " vl" (git log))
     (define-key evil-motion-state-map " vL" (git log -p))
     (define-key evil-motion-state-map " vo" (git reflog))
