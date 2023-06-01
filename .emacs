@@ -568,6 +568,7 @@
     (define-key evil-motion-state-map " d" 'dired)
     (add-to-list 'evil-motion-state-modes 'dired-mode)
     (define-key evil-motion-state-map " y" 'execute-extended-command)
+    (define-key evil-motion-state-map " ," 'eval-expression)
     (define-key evil-motion-state-map " h" help-map)
     (define-key help-mode-map "r" 'help-go-back)
     (define-key help-mode-map "R" 'help-go-forward)
