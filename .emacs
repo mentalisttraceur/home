@@ -578,6 +578,8 @@
     (define-key evil-motion-state-map " n" 'universal-argument)
     (define-key universal-argument-map " n" 'universal-argument-more)
     (define-key universal-argument-map [escape] 'ignore)
+    (define-key evil-normal-state-map " q" 'ignore)
+    (define-key evil-normal-state-map [?  escape] 'ignore)
     (define-key evil-normal-state-map "q" nil)
     (define-key evil-motion-state-map " M" 'evil-record-macro)
     (define-key evil-motion-state-map " Q" 'save-buffers-kill-emacs)
