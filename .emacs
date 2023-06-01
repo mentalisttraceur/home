@@ -871,6 +871,10 @@
     (add-hook 'eshell-mode-hook 'with-editor-export-editor)
     (shell-command-with-editor-mode 1))
 
+(use-package auto-dim-other-buffers
+    :config
+    (set-face-background 'auto-dim-other-buffers-face "#202020"))
+
 
 (defun message-time () (interactive)
     (message "%s" (format-time-string "%H:%M:%S")))
