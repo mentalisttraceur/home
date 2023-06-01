@@ -296,7 +296,8 @@
 
 (use-package vertico
     :config
-    (vertico-mode 1))
+    (vertico-mode 1)
+    (setq vertico-cycle t))
 
 (use-package consult
     :config
