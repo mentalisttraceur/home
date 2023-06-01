@@ -400,6 +400,7 @@
         (setq prefix-arg current-prefix-arg)
         return-value)
     (advice-add 'evil-use-register :filter-return 'fixed-evil-use-register)
+    (define-key evil-motion-state-map "\"" 'evil-use-register)
     (define-key evil-normal-state-map "U" 'evil-redo)
     (defvar override-evil-mode-line-tag nil)
     (defmacro save-override-evil-mode-line-tag (tag help-string &rest body)
