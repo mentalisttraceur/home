@@ -874,7 +874,25 @@
 
 (use-package auto-dim-other-buffers
     :config
-    (set-face-background 'auto-dim-other-buffers-face "#202020"))
+    (set-face-background 'auto-dim-other-buffers-face "#202020")
+    (defun hack-window-list (window-list &optional frame _minibuffer window)
+        (funcall window-list frame t window))
+    (defun hack-adob--rescan-windows (adob--rescan-windows &rest arguments)
+        (with-advice ('window-list :around 'hack-window-list)
+            (apply adob--rescan-windows arguments)))
+    (advice-add 'adob--rescan-windows :around 'hack-adob--rescan-windows)
+    (defun hack-window-minibuffer-p (&optional _window)
+        nil)
+    (defun hack-adob--update (adob--update &rest arguments)
+        (with-advice ('window-minibuffer-p :override 'hack-window-minibuffer-p)
+            (apply adob--update arguments)))
+    (advice-add 'adob--update :around 'hack-adob--update)
+    (defun hack-adob--focus-out-hook (adob--focus-out-hook &rest arguments)
+        (with-advice ('window-minibuffer-p :override 'hack-window-minibuffer-p)
+            (apply adob--focus-out-hook arguments)))
+    (advice-add 'adob--focus-out-hook :around 'hack-adob--focus-out-hook)
+    (with-current-buffer " *Minibuf-0*" (insert ?\n))
+    (auto-dim-other-buffers-mode 1))
 
 
 (defun message-time () (interactive)
