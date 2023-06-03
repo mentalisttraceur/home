@@ -892,6 +892,10 @@
             (apply adob--focus-out-hook arguments)))
     (advice-add 'adob--focus-out-hook :around 'hack-adob--focus-out-hook)
     (with-current-buffer " *Minibuf-0*" (insert ?\n))
+    (with-current-buffer (get-buffer-create " *Echo Area 0*")
+        (face-remap-add-relative 'default :background "#202020"))
+    (with-current-buffer (get-buffer-create " *Echo Area 1*")
+        (face-remap-add-relative 'default :background "#202020"))
     (auto-dim-other-buffers-mode 1))
 
 
