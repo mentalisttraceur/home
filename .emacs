@@ -695,6 +695,10 @@
     (define-key evil-motion-state-map " vc" (git commit))
     (define-key evil-motion-state-map " vC" (git commit --amend))
     (define-key evil-motion-state-map " vb" 'vc-annotate)
+    (define-key evil-motion-state-map " zy" (lambda () (interactive)
+        (let ((default-directory "~"))
+            (pop-to-command-eshell
+                '("sh" "-c" "yt-dlp -f bestaudio \"`p`\"") nil "yt-dlp"))))
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
             (setq count 1))
