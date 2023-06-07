@@ -43,7 +43,10 @@
     (advice-add 'gui-select-text :before (lambda (text)
         (with-temp-file "~/.clipboard-fix"
             (insert text))))
-    (setq browse-url-browser-function 'browse-url-xdg-open))
+    (defun fixed-browse-url-xdg-open (url &optional _unused)
+        (message "opening %s" url)
+        (browse-url-xdg-open url))
+    (setq browse-url-browser-function 'fixed-browse-url-xdg-open))
 
 
 (defalias 'yes-or-no-p 'y-or-n-p)
