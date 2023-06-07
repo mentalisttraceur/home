@@ -42,7 +42,8 @@
             (buffer-string)))
     (advice-add 'gui-select-text :before (lambda (text)
         (with-temp-file "~/.clipboard-fix"
-            (insert text)))))
+            (insert text))))
+    (setq browse-url-browser-function 'browse-url-xdg-open))
 
 
 (defalias 'yes-or-no-p 'y-or-n-p)
