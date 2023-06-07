@@ -1,0 +1,10 @@
+#!/bin/sh -
+case $1 in --help)
+    exec echo 'Hacky script to use `cmd.exe /c start` as xdg-open on WSL'
+esac
+cmd=/mnt/c/Windows/system32/cmd.exe
+cd /mnt/c
+windows_home_directory=`"$cmd" /c echo '%UserProfile%' | tr -d '\r'`
+windows_home_directory=`wslpath "$windows_home_directory"`
+cd "$windows_home_directory"
+exec "$cmd" /c start "$1"
