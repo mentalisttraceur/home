@@ -10,7 +10,7 @@ HISTSIZE=10000
 SAVEHIST=10000
 setopt sharehistory interactivecomments histignorealldups histignorespace
 bindkey '^I' expand-or-complete-prefix
-bindkey 'U' redo
+bindkey -M vicmd 'U' redo
 
 case ${TERMUX_VERSION+x} in x)
     PATH=$PREFIX/local/bin:$PATH
