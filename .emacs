@@ -59,6 +59,13 @@
 (blink-cursor-mode -1)
 
 
+(defun require-final-newline-in-new-files ()
+    (unless (file-exists-p buffer-file-name)
+        (setq-local require-final-newline t))
+    nil)
+(add-hook 'find-file-hook 'require-final-newline-in-new-files)
+
+
 (defmacro save-mutation (&rest body)
     `(let ((buffer-undo-list ()))
         (unwind-protect (progn ,@body)
