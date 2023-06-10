@@ -217,7 +217,7 @@
                     :filter-args 'hack-insert-before-markers-and-inherit)
                 (eshell-send-input))))
     (defun eshell/vi (&rest paths)
-        (dolist (path paths)
+        (dolist (path (flatten-list paths))
             (find-file path)))
     (defalias 'eshell/e 'eshell/vi)
     (add-to-list 'eshell-modules-list 'eshell-tramp)
