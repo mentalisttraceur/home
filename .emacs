@@ -906,7 +906,7 @@
         (with-advice ('window-minibuffer-p :override 'hack-window-minibuffer-p)
             (apply adob--focus-out-hook arguments)))
     (advice-add 'adob--focus-out-hook :around 'hack-adob--focus-out-hook)
-    (with-current-buffer " *Minibuf-0*" (insert ?\n))
+    (with-current-buffer " *Minibuf-0*" (insert ?\t))
     (get-buffer-create " *Echo Area 0*")
     (get-buffer-create " *Echo Area 1*")
     (auto-dim-other-buffers-mode 1))
