@@ -66,6 +66,9 @@
 (add-hook 'find-file-hook 'require-final-newline-in-new-files)
 
 
+(define-key global-map [\C-tab] 'other-window)
+
+
 (defmacro save-mutation (&rest body)
     `(let ((buffer-undo-list ()))
         (unwind-protect (progn ,@body)
