@@ -1,0 +1,8 @@
+#!/bin/sh -
+for directory
+do
+    hashes=`cdexec "$directory" find . ! -type d -exec shasum {} +` || exit 1
+    hashes=`printf '%s\n' "$hashes" | sort` || exit 1
+    hash=`printf '%s\n' "$hashes" | shasum` || exit 1
+    printf '%s%s\n' "${hash%-}" "$directory" || exit 1
+done
