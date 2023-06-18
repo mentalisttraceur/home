@@ -1,0 +1,15 @@
+#!/bin/sh -
+identity=${1?first argument must be an SSH server identity} &&
+shift &&
+directory=~/.ssh/i/$identity &&
+key=$directory/id_ed25519 &&
+known_hosts=$directory/known_hosts &&
+mkdir -m 700 -p "$directory" &&
+ssh-keygen -t ed25519 -f "$key" &&
+printf '%s\n' >"$directory"/config \
+    'IdentityFile '"$key" \
+    'StrictHostKeyChecking yes' \
+    'UserKnownHostsFile '"$known_hosts"
+sshi "$identity" -o StrictHostKeyChecking=ask "$@" <"$key".pub \
+    'umask 077 && mkdir -p ~/.ssh && cat >>~/.ssh/authorized_keys' &&
+vi "$known_hosts"

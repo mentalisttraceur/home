@@ -1,0 +1,4 @@
+#!/bin/sh -
+identity=${1?first argument must be an SSH server identity} &&
+shift &&
+exec sftp -F ~/.ssh/i/"$identity"/config "$@"
