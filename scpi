@@ -1,4 +1,0 @@
-#!/bin/sh -
-identity=${1?first argument must be an SSH server identity} &&
-shift &&
-exec scp -F ~/.ssh/i/"$identity"/config "$@"
