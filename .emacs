@@ -547,6 +547,9 @@
     (setq evil-motion-state-modes (append
         evil-motion-state-modes evil-emacs-state-modes))
     (setq evil-emacs-state-modes nil)
+    (advice-add 'evil-quit :around (lambda (evil-quit &rest arguments)
+        (with-advice ('delete-window :override 'kill-current-buffer)
+            (apply evil-quit arguments))))
     (define-prefix-command 'space-map)
     (define-key evil-motion-state-map " " 'space-map)
     (define-key evil-motion-state-map "\C-@" 'space-map)
