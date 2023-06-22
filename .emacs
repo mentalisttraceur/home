@@ -719,6 +719,10 @@
         (let ((default-directory "~"))
             (pop-to-command-eshell
                 '("sh" "-c" "yt-dlp -f bestaudio \"`p`\"") nil "yt-dlp"))))
+    (define-key evil-motion-state-map " zm" (lambda () (interactive)
+        (let ((default-directory "~"))
+            (pop-to-command-eshell
+                '("termux-media-scan" "/storage/emulated/0")))))
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
             (setq count 1))
