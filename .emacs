@@ -222,7 +222,6 @@
     (defun eshell/vi (&rest paths)
         (dolist (path (nreverse (flatten-list paths)))
             (find-file path)))
-    (defalias 'eshell/e 'eshell/vi)
     (defun eshell/vo (&rest paths)
         (dolist (path (nreverse (flatten-list paths)))
             (other-window-prefix)
