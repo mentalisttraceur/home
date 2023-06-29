@@ -735,6 +735,12 @@
         'doc-view-scroll-up-or-next-page)
     (evil-define-key 'motion doc-view-mode-map "\C-u"
         'doc-view-scroll-down-or-previous-page)
+    (evil-define-key 'motion doc-view-mode-map "gg" 'doc-view-first-page)
+    (defun evil-doc-view-goto-page (prefix-argument) (interactive "P")
+        (if prefix-argument
+            (doc-view-goto-page prefix-argument)
+            (doc-view-last-page)))
+    (evil-define-key 'motion doc-view-mode-map "G" 'evil-doc-view-goto-page)
     (evil-define-key 'motion doc-view-mode-map [down]
         'doc-view-next-line-or-next-page)
     (evil-define-key 'motion doc-view-mode-map [up]
