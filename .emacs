@@ -725,6 +725,22 @@
         (let ((default-directory "~"))
             (pop-to-command-eshell
                 '("termux-media-scan" "/storage/emulated/0")))))
+    (evil-define-key 'motion doc-view-mode-map "j"
+        'doc-view-next-line-or-next-page)
+    (evil-define-key 'motion doc-view-mode-map "k"
+        'doc-view-previous-line-or-previous-page)
+    (evil-define-key 'motion doc-view-mode-map "l" 'image-forward-hscroll)
+    (evil-define-key 'motion doc-view-mode-map "h" 'image-backward-hscroll)
+    (evil-define-key 'motion doc-view-mode-map "\C-d"
+        'doc-view-scroll-up-or-next-page)
+    (evil-define-key 'motion doc-view-mode-map "\C-u"
+        'doc-view-scroll-down-or-previous-page)
+    (evil-define-key 'motion doc-view-mode-map [down]
+        'doc-view-next-line-or-next-page)
+    (evil-define-key 'motion doc-view-mode-map [up]
+        'doc-view-previous-line-or-previous-page)
+    (evil-define-key 'motion doc-view-mode-map [right] 'image-forward-hscroll)
+    (evil-define-key 'motion doc-view-mode-map [left] 'image-backward-hscroll)
     (evil-define-motion evil-vertico-next-line (count)
         (unless count
             (setq count 1))
