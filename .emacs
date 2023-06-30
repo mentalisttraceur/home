@@ -741,6 +741,7 @@
             (doc-view-goto-page prefix-argument)
             (doc-view-last-page)))
     (evil-define-key 'motion doc-view-mode-map "G" 'evil-doc-view-goto-page)
+    (evil-define-key 'motion doc-view-mode-map "-" 'doc-view-shrink)
     (evil-define-key 'motion doc-view-mode-map [down]
         'doc-view-next-line-or-next-page)
     (evil-define-key 'motion doc-view-mode-map [up]
