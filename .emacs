@@ -70,6 +70,7 @@
 
 
 (setq-default c-basic-offset 4)
+(setq lisp-indent-offset 4)
 
 
 (defmacro save-mutation (&rest body)
