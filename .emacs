@@ -69,6 +69,9 @@
 (define-key global-map [\C-tab] 'other-window)
 
 
+(setq-default c-basic-offset 4)
+
+
 (defmacro save-mutation (&rest body)
     `(let ((buffer-undo-list ()))
         (unwind-protect (progn ,@body)
