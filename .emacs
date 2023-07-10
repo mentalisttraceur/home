@@ -314,7 +314,17 @@
     (define-key undo-tree-visualizer-mode-map
         "k" 'undo-tree-visualize-undo)
     (define-key undo-tree-visualizer-mode-map
-        "l" 'undo-tree-visualize-switch-branch-right))
+        "l" 'undo-tree-visualize-switch-branch-right)
+    (defun undo-tree-visualize-swing-left (count) (interactive "p")
+        (dotimes (_ count)
+            (undo-tree-visualize-undo)
+            (undo-tree-visualize-switch-branch-left 1)
+            (undo-tree-visualize-redo)))
+    (defun undo-tree-visualize-swing-right (count) (interactive "p")
+        (dotimes (_ count)
+            (undo-tree-visualize-undo)
+            (undo-tree-visualize-switch-branch-right 1)
+            (undo-tree-visualize-redo))))
 
 (use-package vertico
     :config
@@ -585,7 +595,9 @@
     (define-key evil-motion-state-map " ." 'toggle-evil-repeat-move-cursor)
     (define-key evil-motion-state-map " u" 'undo-tree-visualize)
     (add-hook 'undo-tree-visualizer-mode-hook (lambda ()
-        (evil-local-set-key 'motion [escape] 'undo-tree-visualizer-quit)))
+        (evil-local-set-key 'motion [escape] 'undo-tree-visualizer-quit)
+        (evil-local-set-key 'motion "H" 'undo-tree-visualize-swing-left)
+        (evil-local-set-key 'motion "L" 'undo-tree-visualize-swing-right)))
     (define-key evil-motion-state-map " b" 'switch-to-buffer)
     (define-key evil-motion-state-map " B" 'ibuffer)
     (define-key evil-motion-state-map " k" 'kill-buffer)
