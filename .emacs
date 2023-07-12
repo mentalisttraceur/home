@@ -67,6 +67,8 @@
 
 
 (define-key global-map [\C-tab] 'other-window)
+(define-key global-map [\C-iso-lefttab] (lambda () (interactive)
+    (other-window -1)))
 
 
 (setq-default c-basic-offset 4)
