@@ -232,7 +232,7 @@
                     (find-file path)))))
     (defun eshell/vo (&rest paths)
         (let ((default-directory-when-invoked default-directory))
-            (dolist (path (nreverse (flatten-list paths)))
+            (dolist (path (flatten-list paths))
                 (let ((default-directory default-directory-when-invoked))
                     (other-window-prefix)
                     (find-file path)))))
