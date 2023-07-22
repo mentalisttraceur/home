@@ -301,7 +301,8 @@
 (use-package vc
     :config
     (defun fixed-vc-deduce-backend (vc-deduce-backend &rest arguments)
-        (if (derived-mode-p 'eshell-mode 'eat-mode)
+        (if (or (derived-mode-p 'eshell-mode 'eat-mode)
+                (bound-and-true-p with-editor-mode))
             (ignore-errors (vc-responsible-backend default-directory))
             (apply vc-deduce-backend arguments)))
     (advice-add 'vc-deduce-backend :around 'fixed-vc-deduce-backend)
