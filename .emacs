@@ -753,7 +753,7 @@
     (define-key evil-motion-state-map " vC" (git commit --amend))
     (define-key evil-motion-state-map " vb" 'vc-annotate)
     (define-key evil-motion-state-map " zy" (lambda () (interactive)
-        (let ((default-directory "~"))
+        (let ((default-directory "~/Downloads"))
             (pop-to-command-eshell
                 '("sh" "-c" "yt-dlp -f bestaudio \"`p`\"") nil "yt-dlp"))))
     (define-key evil-motion-state-map " zm" (lambda () (interactive)
