@@ -296,7 +296,8 @@
 
 (use-package dired
     :config
-    (setq dired-dwim-target t))
+    (setq dired-dwim-target t)
+    (define-key dired-mode-map "I" 'dired-kill-subdir))
 
 (use-package vc
     :config
