@@ -979,8 +979,7 @@
         (with-advice ('window-minibuffer-p :override 'hack-window-minibuffer-p)
             (apply adob--focus-out-hook arguments)))
     (advice-add 'adob--focus-out-hook :around 'hack-adob--focus-out-hook)
-    (with-current-buffer " *Minibuf-0*"
-        (insert ?\t))
+    (with-current-buffer " *Minibuf-0*" (insert ?\t))
     (add-hook 'after-change-functions (lambda (&rest _)
         (when (and (equal (buffer-name) " *Minibuf-0*")
                    (< (buffer-size) 1))
