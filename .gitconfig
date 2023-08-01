@@ -39,3 +39,5 @@
         bold yellow => syntax "#305050"
 [delta "interactive"]
     keep-plus-minus-markers = false
+[alias]
+    status = --no-optional-locks status
