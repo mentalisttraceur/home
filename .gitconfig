@@ -40,4 +40,10 @@
 [delta "interactive"]
     keep-plus-minus-markers = false
 [alias]
+    i = !cd \"${GIT_PREFIX:-.}\" \
+         && git init "$@" \
+         && git rev-parse HEAD >/dev/null 2>&1 \
+         && exit 0 \
+         || git commit --allow-empty -m 'Empty root commit' \
+         && :
     status = --no-optional-locks status
