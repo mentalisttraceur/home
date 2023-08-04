@@ -1,2 +1,12 @@
 #!/bin/sh -
+if ! git rev-parse --git-common-dir 1>/dev/null 2>&1
+then
+    for argument
+    do
+        shift
+        case $argument in --git) :;; *)
+            set -- "$@" "$argument"
+        esac
+    done
+fi
 exec /usr/bin/exa --color=always "$@"
