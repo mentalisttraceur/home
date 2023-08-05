@@ -697,6 +697,7 @@
             display-fill-column-indicator-mode))
     (evil-declare-not-repeat 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " i" 'toggle-show-80+-characters)
+    (define-key evil-motion-state-map " #" 'display-line-numbers-mode)
     (define-key evil-motion-state-map " l" 'consult-line)
     (define-key evil-motion-state-map " sl" 'consult-ripgrep)
     (define-key evil-motion-state-map " sf" 'consult-fd)
