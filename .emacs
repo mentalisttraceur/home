@@ -462,6 +462,7 @@
                 " "))))
     (setq evil-mode-line-format nil)
     (setq evil-want-minibuffer t)
+    (setq mode-line (if (facep 'mode-line-active) 'mode-line-active 'mode-line))
     (defun color-code-vi-state ()
         (if (minibufferp)
             (face-remap-add-relative 'minibuffer-prompt :foreground (cond
@@ -473,7 +474,7 @@
                 ((evil-emacs-state-p)    "#8000FF")
                 ((evil-motion-state-p)   "#A0E0FF")
                 (t                       "#FFFFFF")))
-            (face-remap-add-relative 'mode-line :background (cond
+            (face-remap-add-relative mode-line :background (cond
                 ((evil-normal-state-p)   "#FF4040")
                 ((evil-operator-state-p) "#FFA060")
                 ((evil-insert-state-p)   "#40FF40")
