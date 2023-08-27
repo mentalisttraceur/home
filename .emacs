@@ -28,6 +28,9 @@
 (load custom-file 'noerror)
 
 
+(define-key minibuffer-inactive-mode-map [mouse-1] nil)
+
+
 (setq init-gc-cons-threshold gc-cons-threshold
       init-file-name-handler-alist file-name-handler-alist)
 (setq gc-cons-threshold (* 1024 1024 1024)
