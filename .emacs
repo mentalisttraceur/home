@@ -701,17 +701,15 @@
     (evil-declare-not-repeat 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " i" 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " #" 'display-line-numbers-mode)
-    (defun toggle-line-wrap-visual () (interactive)
-        (unless visual-line-mode
-            (setq truncate-lines nil))
-        (call-interactively 'visual-line-mode))
-    (define-key evil-motion-state-map " ;" 'toggle-line-wrap-visual)
-    (defun toggle-line-wrap () (interactive)
-        (if visual-line-mode
-            (visual-line-mode -1))
-        (setq truncate-lines (not truncate-lines))
-        (message "truncate-lines: %s" truncate-lines))
-    (define-key evil-motion-state-map " :" 'toggle-line-wrap)
+    (defun cycle-line-wrap () (interactive)
+        (if truncate-lines
+            (setq truncate-lines nil)
+            (visual-line-mode 'toggle)
+            (if (not visual-line-mode)
+                (setq truncate-lines t)))
+        (message "visual-line-mode: %s truncate-lines: %s"
+            visual-line-mode truncate-lines))
+    (define-key evil-motion-state-map " ;" 'cycle-line-wrap)
     (define-key evil-motion-state-map " l" 'consult-line)
     (define-key evil-motion-state-map " sl" 'consult-ripgrep)
     (define-key evil-motion-state-map " sf" 'consult-fd)
