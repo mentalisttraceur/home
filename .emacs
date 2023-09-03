@@ -365,32 +365,6 @@
                 (cons
                     `("fd" "--color=never" "--full-path" ,@patterns ,@options)
                     highlight-function))))
-    (defun consult-atuin (&optional initial-query) (interactive "P")
-        (let ((default-directory "~"))
-            (consult--read
-                (consult--async-command 'consult--atuin-builder)
-                :prompt "Atuin: "
-                :category 'command
-                :history t
-                :initial (consult--async-split-initial initial-query)
-                :require-match t
-                :sort nil)))
-    (defun consult--atuin-builder (query)
-        (let (patterns options highlight-function)
-            (uncons query options (consult--command-split query))
-            (setq patterns (atuin-query-to-regexp query))
-            (uncons patterns highlight-function (funcall
-                consult--regexp-compiler patterns 'regular t))
-            (when patterns
-
-                (cons
-                    (append atuin-search-command options (list "--" query))
-                    highlight-function))))
-    (defun atuin-query-to-regexp (query)
-        (string-join (mapcar 'regexp-quote (split-string query "[*%]+")) ".*"))
-    (defvar atuin-search-command '(
-        "env" "ATUIN_SESSION=00000000000000000000000000000000"
-        "atuin" "search" "--cmd-only" "--search-mode" "full-text"))
     (defun fixed-consult-history (prefix-argument) (interactive "P")
         (let ((command (when prefix-argument (get-command-at-point))))
             (with-advice ('pos-eol :override 'field-end)
