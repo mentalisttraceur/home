@@ -73,6 +73,13 @@
 (define-key global-map [\C-iso-lefttab] (lambda () (interactive)
     (other-window -1)))
 
+(defun quit-other-window () (interactive)
+    (if (> (count-windows) 1)
+        (save-selected-window
+            (other-window 1)
+            (quit-window))
+        (error "Attempt to quit sole window")))
+
 
 (electric-indent-mode -1)
 (setq-default c-basic-offset 4)
@@ -448,6 +455,7 @@
     (advice-add 'evil-use-register :filter-return 'fixed-evil-use-register)
     (define-key evil-motion-state-map "\"" 'evil-use-register)
     (define-key evil-normal-state-map "U" 'evil-redo)
+    (define-key evil-motion-state-map "Q" 'quit-other-window)
     (defvar override-evil-mode-line-tag nil)
     (defmacro save-override-evil-mode-line-tag (tag help-string &rest body)
         `(unwind-protect
