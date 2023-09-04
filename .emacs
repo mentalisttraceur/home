@@ -73,11 +73,10 @@
 (define-key global-map [\C-iso-lefttab] (lambda () (interactive)
     (other-window -1)))
 
-(defun quit-other-window () (interactive)
+(defun quit-previous-window () (interactive)
     (if (> (count-windows) 1)
         (save-selected-window
-            (other-window 1)
-            (quit-window))
+            (quit-window nil (get-mru-window nil nil t)))
         (error "Attempt to quit sole window")))
 
 
@@ -455,7 +454,7 @@
     (advice-add 'evil-use-register :filter-return 'fixed-evil-use-register)
     (define-key evil-motion-state-map "\"" 'evil-use-register)
     (define-key evil-normal-state-map "U" 'evil-redo)
-    (define-key evil-motion-state-map "Q" 'quit-other-window)
+    (define-key evil-motion-state-map "Q" 'quit-previous-window)
     (defvar override-evil-mode-line-tag nil)
     (defmacro save-override-evil-mode-line-tag (tag help-string &rest body)
         `(unwind-protect
