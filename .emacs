@@ -891,7 +891,7 @@
     (defconst window-state-kill
         '("#FF0000" "#802020" "K" "Kill window state"))
     (defconst window-state-bury
-        '("#FF8000" "#805010" "B" "Bury window state"))
+        '("#FFA060" "#805010" "B" "Bury window state"))
     (defvar window-state--action nil)
     (defvar window-state--loop nil)
     (defvar window-state--loop-default nil)
