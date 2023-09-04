@@ -162,6 +162,19 @@
     `(apply-split-nest with-advice-1 ,advice-list 3 ,body))
 
 
+(defmacro with-face-attribute-1 (face attribute value &rest body)
+    `(let ((--with-face-attribute-1-- (face-attribute ,face ,attribute)))
+        (unwind-protect
+            (progn
+                (set-face-attribute ,face nil ,attribute ,value)
+                ,@body)
+            (set-face-attribute ,face nil ,attribute
+                --with-face-attribute-1--))))
+
+(defmacro with-face-attribute (face-attribute-list &rest body)
+    `(apply-split-nest with-face-attribute-1 ,face-attribute-list 3 ,body))
+
+
 (defun list-interject (list separator)
     (let ((next list))
         (dotimes (_ (length (cdr list)))
