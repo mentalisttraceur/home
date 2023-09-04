@@ -921,11 +921,13 @@
                     (save-override-evil-mode-line-tag tag help-string
                         (fixed-aw-select (lambda (window)
                             (funcall window-state--action window))))))))
-    (defun window-state-select ()
+    (defun window-state-select (&optional lock)
         (setq window-state--action 'aw-switch-to-window)
         (setq window-state window-state-select)
-        (setq window-state--loop-default nil)
+        (setq window-state--loop-default lock)
         (setq window-state--loop t))
+    (defun window-state-select-locked ()
+        (window-state-swap t))
     (defun window-state-select-latched ()
         (unless (eq window-state window-state-select-latched)
             (setq window-state--action `(lambda (window)
@@ -982,6 +984,7 @@
         (setq window-state--loop nil))
     (setq aw-dispatch-alist '(
         (?o window-state-select)
+        (?O window-state-select-locked)
         (?l window-state-select-latched)
         (?s window-state-swap)
         (?S window-state-swap-locked)
