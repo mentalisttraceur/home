@@ -894,17 +894,17 @@
         (bury-buffer))
     (defvar window-state nil)
     (defconst window-state-select
-        '("#00FF00" "#606060" "W" "Window state"))
+        '("#00FF00" "#606060" "#202020" "W" "Window state"))
     (defconst window-state-select-latched
-        '("#00FF00" "#208020" "W" "Window state"))
+        '("#00FF00" "#208020" "#002000" "W" "Window state"))
     (defconst window-state-swap
-        '("#A020FF" "#404060" "S" "Swap window state"))
+        '("#A020FF" "#404060" "#101020" "S" "Swap window state"))
     (defconst window-state-copy
-        '("#FFFF00" "#606000" "C" "Copy window state"))
+        '("#FFFF00" "#606000" "#202000" "C" "Copy window state"))
     (defconst window-state-kill
-        '("#FF0000" "#802020" "K" "Kill window state"))
+        '("#FF0000" "#802020" "#200000" "K" "Kill window state"))
     (defconst window-state-bury
-        '("#FFA060" "#805010" "B" "Bury window state"))
+        '("#FFA060" "#805010" "#281800" "B" "Bury window state"))
     (defvar window-state--action nil)
     (defvar window-state--loop nil)
     (defvar window-state--loop-default nil)
@@ -913,12 +913,14 @@
         (setq window-state--loop-default nil)
         (while window-state--loop
             (setq window-state--loop window-state--loop-default)
-            (let-unpack ((hint-color tint-color tag help-string) window-state)
-                (set-face-foreground 'aw-leading-char-face hint-color)
-                (set-face-foreground 'aw-background-face   tint-color)
-                (save-override-evil-mode-line-tag tag help-string
-                    (fixed-aw-select (lambda (window)
-                        (funcall window-state--action window)))))))
+            (let-unpack ((hint tint dim tag help-string) window-state)
+                (with-face-attribute (
+                        'aw-leading-char-face        :foreground hint
+                        'aw-background-face          :foreground tint
+                        'auto-dim-other-buffers-face :background dim)
+                    (save-override-evil-mode-line-tag tag help-string
+                        (fixed-aw-select (lambda (window)
+                            (funcall window-state--action window))))))))
     (defun window-state-select ()
         (setq window-state--action 'aw-switch-to-window)
         (setq window-state window-state-select)
