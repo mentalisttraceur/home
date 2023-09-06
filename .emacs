@@ -1061,6 +1061,10 @@
     (get-buffer-create " *Echo Area 1*")
     (auto-dim-other-buffers-mode 1))
 
+(use-package rainbow-mode
+    :config
+    (define-key evil-motion-state-map " R" 'rainbow-mode))
+
 
 (defun message-time () (interactive)
     (message "%s" (format-time-string "%H:%M:%S")))
