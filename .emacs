@@ -1006,6 +1006,7 @@
         (?r window-state-bury-to-kill-buffer)
         (?R window-state-kill-buffer)
         ,(window-state-forward-key ? )
+        ,(window-state-forward-key ?:)
         (?q window-state-done)
         (?\C-\[ window-state-done)))
     (setq aw-dispatch-function (lambda (character)
