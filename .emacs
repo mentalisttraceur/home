@@ -922,7 +922,7 @@
         (setq window-state--loop-default lock)
         (setq window-state--loop t))
     (defun window-state-select-locked ()
-        (window-state-swap t))
+        (window-state-select t))
     (defun window-state-select-latched ()
         (unless (eq window-state window-state-select-latched)
             (setq window-state--action `(lambda (window)
