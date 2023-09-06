@@ -1017,7 +1017,7 @@
         (?\C-\[ window-state-done)))
     (setq aw-dispatch-function (lambda (character)
         (if (equal character ??)
-            (message "No such candidate: ?, hit ‘C-g’ to quit.")
+            (message "No such candidate: ?, hit `C-g' to quit.")
             (if (equal character ?\C-g)
                 (aw-dispatch-default ?q)
                 (aw-dispatch-default character)))))
