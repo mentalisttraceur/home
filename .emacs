@@ -1106,3 +1106,6 @@
 
 (setq gc-cons-threshold init-gc-cons-threshold
       file-name-handler-alist init-file-name-handler-alist)
+
+
+(setq initial-buffer-choice 'eshell)
