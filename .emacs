@@ -904,8 +904,6 @@
     (defvar window-state--loop nil)
     (defvar window-state--loop-default nil)
     (defun window-state--loop ()
-        (setq window-state--loop t)
-        (setq window-state--loop-default nil)
         (while window-state--loop
             (setq window-state--loop window-state--loop-default)
             (let-unpack ((hint tint dim tag help-string) window-state)
@@ -986,6 +984,9 @@
     (defun window-state () (interactive)
         (window-state-select)
         (window-state--loop))
+    (defun window-state-locked () (interactive)
+        (window-state-select-locked)
+        (window-state--loop))
     (defun window-state-done ()
         (setq window-state--loop nil))
     (setq aw-dispatch-alist `(
@@ -1016,7 +1017,9 @@
                 (aw-dispatch-default ?q)
                 (aw-dispatch-default character)))))
     (define-key global-map "\C-xo" 'window-state)
-    (define-key evil-motion-state-map " o" 'window-state))
+    (define-key global-map "\C-xO" 'window-state-locked)
+    (define-key evil-motion-state-map " o" 'window-state)
+    (define-key evil-motion-state-map " O" 'window-state-locked))
 
 (use-package with-editor
     :config
