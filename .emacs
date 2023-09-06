@@ -974,7 +974,7 @@
             (seq-filter 'buffer-live-p aw-empty-buffers-list)))
     (advice-add 'aw--done :before 'fixed-aw--done)
     (defun window-state-bury-to-kill-buffer ()
-        (if (> (length (get-buffer-window-list (window-buffer) nil t)) 1)
+        (if (> (length (get-buffer-window-list (current-buffer) nil t)) 1)
             (bury-buffer)
             (kill-buffer))
         (setq window-state--loop t))
