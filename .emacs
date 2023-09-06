@@ -1056,9 +1056,9 @@
     (advice-add 'adob--focus-out-hook :around 'hack-adob--focus-out-hook)
     (with-current-buffer " *Minibuf-0*" (insert ?\t))
     (add-hook 'after-change-functions (lambda (&rest _)
-        (when (and (equal (buffer-name) " *Minibuf-0*")
-                   (< (buffer-size) 1))
-            (insert ?\t))))
+        (with-current-buffer " *Minibuf-0*"
+            (when (< (buffer-size) 1)
+                (insert ?\t)))))
     (define-key evil-motion-state-map " \\" (lambda () (interactive)
         (with-current-buffer " *Minibuf-0*" (insert ?\t))))
     (get-buffer-create " *Echo Area 0*")
