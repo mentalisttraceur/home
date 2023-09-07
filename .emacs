@@ -57,7 +57,6 @@
 
 (setq help-window-select t)
 (define-key help-map "t" 'describe-face)
-(define-key help-mode-map "\C-m" 'help-view-source)
 
 
 (blink-cursor-mode -1)
@@ -212,6 +211,10 @@
 (unless (and (fboundp 'package-installed-p)
              (package-installed-p 'use-package))
     (defmacro use-package (&rest _)))
+
+(use-package help
+    :config
+    (define-key help-mode-map "\C-m" 'help-view-source))
 
 (use-package eshell
     :config
