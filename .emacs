@@ -73,6 +73,8 @@
 (define-key global-map [\C-tab] 'other-window)
 (define-key global-map [\C-iso-lefttab] (lambda () (interactive)
     (other-window -1)))
+(add-hook 'minibuffer-setup-hook (lambda ()
+    (local-set-key [\C-tab] 'other-window)))
 
 
 (defun quit-previous-window () (interactive)
