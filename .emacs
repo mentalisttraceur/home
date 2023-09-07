@@ -610,6 +610,8 @@
     (define-key evil-motion-state-map [?\C- ] 'space-map)
     (define-key evil-insert-state-map "\C-@" 'space-map)
     (define-key evil-insert-state-map [?\C- ] 'space-map)
+    (define-key evil-replace-state-map "\C-@" 'space-map)
+    (define-key evil-replace-state-map [?\C- ] 'space-map)
     (define-key evil-emacs-state-map "\C-@" 'space-map)
     (define-key evil-emacs-state-map [?\C- ] 'space-map)
     (defun fixed-last-s-expression (function &rest arguments)
