@@ -122,10 +122,14 @@
 
 
 (defmacro unpack (names list)
-    `(let ((--unpack-- ,list))
-        (dolist (name ',names)
-            (eval (list 'setq name '(car --unpack--)))
-            (setq --unpack-- (cdr --unpack--)))))
+    (let* ((setq-form (list 'setq))
+           (last-cons setq-form)
+           (cdr-chain '--unpack--))
+        (dolist (name names)
+            (setcdr last-cons (list name (list 'car cdr-chain)))
+            (setq cdr-chain (list 'cdr cdr-chain))
+            (setq last-cons (cddr last-cons)))
+        `(let ((--unpack-- ,list)) ,setq-form nil)))
 
 (defmacro let-unpack-1 (names list &rest body)
     `(let ((--let-unpack-1-- ,list) ,@names)
