@@ -124,10 +124,10 @@
 (defmacro unpack (names list)
     (let* ((setq-form (list 'setq))
            (last-cons setq-form)
-           (cdr-chain '--unpack--))
+           (unpack-1 '(prog1 (car --unpack--)
+                             (setq --unpack-- (cdr --unpack--)))))
         (dolist (name names)
-            (setcdr last-cons (list name (list 'car cdr-chain)))
-            (setq cdr-chain (list 'cdr cdr-chain))
+            (setcdr last-cons (list name unpack-1))
             (setq last-cons (cddr last-cons)))
         `(let ((--unpack-- ,list)) ,setq-form nil)))
 
