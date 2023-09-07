@@ -74,6 +74,7 @@
 (define-key global-map [\C-iso-lefttab] (lambda () (interactive)
     (other-window -1)))
 
+
 (defun quit-previous-window () (interactive)
     (if (> (count-windows) 1)
         (save-selected-window
