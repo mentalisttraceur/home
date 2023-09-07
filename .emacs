@@ -57,6 +57,7 @@
 
 (setq help-window-select t)
 (define-key help-map "t" 'describe-face)
+(define-key help-mode-map "\C-m" 'help-view-source)
 
 
 (blink-cursor-mode -1)
