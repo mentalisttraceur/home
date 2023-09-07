@@ -55,10 +55,6 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 
-(setq help-window-select t)
-(define-key help-map "t" 'describe-face)
-
-
 (blink-cursor-mode -1)
 
 
@@ -214,6 +210,8 @@
 
 (use-package help
     :config
+    (setq help-window-select t)
+    (define-key help-map "t" 'describe-face)
     (define-key help-mode-map "\C-m" 'help-view-source))
 
 (use-package eshell
