@@ -1031,6 +1031,7 @@
         (?R window-state-kill-buffer)
         ,(window-state-forward-character ? )
         ,(window-state-forward-character ?:)
+        (?0 aw-switch-to-minibuffer)
         (?q window-state-done)
         (?\C-\[ window-state-done)))
     (setq aw-dispatch-function (lambda (character)
