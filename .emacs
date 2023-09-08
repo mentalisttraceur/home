@@ -901,6 +901,10 @@
         (with-advice ('aw-window-list :filter-return 'hack-aw-window-list
                       'avy-tree :filter-args 'hack-avy-tree)
             (aw-select "" action)))
+    (defun aw-switch-to-minibuffer ()
+        (if (active-minibuffer-window)
+            (aw-switch-to-window (active-minibuffer-window))
+            (message "Minibuffer is not active")))
     (defun evil-aw-delete-window (window)
         (aw-switch-to-window window)
         (evil-window-delete))
