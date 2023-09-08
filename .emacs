@@ -876,6 +876,16 @@
     (setq aw-scope 'frame)
     (setq aw-make-frame-char nil)
     (setq aw-leading-char-style 'path)
+    (defun fixed-aw--make-background (window)
+        (let ((buffer (window-buffer window)))
+            (with-current-buffer buffer
+                (let ((overlay (make-overlay 1 (buffer-size) buffer nil t)))
+                    (overlay-put overlay 'face 'aw-background-face)
+                    overlay))))
+    (defun fixed-aw--make-backgrounds (window-list)
+        (setq aw-overlays-back
+            (mapcar 'fixed-aw--make-background window-list)))
+    (advice-add 'aw--make-backgrounds :override 'fixed-aw--make-backgrounds)
     (defun aw-window< (window-1 window-2)
         (let ((window-1-edges (window-edges window-1))
               (window-2-edges (window-edges window-2)))
