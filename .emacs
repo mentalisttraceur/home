@@ -1055,8 +1055,6 @@
             (if (equal character ?\C-g)
                 (aw-dispatch-default ?q)
                 (aw-dispatch-default character)))))
-    (define-key global-map "\C-xo" 'window-state)
-    (define-key global-map "\C-xO" 'window-state-locked)
     (define-key evil-motion-state-map " o" 'window-state)
     (define-key evil-motion-state-map " O" 'window-state-locked))
 
