@@ -1124,6 +1124,7 @@
         (?T window-state-unbury)
         (?r window-state-kill-operator)
         (?R window-state-kill)
+        (?: window-state-ex-operator)
         (?\" window-state-use-register)
         ,(window-state-passthrough ? )
         (?q window-state-quit)
