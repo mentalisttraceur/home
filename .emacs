@@ -888,6 +888,10 @@
         (setq aw-overlays-back
             (mapcar 'fixed-aw--make-background window-list)))
     (advice-add 'aw--make-backgrounds :override 'fixed-aw--make-backgrounds)
+    (defun fixed-aw--done (&rest _)
+        (setq aw-empty-buffers-list
+            (seq-filter 'buffer-live-p aw-empty-buffers-list)))
+    (advice-add 'aw--done :before 'fixed-aw--done)
     (defun aw-window< (window-1 window-2)
         (if (window-minibuffer-p window-1)
             t
@@ -1004,10 +1008,6 @@
     (defun window-state-unbury-buffer ()
         (switch-to-buffer (last-buffer nil t))
         (setq window-state--loop t))
-    (defun fixed-aw--done (&rest _)
-        (setq aw-empty-buffers-list
-            (seq-filter 'buffer-live-p aw-empty-buffers-list)))
-    (advice-add 'aw--done :before 'fixed-aw--done)
     (defun window-state-bury-to-kill-buffer ()
         (if (> (length (get-buffer-window-list (current-buffer) nil t)) 1)
             (bury-buffer)
