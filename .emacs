@@ -651,6 +651,7 @@
     (define-key evil-motion-state-map " B" 'ibuffer)
     (define-key evil-motion-state-map " k" 'kill-buffer)
     (define-key evil-motion-state-map " f" 'find-file)
+    (define-key evil-motion-state-map " F" 'find-alternate-file)
     (define-key evil-motion-state-map " r" 'revert-buffer)
     (define-key evil-motion-state-map " d" 'dired)
     (add-to-list 'evil-motion-state-modes 'dired-mode)
