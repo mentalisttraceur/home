@@ -669,6 +669,7 @@
     (define-key universal-argument-map [escape] 'ignore)
     (define-key evil-normal-state-map " q" 'ignore)
     (define-key evil-normal-state-map [?  escape] 'ignore)
+    (define-key evil-operator-state-map "q" 'evil-force-normal-state)
     (define-key evil-normal-state-map "q" nil)
     (define-key evil-motion-state-map " M" 'evil-record-macro)
     (define-key evil-motion-state-map " Q" 'delete-frame)
