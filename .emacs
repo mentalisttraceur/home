@@ -891,7 +891,9 @@
     (add-hook 'Info-mode-hook (lambda ()
         (evil-local-set-key 'motion " " 'space-map)))
     (evil-declare-not-repeat 'ignore)
-    (add-to-list 'evil-motion-state-modes 'shortdoc-mode))
+    (add-to-list 'evil-motion-state-modes 'shortdoc-mode)
+    (with-current-buffer (messages-buffer)
+        (evil-force-normal-state)))
 
 (use-package ace-window
     :config
