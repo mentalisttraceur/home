@@ -952,6 +952,7 @@
     (defconst window-state-target-pending
         '("#00FF00" "#906030" "#302010" "T" "Target-pending window state"))
     (defvar window-state-this-register nil)
+    (defvar window-state-last-search-target nil)
     (defvar window-state--action nil)
     (defvar window-state--execute-once nil)
     (defvar window-state--execute-more nil)
@@ -1084,6 +1085,28 @@
         (condition-case _error
             (evil-ex)
             (quit)))
+    (window-state-define-operator window-state-vi-search-forward
+        (condition-case _error
+            (progn
+                (evil-search-forward)
+                (setq window-state-last-search-target (selected-window)))
+            (quit)))
+    (window-state-define-operator window-state-vi-search-backward
+        (condition-case _error
+            (progn
+                (evil-search-backward)
+                (setq window-state-last-search-target (selected-window)))
+            (quit)))
+    (defun window-state-vi-search-next (&optional window)
+        (unless window
+            (setq window window-state-last-search-target))
+        (with-selected-window window
+            (evil-search-next)))
+    (defun window-state-vi-search-previous (&optional window)
+        (unless window
+            (setq window window-state-last-search-target))
+        (with-selected-window window
+            (evil-search-previous)))
     (defun window-state-use-register ()
         (condition-case _error
             (setq window-state-this-register
@@ -1125,6 +1148,10 @@
         (?r window-state-kill-operator)
         (?R window-state-kill)
         (?: window-state-ex-operator)
+        (?/ window-state-vi-search-forward-operator)
+        (?? window-state-vi-search-backward-operator)
+        (?n window-state-vi-search-next)
+        (?N window-state-vi-search-previous)
         (?\" window-state-use-register)
         ,(window-state-passthrough ? )
         (?q window-state-quit)
