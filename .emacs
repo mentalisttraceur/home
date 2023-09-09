@@ -399,7 +399,6 @@
 
 (use-package consult
     :config
-    (setq consult-line-start-from-top t)
     (setq consult-find-args "find .")
     (defun consult-fd (&optional directory initial-query) (interactive "P")
         (let-unpack ((prompt paths directory)
