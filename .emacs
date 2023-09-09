@@ -197,6 +197,27 @@
         (delete-region (pos-bol) (pos-bol (+ count 1)))))
 
 
+(defun point-to-register-with-scroll (register)
+    (set-register register (list
+        (point-marker)
+        (window-start)
+        (window-vscroll nil t)
+        (window-hscroll))))
+
+(defun jump-to-register-with-scroll (register)
+    (let ((value (get-register register)))
+        (if (and (listp value)
+                 (= (length value) 4)
+                 (markerp (car value)))
+            (let-unpack ((marker start vscroll hscroll) value)
+                (register-val-jump-to marker nil)
+                (let ((window (selected-window)))
+                    (set-window-start window start t)
+                    (set-window-vscroll window vscroll t)
+                    (set-window-hscroll window hscroll)))
+            (register-val-jump-to value nil))))
+
+
 (defconst pop-to-command-buffer nil)
 (make-variable-buffer-local 'pop-to-command-buffer)
 (defvar pop-to-command-setup-hook nil)
