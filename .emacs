@@ -893,10 +893,10 @@
             (seq-filter 'buffer-live-p aw-empty-buffers-list)))
     (advice-add 'aw--done :before 'fixed-aw--done)
     (defun aw-window< (window-1 window-2)
-        (if (window-minibuffer-p window-1)
-            t
-            (if (window-minibuffer-p window-2)
-                nil
+        (cond
+            ((window-minibuffer-p window-1) t)
+            ((window-minibuffer-p window-2) nil)
+            (t
                 (let ((window-1-edges (window-edges window-1))
                       (window-2-edges (window-edges window-2)))
                     (let ((window-1-left-edge (car window-1-edges))
