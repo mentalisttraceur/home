@@ -1190,7 +1190,7 @@
         (?q window-state-quit)
         (?\C-\[ window-state-quit)))
     (setq aw-dispatch-function (lambda (character)
-        (if (equal character ??)
+        (if (and (equal character ??) (not (alist-get ?? aw-dispatch-alist)))
             (message "No such candidate: ?, hit `C-g' to quit.")
             (if (equal character ?\C-g)
                 (aw-dispatch-default ?q)
