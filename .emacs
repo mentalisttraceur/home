@@ -1090,8 +1090,8 @@
         (setq window-state window-state-target-pending)
         (setq window-state--execute-once t))
     (defun window-state-swap-move ()
-        (setq window-state--action 'aw-swap-target-pending)
-        (setq window-state window-state-swap)
+        (setq window-state--action 'aw-swap-window)
+        (setq window-state window-state-target-pending)
         (setq window-state--execute-once t))
     (window-state-define-operator window-state-change
         (condition-case _error
