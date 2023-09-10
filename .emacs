@@ -1081,12 +1081,11 @@
     (window-state-define-operator window-state-paste
         (with-advice ('push-mark :override 'ignore)
             (jump-to-register-with-scroll (or window-state-this-register ?0))))
-    (defun aw-swap-and-switch-to-window (window)
-        (let ((initial-window (selected-window)))
-            (aw-swap-window window)
-            (aw-switch-to-window initial-window)))
+    (defun window-state--swap-buffer (window)
+        (save-selected-window
+            (aw-swap-window window)))
     (defun window-state-swap ()
-        (setq window-state--action 'aw-swap-and-switch-to-window)
+        (setq window-state--action 'window-state--swap-buffer)
         (setq window-state window-state-target-pending)
         (setq window-state--execute-once t))
     (defun window-state-swap-move ()
