@@ -1235,7 +1235,9 @@
                 (let* ((key (read-key "g-"))
                        (action (alist-get key '(
                         (?p . window-state-fast-paste)
-                        (?P . window-state-fast-paste-move)))))
+                        (?P . window-state-fast-paste-move)
+                        (?q . window-state-quit)
+                        (?\C-\[ . window-state-quit)))))
                     (if action
                         (funcall action)
                         (window-state--bad-candidate key)
