@@ -988,9 +988,9 @@
             (aw-select "" action)))
     (defvar window-state nil)
     (defconst window-state-normal
-        '("#00FF00" "#606060" "#202020" "W" "Window state"))
+        '("#00FF00" "#808080" "#202020" "W" "Window state"))
     (defconst window-state-target-pending
-        '("#00FF00" "#906030" "#302010" "T" "Target-pending window state"))
+        '("#00FF00" "#C08040" "#302010" "T" "Target-pending window state"))
     (defvar window-state-this-register nil)
     (defvar window-state-last-search-target nil)
     (defvar window-state--action nil)
