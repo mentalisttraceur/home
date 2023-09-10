@@ -339,13 +339,13 @@
                 (,sentinel process message)))))
     (add-hook 'comint-exec-hook 'comint-implement-exit-hook))
 
-(defun get-command-at-point ()
+(defun get-field-at-point ()
     (buffer-substring-no-properties (field-beginning) (field-end)))
-(defun delete-command-at-point ()
+(defun delete-field-at-point ()
     (delete-region (field-beginning) (field-end)))
-(defun replace-command-at-point (command)
-    (delete-command-at-point)
-    (insert command))
+(defun replace-field-at-point (new-contents)
+    (delete-field-at-point)
+    (insert new-contents))
 
 (use-package tramp
     :config
@@ -417,17 +417,17 @@
                     `("fd" "--color=never" "--full-path" ,@patterns ,@options)
                     highlight-function))))
     (defun fixed-consult-history (prefix-argument) (interactive "P")
-        (let ((command (when prefix-argument (get-command-at-point))))
+        (let ((command (when prefix-argument (get-field-at-point))))
             (with-advice ('pos-eol :override 'field-end)
                 (save-excursion (save-mutation
                     (end-of-buffer)
                     (when prefix-argument
-                        (replace-command-at-point command))
+                        (replace-field-at-point command))
                     (goto-char (field-beginning))
                     (consult-history)
-                    (setq command (get-command-at-point)))))
+                    (setq command (get-field-at-point)))))
             (end-of-buffer)
-            (replace-command-at-point command)
+            (replace-field-at-point command)
             command)))
 
 (use-package orderless
@@ -705,7 +705,7 @@
             (evil-repeat-start)
             (add-to-list 'evil-repeat-info `((lambda ()
                 (end-of-buffer)
-                (replace-command-at-point ,command)
+                (replace-field-at-point ,command)
                 (when ,consult-history-execute
                     (setq unread-command-events '(,@run-key))))))
             (evil-repeat-stop)
