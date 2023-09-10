@@ -1176,12 +1176,14 @@
         (unless window
             (setq window window-state-last-search-target))
         (with-selected-window window
-            (evil-search-next)))
+            (dotimes (x (prefix-numeric-value current-prefix-arg))
+                (evil-search-next))))
     (defun window-state-vi-search-previous (&optional window)
         (unless window
             (setq window window-state-last-search-target))
         (with-selected-window window
-            (evil-search-previous)))
+            (dotimes (x (prefix-numeric-value current-prefix-arg))
+                (evil-search-previous))))
     (defun window-state-use-register ()
         (condition-case _error
             (setq window-state-this-register
