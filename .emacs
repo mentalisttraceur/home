@@ -809,8 +809,8 @@
                 "echo" (concat (buffer-name) " is not visiting a file"))
             (with-temporary-directory directory
                 (let ((file    (concat directory "/file"))
-                    (unsaved (concat directory "/unsaved"))
-                    (default-directory "~"))
+                      (unsaved (concat directory "/unsaved"))
+                      (default-directory "~"))
                     (copy-file buffer-file-name file)
                     (write-region (buffer-end -1) (buffer-end 1) unsaved)
                     (diff-unsaved-changes--eshell
