@@ -428,7 +428,25 @@
                     (setq command (get-field-at-point)))))
             (end-of-buffer)
             (replace-field-at-point command)
-            command)))
+            command))
+    (defun consult-line-resume (prefix-argument) (interactive "P")
+        (consult-line
+            (cond
+                ((not prefix-argument)
+                    (nth 0 consult--line-history))
+                ((and (integerp prefix-argument) (>= prefix-argument 0))
+                    (nth prefix-argument consult--line-history))
+                (t
+                    (completing-read
+                        "Resume consult-line: "
+                        consult--line-history
+                        nil
+                        nil
+                        nil
+                        'consult--line-history)))))
+    (defun consult-line-quit () (interactive)
+        (push (get-field-at-point) consult--line-history)
+        (abort-minibuffers)))
 
 (use-package orderless
     :config
@@ -777,6 +795,7 @@
             visual-line-mode truncate-lines))
     (define-key evil-motion-state-map " ;" 'cycle-line-wrap)
     (define-key evil-motion-state-map " l" 'consult-line)
+    (define-key evil-motion-state-map " L" 'consult-line-resume)
     (define-key evil-motion-state-map " sl" 'consult-ripgrep)
     (define-key evil-motion-state-map " sf" 'consult-fd)
     (define-key evil-motion-state-map " x" 'tramp-cleanup-connection)
@@ -885,9 +904,13 @@
         (evil-local-set-key 'normal [down] 'evil-vertico-next-line)
         (evil-local-set-key 'normal "k"    'evil-vertico-previous-line)
         (evil-local-set-key 'normal [up]   'evil-vertico-previous-line)
-        (let ((quit (if (eq this-command 'consult-history-execute)
-                         'consult-history-execute-quit
-                         'abort-minibuffers)))
+        (let ((quit (cond
+                        ((eq this-command 'consult-history-execute)
+                            'consult-history-execute-quit)
+                        ((eq this-command 'consult-line)
+                            'consult-line-quit)
+                        (t
+                            'abort-minibuffers))))
             (evil-local-set-key 'normal   [escape] quit)
             (evil-local-set-key 'normal   "q"      quit)
             (evil-local-set-key 'operator [escape] 'evil-force-normal-state)
