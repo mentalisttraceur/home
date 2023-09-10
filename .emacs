@@ -1124,6 +1124,17 @@
         (setq window-state--action 'aw-swap-window)
         (setq window-state window-state-target-pending)
         (setq window-state--execute-once t))
+    (defun window-state--copy-buffer (window)
+        (save-selected-window
+            (aw-copy-window window)))
+    (defun window-state-copy ()
+        (setq window-state--action 'window-state--copy-buffer)
+        (setq window-state window-state-target-pending)
+        (setq window-state--execute-once t))
+    (defun window-state-copy-move ()
+        (setq window-state--action 'aw-copy-window)
+        (setq window-state window-state-target-pending)
+        (setq window-state--execute-once t))
     (window-state-define-operator window-state-change
         (condition-case _error
             (call-interactively 'switch-to-buffer)
@@ -1218,11 +1229,23 @@
         (?N window-state-vi-search-previous)
         (?\" window-state-use-register)
         ,(window-state-passthrough ? )
+        (?g (lambda ()
+                (let* ((key (read-key "g-"))
+                       (action (alist-get key '(
+                        (?p . window-state-copy)
+                        (?P . window-state-copy-move)))))
+                    (if action
+                        (funcall action)
+                        (window-state--bad-candidate key))
+                    (setq window-state--execute-once t))))
         (?q window-state-quit)
         (?\C-\[ window-state-quit)))
+    (defun window-state--bad-candidate (key)
+        (message "No such candidate: %s, hit `C-g' to quit."
+            (char-to-string key)))
     (setq aw-dispatch-function (lambda (character)
         (if (and (equal character ??) (not (alist-get ?? aw-dispatch-alist)))
-            (message "No such candidate: ?, hit `C-g' to quit.")
+            (window-state--bad-candidate character)
             (if (equal character ?\C-g)
                 (aw-dispatch-default ?q)
                 (aw-dispatch-default character)))))
