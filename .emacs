@@ -1238,8 +1238,8 @@
                         (?P . window-state-fast-paste-move)))))
                     (if action
                         (funcall action)
-                        (window-state--bad-candidate key))
-                    (setq window-state--execute-once t))))
+                        (window-state--bad-candidate key)
+                        (setq window-state--execute-once t)))))
         (?q window-state-quit)
         (?\C-\[ window-state-quit)))
     (defun window-state--bad-candidate (key)
