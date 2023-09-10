@@ -1270,7 +1270,7 @@
 
 (use-package rainbow-mode
     :config
-    (define-key evil-motion-state-map " R" 'rainbow-mode))
+    (define-key evil-motion-state-map " C" 'rainbow-mode))
 
 
 (defun message-time () (interactive)
