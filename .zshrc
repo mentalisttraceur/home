@@ -11,6 +11,9 @@ SAVEHIST=10000
 setopt sharehistory interactivecomments histignorealldups histignorespace
 bindkey '^I' expand-or-complete-prefix
 bindkey -M vicmd 'U' redo
+bindkey -M vicmd 'H' vi-join
+bindkey -M vicmd 'J' end-of-buffer
+bindkey -M vicmd 'K' beginning-of-buffer
 
 case ${TERMUX_VERSION+x} in x)
     PATH=$PREFIX/local/bin:$PATH
