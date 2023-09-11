@@ -926,6 +926,8 @@
             (lambda () (interactive)
                 (isearch-done)))))
     (add-hook 'Info-mode-hook (lambda ()
+        (evil-local-set-key 'motion "H" 'Info-history-back)
+        (evil-local-set-key 'motion "L" 'Info-history-forward)
         (evil-local-set-key 'motion " " 'space-map)))
     (evil-declare-not-repeat 'ignore)
     (add-to-list 'evil-motion-state-modes 'shortdoc-mode)
