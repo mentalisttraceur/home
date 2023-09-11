@@ -447,7 +447,9 @@
                         nil
                         'consult--line-history)))))
     (defun consult-line-quit () (interactive)
-        (push (get-field-at-point) consult--line-history)
+        (let ((query (get-field-at-point)))
+            (if (length> query 0)
+                (push query consult--line-history)))
         (abort-minibuffers)))
 
 (use-package orderless
