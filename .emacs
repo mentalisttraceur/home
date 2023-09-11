@@ -438,7 +438,7 @@
                 ((not prefix-argument)
                     (nth 0 consult--line-history))
                 ((and (integerp prefix-argument) (>= prefix-argument 0))
-                    (nth prefix-argument consult--line-history))
+                    (nth (- prefix-argument 1) consult--line-history))
                 (t
                     (completing-read
                         "Resume consult-line: "
