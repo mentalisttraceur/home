@@ -432,6 +432,7 @@
     (defun consult-line-resume (prefix-argument) (interactive "P")
         (when (eq this-command 'consult-line-resume)
             (setq this-command 'consult-line))
+        (delete-dups consult--line-history)
         (consult-line
             (cond
                 ((not prefix-argument)
@@ -449,7 +450,8 @@
     (defun consult-line-quit () (interactive)
         (let ((query (get-field-at-point)))
             (if (length> query 0)
-                (push query consult--line-history)))
+                (push query consult--line-history)
+                (delete-dups consult--line-history)))
         (abort-minibuffers)))
 
 (use-package orderless
