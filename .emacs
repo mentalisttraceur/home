@@ -791,6 +791,7 @@
                 (setq truncate-lines t)))
         (message "visual-line-mode: %s truncate-lines: %s"
             visual-line-mode truncate-lines))
+    (evil-declare-not-repeat 'cycle-line-wrap)
     (define-key evil-motion-state-map " ;" 'cycle-line-wrap)
     (define-key evil-motion-state-map " l" 'consult-line)
     (define-key evil-motion-state-map " L" 'consult-line-resume)
