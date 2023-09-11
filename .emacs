@@ -548,6 +548,7 @@
                 " "))))
     (setq evil-mode-line-format nil)
     (setq evil-want-minibuffer t)
+    (evil-select-search-module 'evil-search-module 'evil-search)
     (setq mode-line (if (facep 'mode-line-active) 'mode-line-active 'mode-line))
     (defun color-code-vi-state ()
         (if (minibufferp)
