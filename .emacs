@@ -825,6 +825,18 @@
     (defun diff-unsaved-changes--eshell (&rest command)
         (pop-to-command-eshell command (buffer-name) "Diff unsaved"))
     (define-key evil-motion-state-map " c" 'diff-unsaved-changes)
+    (defun partial-save () (interactive)
+        (if (not buffer-file-name)
+            (partial-save--eshell
+                "echo" (concat (buffer-name) " is not visiting a file"))
+            (with-temporary-file unsaved
+                (let ((default-directory "~"))
+                    (write-region (buffer-end -1) (buffer-end 1) unsaved)
+                    (partial-save--eshell "gp" buffer-file-name unsaved))
+                (sleep-for 0.2))))
+    (defun partial-save--eshell (&rest command)
+        (pop-to-command-eshell command (buffer-name) "Partial save"))
+    (define-key evil-motion-state-map " w" 'partial-save)
     (defmacro git (&rest arguments)
         (let ((command (cons "git" (mapcar 'symbol-name arguments))))
             `(lambda () (interactive)
