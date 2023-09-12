@@ -5,6 +5,7 @@ cleanup()
         rm -rf "$directory"
     esac
 }
+output=${3-"$1"}
 directory=`mktemp -d` &&
 trap cleanup EXIT TERM INT HUP &&
 (cd "$directory" && git init --quiet) &&
@@ -13,4 +14,4 @@ cp "$1" "$directory"/contents &&
 cp "$2" "$directory"/contents &&
 (cd "$directory" && git add -p contents) &&
 (cd "$directory" && git checkout contents) &&
-cp "$directory"/contents "$1"
+cp "$directory"/contents "$output"
