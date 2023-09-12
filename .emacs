@@ -49,7 +49,8 @@
     (defun fixed-browse-url-xdg-open (url &optional _unused)
         (message "opening %s" url)
         (browse-url-xdg-open url))
-    (setq browse-url-browser-function 'fixed-browse-url-xdg-open))
+    (setq browse-url-browser-function 'fixed-browse-url-xdg-open)
+    (setq woman-manpath '("~/../usr/share/man")))
 
 
 (defalias 'yes-or-no-p 'y-or-n-p)
