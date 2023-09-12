@@ -13,5 +13,5 @@ cp "$1" "$directory"/contents &&
 (cd "$directory" && git add contents) &&
 cp "$2" "$directory"/contents &&
 (cd "$directory" && git add -p contents) &&
-(cd "$directory" && git checkout contents) &&
+(cd "$directory" && git checkout --quiet contents) &&
 cp "$directory"/contents "$output"
