@@ -171,6 +171,34 @@
     `(apply-split-nest with-face-attribute-1 ,face-attribute-list 3 ,body))
 
 
+(defmacro with-buffer-modified-p (flag &rest body)
+    `(let ((--with-buffer-modified-p-- (buffer-modified-p)))
+        (unwind-protect
+            (progn
+                (set-buffer-modified-p ,flag)
+                ,@body)
+            (set-buffer-modified-p --with-buffer-modified-p--))))
+
+
+(defmacro with-visited-file-modtime (time-flag &rest body)
+    `(let ((--with-visited-file-modtime-- (visited-file-modtime)))
+        (unwind-protect
+            (progn
+                (set-visited-file-modtime ,time-flag)
+                ,@body)
+            (set-visited-file-modtime --with-visited-file-modtime--))))
+
+
+(defun buffer-differs-from-visited-file-p ()
+    (with-buffer-modified-p nil
+        (with-visited-file-modtime '(0 0)
+            (let ((differs nil))
+                (with-advice ('ask-user-about-supersession-threat
+                                 :override (lambda (_) (setq differs t)))
+                    (set-buffer-modified-p t)
+                    differs)))))
+
+
 (defun list-interject (list separator)
     (let ((next list))
         (dotimes (_ (length (cdr list)))
