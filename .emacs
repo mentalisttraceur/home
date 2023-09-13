@@ -848,8 +848,7 @@
                       (default-directory "~"))
                     (copy-file buffer-file-name file)
                     (write-region (buffer-end -1) (buffer-end 1) unsaved)
-                    (diff-unsaved-changes--eshell
-                        "cdexec" directory "git" "diff" "file" "unsaved"))
+                    (diff-unsaved-changes--eshell "gd" file unsaved))
                 (sleep-for 0.2))))
     (defun diff-unsaved-changes--eshell (&rest command)
         (pop-to-command-eshell command (buffer-name) "Diff unsaved"))
