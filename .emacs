@@ -250,6 +250,8 @@
 (defconst pop-to-command-buffer nil)
 (make-variable-buffer-local 'pop-to-command-buffer)
 (defvar pop-to-command-setup-hook nil)
+(defvar pop-to-command--callback nil)
+(make-variable-buffer-local 'pop-to-command--callback)
 (defun pop-to-command-buffer-name (type command &optional context name)
     (unless name
         (setq name (concat type ": " (string-join command " "))))
@@ -324,7 +326,7 @@
                     (find-file path)))))
     (put 'eshell/vo 'eshell-no-numeric-conversions t)
     (add-to-list 'eshell-modules-list 'eshell-tramp)
-    (defun pop-to-command-eshell (command &optional context name)
+    (defun pop-to-command-eshell (command &optional context name callback)
         (setq name (pop-to-command-buffer-name "eshell" command context name))
         (let ((program   (car command))
               (arguments (cdr command))
@@ -341,6 +343,7 @@
                     (eshell-mode)))
             (pop-to-buffer buffer)
             (setq-local pop-to-command-buffer t)
+            (setq-local pop-to-command--callback callback)
             (end-of-buffer)
             (run-hooks 'pop-to-command-setup-hook)
             (let ((parsed-command (eshell-parse-command program arguments t)))
@@ -349,7 +352,9 @@
     (add-hook 'eshell-post-command-hook (lambda ()
         (when pop-to-command-buffer
             (insert "\nCommand " (buffer-name) " done.\n")
-            (end-of-buffer)))))
+            (end-of-buffer)
+            (when pop-to-command--callback
+                (funcall pop-to-command--callback))))))
 (use-package esh-mode
     :config
     (define-key eshell-mode-map "\C-m" 'fixed-eshell-send-input))
@@ -505,7 +510,7 @@
     (set-face-foreground 'eat-term-color-13 "#FF00FF")
     (set-face-foreground 'eat-term-color-14 "#00FFFF")
     (set-face-foreground 'eat-term-color-15 "#FFFFFF")
-    (defun pop-to-command-eat (command &optional context name)
+    (defun pop-to-command-eat (command &optional context name callback)
         (setq name (pop-to-command-buffer-name "eat" command context name))
         (let ((program   (car command))
               (arguments (cdr command))
@@ -518,9 +523,14 @@
                 (eat-mode))
             (pop-to-buffer buffer)
             (setq-local pop-to-command-buffer t)
+            (setq-local pop-to-command--callback callback)
             (run-hooks 'pop-to-command-setup-hook)
             (eat-exec buffer name program nil arguments)
             buffer))
+    (add-hook 'eat-exit-hook (lambda (_process)
+        (when (and pop-to-command-buffer pop-to-command--callback)
+            (funcall pop-to-command--callback))))
+    (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil)))
     (eat-eshell-mode 1)
     (eat-eshell-visual-command-mode 1))
 
