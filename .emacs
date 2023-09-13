@@ -199,6 +199,14 @@
                     differs)))))
 
 
+(defun refresh-modified-state (&optional buffer) (interactive)
+    (unless buffer
+        (setq buffer (current-buffer)))
+    (with-current-buffer buffer
+        (set-buffer-modified-p (buffer-differs-from-visited-file-p))
+        (set-visited-file-modtime)))
+
+
 (defun list-interject (list separator)
     (let ((next list))
         (dotimes (_ (length (cdr list)))
