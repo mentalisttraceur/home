@@ -877,7 +877,9 @@
                     (pop-to-command-eshell
                         (list "gp" buffer-file-name unsaved)
                         (buffer-name)
-                        "Partial save"))
+                        "Partial save"
+                        (apply-partially 'refresh-modified-state
+                            (current-buffer))))
                 (sleep-for 0.2))))
     (define-key evil-motion-state-map " w" 'partial-save)
     (defmacro git (&rest arguments)
