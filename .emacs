@@ -203,7 +203,10 @@
     (unless buffer
         (setq buffer (current-buffer)))
     (with-current-buffer buffer
-        (set-buffer-modified-p (buffer-differs-from-visited-file-p))
+        (let ((differs (buffer-differs-from-visited-file-p)))
+            (with-advice ('ask-user-about-supersession-threat
+                              :override (lambda (_)))
+                (set-buffer-modified-p differs)))
         (set-visited-file-modtime)))
 
 
@@ -882,6 +885,29 @@
                             (current-buffer))))
                 (sleep-for 0.2))))
     (define-key evil-motion-state-map " w" 'partial-save)
+    (defun partial-revert () (interactive)
+        (if (not buffer-file-name)
+            (call-interactively 'revert-buffer)
+            (with-temporary-file unsaved
+                (let ((default-directory "~"))
+                    (write-region (buffer-end -1) (buffer-end 1) unsaved)
+                    (pop-to-command-eshell
+                        (list "gp" unsaved buffer-file-name)
+                        (buffer-name)
+                        "Partial revert"
+                        (apply-partially 'partial-revert--finish
+                            (current-buffer) unsaved)))
+                (setq unsaved nil))))
+    (defun partial-revert--finish (buffer temporary-file)
+        (unwind-protect
+            (with-current-buffer buffer
+                (let ((buffer-file-name temporary-file))
+                    (revert-buffer t t t))
+                (setq buffer-file-truename
+                    (abbreviate-file-name (file-truename buffer-file-name)))
+                (refresh-modified-state buffer))
+            (delete-file temporary-file)))
+    (define-key evil-motion-state-map " R" 'partial-revert)
     (defmacro git (&rest arguments)
         (let ((command (cons "git" (mapcar 'symbol-name arguments))))
             `(lambda () (interactive)
