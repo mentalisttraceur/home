@@ -867,8 +867,9 @@
                     (pop-to-command-eshell
                         (list "gd" file unsaved)
                         (buffer-name)
-                        "Diff unsaved"))
-                (sleep-for 0.2))))
+                        "Diff unsaved"
+                        (apply-partially 'delete-directory directory t)))
+                (setq directory nil))))
     (define-key evil-motion-state-map " c" 'diff-unsaved-changes)
     (defun partial-save () (interactive)
         (if (not buffer-file-name)
@@ -880,9 +881,14 @@
                         (list "gp" buffer-file-name unsaved)
                         (buffer-name)
                         "Partial save"
-                        (apply-partially 'refresh-modified-state
-                            (current-buffer))))
-                (sleep-for 0.2))))
+                        (apply-partially 'partial-save--finish
+                            (current-buffer) unsaved)))
+                (setq unsaved nil))))
+    (defun partial-save--finish (buffer temporary-file)
+        (unwind-protect
+            (with-current-buffer buffer
+                (refresh-modified-state buffer))
+            (delete-file temporary-file)))
     (define-key evil-motion-state-map " w" 'partial-save)
     (defun partial-revert () (interactive)
         (if (not buffer-file-name)
