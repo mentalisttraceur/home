@@ -874,44 +874,51 @@
     (defun partial-save () (interactive)
         (if (not buffer-file-name)
             (pop-to-command-eshell--not-a-file "Partial save")
-            (with-temporary-file unsaved
-                (let ((default-directory "~"))
+            (with-temporary-directory directory
+                (let ((file    (concat directory "/file"))
+                      (unsaved (concat directory "/unsaved"))
+                      (default-directory "~"))
+                    (copy-file buffer-file-name file)
                     (write-region (buffer-end -1) (buffer-end 1) unsaved)
                     (pop-to-command-eshell
-                        (list "gp" buffer-file-name unsaved)
+                        (list "gp" file unsaved)
                         (buffer-name)
                         "Partial save"
                         (apply-partially 'partial-save--finish
-                            (current-buffer) unsaved)))
-                (setq unsaved nil))))
-    (defun partial-save--finish (buffer temporary-file)
+                            (current-buffer) directory)))
+                (setq directory nil))))
+    (defun partial-save--finish (buffer directory)
         (unwind-protect
             (with-current-buffer buffer
+                (copy-file (concat directory "/file") buffer-file-name t)
                 (refresh-modified-state buffer))
-            (delete-file temporary-file)))
+            (delete-directory directory t)))
     (define-key evil-motion-state-map " w" 'partial-save)
     (defun partial-revert () (interactive)
         (if (not buffer-file-name)
             (call-interactively 'revert-buffer)
-            (with-temporary-file unsaved
-                (let ((default-directory "~"))
+            (with-temporary-directory directory
+                (let ((file    (concat directory "/file"))
+                      (unsaved (concat directory "/unsaved"))
+                      (default-directory "~"))
+                    (copy-file buffer-file-name file)
                     (write-region (buffer-end -1) (buffer-end 1) unsaved)
                     (pop-to-command-eshell
-                        (list "gp" unsaved buffer-file-name)
+                        (list "gp" unsaved file)
                         (buffer-name)
                         "Partial revert"
                         (apply-partially 'partial-revert--finish
-                            (current-buffer) unsaved)))
-                (setq unsaved nil))))
-    (defun partial-revert--finish (buffer temporary-file)
+                            (current-buffer) directory)))
+                (setq directory nil))))
+    (defun partial-revert--finish (buffer directory)
         (unwind-protect
             (with-current-buffer buffer
-                (let ((buffer-file-name temporary-file))
+                (let ((buffer-file-name (concat directory "/unsaved")))
                     (revert-buffer t t t))
                 (setq buffer-file-truename
                     (abbreviate-file-name (file-truename buffer-file-name)))
                 (refresh-modified-state buffer))
-            (delete-file temporary-file)))
+            (delete-directory directory t)))
     (define-key evil-motion-state-map " r" 'partial-revert)
     (define-key evil-motion-state-map " R" 'revert-buffer)
     (defmacro git (&rest arguments)
