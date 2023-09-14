@@ -190,11 +190,11 @@
 
 
 (defun buffer-differs-from-visited-file-p ()
-    (with-buffer-modified-p nil
-        (with-visited-file-modtime '(0 0)
-            (let ((differs nil))
-                (with-advice ('ask-user-about-supersession-threat
-                                 :override (lambda (_) (setq differs t)))
+    (with-visited-file-modtime '(0 0)
+        (let ((differs nil))
+            (with-advice ('ask-user-about-supersession-threat
+                             :override (lambda (_) (setq differs t)))
+                (with-buffer-modified-p nil
                     (set-buffer-modified-p t)
                     differs)))))
 
