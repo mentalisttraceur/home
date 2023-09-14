@@ -229,25 +229,20 @@
         (delete-region (pos-bol) (pos-bol (+ count 1)))))
 
 
-(defun point-to-register-with-scroll (register)
-    (set-register register (list
+(defun point-marker-with-scroll ()
+    (list
         (point-marker)
         (window-start)
         (window-vscroll nil t)
-        (window-hscroll))))
+        (window-hscroll)))
 
-(defun jump-to-register-with-scroll (register)
-    (let ((value (get-register register)))
-        (if (and (listp value)
-                 (= (length value) 4)
-                 (markerp (car value)))
-            (let-unpack ((marker start vscroll hscroll) value)
-                (register-val-jump-to marker nil)
-                (let ((window (selected-window)))
-                    (set-window-start window start t)
-                    (set-window-vscroll window vscroll t)
-                    (set-window-hscroll window hscroll)))
-            (register-val-jump-to value nil))))
+(defun jump-to-marker-with-scroll (marker-with-scroll)
+    (let-unpack ((marker start vscroll hscroll) marker-with-scroll)
+        (register-val-jump-to marker nil)
+        (let ((window (selected-window)))
+            (set-window-start window start t)
+            (set-window-vscroll window vscroll t)
+            (set-window-hscroll window hscroll))))
 
 
 (defconst pop-to-command-buffer nil)
@@ -1209,14 +1204,40 @@
                             (setq window-state--execute-once t))
                         (t
                             (keyboard-quit)))))))
+    (defconst window-state--register-ring (make-ring 9))
+    (defconst window-state--register-bank (make-hash-table :size 27))
     (window-state-define-operator window-state-yank
-        (point-to-register-with-scroll (or window-state-this-register ?0)))
+        (if (or (not window-state-this-register)
+                (equal window-state-this-register ?\")
+                (<= ?0 window-state-this-register ?9))
+            (puthash ?0
+                (ring-insert window-state--register-ring
+                    (point-marker-with-scroll))
+                window-state--register-bank)
+            (puthash window-state-this-register
+                (point-marker-with-scroll)
+                window-state--register-bank)))
     (window-state-define-operator window-state-delete
-        (point-to-register-with-scroll (or window-state-this-register ?0))
+        (if (or (not window-state-this-register)
+                (equal window-state-this-register ?\")
+                (<= ?1 window-state-this-register ?9))
+            (ring-insert window-state--register-ring
+                (point-marker-with-scroll))
+            (puthash window-state-this-register
+                (point-marker-with-scroll)
+                window-state--register-bank))
         (evil-window-delete))
     (window-state-define-operator window-state-paste
         (with-advice ('push-mark :override 'ignore)
-            (jump-to-register-with-scroll (or window-state-this-register ?0))))
+            (jump-to-marker-with-scroll
+                (if (or (not window-state-this-register)
+                        (equal window-state-this-register ?\"))
+                    (ring-ref window-state--register-ring 0)
+                    (if (<= ?1 window-state-this-register ?9)
+                        (ring-ref window-state--register-ring
+                            (- window-state-this-register ?1))
+                        (gethash window-state-this-register
+                            window-state--register-bank))))))
     (defun window-state--swap (window)
         (save-selected-window
             (aw-swap-window window)))
@@ -1229,10 +1250,9 @@
         (setq window-state window-state-target-pending)
         (setq window-state--execute-once t))
     (defun window-state--fast-paste-move (window)
-        (let ((nonce (make-symbol "window-state--fast-paste-nonce")))
-            (point-to-register-with-scroll nonce)
+        (let ((marker (point-marker-with-scroll)))
             (select-window window)
-            (jump-to-register-with-scroll nonce)))
+            (jump-to-marker-with-scroll marker)))
     (defun window-state--fast-paste (window)
         (save-selected-window
             (window-state--fast-paste-move window)))
