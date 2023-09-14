@@ -1205,6 +1205,7 @@
                         (t
                             (keyboard-quit)))))))
     (defconst window-state--register-ring (make-ring 9))
+    (setcar (cdr window-state--register-ring) 9)
     (defconst window-state--register-bank (make-hash-table :size 27))
     (window-state-define-operator window-state-yank
         (if (or (not window-state-this-register)
