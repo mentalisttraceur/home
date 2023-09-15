@@ -284,6 +284,19 @@
             'rear-nonsticky t)))
     (setq eshell-hist-ignoredups 'erase)
     (setq eshell-history-size 65536)
+    (defun histdir-read-eshell ()
+        (let ((default-directory "~/.history/eshell/v1")
+              (ring (make-ring eshell-history-size)))
+            (with-temp-buffer
+                (dolist (file (directory-files "." nil "..." t))
+                    (insert-file-contents file)
+                    (end-of-buffer)
+                    (delete-char -1)
+                    (ring-insert ring (buffer-string))
+                    (erase-buffer)))
+            (setq eshell-history-ring ring)))
+    (advice-add 'eshell-read-history :override (lambda (&rest _)
+        (histdir-read-eshell)))
     (defun hack-ring-empty-p (ring-empty-p ring)
         (if (eq ring eshell-history-ring)
             nil
@@ -293,7 +306,7 @@
             (funcall ring-remove ring index)))
     (defun histdir-add-eshell (input &rest _)
         (call-process-region input nil "histdir" nil 0 nil
-            (expand-file-name "~/.history/eshell") input)
+            (expand-file-name "~/.history/eshell") input))
     (defun fixed-eshell-add-input-to-history
             (eshell-add-input-to-history &rest arguments)
         (with-advice ('ring-empty-p :around 'hack-ring-empty-p
@@ -302,6 +315,7 @@
             (apply eshell-add-input-to-history arguments)))
     (advice-add 'eshell-add-input-to-history :around
         'fixed-eshell-add-input-to-history)
+    (advice-add 'eshell-write-history :override (lambda (&rest _)))
     (defun in-eshell-scrollback-p () (interactive)
         (text-property-any (point) (buffer-end 1) 'field 'prompt))
     (defun hack-insert-before-markers-and-inherit (arguments)
