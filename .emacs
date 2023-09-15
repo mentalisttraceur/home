@@ -292,7 +292,7 @@
                     (insert-file-contents file)
                     (goto-char (point-max))
                     (delete-char -1)
-                    (ring-insert ring (buffer-string))
+                    (ring-insert-at-beginning ring (buffer-string))
                     (erase-buffer)))
             (setq eshell-history-ring ring)))
     (advice-add 'eshell-read-history :override (lambda (&rest _)
