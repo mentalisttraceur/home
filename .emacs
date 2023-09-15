@@ -290,7 +290,7 @@
             (with-temp-buffer
                 (dolist (file (directory-files "." nil "..." t))
                     (insert-file-contents file)
-                    (end-of-buffer)
+                    (goto-char (point-max))
                     (delete-char -1)
                     (ring-insert ring (buffer-string))
                     (erase-buffer)))
