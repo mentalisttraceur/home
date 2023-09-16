@@ -271,6 +271,14 @@
     (advice-add 'help-view-source :after 'fixed-help-view-source)
     (define-key help-mode-map "\C-m" 'help-view-source))
 
+(defun histdir--read (file)
+    (insert-file-contents file)
+    (goto-char (point-max))
+    (delete-char -1)
+    (prog1
+        (buffer-string)
+        (erase-buffer)))
+
 (use-package eshell
     :config
     (setq eshell-highlight-prompt nil)
@@ -288,12 +296,10 @@
         (let ((default-directory "~/.history/eshell/v1")
               (ring (make-ring eshell-history-size)))
             (with-temp-buffer
-                (dolist (file (directory-files "." nil "..." t))
-                    (insert-file-contents file)
-                    (goto-char (point-max))
-                    (delete-char -1)
-                    (ring-insert-at-beginning ring (buffer-string))
-                    (erase-buffer)))
+                (dolist (file (directory-files "call" nil "..."))
+                    (let* ((hash   (histdir--read (concat "call/" file)))
+                           (string (histdir--read (concat "string/" hash))))
+                        (ring-remove+insert+extend ring string))))
             (setq eshell-history-ring ring)))
     (advice-add 'eshell-read-history :override (lambda (&rest _)
         (histdir-read-eshell)))
