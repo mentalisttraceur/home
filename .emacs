@@ -335,10 +335,6 @@
             (with-advice ('insert-before-markers-and-inherit
                     :filter-args 'hack-insert-before-markers-and-inherit)
                 (eshell-send-input))))
-    (define-key eshell-hist-mode-map [up] 'eshell-previous-input)
-    (define-key eshell-hist-mode-map [down] 'eshell-next-input)
-    (advice-add 'eshell-interrupt-process :before (lambda (&rest _)
-        (setq eshell-history-index nil)))
     (defun eshell/vi (&rest paths)
         (let ((default-directory-when-invoked default-directory))
             (dolist (path (nreverse (flatten-list paths)))
@@ -385,6 +381,12 @@
 (use-package esh-mode
     :config
     (define-key eshell-mode-map "\C-m" 'fixed-eshell-send-input))
+(use-package em-hist
+    :config
+    (define-key eshell-hist-mode-map [up] 'eshell-previous-input)
+    (define-key eshell-hist-mode-map [down] 'eshell-next-input)
+    (advice-add 'eshell-interrupt-process :before (lambda (&rest _)
+        (setq eshell-history-index nil))))
 
 (use-package comint
     :config
