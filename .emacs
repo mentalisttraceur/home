@@ -385,8 +385,27 @@
     (define-key eshell-mode-map "\C-m" 'fixed-eshell-send-input))
 (use-package em-hist
     :config
-    (define-key eshell-hist-mode-map [up] 'eshell-previous-input)
-    (define-key eshell-hist-mode-map [down] 'eshell-next-input)
+    (defun fixed-eshell-up-arrow () (interactive)
+        (if (in-eshell-scrollback-p)
+            (message "not in input")
+            (previous-line)
+            (when (in-eshell-prompt-p)
+                (move-end-of-line 1)
+                (goto-char (field-beginning)))
+            (when (in-eshell-scrollback-p)
+                (end-of-buffer)
+                (delete-field-at-point)
+                (eshell-previous-input 1))))
+    (defun fixed-eshell-down-arrow () (interactive)
+        (if (in-eshell-scrollback-p)
+            (message "not in input")
+            (condition-case _error
+                (next-line)
+                (end-of-buffer
+                    (delete-field-at-point)
+                    (eshell-next-input 1)))))
+    (define-key eshell-hist-mode-map [up] 'fixed-eshell-up-arrow)
+    (define-key eshell-hist-mode-map [down] 'fixed-eshell-down-arrow)
     (advice-add 'eshell-interrupt-process :before (lambda (&rest _)
         (setq eshell-history-index nil))))
 
