@@ -323,7 +323,7 @@
     (advice-add 'eshell-add-input-to-history :around
         'fixed-eshell-add-input-to-history)
     (advice-add 'eshell-write-history :override (lambda (&rest _)))
-    (defun in-eshell-scrollback-p () (interactive)
+    (defun in-eshell-scrollback-p ()
         (text-property-any (point) (buffer-end 1) 'field 'prompt))
     (defun hack-insert-before-markers-and-inherit (arguments)
         (if (and (equal (length arguments) 1) (equal (car arguments) ?\n))
