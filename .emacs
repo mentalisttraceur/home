@@ -335,6 +335,8 @@
             (with-advice ('insert-before-markers-and-inherit
                     :filter-args 'hack-insert-before-markers-and-inherit)
                 (eshell-send-input))))
+    (define-key eshell-hist-mode-map [up] 'eshell-previous-input)
+    (define-key eshell-hist-mode-map [down] 'eshell-next-input)
     (defun eshell/vi (&rest paths)
         (let ((default-directory-when-invoked default-directory))
             (dolist (path (nreverse (flatten-list paths)))
