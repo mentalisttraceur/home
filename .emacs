@@ -398,7 +398,9 @@
                 (unless (process-live-p process)
                     (run-hook-with-args 'comint-exit-hook process))
                 (,sentinel process message)))))
-    (add-hook 'comint-exec-hook 'comint-implement-exit-hook))
+    (add-hook 'comint-exec-hook 'comint-implement-exit-hook)
+    (define-key comint-mode-map [up] 'comint-previous-input)
+    (define-key comint-mode-map [down] 'comint-next-input))
 
 (defun get-field-at-point ()
     (buffer-substring-no-properties (field-beginning) (field-end)))
