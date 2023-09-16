@@ -313,7 +313,7 @@
     (defun histdir-add-eshell (input &rest _)
         (let ((default-directory "~"))
             (call-process-region input nil "histdir" nil 0 nil
-                ".history/eshell" input)))
+                "add" ".history/eshell" input)))
     (defun fixed-eshell-add-input-to-history
             (eshell-add-input-to-history &rest arguments)
         (with-advice ('ring-empty-p :around 'hack-ring-empty-p
