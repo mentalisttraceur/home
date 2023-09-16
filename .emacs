@@ -337,6 +337,8 @@
                 (eshell-send-input))))
     (define-key eshell-hist-mode-map [up] 'eshell-previous-input)
     (define-key eshell-hist-mode-map [down] 'eshell-next-input)
+    (advice-add 'eshell-interrupt-process :before (lambda (&rest _)
+        (setq eshell-history-index nil)))
     (defun eshell/vi (&rest paths)
         (let ((default-directory-when-invoked default-directory))
             (dolist (path (nreverse (flatten-list paths)))
