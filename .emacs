@@ -905,6 +905,7 @@
     (evil-declare-not-repeat 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " i" 'toggle-show-80+-characters)
     (define-key evil-motion-state-map " #" 'display-line-numbers-mode)
+    (set-face-foreground 'line-number "#808080")
     (defun cycle-line-wrap () (interactive)
         (if truncate-lines
             (setq truncate-lines nil)
@@ -1206,6 +1207,7 @@
                 (with-face-attribute (
                         'aw-leading-char-face        :foreground hint
                         'aw-background-face          :foreground tint
+                        'line-number                 :foreground tint
                         'auto-dim-other-buffers-face :background dim)
                     (save-override-evil-mode-line-tag tag help-string
                         (fixed-aw-select 'window-state--do-action))))))
