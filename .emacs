@@ -897,6 +897,8 @@
     (add-hook 'comint-mode-hook (lambda ()
         (evil-local-set-key 'normal [escape] 'comint-interrupt-subjob)
         (evil-local-set-key 'insert "\C-d" 'comint-send-eof)))
+    (evil-declare-not-repeat 'fixed-comint-send-input)
+    (evil-declare-not-repeat 'comint-interrupt-subjob)
     (add-hook 'comint-exit-hook (lambda (_process) (evil-normal-state nil)))
     (evil-set-register ?r (string-join (make-list 8 "1234567890")))
     (evil-set-register ?R "\n")
