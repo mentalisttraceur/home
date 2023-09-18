@@ -901,6 +901,7 @@
     (add-hook 'eat-mode-hook (lambda ()
         (evil-local-set-key 'emacs "\C-[" 'eat-self-input)))
     (define-key eat-semi-char-mode-map "\C-c\C-z" 'eat-self-input)
+    (add-to-list 'evil-normal-state-modes 'comint-mode)
     (add-hook 'comint-mode-hook (lambda ()
         (evil-local-set-key 'normal [escape] 'comint-interrupt-subjob)
         (evil-local-set-key 'insert "\C-d" 'comint-send-eof)))
