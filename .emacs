@@ -271,6 +271,8 @@
     (advice-add 'help-view-source :after 'fixed-help-view-source)
     (define-key help-mode-map "\C-m" 'help-view-source))
 
+(defvar histdir)
+(make-variable-buffer-local 'histdir)
 (defun histdir--read (file)
     (insert-file-contents file)
     (goto-char (point-max))
@@ -278,7 +280,23 @@
     (prog1
         (buffer-string)
         (erase-buffer)))
-
+(defun histdir-read (size)
+    (let ((default-directory (concat (expand-file-name histdir) "/v1"))
+          (ring (make-ring size))
+          (files nil))
+        (condition-case _error
+            (setq files (directory-files "call" nil "..."))
+            (file-missing))
+        (with-temp-buffer
+            (dolist (file files)
+                (let* ((hash   (histdir--read (concat "call/" file)))
+                       (string (histdir--read (concat "string/" hash))))
+                    (ring-remove+insert+extend ring string))))
+        ring))
+(defun histdir-add (entry)
+    (let ((default-directory "~"))
+        (call-process-region entry nil "histdir" nil 0 nil
+            "add" (expand-file-name histdir) entry)))
 (defun histdir-repl-name (name)
     (cond
         ((string-prefix-p "python" name) "python")
@@ -300,17 +318,12 @@
             'rear-nonsticky t)))
     (setq eshell-hist-ignoredups 'erase)
     (setq eshell-history-size 65536)
-    (defun histdir-read-eshell ()
-        (let ((default-directory "~/.history/eshell/v1")
-              (ring (make-ring eshell-history-size)))
-            (with-temp-buffer
-                (dolist (file (directory-files "call" nil "..."))
-                    (let* ((hash   (histdir--read (concat "call/" file)))
-                           (string (histdir--read (concat "string/" hash))))
-                        (ring-remove+insert+extend ring string))))
-            (setq eshell-history-ring ring)))
+    (advice-add 'eshell-hist-initialize :before (lambda (&rest _)
+        (setq histdir "~/.history/eshell")))
     (advice-add 'eshell-read-history :override (lambda (&rest _)
-        (histdir-read-eshell)))
+        (setq eshell-history-ring (histdir-read eshell-history-size))))
+    (add-hook 'eshell-mode-hook (lambda ()
+        (setq-local revert-buffer-function 'eshell-read-history)))
     (defun hack-ring-empty-p (ring-empty-p ring)
         (if (eq ring eshell-history-ring)
             nil
@@ -318,15 +331,12 @@
     (defun hack-ring-remove (ring-remove ring &optional index)
         (when index
             (funcall ring-remove ring index)))
-    (defun histdir-add-eshell (input &rest _)
-        (let ((default-directory "~"))
-            (call-process-region input nil "histdir" nil 0 nil
-                "add" ".history/eshell" input)))
     (defun fixed-eshell-add-input-to-history
             (eshell-add-input-to-history &rest arguments)
         (with-advice ('ring-empty-p :around 'hack-ring-empty-p
                       'ring-remove  :around 'hack-ring-remove
-                      'eshell-put-history :before 'histdir-add-eshell)
+                      'eshell-put-history :before (lambda (input &rest _)
+                          (histdir-add input)))
             (apply eshell-add-input-to-history arguments)))
     (advice-add 'eshell-add-input-to-history :around
         'fixed-eshell-add-input-to-history)
@@ -432,6 +442,20 @@
                     (run-hook-with-args 'comint-exit-hook process))
                 (,sentinel process message)))))
     (add-hook 'comint-exec-hook 'comint-implement-exit-hook)
+    (advice-add 'comint-read-input-ring :around
+        (lambda (comint-read-input-ring &rest arguments)
+            (if histdir
+                (setq comint-input-ring (histdir-read comint-input-ring-size))
+                (apply 'comint-read-input-string arguments))))
+    (add-hook 'comint-mode-hook (lambda ()
+        (setq-local revert-buffer-function (lambda (&rest _)
+            (comint-read-input-ring)))))
+    (setq comint-input-filter (lambda (input)
+        (when (comint-nonblank-p input)
+            (when histdir
+                (histdir-add input))
+            (ring-remove+insert+extend comint-input-ring input))
+        nil))
     (defun in-comint-prompt-p ()
         (eq (get-text-property (point) 'field) 'output))
     (defun in-comint-scrollback-p ()
@@ -464,9 +488,17 @@
     (define-key comint-mode-map [down] 'fixed-comint-down-arrow)
     (defun eshell/r (command &rest arguments)
         (let* ((repl (histdir-repl-name (file-name-base command)))
-               (comint-process-echoes (equal repl "node")))
-            (comint-run command arguments)))
-    (put 'eshell/r 'eshell-no-numeric-conversions t))
+               (comint-process-echoes (equal repl "node"))
+               (buffer (apply 'make-comint command command nil arguments)))
+            (switch-to-buffer buffer)
+            (setq histdir (concat "~/.history/" repl))
+            (comint-read-input-ring)
+            buffer))
+    (put 'eshell/r 'eshell-no-numeric-conversions t)
+    (defun eshell/ro (command &rest arguments)
+        (other-window-prefix)
+        (apply 'eshell/r command arguments))
+    (put 'eshell/ro 'eshell-no-numeric-conversions t))
 
 (defun get-field-at-point ()
     (buffer-substring-no-properties (field-beginning) (field-end)))
