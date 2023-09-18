@@ -970,11 +970,11 @@
             (with-temporary-directory directory
                 (let ((file    (concat directory "/file"))
                       (unsaved (concat directory "/unsaved"))
-                      (default-directory "~"))
+                      (default-directory directory))
                     (copy-file buffer-file-name file)
                     (write-region (buffer-end -1) (buffer-end 1) unsaved)
                     (pop-to-command-eshell
-                        (list "gd" file unsaved)
+                        (list "git" "diff" "--no-index" "file" "unsaved")
                         (buffer-name)
                         "Diff unsaved"
                         (apply-partially 'delete-directory directory t)))
