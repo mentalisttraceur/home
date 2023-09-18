@@ -897,6 +897,8 @@
     (add-hook 'comint-mode-hook (lambda ()
         (evil-local-set-key 'normal [escape] 'comint-interrupt-subjob)
         (evil-local-set-key 'insert "\C-d" 'comint-send-eof)))
+    (advice-add 'comint-snapshot-last-prompt :before (lambda (&rest _)
+        (evil-end-undo-step)))
     (evil-declare-not-repeat 'fixed-comint-send-input)
     (evil-declare-not-repeat 'comint-interrupt-subjob)
     (add-hook 'comint-exit-hook (lambda (_process) (evil-normal-state nil)))
