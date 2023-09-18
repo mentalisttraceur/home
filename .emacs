@@ -384,6 +384,7 @@
         (setq name (pop-to-command-buffer-name "eshell" command context name))
         (let ((program   (car command))
               (arguments (cdr command))
+              (directory default-directory)
               (buffer    (get-buffer name)))
             (if buffer
                 (with-current-buffer buffer
@@ -398,6 +399,7 @@
             (pop-to-buffer buffer)
             (setq-local pop-to-command-buffer t)
             (setq-local pop-to-command--callback callback)
+            (setq default-directory directory)
             (end-of-buffer)
             (run-hooks 'pop-to-command-setup-hook)
             (let ((parsed-command (eshell-parse-command program arguments t)))
@@ -607,6 +609,7 @@
         (setq name (pop-to-command-buffer-name "eat" command context name))
         (let ((program   (car command))
               (arguments (cdr command))
+              (directory default-directory)
               (buffer    (get-buffer name)))
             (if buffer
                 (with-current-buffer buffer
@@ -617,6 +620,7 @@
             (pop-to-buffer buffer)
             (setq-local pop-to-command-buffer t)
             (setq-local pop-to-command--callback callback)
+            (setq default-directory directory)
             (run-hooks 'pop-to-command-setup-hook)
             (eat-exec buffer name program nil arguments)
             buffer))
