@@ -279,6 +279,13 @@
         (buffer-string)
         (erase-buffer)))
 
+(defun histdir-repl-name (name)
+    (cond
+        ((string-prefix-p "python" name) "python")
+        ((string-prefix-p "pypy" name)   "python")
+        ((string-prefix-p "node" name)   "node")
+        (t name)))
+
 (use-package eshell
     :config
     (setq eshell-highlight-prompt nil)
@@ -373,12 +380,10 @@
                     (find-file path)))))
     (put 'eshell/vo 'eshell-no-numeric-conversions t)
     (defun eshell/r (command &rest arguments)
-        (comint-run command arguments))
-    (put 'eshell/r 'eshell-no-numeric-conversions t)
-    (defun eshell/rn (command &rest arguments)
-        (let ((comint-process-echoes t))
+        (let* ((repl (histdir-repl-name (file-name-base command)))
+               (comint-process-echoes (equal repl "node")))
             (comint-run command arguments)))
-    (put 'eshell/rn 'eshell-no-numeric-conversions t)
+    (put 'eshell/r 'eshell-no-numeric-conversions t)
     (add-to-list 'eshell-modules-list 'eshell-tramp)
     (defun pop-to-command-eshell (command &optional context name callback)
         (setq name (pop-to-command-buffer-name "eshell" command context name))
