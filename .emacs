@@ -917,7 +917,23 @@
     (defun consult-history-execute-quit () (interactive)
         (setq consult-history-execute nil)
         (vertico-exit))
+    (defun consult-history-remove (prefix-argument) (interactive "P")
+        (let ((consult-history-remove t))
+            (fixed-consult-history prefix-argument)
+            (when consult-history-remove
+                (let ((history (car (consult--current-history)))
+                      (entry   (get-field-at-point)))
+                    (while-let ((index (ring-member history entry)))
+                        (ring-remove history index))
+                    (when histdir
+                        (histdir-remove entry))
+                    (delete-field-at-point)))))
+    (evil-declare-not-repeat 'consult-history-remove)
+    (defun consult-history-remove-quit () (interactive)
+        (setq consult-history-remove nil)
+        (vertico-exit))
     (define-key evil-motion-state-map "gh" 'consult-history-execute)
+    (define-key evil-motion-state-map "gr" 'consult-history-remove)
     (define-key evil-motion-state-map " t" 'eshell)
     (add-to-list 'evil-normal-state-modes 'eshell-mode)
     (defvar evil-eshell-state-for-next-input 'normal)
@@ -1154,6 +1170,8 @@
         (let ((quit (cond
                         ((eq this-command 'consult-history-execute)
                             'consult-history-execute-quit)
+                        ((eq this-command 'consult-history-remove)
+                            'consult-history-remove-quit)
                         ((eq this-command 'consult-line)
                             'consult-line-quit)
                         (t
