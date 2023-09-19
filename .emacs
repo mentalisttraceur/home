@@ -297,6 +297,10 @@
     (let ((default-directory "~"))
         (call-process-region entry nil "histdir" nil 0 nil
             "add" (expand-file-name histdir) entry)))
+(defun histdir-remove (entry)
+    (let ((default-directory "~"))
+        (call-process-region entry nil "histdir" nil 0 nil
+            "remove" (expand-file-name histdir) entry)))
 (defun histdir-repl-name (name)
     (cond
         ((string-prefix-p "python" name) "python")
