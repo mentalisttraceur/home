@@ -274,12 +274,15 @@
 (defvar histdir)
 (make-variable-buffer-local 'histdir)
 (defun histdir--read (file)
-    (insert-file-contents file)
-    (goto-char (point-max))
-    (delete-char -1)
-    (prog1
-        (buffer-string)
-        (erase-buffer)))
+    (condition-case _error
+        (progn
+            (insert-file-contents file)
+            (goto-char (point-max))
+            (delete-char -1)
+            (prog1
+                (buffer-string)
+                (erase-buffer)))
+        (file-missing)))
 (defun histdir-read (size)
     (let ((default-directory (concat (expand-file-name histdir) "/v1"))
           (ring (make-ring size))
@@ -289,8 +292,8 @@
             (file-missing))
         (with-temp-buffer
             (dolist (file files)
-                (let* ((hash   (histdir--read (concat "call/" file)))
-                       (string (histdir--read (concat "string/" hash))))
+                (if-let* ((hash   (histdir--read (concat "call/" file)))
+                          (string (histdir--read (concat "string/" hash))))
                     (ring-remove+insert+extend ring string))))
         ring))
 (defun histdir-add (entry)
