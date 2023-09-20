@@ -500,7 +500,7 @@
         (let ((comint-input-sender 'comint-send-string))
             (comint-send-input t))
         (process-send-string (current-buffer) "\t"))
-    (define-key comint-mode-map "\C-i" 'fixed-comint-tab)
+    (define-key comint-mode-map "\t" 'fixed-comint-tab)
     (defun eshell/r (program &rest arguments)
         (let* ((program-name (file-name-base program))
                (repl (histdir-repl-name program-name))
