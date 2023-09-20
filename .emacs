@@ -685,6 +685,10 @@
         (when (and pop-to-command-buffer pop-to-command--callback)
             (funcall pop-to-command--callback))))
     (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil)))
+    (defun hack-eat--t-write (arguments)
+        (setcar arguments (propertize (car arguments) 'field 'output))
+        arguments)
+    (advice-add 'eat--t-write :filter-args 'hack-eat--t-write)
     (eat-eshell-mode 1)
     (eat-eshell-visual-command-mode 1))
 
