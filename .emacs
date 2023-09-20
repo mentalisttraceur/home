@@ -931,6 +931,8 @@
                         (ring-remove history index))
                     (when histdir
                         (histdir-remove entry))
+                    (evil-end-undo-step)
+                    (evil-start-undo-step)
                     (delete-field-at-point)))))
     (evil-declare-not-repeat 'consult-history-remove)
     (defun consult-history-remove-quit () (interactive)
