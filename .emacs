@@ -509,6 +509,16 @@
         (apply 'eshell/r program arguments))
     (put 'eshell/ro 'eshell-no-numeric-conversions t))
 
+(use-package python
+    :config
+    (defun fixed-run-python (run-python &rest arguments)
+        (with-temp-buffer (apply run-python arguments)))
+    (advice-add 'run-python :around 'fixed-run-python)
+    (add-hook 'python-shell-first-prompt-hook (lambda ()
+        (let ((inhibit-read-only t))
+            (add-text-properties
+                (buffer-end -1) (buffer-end 1) '(field output))))))
+
 (defun get-field-at-point ()
     (buffer-substring-no-properties (field-beginning) (field-end)))
 (defun delete-field-at-point ()
