@@ -515,6 +515,8 @@
         (with-temp-buffer (apply run-python arguments)))
     (advice-add 'run-python :around 'fixed-run-python)
     (add-hook 'python-shell-first-prompt-hook (lambda ()
+        (setq histdir "~/.history/python")
+        (comint-read-input-ring)
         (let ((inhibit-read-only t))
             (add-text-properties
                 (buffer-end -1) (buffer-end 1) '(field output))))))
