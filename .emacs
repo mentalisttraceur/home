@@ -497,7 +497,8 @@
         (let* ((program-name (file-name-base program))
                (repl (histdir-repl-name program-name))
                (comint-process-echoes (string-prefix-p "node" program-name))
-               (buffer (apply 'make-comint program program nil arguments)))
+               (buffer (apply 'make-comint program
+                           "env" nil "NODE_NO_READLINE=1" program arguments)))
             (switch-to-buffer buffer)
             (setq histdir (concat "~/.history/" repl))
             (comint-read-input-ring)
