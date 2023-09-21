@@ -374,7 +374,7 @@
                 (goto-char (field-beginning)))
             (when (in-eshell-scrollback-p)
                 (end-of-buffer)
-                (delete-field-at-point)
+                (delete-field)
                 (eshell-previous-input 1))))
     (defun fixed-eshell-down-arrow () (interactive)
         (if (in-eshell-scrollback-p)
@@ -382,7 +382,7 @@
             (condition-case _error
                 (next-line)
                 (end-of-buffer
-                    (delete-field-at-point)
+                    (delete-field)
                     (eshell-next-input 1)))))
     (advice-add 'eshell-interrupt-process :before (lambda (&rest _)
         (setq eshell-history-index nil)))
@@ -484,7 +484,7 @@
                 (goto-char (field-beginning)))
             (when (in-comint-scrollback-p)
                 (end-of-buffer)
-                (delete-field-at-point)
+                (delete-field)
                 (comint-previous-input 1))))
     (defun fixed-comint-down-arrow () (interactive)
         (if (in-comint-scrollback-p)
@@ -492,7 +492,7 @@
             (condition-case _error
                 (next-line)
                 (end-of-buffer
-                    (delete-field-at-point)
+                    (delete-field)
                     (comint-next-input 1)))))
     (define-key comint-mode-map [up] 'fixed-comint-up-arrow)
     (define-key comint-mode-map [down] 'fixed-comint-down-arrow)
@@ -530,11 +530,9 @@
                 (buffer-end -1) (buffer-end 1) '(field output))))))
 
 (defun get-field-at-point ()
-    (buffer-substring-no-properties (field-beginning) (field-end)))
-(defun delete-field-at-point ()
-    (delete-region (field-beginning) (field-end)))
+    (substring-no-properties (field-string)))
 (defun replace-field-at-point (new-contents)
-    (delete-field-at-point)
+    (delete-field)
     (insert new-contents))
 
 (use-package tramp
@@ -959,7 +957,7 @@
                         (histdir-remove entry))
                     (evil-end-undo-step)
                     (evil-start-undo-step)
-                    (delete-field-at-point)))))
+                    (delete-field)))))
     (evil-declare-not-repeat 'consult-history-remove)
     (defun consult-history-remove-quit () (interactive)
         (setq consult-history-remove nil)
