@@ -567,6 +567,9 @@
             (funcall function new-command position)
             (replace-field new-command position))))
 
+(defun buffer-process-send-string (string)
+    (process-send-string (get-buffer-process (current-buffer)) string))
+
 (use-package tramp
     :config
     (setq tramp-default-method "sshx"))
