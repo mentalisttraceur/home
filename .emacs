@@ -550,6 +550,23 @@
         (insert new-contents)
         (goto-char (+ (point) (length new-contents)))))
 
+(defvar command-at-point-mode-alist nil)
+(defun command-string (&optional position)
+    (let* ((functions (alist-get major-mode command-at-point-mode-alist)))
+        (if-let ((function (nth 0 functions)))
+            (funcall function position)
+            (field-string-no-properties position))))
+(defun delete-command (&optional position)
+    (let* ((functions (alist-get major-mode command-at-point-mode-alist)))
+        (if-let ((function (nth 1 functions)))
+            (funcall function position)
+            (delete-field position))))
+(defun replace-command (new-command &optional position)
+    (let* ((functions (alist-get major-mode command-at-point-mode-alist)))
+        (if-let ((function (nth 2 functions)))
+            (funcall function new-command position)
+            (replace-field new-command position))))
+
 (use-package tramp
     :config
     (setq tramp-default-method "sshx"))
