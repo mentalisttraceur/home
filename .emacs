@@ -314,8 +314,7 @@
             (if (= (user-uid) 0) "# " "$ ")
             'read-only t
             'field 'prompt
-            'font-lock-face 'eshell-prompt
-            'front-sticky '(read-only font-lock-face)
+            'front-sticky '(read-only)
             'rear-nonsticky t)))
     (setq eshell-hist-ignoredups 'erase)
     (setq eshell-history-size 65536)
