@@ -1317,7 +1317,7 @@
             (end   (histdir-repl-end-of-line)))
         (buffer-substring-no-properties start end)))
 (defun histdir-repl-delete-line (&optional position) (interactive)
-    (buffer-process-send-string "\C-e\C-u")
+    (buffer-process-send-string "\C-ex\C-u")
     (sleep-for 0.04))
 (defun histdir-repl-replace-line (new-line &optional position) (interactive)
     (histdir-repl-delete-line)
