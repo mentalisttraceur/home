@@ -1256,6 +1256,111 @@
     (with-current-buffer (messages-buffer)
         (evil-force-normal-state)))
 
+(define-derived-mode histdir-repl-mode eat-mode "HER")
+(defvar histdir-repl-history-ring)
+(make-variable-buffer-local 'histdir-repl-history-ring)
+(defun histdir-repl-read-history ()
+    (setq histdir-repl-history-ring (histdir-read 65536)))
+(defvar histdir-repl-history-ring-index)
+(make-variable-buffer-local 'histdir-repl-history-ring-index)
+(add-to-list 'consult-mode-histories
+    '(histdir-repl-mode
+        histdir-repl-history-ring
+        histdir-repl-history-ring-index
+        beginning-of-line))
+(add-to-list 'command-at-point-mode-alist
+    '(histdir-repl-mode
+        histdir-repl-get-line
+        histdir-repl-delete-line
+        histdir-repl-replace-line))
+(defun histdir-repl (command histdir)
+    (let* ((program       (car command))
+            (arguments     (cdr command))
+            (buffer-locals (list default-directory histdir))
+            (name          (concat "*" (string-join command " ") "*"))
+            (buffer        (get-buffer name)))
+        (unless buffer
+            (setq buffer (get-buffer-create name))
+            (set-buffer buffer)
+            (histdir-repl-mode))
+        (switch-to-buffer buffer)
+        (unpack (default-directory histdir) buffer-locals)
+        (setq-local revert-buffer-function (lambda (&rest _)
+            (histdir-repl-read-history)))
+        (unless (get-buffer-process (current-buffer))
+            (eat-exec buffer name program nil arguments))
+        (evil-local-set-key 'normal "\C-m" 'histdir-repl-send-input)
+        (evil-local-set-key 'insert "\C-m" 'histdir-repl-send-input)
+        (dolist (key '("r" "i" "o" "p" "a" "d" "x" "c"))
+            (evil-local-set-key 'normal key
+                'histdir-repl-insert-state)
+            (evil-local-set-key 'normal (upcase key)
+                'histdir-repl-insert-state))
+        (evil-local-set-key 'insert "\C-q" 'eat-quoted-input)
+        (dolist (key '("\C-a" "\C-c" "\C-d" "\C-e" "\C-k" "\C-l" "\C-u"))
+            (evil-local-set-key 'insert key 'eat-self-input))
+        (evil-insert-state)
+        (histdir-repl-read-history)
+        (evil-local-set-key 'insert [up] 'histdir-repl-cycle-up-history)
+        (evil-local-set-key 'insert [down] 'histdir-repl-cycle-down-history)
+        buffer))
+(defun histdir-repl-beginning-of-line () (interactive)
+    (buffer-process-send-string "\C-a")
+    (sleep-for 0.04)
+    (point))
+(defun histdir-repl-end-of-line () (interactive)
+    (buffer-process-send-string "\C-e")
+    (sleep-for 0.04)
+    (point))
+(defun histdir-repl-get-line (&optional position) (interactive)
+    (let ((start (histdir-repl-beginning-of-line))
+            (end   (histdir-repl-end-of-line)))
+        (buffer-substring-no-properties start end)))
+(defun histdir-repl-delete-line (&optional position) (interactive)
+    (buffer-process-send-string "\C-e\C-u")
+    (sleep-for 0.04))
+(defun histdir-repl-replace-line (new-line &optional position) (interactive)
+    (histdir-repl-delete-line)
+    (buffer-process-send-string new-line))
+(defun histdir-repl-send-input () (interactive)
+    (let ((input (histdir-repl-get-line)))
+        (unless (equal (string-trim input) "")
+            (histdir-add input)
+            (ring-remove+insert+extend histdir-repl-history-ring input))
+        (setq histdir-repl-history-ring-index nil)
+        (end-of-buffer)
+        (buffer-process-send-string "\C-m")))
+(defun histdir-repl-insert-state () (interactive)
+    (histdir-repl-end-of-line)
+    (end-of-buffer)
+    (evil-insert-state))
+(defun histdir-repl-select-history-entry (index)
+    (setq histdir-repl-history-ring-index index)
+    (histdir-repl-replace-line
+        (if index
+            (ring-ref histdir-repl-history-ring index)
+            "")))
+(defun histdir-repl-cycle-up-history () (interactive)
+    (let ((length (ring-length histdir-repl-history-ring)))
+        (histdir-repl-select-history-entry
+            (cond
+                ((not histdir-repl-history-ring-index)
+                    0)
+                ((>= histdir-repl-history-ring-index (1- length))
+                    nil)
+                (t
+                    (1+ histdir-repl-history-ring-index))))))
+(defun histdir-repl-cycle-down-history () (interactive)
+    (let ((length (ring-length histdir-repl-history-ring)))
+        (histdir-repl-select-history-entry
+            (cond
+                ((not histdir-repl-history-ring-index)
+                    (1- length))
+                ((< histdir-repl-history-ring-index 0)
+                    nil)
+                (t
+                    (1- histdir-repl-history-ring-index))))))
+
 (use-package auto-dim-other-buffers
     :config
     (set-face-background 'auto-dim-other-buffers-face "#202020")
