@@ -294,6 +294,7 @@
         (with-temp-buffer
             (dolist (file files)
                 (if-let* ((hash   (histdir--read (concat "call/" file)))
+                          (_      (> (length hash) 0))
                           (string (histdir--read (concat "string/" hash))))
                     (ring-remove+insert+extend ring string))))
         ring))
