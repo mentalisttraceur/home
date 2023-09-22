@@ -539,12 +539,16 @@
             (add-text-properties
                 (buffer-end -1) (buffer-end 1) '(field output))))))
 
-(defun get-field-at-point ()
-    (substring-no-properties (field-string)))
-(defun replace-field-at-point (new-contents)
-    (delete-field)
-    (insert new-contents)
-    (goto-char (+ (point) (length new-contents))))
+(defun field-string-no-properties (&optional position)
+    (substring-no-properties (field-string position)))
+(defun replace-field (new-contents &optional position)
+    (delete-field position)
+    (if position
+        (save-excursion
+            (goto-char position)
+            (insert new-contents))
+        (insert new-contents)
+        (goto-char (+ (point) (length new-contents)))))
 
 (use-package tramp
     :config
@@ -616,17 +620,17 @@
                     `("fd" "--color=never" "--full-path" ,@patterns ,@options)
                     highlight-function))))
     (defun fixed-consult-history (prefix-argument) (interactive "P")
-        (let ((command (when prefix-argument (get-field-at-point))))
+        (let ((command (when prefix-argument (field-string-no-properties))))
             (with-advice ('pos-eol :override 'field-end)
                 (save-excursion (save-mutation
                     (end-of-buffer)
                     (when prefix-argument
-                        (replace-field-at-point command))
+                        (replace-field command))
                     (goto-char (field-beginning))
                     (consult-history)
-                    (setq command (get-field-at-point)))))
+                    (setq command (field-string-no-properties)))))
             (end-of-buffer)
-            (replace-field-at-point command)
+            (replace-field command)
             command))
     (defun consult-line-resume (prefix-argument) (interactive "P")
         (when (eq this-command 'consult-line-resume)
@@ -647,7 +651,7 @@
                         nil
                         'consult--line-history)))))
     (defun consult-line-quit () (interactive)
-        (let ((query (get-field-at-point)))
+        (let ((query (field-string-no-properties)))
             (if (length> query 0)
                 (push query consult--line-history)
                 (delete-dups consult--line-history)))
@@ -947,7 +951,7 @@
             (evil-repeat-start)
             (add-to-list 'evil-repeat-info `((lambda ()
                 (end-of-buffer)
-                (replace-field-at-point ,command)
+                (replace-field ,command)
                 (when ,consult-history-execute
                     (setq unread-command-events '(,@run-key))))))
             (evil-repeat-stop)
@@ -961,7 +965,7 @@
             (fixed-consult-history prefix-argument)
             (when consult-history-remove
                 (let ((history (car (consult--current-history)))
-                      (entry   (get-field-at-point)))
+                      (entry   (field-string-no-properties)))
                     (while-let ((index (ring-member history entry)))
                         (ring-remove history index))
                     (when histdir
