@@ -543,7 +543,8 @@
     (substring-no-properties (field-string)))
 (defun replace-field-at-point (new-contents)
     (delete-field)
-    (insert new-contents))
+    (insert new-contents)
+    (goto-char (+ (point) (length new-contents))))
 
 (use-package tramp
     :config
