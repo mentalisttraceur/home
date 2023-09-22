@@ -307,12 +307,6 @@
     (let ((default-directory "~"))
         (call-process-region entry nil "histdir" nil 0 nil
             "remove" (expand-file-name histdir))))
-(defun histdir-repl-name (name)
-    (cond
-        ((string-prefix-p "python" name) "python")
-        ((string-prefix-p "pypy" name)   "python")
-        ((string-prefix-p "node" name)   "js")
-        (t name)))
 
 (use-package eshell
     :config
@@ -510,22 +504,7 @@
         (let ((comint-input-sender 'comint-send-string))
             (comint-send-input t))
         (process-send-string (current-buffer) "\t"))
-    (define-key comint-mode-map "\t" 'fixed-comint-tab)
-    (defun eshell/r (program &rest arguments)
-        (let* ((program-name (file-name-base program))
-               (repl (histdir-repl-name program-name))
-               (comint-process-echoes (string-prefix-p "node" program-name))
-               (buffer (apply 'make-comint program
-                           "env" nil "NODE_NO_READLINE=1" program arguments)))
-            (switch-to-buffer buffer)
-            (setq histdir (concat "~/.history/" repl))
-            (comint-read-input-ring)
-            buffer))
-    (put 'eshell/r 'eshell-no-numeric-conversions t)
-    (defun eshell/ro (program &rest arguments)
-        (other-window-prefix)
-        (apply 'eshell/r program arguments))
-    (put 'eshell/ro 'eshell-no-numeric-conversions t))
+    (define-key comint-mode-map "\t" 'fixed-comint-tab))
 
 (use-package python
     :config
@@ -1283,7 +1262,7 @@
             (setq buffer (get-buffer-create name))
             (set-buffer buffer)
             (histdir-repl-mode))
-        (switch-to-buffer buffer)
+        (pop-to-buffer-same-window buffer)
         (unpack (default-directory histdir) buffer-locals)
         (setq-local revert-buffer-function (lambda (&rest _)
             (histdir-repl-read-history)))
@@ -1360,6 +1339,23 @@
                     nil)
                 (t
                     (1- histdir-repl-history-ring-index))))))
+(defun histdir-repl-name (name)
+    (cond
+        ((string-prefix-p "python" name) "python")
+        ((string-prefix-p "pypy" name)   "python")
+        ((string-prefix-p "node" name)   "js")
+        (t name)))
+(defun eshell/r (&rest command)
+    (let* ((program      (car command))
+           (program-name (file-name-base program))
+           (repl         (histdir-repl-name program-name))
+           (histdir      (concat "~/.history/" repl)))
+        (histdir-repl command histdir)))
+(put 'eshell/r 'eshell-no-numeric-conversions t)
+(defun eshell/ro (&rest command)
+    (other-window-prefix)
+    (apply 'eshell/r command))
+(put 'eshell/ro 'eshell-no-numeric-conversions t)
 
 (use-package auto-dim-other-buffers
     :config
