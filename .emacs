@@ -1299,7 +1299,7 @@
         (evil-local-set-key 'insert "\C-q" 'eat-quoted-input)
         (dolist (key '("\C-a" "\C-c" "\C-d" "\C-e" "\C-k" "\C-l" "\C-u"))
             (evil-local-set-key 'insert key 'eat-self-input))
-        (evil-insert-state)
+        (evil-normal-state)
         (histdir-repl-read-history)
         (evil-local-set-key 'insert [up] 'histdir-repl-cycle-up-history)
         (evil-local-set-key 'insert [down] 'histdir-repl-cycle-down-history)
