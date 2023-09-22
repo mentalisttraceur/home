@@ -278,7 +278,8 @@
         (progn
             (insert-file-contents file)
             (goto-char (point-max))
-            (delete-char -1)
+            (when (equal (char-before) ?\n)
+                (delete-char -1))
             (prog1
                 (buffer-string)
                 (erase-buffer)))
