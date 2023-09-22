@@ -262,9 +262,6 @@
              (package-installed-p 'use-package))
     (defmacro use-package (&rest _)))
 
-(add-to-list 'package-archives
-    '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-
 (use-package help
     :config
     (setq help-window-select t)
