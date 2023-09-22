@@ -1316,9 +1316,10 @@
 (defun histdir-repl-select-history-entry (index)
     (setq histdir-repl-history-ring-index index)
     (histdir-repl-replace-line
-        (if index
-            (ring-ref histdir-repl-history-ring index)
-            "")))
+        (if (not index)
+            ""
+            (message "History item: %s" (1+ index))
+            (ring-ref histdir-repl-history-ring index))))
 (defun histdir-repl-cycle-up-history () (interactive)
     (let ((length (ring-length histdir-repl-history-ring)))
         (histdir-repl-select-history-entry
