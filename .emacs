@@ -506,18 +506,6 @@
         (process-send-string (current-buffer) "\t"))
     (define-key comint-mode-map "\t" 'fixed-comint-tab))
 
-(use-package python
-    :config
-    (defun fixed-run-python (run-python &rest arguments)
-        (with-temp-buffer (apply run-python arguments)))
-    (advice-add 'run-python :around 'fixed-run-python)
-    (add-hook 'python-shell-first-prompt-hook (lambda ()
-        (setq histdir "~/.history/python")
-        (comint-read-input-ring)
-        (let ((inhibit-read-only t))
-            (add-text-properties
-                (buffer-end -1) (buffer-end 1) '(field output))))))
-
 (defun field-string-no-properties (&optional position)
     (substring-no-properties (field-string position)))
 (defun replace-field (new-contents &optional position)
