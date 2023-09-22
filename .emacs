@@ -637,15 +637,14 @@
                     `("fd" "--color=never" "--full-path" ,@patterns ,@options)
                     highlight-function))))
     (defun fixed-consult-history (prefix-argument) (interactive "P")
-        (let ((command (when prefix-argument (field-string-no-properties))))
-            (with-advice ('pos-eol :override 'field-end)
-                (save-excursion (save-mutation
-                    (end-of-buffer)
-                    (when prefix-argument
-                        (replace-field command))
-                    (goto-char (field-beginning))
-                    (consult-history)
-                    (setq command (field-string-no-properties)))))
+        (let ((command (if prefix-argument
+                           (field-string-no-properties)
+                           (field-string-no-properties (buffer-end 1)))))
+            (let-unpack ((history index bol) (consult--current-history))
+                (with-temp-buffer
+                    (insert-before-markers command)
+                    (consult-history history index bol)
+                    (setq command (buffer-string))))
             (end-of-buffer)
             (replace-field command)
             command))
