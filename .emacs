@@ -1336,7 +1336,7 @@
             (cond
                 ((not histdir-repl-history-ring-index)
                     (1- length))
-                ((< histdir-repl-history-ring-index 0)
+                ((<= histdir-repl-history-ring-index 0)
                     nil)
                 (t
                     (1- histdir-repl-history-ring-index))))))
