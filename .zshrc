@@ -15,6 +15,9 @@ bindkey -M vicmd 'H' vi-join
 bindkey -M vicmd 'J' end-of-buffer
 bindkey -M vicmd 'K' beginning-of-buffer
 
+bindkey '^A' beginning-of-line
+bindkey '^E' end-of-line
+
 case ${TERMUX_VERSION+x} in x)
     PATH=$PREFIX/local/bin:$PATH
     export XDG_RUNTIME_DIR=$PREFIX/var/run
