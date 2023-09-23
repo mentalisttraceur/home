@@ -281,7 +281,7 @@
             (when (equal (char-before) ?\n)
                 (delete-char -1))
             (prog1
-                (buffer-string)
+                (string-replace "\0" "" (buffer-string))
                 (erase-buffer)))
         (file-missing)))
 (defun histdir-read (size)
