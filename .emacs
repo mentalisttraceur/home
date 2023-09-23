@@ -1190,6 +1190,8 @@
             (histdir-repl-read-history)))
         (unless (get-buffer-process (current-buffer))
             (eat-exec buffer name program nil arguments))
+        (evil-local-set-key 'normal "q" 'quit-window)
+        (evil-local-set-key 'normal [escape] 'quit-window)
         (evil-local-set-key 'normal "\C-m" 'histdir-repl-send-input)
         (evil-local-set-key 'insert "\C-m" 'histdir-repl-send-input)
         (dolist (key '("r" "i" "o" "p" "a" "d" "x" "c"))
