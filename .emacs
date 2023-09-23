@@ -635,7 +635,6 @@
     (add-hook 'eat-exit-hook (lambda (_process)
         (when (and pop-to-command-buffer pop-to-command--callback)
             (funcall pop-to-command--callback))))
-    (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil)))
     (eat-eshell-mode 1)
     (eat-eshell-visual-command-mode 1))
 
