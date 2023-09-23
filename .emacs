@@ -298,6 +298,22 @@
                           (string (histdir--read (concat "string/" hash))))
                     (ring-remove+insert+extend ring string))))
         ring))
+(defun histdir--see (buffer callback watch-event)
+    (let-unpack ((_descriptor action file) watch-event (string) nil)
+        (when (or (eq action 'created) (eq action 'changed))
+            (with-temp-buffer
+                (setq string (histdir--read file)))
+            (unless (equal (length string) 0)
+                (with-current-buffer buffer
+                    (funcall callback string))))))
+(defun histdir-watch (callback)
+    (require 'filenotify)
+    (let* ((directory     (concat (expand-file-name histdir) "/v1/string"))
+           (descriptor    (file-notify-add-watch directory '(change)
+                              (apply-partially
+                                  'histdir--see (current-buffer) callback)))
+           (stop-watching (apply-partially 'file-notify-rm-watch descriptor)))
+        (add-hook 'kill-buffer-hook stop-watching nil t)))
 (defun histdir-add (entry)
     (let ((default-directory "~"))
         (call-process-region entry nil "histdir" nil 0 nil
@@ -325,7 +341,9 @@
     (advice-add 'eshell-read-history :override (lambda (&rest _)
         (setq eshell-history-ring (histdir-read eshell-history-size))))
     (add-hook 'eshell-mode-hook (lambda ()
-        (setq-local revert-buffer-function 'eshell-read-history)))
+        (setq-local revert-buffer-function 'eshell-read-history)
+        (histdir-watch (lambda (entry)
+            (ring-remove+insert+extend eshell-history-ring entry)))))
     (defun hack-ring-empty-p (ring-empty-p ring)
         (if (eq ring eshell-history-ring)
             nil
@@ -1185,6 +1203,8 @@
             (evil-local-set-key 'insert key 'eat-self-input))
         (evil-normal-state)
         (histdir-repl-read-history)
+        (histdir-watch (lambda (entry)
+            (ring-remove+insert+extend histdir-repl-history-ring entry)))
         (evil-local-set-key 'insert [up] 'histdir-repl-cycle-up-history)
         (evil-local-set-key 'insert [down] 'histdir-repl-cycle-down-history)
         buffer))
