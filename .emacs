@@ -284,6 +284,13 @@
                 (string-replace "\0" "" (buffer-string))
                 (erase-buffer)))
         (file-missing)))
+(defun histdir--read-call (file)
+    (when-let (hash (histdir--read file))
+        (when (> (length hash) 0)
+            (histdir--read (concat
+                 (file-name-parent-directory (file-name-directory file))
+                 "string/"
+                 hash)))))
 (defun histdir-read (size)
     (let ((default-directory (concat (expand-file-name histdir) "/v1"))
           (ring (make-ring size))
@@ -293,22 +300,20 @@
             (file-missing))
         (with-temp-buffer
             (dolist (file files)
-                (if-let* ((hash   (histdir--read (concat "call/" file)))
-                          (_      (> (length hash) 0))
-                          (string (histdir--read (concat "string/" hash))))
+                (when-let (string (histdir--read-call (concat "call/" file)))
                     (ring-remove+insert+extend ring string))))
         ring))
 (defun histdir--see (buffer callback watch-event)
     (let-unpack ((_descriptor action file) watch-event (string) nil)
         (when (or (eq action 'created) (eq action 'changed))
             (with-temp-buffer
-                (setq string (histdir--read file)))
-            (unless (equal (length string) 0)
+                (setq string (histdir--read-call file)))
+            (when (and string (> (length string) 0))
                 (with-current-buffer buffer
                     (funcall callback string))))))
 (defun histdir-watch (callback)
     (require 'filenotify)
-    (let* ((directory     (concat (expand-file-name histdir) "/v1/string"))
+    (let* ((directory     (concat (expand-file-name histdir) "/v1/call"))
            (descriptor    (file-notify-add-watch directory '(change)
                               (apply-partially
                                   'histdir--see (current-buffer) callback)))
