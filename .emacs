@@ -1199,7 +1199,10 @@
         (evil-local-set-key 'normal [escape] 'quit-window)
         (evil-local-set-key 'normal "\C-m" 'histdir-repl-send-input)
         (evil-local-set-key 'insert "\C-m" 'histdir-repl-send-input)
-        (dolist (key '("r" "i" "o" "p" "a" "d" "x" "c"))
+        (evil-local-set-key 'normal "d" (make-sparse-keymap))
+        (evil-local-set-key 'normal "dd" 'histdir-repl-delete-line)
+        (evil-local-set-key 'normal "D" 'histdir-repl-delete-line)
+        (dolist (key '("r" "i" "o" "p" "a" "x" "c"))
             (evil-local-set-key 'normal key
                 'histdir-repl-insert-state)
             (evil-local-set-key 'normal (upcase key)
