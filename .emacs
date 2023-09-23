@@ -560,9 +560,9 @@
                     `("fd" "--color=never" "--full-path" ,@patterns ,@options)
                     highlight-function))))
     (defun fixed-consult-history (prefix-argument) (interactive "P")
-        (let ((command (if prefix-argument
-                           (command-string)
-                           (command-string (buffer-end 1)))))
+        (let* ((position (if prefix-argument (point) (buffer-end 1)))
+               (command  (command-string position)))
+            (delete-command position)
             (let-unpack ((history index bol) (consult--current-history))
                 (with-temp-buffer
                     (insert-before-markers command)
