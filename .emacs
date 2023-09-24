@@ -951,7 +951,7 @@
     (add-hook 'eat-mode-hook (lambda ()
         (evil-local-set-key 'emacs "\C-[" 'eat-self-input)))
     (define-key eat-semi-char-mode-map "\C-c\C-z" 'eat-self-input)
-    (evil-set-register ?r (string-join (make-list 8 "1234567890")))
+    (evil-set-register ?r (repeat-string "1234567890" 8))
     (evil-set-register ?R "\n")
     (evil-set-register ?r (propertize (evil-get-register ?r)
         'yank-handler '(evil-yank-line-handler nil t)))
