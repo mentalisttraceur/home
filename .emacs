@@ -1283,6 +1283,16 @@
     (goto-char (eat-point))
     (buffer-process-send-string "\C-e")
     (evil-insert-state))
+(defun histdir-repl-point-in-line-p ()
+    (save-excursion
+        (let* ((point-in-buffer   (point))
+            (point-in-terminal (goto-char (marker-position (eat-point))))
+            (start (histdir-repl-beginning-of-line))
+            (end   (histdir-repl-end-of-line)))
+            (prog1
+                (<= start point-in-buffer end)
+                (histdir-repl-backward-char (length
+                    (histdir-repl-line-substring point-in-terminal end)))))))
 (defun histdir-repl-delete-line+insert (&optional position) (interactive)
     (histdir-repl-delete-line)
     (evil-insert-state))
