@@ -602,6 +602,12 @@
 
 (use-package eat
     :config
+    (defun eat-point ()
+        (when eat--terminal
+            (eat--t-cur-position
+                (eat--t-disp-cursor
+                    (eat--t-term-display
+                        eat--terminal)))))
     (set-face-foreground 'eat-term-color-0  "#505050")
     (set-face-foreground 'eat-term-color-1  "#C00000")
     (set-face-foreground 'eat-term-color-2  "#00C000")
