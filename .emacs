@@ -229,6 +229,10 @@
         (delete-region (pos-bol) (pos-bol (+ count 1)))))
 
 
+(defun repeat-string (string count)
+    (string-join (make-list count string)))
+
+
 (defun point-marker-with-scroll ()
     (list
         (point-marker)
