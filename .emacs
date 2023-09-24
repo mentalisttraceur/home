@@ -1277,7 +1277,7 @@
     (evil-insert-state))
 (defun histdir-repl-append () (interactive)
     (goto-char (eat-point))
-    (buffer-process-send-string "\e[C")
+    (histdir-repl-forward-char 1)
     (evil-insert-state))
 (defun histdir-repl-append-at-end () (interactive)
     (goto-char (eat-point))
