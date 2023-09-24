@@ -1244,7 +1244,7 @@
     (string-replace "\n" "" (buffer-substring-no-properties start end)))
 (defun histdir-repl-get-line (&optional position) (interactive)
     (let ((start (histdir-repl-beginning-of-line))
-            (end   (histdir-repl-end-of-line)))
+          (end   (histdir-repl-end-of-line)))
         (histdir-repl-line-substring start end)))
 (defun histdir-repl-delete-line (&optional position) (interactive)
     (goto-char (eat-point))
