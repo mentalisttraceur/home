@@ -1191,10 +1191,10 @@
         histdir-repl-replace-input))
 (defun histdir-repl (command histdir)
     (let* ((program       (car command))
-            (arguments     (cdr command))
-            (buffer-locals (list default-directory histdir))
-            (name          (concat "*" (string-join command " ") "*"))
-            (buffer        (get-buffer name)))
+           (arguments     (cdr command))
+           (buffer-locals (list default-directory histdir))
+           (name          (concat "*" (string-join command " ") "*"))
+           (buffer        (get-buffer name)))
         (unless buffer
             (setq buffer (get-buffer-create name))
             (set-buffer buffer)
@@ -1286,9 +1286,9 @@
 (defun histdir-repl-point-in-input-p ()
     (save-excursion
         (let* ((point-in-buffer   (point))
-            (point-in-terminal (goto-char (marker-position (eat-point))))
-            (start (histdir-repl-beginning-of-input))
-            (end   (histdir-repl-end-of-input)))
+               (point-in-terminal (goto-char (marker-position (eat-point))))
+               (start             (histdir-repl-beginning-of-input))
+               (end               (histdir-repl-end-of-input)))
             (prog1
                 (<= start point-in-buffer end)
                 (histdir-repl-backward-char (length
