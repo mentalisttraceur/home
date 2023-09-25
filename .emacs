@@ -1235,8 +1235,7 @@
             'self-insert-command 'histdir-repl-self-input+replace
             evil-replace-state-local-map global-map)
         (dolist (key '([backspace] "\C-?"))
-            (evil-local-set-key 'replace key
-                'histdir-repl-backspace-char+force))
+            (evil-local-set-key 'replace key 'eat-self-input))
         (dolist (key '("o" "O" "p" "P"))
             (evil-local-set-key 'normal key 'histdir-repl-append-at-end))
         (evil-local-set-key 'insert "\C-q" 'eat-quoted-input)
