@@ -1222,7 +1222,13 @@
         (evil-local-set-key 'normal "A" 'histdir-repl-append-at-end)
         (evil-local-set-key 'normal "0" 'histdir-repl-beginning-of-line)
         (evil-local-set-key 'normal "$" 'histdir-repl-end-of-line)
-        (dolist (key '("r" "o" "p" "x"))
+        (dolist (key '("x" [deletechar]))
+            (evil-local-set-key 'normal key
+                'histdir-repl-delete-char-in-input))
+        (dolist (key '("X" "\C-?"))
+            (evil-local-set-key 'normal key
+                'histdir-repl-backspace-char-in-input))
+        (dolist (key '("r" "o" "p"))
             (evil-local-set-key 'normal key
                 'histdir-repl-append-at-end)
             (evil-local-set-key 'normal (upcase key)
@@ -1299,6 +1305,12 @@
     (goto-char (eat-point))
     (buffer-process-send-string "\C-e")
     (evil-insert-state))
+(defun histdir-repl-delete-char-in-input (&optional count) (interactive "p")
+    (histdir-repl-enter-input 0)
+    (buffer-process-send-string (repeat-string "\e[3~" (or count 1))))
+(defun histdir-repl-backspace-char-in-input (&optional count) (interactive "p")
+    (histdir-repl-enter-input 0)
+    (buffer-process-send-string (repeat-string "\b" (or count 1))))
 (defun histdir-repl-point-in-input-p ()
     (save-excursion
         (let* ((point-in-buffer   (point))
