@@ -1274,7 +1274,7 @@
 (defun histdir-repl-backward-char-in-input (&optional count)
     (buffer-process-send-string (repeat-string "\e[D" (or count 1))))
 (defun histdir-repl-backspace-char-in-input (&optional count)
-    (buffer-process-send-string (repeat-string "\b" (or count 1))))
+    (buffer-process-send-string (repeat-string "\C-?" (or count 1))))
 (defun histdir-repl-enter-input (offset)
     (let* ((point-in-buffer   (point))
            (point-in-terminal (goto-char (eat-point)))
