@@ -1210,6 +1210,7 @@
         (evil-local-set-key 'normal [escape] 'quit-window)
         (evil-local-set-key 'normal "\C-m" 'histdir-repl-send-input)
         (evil-local-set-key 'insert "\C-m" 'histdir-repl-send-input)
+        (evil-local-set-key 'replace "\C-m" 'histdir-repl-send-input)
         (evil-local-set-key 'normal "d" (make-sparse-keymap))
         (evil-local-set-key 'normal "dd" 'histdir-repl-delete-input)
         (evil-local-set-key 'normal "D" 'histdir-repl-delete-input)
@@ -1229,7 +1230,14 @@
         (dolist (key '([backspace] "\C-?"))
             (evil-local-set-key 'normal key 'histdir-repl-backspace-char+force))
         (evil-local-set-key 'normal "r" 'histdir-repl-evil-replace-char)
-        (dolist (key '("R" "o" "O" "p" "P"))
+        (evil-local-set-key 'normal "R" 'histdir-repl-evil-replace-state)
+        (substitute-key-definition
+            'self-insert-command 'histdir-repl-self-input+replace
+            evil-replace-state-local-map global-map)
+        (dolist (key '([backspace] "\C-?"))
+            (evil-local-set-key 'replace key
+                'histdir-repl-backspace-char+force))
+        (dolist (key '("o" "O" "p" "P"))
             (evil-local-set-key 'normal key 'histdir-repl-append-at-end))
         (evil-local-set-key 'insert "\C-q" 'eat-quoted-input)
         (dolist (key '("\C-a" "\C-c" "\C-d" "\C-e" "\C-k" "\C-l" "\C-u"))
@@ -1363,6 +1371,12 @@
                 (setq character (evil-read-key)))
             (evil-refresh-cursor))
         (histdir-repl-enter+replace-input count character)))
+(defun histdir-repl-evil-replace-state () (interactive)
+    (histdir-repl-enter-input 0)
+    (evil-replace-state))
+(defun histdir-repl-self-input+replace () (interactive)
+    (call-interactively 'eat-self-input)
+    (buffer-process-send-string "\C-d"))
 (defun histdir-repl-point-in-input-p ()
     (save-excursion
         (let* ((point-in-buffer   (point))
