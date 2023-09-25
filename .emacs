@@ -608,10 +608,11 @@
     :config
     (defun eat-point ()
         (when eat--terminal
-            (eat--t-cur-position
-                (eat--t-disp-cursor
-                    (eat--t-term-display
-                        eat--terminal)))))
+            (marker-position
+                (eat--t-cur-position
+                    (eat--t-disp-cursor
+                        (eat--t-term-display
+                            eat--terminal))))))
     (set-face-foreground 'eat-term-color-0  "#505050")
     (set-face-foreground 'eat-term-color-1  "#C00000")
     (set-face-foreground 'eat-term-color-2  "#00C000")
@@ -1290,7 +1291,7 @@
 (defun histdir-repl-point-in-input-p ()
     (save-excursion
         (let* ((point-in-buffer   (point))
-               (point-in-terminal (goto-char (marker-position (eat-point))))
+               (point-in-terminal (goto-char (eat-point)))
                (start             (histdir-repl-beginning-of-input))
                (end               (histdir-repl-end-of-input)))
             (prog1
