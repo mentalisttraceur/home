@@ -1257,7 +1257,7 @@
         (histdir-repl-input-substring start end)))
 (defun histdir-repl-delete-input (&optional position) (interactive)
     (goto-char (eat-point))
-    (buffer-process-send-string "\C-ex\C-u"))
+    (buffer-process-send-string "x\C-a\C-k"))
 (defun histdir-repl-replace-input (new-input &optional position) (interactive)
     (histdir-repl-delete-input)
     (buffer-process-send-string new-input))
