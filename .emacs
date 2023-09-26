@@ -684,6 +684,12 @@
         (with-temp-buffer
             (insert string)
             (evil-yank-characters 1 (buffer-end 1) register yank-handler)))
+    (defun evil-paste-to-string (count &optional register)
+        (repeat-string
+            (if register
+                (evil-get-register register)
+                (current-kill 0))
+            (prefix-numeric-value count)))
     (define-key evil-motion-state-map "\"" 'evil-use-register)
     (define-key evil-normal-state-map "U" 'evil-redo)
     (define-key evil-normal-state-map "H" 'evil-join)
