@@ -1214,8 +1214,8 @@
         (evil-local-set-key 'normal "dd" 'histdir-repl-delete-input)
         (evil-local-set-key 'normal "D" 'histdir-repl-delete-input)
         (evil-local-set-key 'normal "c" (make-sparse-keymap))
-        (evil-local-set-key 'normal "cc" 'histdir-repl-delete-input+insert)
-        (evil-local-set-key 'normal "C" 'histdir-repl-delete-input+insert)
+        (evil-local-set-key 'normal "cc" 'histdir-repl-evil-change-input-line)
+        (evil-local-set-key 'normal "C" 'histdir-repl-evil-change-input-line)
         (evil-local-set-key 'normal "i" 'histdir-repl-insert)
         (evil-local-set-key 'normal "I" 'histdir-repl-insert-at-beginning)
         (evil-local-set-key 'normal "a" 'histdir-repl-append)
@@ -1226,7 +1226,7 @@
             (evil-local-set-key 'normal key 'histdir-repl-delete-char))
         (dolist (key '("X" [backspace] "\C-?"))
             (evil-local-set-key 'normal key 'histdir-repl-backspace-char))
-        (evil-local-set-key 'normal "r" 'histdir-repl-evil-replace-char)
+        (evil-local-set-key 'normal "r" 'histdir-repl-evil-replace)
         (evil-local-set-key 'normal "R" 'histdir-repl-evil-replace-state)
         (substitute-key-definition
             'self-insert-command 'histdir-repl-self-input+replace
@@ -1359,7 +1359,7 @@
         (buffer-process-send-string (make-string count character))
         (histdir-repl-backward-char-in-input count)
         count))
-(defun histdir-repl-evil-replace-char (count) (interactive "p")
+(defun histdir-repl-evil-replace (count) (interactive "p")
     (let ((character nil))
         (unwind-protect
             (let ((evil-force-cursor 'replace))
@@ -1442,7 +1442,7 @@
     (if (histdir-repl-point-in-input-p)
         (histdir-repl-end-of-input)
         (end-of-line)))
-(defun histdir-repl-delete-input+insert (&optional position) (interactive)
+(defun histdir-repl-evil-change-input-line (&optional position) (interactive)
     (histdir-repl-delete-input)
     (evil-insert-state))
 (defun histdir-repl-select-history-entry (index)
