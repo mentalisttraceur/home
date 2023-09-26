@@ -680,6 +680,10 @@
         (setq prefix-arg current-prefix-arg)
         return-value)
     (advice-add 'evil-use-register :filter-return 'fixed-evil-use-register)
+    (defun evil-yank-string (string &optional register yank-handler)
+        (with-temp-buffer
+            (insert string)
+            (evil-yank-characters 1 (buffer-end 1) register yank-handler)))
     (define-key evil-motion-state-map "\"" 'evil-use-register)
     (define-key evil-normal-state-map "U" 'evil-redo)
     (define-key evil-normal-state-map "H" 'evil-join)
