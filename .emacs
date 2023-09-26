@@ -1250,8 +1250,12 @@
         (evil-local-set-key 'replace "\C-m"
             'histdir-repl-evil-replace-send-input)
         (evil-local-set-key 'replace "\t" 'histdir-repl-evil-replace-tab)
-        (dolist (key '("p" "P"))
-            (evil-local-set-key 'normal key 'histdir-repl-append-at-end))
+        (evil-local-set-key 'normal "p" 'histdir-repl-evil-paste-after)
+        (evil-local-set-key 'normal "P" 'histdir-repl-evil-paste-before)
+        (evil-local-set-key 'normal "gp"
+            'histdir-repl-evil-replacing-paste-after)
+        (evil-local-set-key 'normal "gP"
+            'histdir-repl-evil-replacing-paste-before)
         (evil-local-set-key 'insert "\C-q" 'eat-quoted-input)
         (dolist (key '("\C-a" "\C-c" "\C-d" "\C-e" "\C-k" "\C-l" "\C-u"))
             (evil-local-set-key 'insert key 'eat-self-input))
@@ -1495,6 +1499,40 @@
         (evil-yank-string input register))
     (histdir-repl-delete-input)
     (evil-insert-state))
+(evil-define-command histdir-repl-evil-paste-after (count &optional register)
+    :suppress-operator t
+    (interactive "*P<x>")
+    (let* ((string (evil-paste-to-string count register))
+           (string (string-replace "\n" "" string)))
+        (histdir-repl-enter-input 1)
+        (buffer-process-send-string string)))
+(evil-define-command histdir-repl-evil-paste-before (count &optional register)
+    :suppress-operator t
+    (interactive "*P<x>")
+    (let* ((string (evil-paste-to-string count register))
+           (string (string-replace "\n" "" string)))
+        (histdir-repl-enter-input 0)
+        (buffer-process-send-string string)
+        (histdir-repl-backward-char-in-input (length string))))
+(evil-define-command histdir-repl-evil-replacing-paste-after
+        (count &optional register)
+    :suppress-operator t
+    (interactive "*P<x>")
+    (let* ((string (evil-paste-to-string count register))
+           (string (string-replace "\n" "" string))
+           (length (length string)))
+        (histdir-repl-enter+delete-input length)
+        (buffer-process-send-string string)))
+(evil-define-command histdir-repl-evil-replacing-paste-before
+        (count &optional register)
+    :suppress-operator t
+    (interactive "*P<x>")
+    (let* ((string (evil-paste-to-string count register))
+           (string (string-replace "\n" "" string))
+           (length (length string)))
+        (histdir-repl-enter+delete-input length)
+        (buffer-process-send-string string)
+        (histdir-repl-backward-char-in-input length)))
 (defun histdir-repl-select-history-entry (index)
     (setq histdir-repl-history-ring-index index)
     (histdir-repl-replace-input
