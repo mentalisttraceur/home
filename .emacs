@@ -1222,6 +1222,8 @@
         (evil-local-set-key 'normal "I" 'histdir-repl-insert-at-beginning)
         (evil-local-set-key 'normal "a" 'histdir-repl-append)
         (evil-local-set-key 'normal "A" 'histdir-repl-append-at-end)
+        (evil-local-set-key 'normal "o" 'histdir-repl-append-at-end)
+        (evil-local-set-key 'normal "O" 'histdir-repl-insert-at-beginning)
         (evil-local-set-key 'normal "0" 'histdir-repl-beginning-of-line)
         (evil-local-set-key 'normal "$" 'histdir-repl-end-of-line)
         (dolist (key '("x" [delete] [deletechar]))
@@ -1242,7 +1244,7 @@
         (evil-local-set-key 'replace "\C-m"
             'histdir-repl-evil-replace-send-input)
         (evil-local-set-key 'replace "\t" 'histdir-repl-evil-replace-tab)
-        (dolist (key '("o" "O" "p" "P"))
+        (dolist (key '("p" "P"))
             (evil-local-set-key 'normal key 'histdir-repl-append-at-end))
         (evil-local-set-key 'insert "\C-q" 'eat-quoted-input)
         (dolist (key '("\C-a" "\C-c" "\C-d" "\C-e" "\C-k" "\C-l" "\C-u"))
