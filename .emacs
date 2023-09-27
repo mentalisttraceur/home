@@ -1564,6 +1564,7 @@
         ((string-prefix-p "python" name) "python")
         ((string-prefix-p "pypy"   name) "python")
         ((string-prefix-p "node"   name) "js")
+        ((string-prefix-p "bun"    name) "js")
         ((string-prefix-p "irb"    name) "ruby")
         (t name)))
 (defun eshell/r (&rest command)
