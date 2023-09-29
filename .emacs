@@ -868,6 +868,7 @@
     (setq evil-highlight-closing-paren-at-point-states '(not))
     (setq evil-show-paren-range 1)
     (define-key evil-motion-state-map " e" 'eval-last-sexp)
+    (define-key evil-motion-state-map " E" 'eval-print-last-sexp)
     (define-key evil-motion-state-map " g" (lambda () (interactive)
         (setq unread-command-events (listify-key-sequence "\C-g"))))
     (defun toggle-evil-repeat-move-cursor () (interactive)
