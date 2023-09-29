@@ -210,6 +210,52 @@
         (set-visited-file-modtime)))
 
 
+(defun dlist-cons (item dlist)
+    (let ((entry (cons
+                     (cons nil  dlist)
+                     (cons item (cdr dlist)))))
+        (when dlist
+            (setcar (car dlist) entry))
+        entry))
+
+(defun dlist (&rest items)
+    (let ((dlist nil))
+        (dolist (item (reverse items) dlist)
+            (setq dlist (dlist-cons item dlist)))))
+
+(defun dlist-car (dlist)
+    (cadr dlist))
+
+(defun dlist-cdr (dlist)
+    (cdar dlist))
+
+(defun dlist-nthcdr (n dlist)
+    (dotimes (_ n dlist)
+        (setq dlist (dlist-cdr dlist))))
+
+(defun dlist-nth (n dlist)
+    (dlist-car (dlist-nthcdr n dlist)))
+
+(defun dlist-setcar (dlist newcar)
+    (setcar (cdr dlist) newcar))
+
+(defun dlist-setcdr (dlist newcdr)
+    (setcdr (car dlist) newcdr)
+    (setcdr (cdr dlist) (cdr newcdr))
+    (when newcdr
+        (setcar (car newcdr) dlist))
+    newcdr)
+
+(defun dlist-unlink (link)
+    (let-uncons (headward-link tailward-link (car link))
+        (when tailward-link
+            (setcar (car tailward-link) headward-link))
+        (when headward-link
+            (setcdr (car headward-link) tailward-link)
+            (setcdr (cdr headward-link) (cdr tailward-link))))
+    nil)
+
+
 (defun list-interject (list separator)
     (let ((next list))
         (dotimes (_ (length (cdr list)))
