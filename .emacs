@@ -1091,8 +1091,13 @@
                         (list "git" "diff" "--no-index" "file" "unsaved")
                         (buffer-name)
                         "Diff unsaved"
-                        (apply-partially 'delete-directory directory t)))
+                        (apply-partially 'diff-unsaved-changes--finish
+                            (current-buffer) directory)))
                 (setq directory nil))))
+    (defun diff-unsaved-changes--finish (buffer directory)
+        (unwind-protect
+            (refresh-modified-state buffer)
+            (delete-directory directory t)))
     (define-key evil-motion-state-map " c" 'diff-unsaved-changes)
     (defun partial-save () (interactive)
         (if (not buffer-file-name)
