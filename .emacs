@@ -635,8 +635,8 @@
     (defun fixed-consult-history (prefix-argument) (interactive "P")
         (let* ((position (if prefix-argument (point) (buffer-end 1)))
                (command  (command-string position)))
-            (delete-command position)
             (let-unpack ((history index bol) (consult--current-history))
+                (delete-command position)
                 (with-temp-buffer
                     (insert-before-markers command)
                     (consult-history history index bol)
