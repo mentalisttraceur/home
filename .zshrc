@@ -17,6 +17,7 @@ bindkey -M vicmd 'K' beginning-of-buffer
 
 bindkey '^A' beginning-of-line
 bindkey '^E' end-of-line
+bindkey "^K" kill-line
 
 case ${TERMUX_VERSION+x} in x)
     PATH=$PREFIX/local/bin:$PATH
