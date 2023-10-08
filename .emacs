@@ -435,7 +435,7 @@
         (with-advice ('ring-empty-p :around 'hack-ring-empty-p
                       'ring-remove  :around 'hack-ring-remove
                       'eshell-put-history :before (lambda (input &rest _)
-                          (histdir-add input)))
+                          (histdir-add input t)))
             (apply eshell-add-input-to-history arguments)))
     (advice-add 'eshell-add-input-to-history :around
         'fixed-eshell-add-input-to-history)
@@ -1373,7 +1373,7 @@
 (defun histdir-repl-send-input () (interactive)
     (let ((input (histdir-repl-get-input)))
         (unless (equal (string-trim input) "")
-            (histdir-add input)
+            (histdir-add input t)
             (ring-remove+insert+extend histdir-repl-history-ring input))
         (setq histdir-repl-history-ring-index nil)
         (goto-char (eat-point))
