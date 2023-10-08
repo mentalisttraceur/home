@@ -392,10 +392,11 @@
                                   'histdir--see (current-buffer) callback)))
            (stop-watching (apply-partially 'file-notify-rm-watch descriptor)))
         (add-hook 'kill-buffer-hook stop-watching nil t)))
-(defun histdir-add (entry)
+(defun histdir-add (entry &optional deduplicate)
     (let ((default-directory "~"))
+        (setq deduplicate (if deduplicate "--deduplicate" "--"))
         (call-process-region entry nil "histdir" nil 0 nil
-            "add" (expand-file-name histdir))))
+            "add" deduplicate (expand-file-name histdir))))
 (defun histdir-remove (entry)
     (let ((default-directory "~"))
         (call-process-region entry nil "histdir" nil 0 nil
