@@ -1548,7 +1548,7 @@
         (let ((deleted (histdir-repl-enter+delete-input-range start end))
               (evil-was-yanked-without-register nil))
             (evil-yank-string deleted register))))
-(defun histdir-repl-evil-delete-input-line (&optional register) (interactive)
+(evil-define-operator histdir-repl-evil-delete-input-line (&optional register)
     (interactive "<x>")
     :move-point nil
     (let ((input (histdir-repl-get-input))
@@ -1564,7 +1564,7 @@
               (evil-was-yanked-without-register nil))
             (evil-yank-string deleted register)))
     (evil-insert-state))
-(defun histdir-repl-evil-change-input-line (&optional register) (interactive)
+(evil-define-operator histdir-repl-evil-change-input-line (&optional register)
     (interactive "<x>")
     :move-point nil
     (let ((input (histdir-repl-get-input))
