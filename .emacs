@@ -368,6 +368,7 @@
     (let ((default-directory (concat (expand-file-name histdir) "/v1"))
           (ring (make-ring size))
           (files nil))
+        (thread-yield)
         (condition-case _error
             (setq files (directory-files "call" nil "..."))
             (file-missing))
