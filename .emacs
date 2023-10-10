@@ -346,10 +346,10 @@
 
 (defvar histdir)
 (make-variable-buffer-local 'histdir)
-(defun histdir--read (file)
+(defun histdir--read-file (path)
     (condition-case _error
         (progn
-            (insert-file-contents file)
+            (insert-file-contents path)
             (goto-char (point-max))
             (when (equal (char-before) ?\n)
                 (delete-char -1))
@@ -358,13 +358,13 @@
                 (erase-buffer)))
         (file-missing)))
 (defun histdir--read-call (file)
-    (when-let (hash (histdir--read file))
+    (when-let (hash (histdir--read-file file))
         (when (> (length hash) 0)
-            (histdir--read (concat
+            (histdir--read-file (concat
                  (file-name-parent-directory (file-name-directory file))
                  "string/"
                  hash)))))
-(defun histdir-read (size)
+(defun histdir--read (size symbol)
     (let ((default-directory (concat (expand-file-name histdir) "/v1"))
           (ring (make-ring size))
           (files nil))
@@ -373,9 +373,12 @@
             (file-missing))
         (with-temp-buffer
             (dolist (file files)
+                (thread-yield)
                 (when-let (string (histdir--read-call (concat "call/" file)))
                     (ring-remove+insert+extend ring string))))
-        ring))
+        (set symbol ring)))
+(defun histdir-read (size symbol)
+    (make-thread (apply-partially 'histdir--read size symbol)))
 (defun histdir--see (buffer callback watch-event)
     (let-unpack ((_descriptor action file) watch-event (string) nil)
         (when (or (eq action 'created) (eq action 'changed))
@@ -418,7 +421,7 @@
     (advice-add 'eshell-hist-initialize :before (lambda (&rest _)
         (setq histdir "~/.history/eshell")))
     (advice-add 'eshell-read-history :override (lambda (&rest _)
-        (setq eshell-history-ring (histdir-read eshell-history-size))))
+        (histdir-read eshell-history-size 'eshell-history-ring)))
     (add-hook 'eshell-mode-hook (lambda ()
         (setq-local revert-buffer-function 'eshell-read-history)
         (histdir-watch (lambda (entry)
@@ -1262,7 +1265,7 @@
 (defvar histdir-repl-history-ring)
 (make-variable-buffer-local 'histdir-repl-history-ring)
 (defun histdir-repl-read-history ()
-    (setq histdir-repl-history-ring (histdir-read 65536)))
+    (histdir-read 65536 'histdir-repl-history-ring))
 (defvar histdir-repl-history-ring-index)
 (make-variable-buffer-local 'histdir-repl-history-ring-index)
 (add-to-list 'consult-mode-histories
