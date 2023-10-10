@@ -682,10 +682,6 @@
         (when eat-terminal
             (marker-position
                 (eat-term-display-cursor eat-terminal))))
-    (add-hook 'eat-update-hook (lambda ()
-        (let ((inhibit-read-only t)
-              (end (point-max)))
-            (put-text-property (1- end) end 'rear-nonsticky nil))))
     (set-face-foreground 'eat-term-color-0  "#505050")
     (set-face-foreground 'eat-term-color-1  "#C00000")
     (set-face-foreground 'eat-term-color-2  "#00C000")
