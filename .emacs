@@ -360,13 +360,15 @@
 (defun histdir--read-call (file)
     (when-let (hash (histdir--read-file file))
         (when (> (length hash) 0)
-            (histdir--read-file (concat
-                 (file-name-parent-directory (file-name-directory file))
-                 "string/"
-                 hash)))))
+            (cons
+                (intern hash)
+                (histdir--read-file (concat
+                    (file-name-parent-directory (file-name-directory file))
+                    "string/"
+                    hash))))))
 (defun histdir--read (size symbol)
     (let ((default-directory (concat (expand-file-name histdir) "/v1"))
-          (ring (make-ring size))
+          (history (make-ordered-hash-table :test 'eq))
           (files nil))
         (thread-yield)
         (condition-case _error
@@ -375,16 +377,20 @@
         (with-temp-buffer
             (dolist (file files)
                 (thread-yield)
-                (when-let (string (histdir--read-call (concat "call/" file)))
-                    (ring-remove+insert+extend ring string))))
-        (set symbol ring)))
+                (when-let (entry (histdir--read-call (concat "call/" file)))
+                    (let-uncons (hash string entry)
+                        (ordered-hash-table-put history hash string)))))
+        (let ((ring (ring-convert-sequence-to-ring (cddr history))))
+            (ring-extend ring (- size (ring-size ring)))
+            (set symbol ring))))
 (defun histdir-read (size symbol)
     (make-thread (apply-partially 'histdir--read size symbol)))
 (defun histdir--see (buffer callback watch-event)
-    (let-unpack ((_descriptor action file) watch-event (string) nil)
+    (let-unpack ((_descriptor action file) watch-event
+                 (hash string) ())
         (when (or (eq action 'created) (eq action 'changed))
             (with-temp-buffer
-                (setq string (histdir--read-call file)))
+                (uncons hash string (histdir--read-call file)))
             (when (and string (> (length string) 0))
                 (with-current-buffer buffer
                     (funcall callback string))))))
