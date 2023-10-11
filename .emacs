@@ -647,8 +647,6 @@
         (let* ((position (if prefix-argument (point) (buffer-end 1)))
                (command  (command-string position)))
             (let-unpack ((history index bol) (consult--current-history))
-                (when (functionp history)
-                    (setq history (funcall history)))
                 (delete-command position)
                 (with-temp-buffer
                     (insert-before-markers command)
