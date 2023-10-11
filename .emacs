@@ -1005,6 +1005,7 @@
                 (evil-end-undo-step)
                 (evil-start-undo-step)
                 (delete-command))))
+    (consult-customize consult-history-remove :prompt "Remove history: ")
     (evil-declare-not-repeat 'consult-history-remove)
     (defun consult-history-remove-quit () (interactive)
         (setq consult-history-remove nil)
