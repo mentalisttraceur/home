@@ -1364,7 +1364,7 @@
 (defun histdir-repl-get-input (&optional position) (interactive)
     (let ((start (histdir-repl-beginning-of-input))
           (end   (histdir-repl-end-of-input)))
-        (filter-buffer-substring start end)))
+        (substring-no-properties (filter-buffer-substring start end))))
 (defun histdir-repl-delete-input (&optional position) (interactive)
     (goto-char (eat-point))
     (buffer-process-send-string "x\C-a\C-k"))
