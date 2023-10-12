@@ -77,31 +77,6 @@
 (setq lisp-indent-offset 4)
 
 
-(defmacro save-mutation (&rest body)
-    `(let ((buffer-undo-list ()))
-        (unwind-protect (progn ,@body)
-            (primitive-undo (length buffer-undo-list) buffer-undo-list))))
-
-
-(defmacro with-temporary-file (name &rest body)
-    `(let (,name)
-        (unwind-protect
-            (progn
-                (setq ,name (make-temp-file ""))
-                ,@body)
-            (when ,name
-                (delete-file ,name)))))
-
-(defmacro with-temporary-directory (name &rest body)
-    `(let (,name)
-        (unwind-protect
-            (progn
-                (setq ,name (make-temp-file "" t))
-                ,@body)
-            (when ,name
-                (delete-directory ,name t)))))
-
-
 (defmacro apply-split-nest (callable arguments count body)
     (setq count (1- count))
     (let* ((forms '(unused))
@@ -170,6 +145,31 @@
             (lambda ,parameters
                 ,@body)
             ,@arguments)))
+
+
+(defmacro save-mutation (&rest body)
+    `(let ((buffer-undo-list ()))
+        (unwind-protect (progn ,@body)
+            (primitive-undo (length buffer-undo-list) buffer-undo-list))))
+
+
+(defmacro with-temporary-file (name &rest body)
+    `(let (,name)
+        (unwind-protect
+            (progn
+                (setq ,name (make-temp-file ""))
+                ,@body)
+            (when ,name
+                (delete-file ,name)))))
+
+(defmacro with-temporary-directory (name &rest body)
+    `(let (,name)
+        (unwind-protect
+            (progn
+                (setq ,name (make-temp-file "" t))
+                ,@body)
+            (when ,name
+                (delete-directory ,name t)))))
 
 
 (defmacro with-advice-1 (symbol where function &rest body)
