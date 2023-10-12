@@ -148,6 +148,9 @@
 
 
 (defmacro lambda-let (varlist &rest body)
+    `(lambda-partial-let ,varlist () ,@body))
+
+(defmacro lambda-partial-let (varlist args &rest body)
     (let (parameters parameter arguments argument)
         (dolist (var varlist)
             (if (listp var)
@@ -159,6 +162,8 @@
                 (setq parameter (setq argument var)))
             (setq parameters (cons parameter parameters))
             (setq arguments (cons argument arguments)))
+        (dolist (arg args)
+            (setq parameters (cons arg parameters)))
         (setq parameters (nreverse parameters))
         (setq arguments (nreverse arguments))
         `(apply-partially
