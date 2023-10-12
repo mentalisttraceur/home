@@ -147,6 +147,26 @@
     `(apply-split-nest let-uncons-1 ,uncons-list 3 ,body))
 
 
+(defmacro lambda-let (varlist &rest body)
+    (let (parameters parameter arguments argument)
+        (dolist (var varlist)
+            (if (listp var)
+                (if (length= var 2)
+                    (unpack (parameter argument) var)
+                    (if (length= var 1)
+                        (setq parameter (setq argument (car var)))
+                        (eval `(let (,var)))))
+                (setq parameter (setq argument var)))
+            (setq parameters (cons parameter parameters))
+            (setq arguments (cons argument arguments)))
+        (setq parameters (nreverse parameters))
+        (setq arguments (nreverse arguments))
+        `(apply-partially
+            (lambda ,parameters
+                ,@body)
+            ,@arguments)))
+
+
 (defmacro with-advice-1 (symbol where function &rest body)
     `(unwind-protect
         (progn
