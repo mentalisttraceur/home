@@ -343,6 +343,13 @@
             (set-window-hscroll window hscroll))))
 
 
+(defun identity+ignore (value &rest _)
+    value)
+
+(defun ignore+return (value)
+    (apply-partially 'identity+ignore value))
+
+
 (defconst pop-to-command-buffer nil)
 (make-variable-buffer-local 'pop-to-command-buffer)
 (defvar pop-to-command-setup-hook nil)
@@ -668,14 +675,29 @@
                 (cons
                     `("fd" "--color=never" "--full-path" ,@patterns ,@options)
                     highlight-function))))
+    (defun hack-consult-preview (preview cell action candidate)
+        (funcall preview 'setup nil)
+        (if (eq action 'hack-repeat-preview)
+            (funcall preview 'preview (car cell))
+            (setcar cell candidate)
+            (funcall preview action candidate)))
     (defun fixed-consult-history (prefix-argument) (interactive "P")
         (let* ((position (if prefix-argument (point) (buffer-end 1)))
-               (command  (command-string position)))
+               (command  (command-string position))
+               (preview  (apply-partially 'hack-consult-preview
+                             (consult--insertion-preview (point) (point))
+                             (cons nil nil))))
             (let-unpack ((history index bol) (consult--current-history))
                 (delete-command position)
                 (with-temp-buffer
                     (insert-before-markers command)
-                    (consult-history history index bol)
+                    (run-with-idle-timer 0.04 nil
+                        (lambda-let (preview (window (selected-window)))
+                            (with-selected-window window
+                                (funcall preview 'hack-repeat-preview nil))))
+                    (with-advice ('consult--insertion-preview
+                                     :override (ignore+return preview))
+                        (consult-history history index bol))
                     (setq command (buffer-string))))
             (end-of-buffer)
             (replace-command command)
