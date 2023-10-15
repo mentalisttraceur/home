@@ -654,7 +654,10 @@
 (use-package vertico
     :config
     (vertico-mode 1)
-    (setq vertico-cycle t))
+    (setq vertico-cycle t)
+    (setq minibuffer-prompt-properties
+        (append '(cursor-intangible t) minibuffer-prompt-properties))
+    (add-hook 'minibuffer-setup-hook 'cursor-intangible-mode))
 
 (use-package consult
     :config
