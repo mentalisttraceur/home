@@ -290,11 +290,11 @@
         default))
 
 (defun ordered-hash-table-pop (table key)
-    (setq hash-table (dlist-car table))
-    (when-let (entry (gethash key hash-table))
-        (remhash key hash-table)
-        (dlist-unlink entry)
-        (dlist-car entry)))
+    (let ((hash-table (dlist-car table)))
+        (when-let (entry (gethash key hash-table))
+            (remhash key hash-table)
+            (dlist-unlink entry)
+            (dlist-car entry))))
 
 (defun ordered-hash-table-put (table key value)
     (ordered-hash-table-pop table key)
