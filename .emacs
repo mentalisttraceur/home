@@ -376,8 +376,70 @@
     (advice-add 'help-view-source :after 'fixed-help-view-source)
     (define-key help-mode-map "\C-m" 'help-view-source))
 
-(defvar histdir)
-(make-variable-buffer-local 'histdir)
+(defun make-histdir-history ()
+    (let ((table (make-ordered-hash-table :test 'eq)))
+        (vector table table nil nil)))
+(defun histdir-history-table (history)
+    (aref history 0))
+(defmacro histdir-history--manage-last (history &rest body)
+    `(let ((last           (aref ,history 1))
+           (temporary-last (dlist-cons nil nil)))
+        (dlist-setcdr last temporary-last)
+        ,@body
+        (setq last (caar temporary-last))
+        (dlist-setcdr last nil)
+        (aset ,history 1 last)))
+(defun histdir-history-buffers (history)
+    (aref history 2))
+(defun histdir-history--register-buffer (history buffer)
+    (let ((buffers (aref history 2)))
+        (unless (memq buffer buffers)
+            (aset history 2 (cons buffer buffers)))))
+(defun histdir-history-watches (history)
+    (aref history 3))
+(defun histdir-history--set-watches (history descriptors)
+    (aset history 3 descriptors))
+(defvar histdir-buffer-local-history-list nil)
+(make-variable-buffer-local 'histdir-buffer-local-history-list)
+(defun histdir--update-buffer-local-history-pointers (history)
+    (let ((strings (cddr (histdir-history-table history)))
+          (buffers (histdir-history-buffers history)))
+        (dolist (buffer buffers)
+            (if (buffer-live-p buffer)
+                (with-current-buffer buffer
+                    (setq histdir-buffer-local-history-list strings))
+                (setq buffers (delq buffer buffers))))
+        (aset history 2 buffers)))
+(defun histdir-history--add-newest (history key string)
+    (let* ((table           (histdir-history-table history))
+           (unordered-table (dlist-car table))
+           (older-duplicate (gethash key unordered-table)))
+        (when older-duplicate
+            (dlist-setcar older-duplicate nil))
+        (histdir-history--manage-last history
+            (ordered-hash-table-put table key string)))
+    (histdir--update-buffer-local-history-pointers history))
+(defun histdir-history--add-oldest (history key string)
+    (let* ((unordered-table (dlist-car (histdir-history-table history)))
+           (newer-duplicate (gethash key unordered-table)))
+        (unless newer-duplicate
+            (let ((last     (aref history 1))
+                  (new-last (dlist-cons string nil)))
+                (dlist-setcdr last new-last)
+                (puthash key new-last unordered-table)
+                (aset history 1 new-last))
+            (when (= (hash-table-count unordered-table) 1)
+                (histdir--update-buffer-local-history-pointers history)))))
+(defun histdir-history--remove (history key)
+    (let ((table (histdir-history-table history))
+          (removed nil))
+        (if-let (first (caddr table))
+            (histdir-history--manage-last history
+                (setq removed (ordered-hash-table-pop table key)))
+            (when removed
+                (dlist-setcar removed nil))
+            (when (eq first removed)
+                (histdir--update-buffer-local-history-pointers history)))))
 (defun histdir--read-file (path)
     (condition-case _error
         (progn
@@ -392,48 +454,67 @@
 (defun histdir--read-call (file)
     (when-let (hash (histdir--read-file file))
         (when (> (length hash) 0)
+            (thread-yield)
             (cons
                 (intern hash)
                 (histdir--read-file (concat
                     (file-name-parent-directory (file-name-directory file))
                     "string/"
                     hash))))))
-(defun histdir--read (size symbol)
-    (let ((default-directory (concat (expand-file-name histdir) "/v1"))
-          (history (make-ordered-hash-table :test 'eq))
+(defun histdir--read (path history)
+    (let ((default-directory (concat path "/v1"))
           (files nil))
         (thread-yield)
         (condition-case _error
-            (setq files (directory-files "call" nil "..."))
+            (setq files (directory-files "call" nil "..." t))
             (file-missing))
+        (thread-yield)
+        (setq files (sort files 'string-greaterp))
         (with-temp-buffer
             (dolist (file files)
                 (thread-yield)
                 (when-let (entry (histdir--read-call (concat "call/" file)))
                     (let-uncons (hash string entry)
-                        (ordered-hash-table-put history hash string)))))
-        (let ((ring (ring-convert-sequence-to-ring (cddr history))))
-            (ring-extend ring (- size (ring-size ring)))
-            (set symbol ring))))
-(defun histdir-read (size symbol)
-    (make-thread (apply-partially 'histdir--read size symbol)))
-(defun histdir--see (buffer callback watch-event)
+                        (histdir-history--add-oldest history hash string)))))))
+(defun histdir--see-add (history watch-event)
     (let-unpack ((_descriptor action file) watch-event
                  (hash string) ())
         (when (or (eq action 'created) (eq action 'changed))
             (with-temp-buffer
                 (uncons hash string (histdir--read-call file)))
             (when (and string (> (length string) 0))
-                (with-current-buffer buffer
-                    (funcall callback string))))))
-(defun histdir-watch (callback)
+                (histdir-history--add-newest history hash string)))))
+(defun histdir--see-remove (history watch-event)
+    (let-unpack ((_descriptor action file) watch-event
+                 (hash string) ())
+        (when (eq action 'deleted)
+            (let ((hash (intern (file-name-base file))))
+                (histdir-history--remove history hash)))))
+(defun histdir--watch (path history)
+    (let ((directory (concat path "/v1")))
+        (list
+            (file-notify-add-watch (concat directory "/call") '(change)
+                (apply-partially 'histdir--see-add history))
+            (file-notify-add-watch (concat directory "/string") '(change)
+                (apply-partially 'histdir--see-remove history)))))
+(defvar histdir)
+(make-variable-buffer-local 'histdir)
+(defconst histdir--histories (make-hash-table :test 'equal))
+(defun histdir-watch+read ()
     (require 'filenotify)
-    (let* ((directory     (concat (expand-file-name histdir) "/v1/call"))
-           (descriptor    (file-notify-add-watch directory '(change)
-                              (apply-partially
-                                  'histdir--see (current-buffer) callback)))
-           (stop-watching (apply-partially 'file-notify-rm-watch descriptor)))
-        (add-hook 'kill-buffer-hook stop-watching nil t)))
+    (let* ((path       (expand-file-name histdir))
+           (history    (gethash path histdir--histories))
+           (first-read (not history)))
+        (when first-read
+            (setq history (make-histdir-history))
+            (puthash path history histdir--histories))
+        (histdir-history--register-buffer history (current-buffer))
+        (histdir--update-buffer-local-history-pointers history)
+        (unless (histdir-history-watches history)
+            (let ((descriptors (histdir--watch path history)))
+                (histdir-history--set-watches history descriptors)))
+        (when first-read
+            (make-thread (apply-partially 'histdir--read path history)))))
 (defun histdir-add (entry &optional deduplicate)
     (let ((default-directory "~"))
         (setq deduplicate (if deduplicate "--deduplicate" "--"))
@@ -455,32 +536,13 @@
             'field 'prompt
             'front-sticky '(read-only)
             'rear-nonsticky t)))
-    (setq eshell-hist-ignoredups 'erase)
-    (setq eshell-history-size 65536)
+    (setq eshell-history-size 0)
     (advice-add 'eshell-hist-initialize :before (lambda (&rest _)
         (setq histdir "~/.history/eshell")))
     (advice-add 'eshell-read-history :override (lambda (&rest _)
-        (histdir-read eshell-history-size 'eshell-history-ring)))
-    (add-hook 'eshell-mode-hook (lambda ()
-        (setq-local revert-buffer-function 'eshell-read-history)
-        (histdir-watch (lambda (entry)
-            (ring-remove+insert+extend eshell-history-ring entry)))))
-    (defun hack-ring-empty-p (ring-empty-p ring)
-        (if (eq ring eshell-history-ring)
-            nil
-            (funcall ring-empty-p ring)))
-    (defun hack-ring-remove (ring-remove ring &optional index)
-        (when index
-            (funcall ring-remove ring index)))
-    (defun fixed-eshell-add-input-to-history
-            (eshell-add-input-to-history &rest arguments)
-        (with-advice ('ring-empty-p :around 'hack-ring-empty-p
-                      'ring-remove  :around 'hack-ring-remove
-                      'eshell-put-history :before (lambda (input &rest _)
-                          (histdir-add input t)))
-            (apply eshell-add-input-to-history arguments)))
-    (advice-add 'eshell-add-input-to-history :around
-        'fixed-eshell-add-input-to-history)
+        (histdir-watch+read)))
+    (advice-add 'eshell-add-input-to-history :override (lambda (input)
+        (histdir-add input t)))
     (advice-add 'eshell-write-history :override (lambda (&rest _)))
     (defun in-eshell-prompt-p ()
         (eq (get-text-property (point) 'field) 'prompt))
@@ -549,6 +611,7 @@
                         (sleep-for 0.04)))
                 (setq buffer (get-buffer-create name))
                 (set-buffer buffer)
+                (setq histdir nil)
                 (let ((eshell-non-interactive-p t)
                       (eshell-history-file-name nil))
                     (eshell-mode)))
@@ -661,6 +724,11 @@
 
 (use-package consult
     :config
+    (add-to-list 'consult-mode-histories
+        '(eshell-mode
+          histdir-buffer-local-history-list
+          nil
+          eshell-bol))
     (setq consult-find-args "find .")
     (defun consult-fd (&optional directory initial-query) (interactive "P")
         (let-unpack ((prompt paths directory)
@@ -1318,22 +1386,16 @@
         (evil-force-normal-state)))
 
 (define-derived-mode histdir-repl-mode eat-mode "HER")
-(defvar histdir-repl-history-ring)
-(make-variable-buffer-local 'histdir-repl-history-ring)
-(defun histdir-repl-read-history ()
-    (histdir-read 65536 'histdir-repl-history-ring))
-(defvar histdir-repl-history-ring-index)
-(make-variable-buffer-local 'histdir-repl-history-ring-index)
 (add-to-list 'consult-mode-histories
     '(histdir-repl-mode
-        histdir-repl-history-ring
-        histdir-repl-history-ring-index
-        beginning-of-line))
+      histdir-buffer-local-history-list
+      nil
+      beginning-of-line))
 (add-to-list 'command-at-point-mode-alist
     '(histdir-repl-mode
-        histdir-repl-get-input
-        histdir-repl-delete-input
-        histdir-repl-replace-input))
+      histdir-repl-get-input
+      histdir-repl-delete-input
+      histdir-repl-replace-input))
 (defun histdir-repl (command histdir)
     (let* ((program       (car command))
            (arguments     (cdr command))
@@ -1346,8 +1408,6 @@
             (histdir-repl-mode))
         (pop-to-buffer-same-window buffer)
         (unpack (default-directory histdir) buffer-locals)
-        (setq-local revert-buffer-function (lambda (&rest _)
-            (histdir-repl-read-history)))
         (unless (get-buffer-process (current-buffer))
             (eat-exec buffer name program nil arguments))
         (evil-local-set-key 'normal "q" 'quit-window)
@@ -1393,9 +1453,7 @@
         (dolist (key '("\C-a" "\C-c" "\C-d" "\C-e" "\C-k" "\C-l" "\C-u"))
             (evil-local-set-key 'insert key 'eat-self-input))
         (evil-normal-state)
-        (histdir-repl-read-history)
-        (histdir-watch (lambda (entry)
-            (ring-remove+insert+extend histdir-repl-history-ring entry)))
+        (histdir-watch+read)
         (evil-local-set-key 'insert [up] 'histdir-repl-cycle-up-history)
         (evil-local-set-key 'insert [down] 'histdir-repl-cycle-down-history)
         (evil-local-set-key 'replace [up] 'histdir-repl-evil-replace-up)
