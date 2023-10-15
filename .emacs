@@ -436,10 +436,10 @@
         (if-let (first (caddr table))
             (histdir-history--manage-last history
                 (setq removed (ordered-hash-table-pop table key)))
+            (when (eq first (dlist-car removed))
+                (histdir--update-buffer-local-history-pointers history))
             (when removed
-                (dlist-setcar removed nil))
-            (when (eq first removed)
-                (histdir--update-buffer-local-history-pointers history)))))
+                (dlist-setcar removed nil)))))
 (defun histdir--read-file (path)
     (condition-case _error
         (progn
@@ -1116,10 +1116,11 @@
                (entry (fixed-consult-history prefix-argument))
                (history (car (consult--current-history))))
             (when consult-history-remove
-                (while-let ((index (ring-member history entry)))
-                    (ring-remove history index))
-                (when histdir
-                    (histdir-remove entry))
+                (if histdir
+                    (histdir-remove entry)
+                    (if (ring-p history)
+                        (while-let ((index (ring-member history entry)))
+                            (ring-remove history index))))
                 (evil-end-undo-step)
                 (evil-start-undo-step)
                 (delete-command))))
@@ -1482,9 +1483,7 @@
 (defun histdir-repl-send-input () (interactive)
     (let ((input (histdir-repl-get-input)))
         (unless (equal (string-trim input) "")
-            (histdir-add input t)
-            (ring-remove+insert+extend histdir-repl-history-ring input))
-        (setq histdir-repl-history-ring-index nil)
+            (histdir-add input t))
         (goto-char (eat-point))
         (buffer-process-send-string "\C-m")))
 (defun histdir-repl-forward-char-in-input (&optional count)
