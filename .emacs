@@ -282,25 +282,27 @@
 
 
 (defun make-ordered-hash-table (&rest arguments)
-    (dlist (apply 'make-hash-table arguments)))
+    (list (apply 'make-hash-table arguments)))
 
 (defun ordered-hash-table-get (table key &optional default)
-    (if-let (entry (gethash key (dlist-car table)))
+    (if-let (entry (gethash key (car table)))
         (dlist-car entry)
         default))
 
 (defun ordered-hash-table-pop (table key)
-    (let ((hash-table (dlist-car table)))
+    (let ((hash-table (car table)))
         (when-let (entry (gethash key hash-table))
             (remhash key hash-table)
+            (when (eq entry (cdr table))
+                (setcdr table (dlist-cdr entry)))
             (dlist-unlink entry)
             (dlist-car entry))))
 
 (defun ordered-hash-table-put (table key value)
     (ordered-hash-table-pop table key)
-    (let ((entry (dlist-cons value (dlist-cdr table))))
-        (puthash key entry (dlist-car table))
-        (dlist-setcdr table entry))
+    (let ((entry (dlist-cons value (cdr table))))
+        (puthash key entry (car table))
+        (setcdr table entry))
     value)
 
 
