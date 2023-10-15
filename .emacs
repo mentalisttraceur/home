@@ -479,7 +479,9 @@
 (defun histdir--see-add (history watch-event)
     (let-unpack ((_descriptor action file) watch-event
                  (hash string) ())
-        (when (or (eq action 'created) (eq action 'changed))
+        (when (eq action 'renamed)
+            (setq file (nth 3 watch-event)))
+        (when (memq action '(created changed renamed))
             (with-temp-buffer
                 (uncons hash string (histdir--read-call file)))
             (when (and string (> (length string) 0))
