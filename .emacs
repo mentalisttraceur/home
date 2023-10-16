@@ -644,7 +644,7 @@
                         (move-end-of-line 1)
                         (goto-char (field-beginning)))
                     (when (in-eshell-scrollback-p)
-                        (end-of-buffer)
+                        (goto-char (buffer-end 1))
                         (histdir-input-cycle-older)))
                 (beginning-of-buffer
                     (histdir-input-cycle-older)))))
