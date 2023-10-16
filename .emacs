@@ -859,6 +859,8 @@
     (setq evil-want-C-u-scroll t)
     :config
     (evil-mode 1)
+    (evil-declare-not-repeat 'scroll-up-line)
+    (evil-declare-not-repeat 'scroll-down-line)
     (defun fixed-evil-paste-before (evil-paste-before &rest arguments)
         (evil-save-column
             (apply evil-paste-before arguments)))
