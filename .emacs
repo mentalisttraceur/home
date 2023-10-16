@@ -538,6 +538,8 @@
 (defvar histdir)
 (make-variable-buffer-local 'histdir)
 (defconst histdir--histories (make-hash-table :test 'equal))
+(defun histdir--history ()
+    (gethash (expand-file-name histdir) histdir--histories))
 (defun histdir-watch+read ()
     (require 'filenotify)
     (let* ((path       (expand-file-name histdir))
