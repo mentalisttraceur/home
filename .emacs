@@ -352,6 +352,40 @@
     (apply-partially 'identity+ignore value))
 
 
+(defun field-string-no-properties (&optional position)
+    (substring-no-properties (field-string position)))
+(defun replace-field (new-contents &optional position)
+    (delete-field position)
+    (if position
+        (save-excursion
+            (goto-char position)
+            (insert new-contents))
+        (insert new-contents)
+        (goto-char (+ (point) (length new-contents)))))
+
+
+(defvar command-at-point-mode-alist nil)
+(defun command-string (&optional position)
+    (let ((functions (alist-get major-mode command-at-point-mode-alist)))
+        (if-let ((function (nth 0 functions)))
+            (funcall function position)
+            (field-string-no-properties position))))
+(defun delete-command (&optional position)
+    (let ((functions (alist-get major-mode command-at-point-mode-alist)))
+        (if-let ((function (nth 1 functions)))
+            (funcall function position)
+            (delete-field position))))
+(defun replace-command (new-command &optional position)
+    (let ((functions (alist-get major-mode command-at-point-mode-alist)))
+        (if-let ((function (nth 2 functions)))
+            (funcall function new-command position)
+            (replace-field new-command position))))
+
+
+(defun buffer-process-send-string (string)
+    (process-send-string (get-buffer-process (current-buffer)) string))
+
+
 (defconst pop-to-command-buffer nil)
 (make-variable-buffer-local 'pop-to-command-buffer)
 (defvar pop-to-command-setup-hook nil)
@@ -641,37 +675,6 @@
     :config
     (define-key eshell-hist-mode-map [up] 'fixed-eshell-up-arrow)
     (define-key eshell-hist-mode-map [down] 'fixed-eshell-down-arrow))
-
-(defun field-string-no-properties (&optional position)
-    (substring-no-properties (field-string position)))
-(defun replace-field (new-contents &optional position)
-    (delete-field position)
-    (if position
-        (save-excursion
-            (goto-char position)
-            (insert new-contents))
-        (insert new-contents)
-        (goto-char (+ (point) (length new-contents)))))
-
-(defvar command-at-point-mode-alist nil)
-(defun command-string (&optional position)
-    (let ((functions (alist-get major-mode command-at-point-mode-alist)))
-        (if-let ((function (nth 0 functions)))
-            (funcall function position)
-            (field-string-no-properties position))))
-(defun delete-command (&optional position)
-    (let ((functions (alist-get major-mode command-at-point-mode-alist)))
-        (if-let ((function (nth 1 functions)))
-            (funcall function position)
-            (delete-field position))))
-(defun replace-command (new-command &optional position)
-    (let ((functions (alist-get major-mode command-at-point-mode-alist)))
-        (if-let ((function (nth 2 functions)))
-            (funcall function new-command position)
-            (replace-field new-command position))))
-
-(defun buffer-process-send-string (string)
-    (process-send-string (get-buffer-process (current-buffer)) string))
 
 (use-package tramp
     :config
