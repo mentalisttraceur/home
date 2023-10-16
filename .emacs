@@ -564,6 +564,42 @@
     (let ((default-directory "~"))
         (call-process-region entry nil "histdir" nil 0 nil
             "remove" (expand-file-name histdir))))
+(defvar histdir-buffer-local-history--position nil)
+(make-variable-buffer-local 'histdir-buffer-local-history--position)
+(defun histdir-input-add (input &optional deduplicate)
+    (setq histdir-buffer-local-history--position nil)
+    (unless (equal (string-trim input) "")
+        (histdir-add input deduplicate)))
+(defun histdir-input--select (position)
+    (setq histdir-buffer-local-history--position position)
+    (replace-command
+        (if (not position)
+            ""
+            (dlist-car position))))
+(defun histdir-input--cycle-older (position)
+    (let ((history (histdir--history)))
+        (if position
+            (let ((older (dlist-cdr position)))
+                (while (and older (not (dlist-car older)))
+                    (setq older (dlist-cdr older)))
+                older)
+            (cdr (histdir-history-table history)))))
+(defun histdir-input--cycle-newer (position)
+    (let ((history (histdir--history)))
+        (if position
+            (let ((newer (caar position)))
+                (while (and newer (not (dlist-car newer)))
+                    (setq newer (caar newer)))
+                newer)
+            (histdir-history--last history))))
+(defun histdir-input-cycle-older () (interactive)
+    (histdir-input--select
+        (histdir-input--cycle-older
+            histdir-buffer-local-history--position)))
+(defun histdir-input-cycle-newer () (interactive)
+    (histdir-input--select
+        (histdir-input--cycle-newer
+            histdir-buffer-local-history--position)))
 
 (use-package eshell
     :config
