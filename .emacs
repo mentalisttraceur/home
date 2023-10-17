@@ -6,12 +6,13 @@
 
 (menu-bar-mode -1)
 (defun init-graphic-frame (frame)
-    (when (display-graphic-p frame)
+    (if (not (display-graphic-p frame))
+        (set-face-background 'default "#202020")
         (tool-bar-mode -1)
         (scroll-bar-mode -1)
         (select-frame frame)
         (set-frame-font "DejaVu Sans Mono-13")
-        (set-background-color "#000000")
+        (set-background-color "#202020")
         (set-foreground-color "#A0A0A0")
         (set-cursor-color "#FFFFFF")))
 (init-graphic-frame (selected-frame))
@@ -1808,35 +1809,24 @@
     (apply 'eshell/r command))
 (put 'eshell/ro 'eshell-no-numeric-conversions t)
 
-(use-package auto-dim-other-buffers
-    :config
-    (set-face-background 'auto-dim-other-buffers-face "#202020")
-    (defun hack-window-list (window-list &optional frame _minibuffer window)
-        (funcall window-list frame t window))
-    (defun hack-adob--rescan-windows (adob--rescan-windows &rest arguments)
-        (with-advice ('window-list :around 'hack-window-list)
-            (apply adob--rescan-windows arguments)))
-    (advice-add 'adob--rescan-windows :around 'hack-adob--rescan-windows)
-    (defun hack-window-minibuffer-p (&optional _window)
-        nil)
-    (defun hack-adob--update (adob--update &rest arguments)
-        (with-advice ('window-minibuffer-p :override 'hack-window-minibuffer-p)
-            (apply adob--update arguments)))
-    (advice-add 'adob--update :around 'hack-adob--update)
-    (defun hack-adob--focus-out-hook (adob--focus-out-hook &rest arguments)
-        (with-advice ('window-minibuffer-p :override 'hack-window-minibuffer-p)
-            (apply adob--focus-out-hook arguments)))
-    (advice-add 'adob--focus-out-hook :around 'hack-adob--focus-out-hook)
-    (with-current-buffer " *Minibuf-0*" (insert ?\t))
-    (add-hook 'after-change-functions (lambda (&rest _)
-        (with-current-buffer " *Minibuf-0*"
-            (when (< (buffer-size) 1)
-                (insert ?\t)))))
-    (define-key evil-motion-state-map " \\" (lambda () (interactive)
-        (with-current-buffer " *Minibuf-0*" (insert ?\t))))
-    (get-buffer-create " *Echo Area 0*")
-    (get-buffer-create " *Echo Area 1*")
-    (auto-dim-other-buffers-mode 1))
+(defvar face-remap-selected-window--window (selected-window))
+(defvar face-remap-selected-window--tagged nil)
+(make-variable-buffer-local 'face-remap-selected-window--tagged)
+(defun face-remap-selected-window ()
+    (set-window-parameter face-remap-selected-window--window
+        'face-remap-selected-window nil)
+    (setq face-remap-selected-window--window (selected-window))
+    (unless face-remap-selected-window--tagged
+        (face-remap-add-relative 'default
+            '(:filtered (:window face-remap-selected-window t)
+                (:background "#010101")))
+        (setq face-remap-selected-window--tagged t))
+    (set-window-parameter face-remap-selected-window--window
+        'face-remap-selected-window t))
+(setq after-focus-change-function 'face-remap-selected-window)
+(add-hook 'window-configuration-change-hook 'face-remap-selected-window)
+(add-hook 'buffer-list-update-hook 'face-remap-selected-window)
+(setq redisplay-skip-initial-frame nil)
 
 (use-package ace-window
     :config
@@ -1908,10 +1898,10 @@
             (setq window-state--execute-once window-state--execute-more)
             (let-unpack ((hint tint dim tag help-string) window-state)
                 (with-face-attribute (
-                        'aw-leading-char-face        :foreground hint
-                        'aw-background-face          :foreground tint
-                        'line-number                 :foreground tint
-                        'auto-dim-other-buffers-face :background dim)
+                        'aw-leading-char-face :foreground hint
+                        'aw-background-face   :foreground tint
+                        'line-number          :foreground tint
+                        'default              :background dim)
                     (save-override-evil-mode-line-tag tag help-string
                         (fixed-aw-select 'window-state--do-action))))))
     (defun window-state--do-action (window)
