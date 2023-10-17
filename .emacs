@@ -1127,7 +1127,6 @@
     (setq evil-show-paren-range 1)
     (define-key evil-motion-state-map " e" 'eval-last-sexp)
     (define-key evil-motion-state-map " E" 'eval-print-last-sexp)
-    (define-key evil-motion-state-map " g" (inputter "\C-g"))
     (defun toggle-evil-repeat-move-cursor () (interactive)
         (setq evil-repeat-move-cursor (not evil-repeat-move-cursor))
         (message "evil-repeat-move-cursor: %s" evil-repeat-move-cursor))
