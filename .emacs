@@ -346,6 +346,15 @@
             (set-window-hscroll window hscroll))))
 
 
+(defun input (key)
+    (setq unread-command-events
+        (nconc unread-command-events (listify-key-sequence key))))
+
+(defmacro inputter (key)
+    `(lambda () (interactive)
+        (input ,key)))
+
+
 (defun identity+ignore (value &rest _)
     value)
 
