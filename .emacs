@@ -556,12 +556,6 @@
                 (histdir-history--set-watches history descriptors)))
         (when first-read
             (make-thread (apply-partially 'histdir--read path history)))))
-(defun histdir-hash (entry)
-    (when (string-suffix-p "\n" entry)
-        (setq entry (concat entry "\n")))
-    (intern (secure-hash 'sha256 entry)))
-(defun histdir-timestamp ()
-    (format-time-string "%Y%m%dT%H%M%S,%NZ" nil t))
 (defun histdir-add (entry &optional deduplicate)
     (let ((default-directory "~"))
         (setq deduplicate (if deduplicate "--deduplicate" "--"))
