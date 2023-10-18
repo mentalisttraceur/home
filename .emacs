@@ -1932,9 +1932,9 @@
                     (save-selected-window
                         ,@body
                         (selected-window))
-                (error
-                    (message "%s" (error-message-string error))
-                    (selected-window))))))
+                    (error
+                        (message "%s" (error-message-string error))
+                        (selected-window))))))
     (window-state-define-motion window-state-move-up
         (windmove-up))
     (window-state-define-motion window-state-move-down
