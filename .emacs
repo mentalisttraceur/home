@@ -1107,14 +1107,10 @@
     (define-key evil-motion-state-map "gG" 'end-of-buffer)
     (define-prefix-command 'space-map)
     (define-key evil-motion-state-map " " 'space-map)
-    (define-key evil-motion-state-map "\C-@" 'evil-execute-in-normal-state)
-    (define-key evil-motion-state-map [?\C- ] 'evil-execute-in-normal-state)
-    (define-key evil-insert-state-map "\C-@" 'evil-execute-in-normal-state)
-    (define-key evil-insert-state-map [?\C- ] 'evil-execute-in-normal-state)
-    (define-key evil-replace-state-map "\C-@" 'evil-execute-in-normal-state)
-    (define-key evil-replace-state-map [?\C- ] 'evil-execute-in-normal-state)
-    (define-key evil-emacs-state-map "\C-@" 'evil-execute-in-normal-state)
-    (define-key evil-emacs-state-map [?\C- ] 'evil-execute-in-normal-state)
+    (dolist (map (list evil-motion-state-map evil-insert-state-map
+                       evil-replace-state-map evil-emacs-state-map))
+        (dolist (key '([?\C- ] "\C-@"))
+            (define-key map key 'evil-execute-in-normal-state)))
     (defun fixed-last-s-expression (function &rest arguments)
         (save-excursion
             (condition-case _error
