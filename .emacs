@@ -346,6 +346,17 @@
             (set-window-hscroll window hscroll))))
 
 
+(defun read-key-sequence-in-keymap (keymap &rest arguments)
+    (let ((overriding-terminal-local-map nil)
+          (overriding-local-map keymap)
+          (saved-global-map (current-global-map)))
+        (unwind-protect
+            (progn
+                (use-global-map (make-sparse-keymap))
+                (apply 'read-key-sequence arguments))
+            (use-global-map saved-global-map))))
+
+
 (defun identity+ignore (value &rest _)
     value)
 
