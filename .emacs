@@ -2099,6 +2099,14 @@
                 (call-interactively 'evil-use-register))
             (quit))
         (setq window-state--execute-once t))
+    (window-state-define-operator window-state-space
+        (condition-case _error
+            (let ((keys (read-key-sequence-in-keymap space-map "SPC-")))
+                (if (equal keys "\C-g")
+                    (keyboard-quit)
+                    (call-interactively
+                        (lookup-key space-map keys t))))
+            (quit)))
     (defun window-state-passthrough (character)
         (list character `(lambda ()
             (setq window-state--execute-once nil)
@@ -2139,7 +2147,7 @@
         (?n window-state-vi-search-next)
         (?N window-state-vi-search-previous)
         (?\" window-state-use-register)
-        ,(window-state-passthrough ? )
+        (?  window-state-space-operator)
         (?g (lambda ()
                 (let* ((key (read-key "g-"))
                        (action (alist-get key '(
