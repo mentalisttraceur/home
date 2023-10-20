@@ -2101,11 +2101,11 @@
         (setq window-state--execute-once t))
     (window-state-define-operator window-state-space
         (condition-case _error
-            (let ((keys (read-key-sequence-in-keymap space-map "SPC-")))
-                (if (equal keys "\C-g")
-                    (keyboard-quit)
-                    (call-interactively
-                        (lookup-key space-map keys t))))
+            (let* ((keys (read-key-sequence-in-keymap space-map "SPC-"))
+                   (binding (lookup-key space-map keys t)))
+                (if binding
+                    (call-interactively binding)
+                    (undefined)))
             (quit)))
     (setq aw-dispatch-alist `(
         (?h window-state-move-left)
