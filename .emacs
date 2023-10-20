@@ -2072,27 +2072,25 @@
     (window-state-define-operator window-state-vi-search-forward
         (condition-case _error
             (progn
-                (evil-search-forward)
+                (call-interactively 'evil-ex-search-forward)
                 (setq window-state-last-search-target (selected-window)))
             (quit)))
     (window-state-define-operator window-state-vi-search-backward
         (condition-case _error
             (progn
-                (evil-search-backward)
+                (call-interactively 'evil-ex-search-backward)
                 (setq window-state-last-search-target (selected-window)))
             (quit)))
     (defun window-state-vi-search-next (&optional window)
         (unless window
             (setq window window-state-last-search-target))
         (with-selected-window window
-            (dotimes (x (prefix-numeric-value current-prefix-arg))
-                (evil-search-next))))
+            (call-interactively 'evil-ex-search-next)))
     (defun window-state-vi-search-previous (&optional window)
         (unless window
             (setq window window-state-last-search-target))
         (with-selected-window window
-            (dotimes (x (prefix-numeric-value current-prefix-arg))
-                (evil-search-previous))))
+            (call-interactively 'evil-ex-search-previous)))
     (defun window-state-use-register ()
         (condition-case _error
             (setq window-state-this-register
