@@ -2107,6 +2107,16 @@
                     (call-interactively binding)
                     (undefined)))
             (quit)))
+    (window-state-define-operator window-state-send
+        (condition-case _error
+            (let* ((keys (read-key-sequence nil))
+                   (maps (current-active-maps t))
+                   (binding (lookup-key maps keys t)))
+                (if binding
+                    (let ((last-command-event (aref keys (1- (length keys)))))
+                        (call-interactively binding))
+                    (undefined)))
+            (quit)))
     (setq aw-dispatch-alist `(
         (?h window-state-move-left)
         (?j window-state-move-down)
@@ -2144,6 +2154,7 @@
         (?N window-state-vi-search-previous)
         (?\" window-state-use-register)
         (?  window-state-space-operator)
+        (?s window-state-send-operator)
         (?g (lambda ()
                 (let* ((key (read-key "g-"))
                        (action (alist-get key '(
