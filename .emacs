@@ -2107,10 +2107,6 @@
                     (call-interactively
                         (lookup-key space-map keys t))))
             (quit)))
-    (defun window-state-passthrough (character)
-        (list character `(lambda ()
-            (setq window-state--execute-once nil)
-            (setq unread-command-events '(,character)))))
     (setq aw-dispatch-alist `(
         (?h window-state-move-left)
         (?j window-state-move-down)
