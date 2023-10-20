@@ -2162,8 +2162,6 @@
             (if (equal character ?\C-g)
                 (aw-dispatch-default ?q)
                 (aw-dispatch-default character)))))
-    (define-key space-map "o" 'window-state-for-one-command)
-    (define-key space-map "O" 'window-state)
     (define-key evil-motion-state-map "s" 'window-state-for-one-command)
     (define-key evil-normal-state-map "s" nil)
     (define-key evil-motion-state-map "S" 'window-state)
