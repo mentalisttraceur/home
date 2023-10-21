@@ -2067,6 +2067,7 @@
             (call-interactively 'find-file)
             (quit)))
     (window-state-define-operator window-state-target-window-prefix
+        (setq prefix-arg current-prefix-arg)
         (display-buffer-override-next-command
             `(lambda (&rest _)
                 (cons ,(selected-window) 'reuse))
