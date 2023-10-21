@@ -2070,7 +2070,7 @@
         (setq prefix-arg current-prefix-arg)
         (display-buffer-override-next-command
             `(lambda (&rest _)
-                (cons ,(selected-window) 'reuse))
+                (cons ,window 'reuse))
             nil
             "[target-window]")
         (message "Display next command buffer in target window..."))
@@ -2088,13 +2088,13 @@
         (condition-case _error
             (progn
                 (call-interactively 'evil-ex-search-forward)
-                (setq window-state-last-search-target (selected-window)))
+                (setq window-state-last-search-target window))
             (quit)))
     (window-state-define-operator window-state-vi-search-backward
         (condition-case _error
             (progn
                 (call-interactively 'evil-ex-search-backward)
-                (setq window-state-last-search-target (selected-window)))
+                (setq window-state-last-search-target window))
             (quit)))
     (defun window-state-vi-search-next (&optional window)
         (unless window
