@@ -357,6 +357,19 @@
             (use-global-map saved-global-map))))
 
 
+(defun add-single-use-hook--wrapper (remove-arguments function &rest arguments)
+    (unwind-protect
+        (apply function arguments)
+        (apply 'remove-hook remove-arguments)))
+
+(defun add-single-use-hook (hook function &optional depth local)
+    (let* ((remove-arguments (list hook nil local))
+           (wrapper          (apply-partially 'add-single-use-hook--wrapper
+                                 remove-arguments function)))
+        (setcar (cdr remove-arguments) wrapper)
+        (add-hook hook wrapper depth local)))
+
+
 (defun identity+ignore (value &rest _)
     value)
 
