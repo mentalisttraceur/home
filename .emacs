@@ -419,9 +419,10 @@
     :config
     (setq help-window-select t)
     (define-key help-map "t" 'describe-face)
-    (defun fixed-help-view-source ()
+    (defun fixed-help-view-source (&rest _)
         (set-window-start (selected-window) (point)))
-    (advice-add 'help-view-source :after 'fixed-help-view-source)
+    (advice-add 'help-function-def--button-function
+        :after 'fixed-help-view-source)
     (define-key help-mode-map "\C-m" 'help-view-source))
 
 (defun make-histdir-history ()
