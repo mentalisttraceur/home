@@ -2069,8 +2069,8 @@
     (window-state-define-operator window-state-target-window-prefix
         (setq prefix-arg current-prefix-arg)
         (display-buffer-override-next-command
-            `(lambda (&rest _)
-                (cons ,window 'reuse))
+            (lambda-partial-let (window) (&rest _)
+                (cons window 'reuse))
             nil
             "[target-window]")
         (message "Display next command buffer in target window..."))
