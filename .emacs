@@ -811,7 +811,7 @@
         (let* ((position (if prefix-argument (point) (buffer-end 1)))
                (command  (command-string position))
                (preview  (apply-partially 'hack-consult-preview
-                             (consult--insertion-preview (point) (point))
+                             (consult--insertion-preview position position)
                              (cons nil nil))))
             (let-unpack ((history index bol) (consult--current-history))
                 (delete-command position)
