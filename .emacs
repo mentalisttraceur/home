@@ -610,14 +610,28 @@
                     (setq older (dlist-cdr older)))
                 older)
             (cdr (histdir-history-table history)))))
+(defun histdir-input--older (position)
+    (if-let (older (histdir-input--cycle-older position))
+        older
+        position))
+(defun histdir-input--newer (position)
+    (let ((newer (caar position)))
+        (while (and newer (not (dlist-car newer)))
+            (setq newer (caar newer)))
+        newer))
 (defun histdir-input--cycle-newer (position)
     (let ((history (histdir--history)))
         (if position
-            (let ((newer (caar position)))
-                (while (and newer (not (dlist-car newer)))
-                    (setq newer (caar newer)))
-                newer)
+            (histdir-input--newer position)
             (histdir-history--last history))))
+(defun histdir-input-older () (interactive)
+    (histdir-input--select
+        (histdir-input--older
+            histdir-buffer-local-history--position)))
+(defun histdir-input-newer () (interactive)
+    (histdir-input--select
+        (histdir-input--newer
+            histdir-buffer-local-history--position)))
 (defun histdir-input-cycle-older () (interactive)
     (histdir-input--select
         (histdir-input--cycle-older
