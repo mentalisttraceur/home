@@ -2228,7 +2228,9 @@
     :config
     (setq denote-file-type 'markdown-yaml)
     (setq denote-known-keywords nil)
-    (define-key space-map "m" 'denote))
+    (define-key space-map "m" 'denote)
+    (define-key space-map "M" (lambda () (interactive)
+        (dired denote-directory))))
 
 
 (defun message-time () (interactive)
