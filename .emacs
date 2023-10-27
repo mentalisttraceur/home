@@ -839,24 +839,28 @@
             (setcar cell candidate)
             (funcall preview action candidate)))
     (defun fixed-consult-history (prefix-argument) (interactive "P")
-        (let* ((position (if prefix-argument (point) (buffer-end 1)))
-               (command  (command-string position))
-               (preview  (apply-partially 'hack-consult-preview
-                             (consult--insertion-preview position position)
-                             (cons nil nil))))
-            (let-unpack ((history index bol) (consult--current-history))
-                (delete-command position)
-                (with-temp-buffer
-                    (insert-before-markers command)
-                    (run-with-idle-timer 0.04 nil
-                        preview 'hack-repeat-preview nil)
-                    (with-advice ('consult--insertion-preview
-                                     :override (ignore+return preview))
-                        (consult-history history index bol))
-                    (setq command (buffer-string))))
-            (end-of-buffer)
-            (replace-command command)
-            command))
+        (if (minibufferp)
+            (progn
+                (consult-history)
+                (command-string))
+            (let* ((position (if prefix-argument (point) (buffer-end 1)))
+                   (command  (command-string position))
+                   (preview  (apply-partially 'hack-consult-preview
+                                 (consult--insertion-preview position position)
+                                 (cons nil nil))))
+                (let-unpack ((history index bol) (consult--current-history))
+                    (delete-command position)
+                    (with-temp-buffer
+                        (insert-before-markers command)
+                        (run-with-idle-timer 0.04 nil
+                            preview 'hack-repeat-preview nil)
+                        (with-advice ('consult--insertion-preview
+                                         :override (ignore+return preview))
+                            (consult-history history index bol))
+                        (setq command (buffer-string))))
+                (end-of-buffer)
+                (replace-command command)
+                command)))
     (defun consult-line-resume (prefix-argument) (interactive "P")
         (when (eq this-command 'consult-line-resume)
             (setq this-command 'consult-line))
