@@ -123,10 +123,7 @@
     `(apply-split-nest let-uncons-1 ,uncons-list 3 ,body))
 
 
-(defmacro lambda-let (varlist &rest body)
-    `(lambda-partial-let ,varlist () ,@body))
-
-(defmacro lambda-partial-let (varlist args &rest body)
+(defmacro lambda-let (varlist args &rest body)
     (let (parameters parameter arguments argument)
         (dolist (var varlist)
             (if (listp var)
@@ -845,7 +842,7 @@
                 (with-temp-buffer
                     (insert-before-markers command)
                     (run-with-idle-timer 0.04 nil
-                        (lambda-let (preview (window (selected-window)))
+                        (lambda-let (preview (window (selected-window))) ()
                             (with-selected-window window
                                 (funcall preview 'hack-repeat-preview nil))))
                     (with-advice ('consult--insertion-preview
@@ -2084,7 +2081,7 @@
     (window-state-define-operator window-state-target-window-prefix
         (setq prefix-arg current-prefix-arg)
         (display-buffer-override-next-command
-            (lambda-partial-let (window) (&rest _)
+            (lambda-let (window) (&rest _)
                 (cons window 'reuse))
             nil
             "[target-window]")
