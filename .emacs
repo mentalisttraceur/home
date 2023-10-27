@@ -2224,6 +2224,11 @@
     :config
     (define-key space-map "C" 'rainbow-mode))
 
+(use-package denote
+    :config
+    (setq denote-file-type 'markdown-yaml)
+    (setq denote-known-keywords nil))
+
 
 (defun message-time () (interactive)
     (message "%s" (format-time-string "%H:%M:%S")))
