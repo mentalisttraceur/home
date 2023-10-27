@@ -825,6 +825,13 @@
                 (cons
                     `("fd" "--color=never" "--full-path" ,@patterns ,@options)
                     highlight-function))))
+    (defun fixed-consult--insertion-preview (preview)
+        (when preview
+            (lambda-let ((window (selected-window)) preview) (&rest arguments)
+                (with-selected-window window
+                    (apply preview arguments)))))
+    (advice-add 'consult--insertion-preview
+        :filter-return 'fixed-consult--insertion-preview)
     (defun hack-consult-preview (preview cell action candidate)
         (funcall preview 'setup nil)
         (if (eq action 'hack-repeat-preview)
@@ -842,9 +849,7 @@
                 (with-temp-buffer
                     (insert-before-markers command)
                     (run-with-idle-timer 0.04 nil
-                        (lambda-let (preview (window (selected-window))) ()
-                            (with-selected-window window
-                                (funcall preview 'hack-repeat-preview nil))))
+                        preview 'hack-repeat-preview nil)
                     (with-advice ('consult--insertion-preview
                                      :override (ignore+return preview))
                         (consult-history history index bol))
