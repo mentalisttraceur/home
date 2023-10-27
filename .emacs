@@ -2227,7 +2227,8 @@
 (use-package denote
     :config
     (setq denote-file-type 'markdown-yaml)
-    (setq denote-known-keywords nil))
+    (setq denote-known-keywords nil)
+    (define-key space-map "m" 'denote))
 
 
 (defun message-time () (interactive)
