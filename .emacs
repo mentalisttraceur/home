@@ -2233,7 +2233,7 @@
 (use-package denote
     :config
     (setq denote-file-type 'markdown-yaml)
-    (setq denote-known-keywords nil)
+    (setq denote-known-keywords '(""))
     (define-key space-map "m" 'denote)
     (define-key space-map "M" (lambda () (interactive)
         (dired denote-directory))))
