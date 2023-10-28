@@ -372,6 +372,11 @@
         (add-hook hook wrapper depth local)))
 
 
+(defun become-command (command)
+    (let ((this-command command))
+        (call-interactively command)))
+
+
 (defun identity+ignore (value &rest _)
     value)
 
