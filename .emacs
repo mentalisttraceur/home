@@ -430,6 +430,17 @@
              (package-installed-p 'use-package))
     (defmacro use-package (&rest _)))
 
+(defmacro use-packages (&rest packages-:config-body)
+    (let ((head (cons 'use-package packages-:config-body))
+          (tail packages-:config-body))
+        (unless (eq (car tail) :config)
+            (while (and tail (not (eq (cadr tail) :config)))
+                (let-uncons (package next tail)
+                    (when next
+                        (setcdr tail (list :config (cons 'use-package next))))
+                    (setq tail next))))
+        head))
+
 (use-package help
     :config
     (setq help-window-select t)
