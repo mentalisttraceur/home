@@ -2255,6 +2255,9 @@
     :config
     (setq denote-file-type 'markdown-yaml)
     (setq denote-known-keywords '(""))
+    (defun denote-keywords-prompt-without-blank-candidate ()
+        (let ((denote-known-keywords (remove "" denote-known-keywords)))
+            (denote-keywords-prompt)))
     (define-key space-map "m" 'denote)
     (define-key space-map "M" (lambda () (interactive)
         (dired denote-directory)))
@@ -2280,7 +2283,7 @@
         (if (denote-file-has-identifier-p path)
             (let* ((title    (denote-extract-title-slug-from-path path))
                    (keywords (denote-extract-keywords-from-path path))
-                   (added    (denote-keywords-prompt))
+                   (added    (denote-keywords-prompt-without-blank-candidate))
                    (merged   (append keywords added))
                    (unique   (seq-uniq merged))
                    (sorted   (denote-keywords-sort unique)))
