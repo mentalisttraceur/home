@@ -864,13 +864,14 @@
             (progn
                 (consult-history)
                 (command-string))
-            (let* ((position (if prefix-argument (point) (buffer-end 1)))
-                   (command  (command-string position))
-                   (preview  (apply-partially 'hack-consult-preview
-                                 (consult--insertion-preview position position)
+            (let* ((input   (buffer-end 1))
+                   (source  (if prefix-argument (point) input))
+                   (command (command-string source))
+                   (preview (apply-partially 'hack-consult-preview
+                                 (consult--insertion-preview input input)
                                  (cons nil nil))))
                 (let-unpack ((history index bol) (consult--current-history))
-                    (delete-command position)
+                    (delete-command input)
                     (with-temp-buffer
                         (insert-before-markers command)
                         (run-with-idle-timer 0.04 nil
