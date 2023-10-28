@@ -2275,10 +2275,14 @@
             (unless had-unsaved-changes
                 (with-current-buffer buffer
                     (basic-save-buffer)))))
+    (defun fixed-denote-rename-file (path title keywords)
+        (unless title
+            (setq title ""))
+        (denote-rename-file path title keywords))
     (defun hack-denote-rename-file (path title keywords)
         (with-advice ('denote-rewrite-front-matter
                          :around 'hack-denote-rewrite-front-matter)
-            (denote-rename-file path title keywords)))
+            (fixed-denote-rename-file path title keywords)))
     (defun denote-keywords-add-path (path)
         (if (denote-file-has-identifier-p path)
             (let* ((title    (denote-extract-title-slug-from-path path))
