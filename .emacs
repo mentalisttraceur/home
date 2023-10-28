@@ -123,6 +123,11 @@
     `(apply-split-nest let-uncons-1 ,uncons-list 3 ,body))
 
 
+(defmacro until (test &rest body)
+    `(while (not ,test)
+         ,@body))
+
+
 (defmacro lambda-let (varlist args &rest body)
     (let (parameters parameter arguments argument)
         (dolist (var varlist)
