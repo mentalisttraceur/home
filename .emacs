@@ -1097,6 +1097,7 @@
         (let ((evil-move-cursor-back t))
             (apply evil-paste-after arguments)))
     (advice-add 'evil-paste-after :around 'fixed-evil-paste-after)
+    (setq evil-shift-round nil)
     (define-key evil-replace-state-map [escape] 'evil-insert-state)
     (define-key evil-motion-state-map "\C-m" nil)
     (define-key evil-normal-state-map "\C-?" nil)
