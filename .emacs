@@ -2265,28 +2265,34 @@
         (let ((file (file-name-nondirectory path)))
             (string-match denote-title-regexp file)
             (match-string 1 file)))
-    (defun hack-denote-rewrite-front-matter
+    (defun fixed-denote-rename-file (denote-rename-file &rest arguments)
+        (let ((cell (cons nil nil)))
+            (with-advice ('denote-format-file-name
+                             :filter-return (apply-partially 'setcar cell))
+                (apply denote-rename-file arguments))
+            (car cell)))
+    (advice-add 'denote-rename-file :around 'fixed-denote-rename-file)
+    (defun fixed-denote-rewrite-front-matter
             (denote-rewrite-front-matter path &rest arguments)
         (let* ((buffer (find-file-noselect path))
                (_ (refresh-modified-state buffer))
                (had-unsaved-changes (buffer-modified-p buffer)))
-            (with-advice ('y-or-n-p :override (ignore+return t))
-                (apply denote-rewrite-front-matter path arguments))
+            (apply denote-rewrite-front-matter path arguments)
             (unless had-unsaved-changes
                 (with-current-buffer buffer
                     (basic-save-buffer)))))
-    (defun fixed-denote-rename-file (path title keywords)
+    (advice-add 'denote-rewrite-front-matter
+        :around 'fixed-denote-rewrite-front-matter)
+    (defun hack-denote-rewrite-front-matter
+            (denote-rewrite-front-matter path &rest arguments)
+        (with-advice ('y-or-n-p :override (ignore+return t))
+            (apply denote-rewrite-front-matter path arguments)))
+    (defun hack-denote-rename-file (path title keywords)
         (unless title
             (setq title ""))
-        (let ((cell (cons nil nil)))
-            (with-advice ('denote-format-file-name
-                             :filter-return (apply-partially 'setcar cell))
-                (denote-rename-file path title keywords))
-            (car cell)))
-    (defun hack-denote-rename-file (path title keywords)
         (with-advice ('denote-rewrite-front-matter
                          :around 'hack-denote-rewrite-front-matter)
-            (fixed-denote-rename-file path title keywords)))
+            (denote-rename-file path title keywords)))
     (defun denote-keywords-add-path (path)
         (if (denote-file-has-identifier-p path)
             (let* ((title    (denote-extract-title-slug-from-path path))
