@@ -2309,13 +2309,15 @@
         (if-let (path (buffer-file-name))
             (denote-keywords-add-path path)
             (if (eq major-mode 'dired-mode)
-                (denote-keywords-add-path (dired-get-filename))
+                (dired-goto-file
+                    (denote-keywords-add-path (dired-get-filename)))
                 (become-command 'consult-history-execute))))
     (defun history-or-tag-remove (prefix-argument) (interactive "P")
         (if-let (path (buffer-file-name))
             (denote-keywords-remove-path path)
             (if (eq major-mode 'dired-mode)
-                (denote-keywords-remove-path (dired-get-filename))
+                (dired-goto-file
+                    (denote-keywords-remove-path (dired-get-filename)))
                 (become-command 'consult-history-remove))))
     (define-key evil-motion-state-map "gh" 'history-or-tag-execute-or-add)
     (define-key evil-motion-state-map "gr" 'history-or-tag-remove))
