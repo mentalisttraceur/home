@@ -2278,7 +2278,11 @@
     (defun fixed-denote-rename-file (path title keywords)
         (unless title
             (setq title ""))
-        (denote-rename-file path title keywords))
+        (let ((cell (cons nil nil)))
+            (with-advice ('denote-format-file-name
+                             :filter-return (apply-partially 'setcar cell))
+                (denote-rename-file path title keywords))
+            (car cell)))
     (defun hack-denote-rename-file (path title keywords)
         (with-advice ('denote-rewrite-front-matter
                          :around 'hack-denote-rewrite-front-matter)
