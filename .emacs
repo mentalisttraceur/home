@@ -2312,7 +2312,7 @@
                 (let ((title (denote-extract-title-slug-from-path
                                 (tag--add-nil-denote-id path))))
                     (with-advice ('denote-format-file-name
-                                    :filter-return 'remove-denote-id)
+                                    :filter-return 'tag--remove-denote-id)
                         (hack-denote-rename-file path title tags))))))
     (defun tag-add (path)
         (let* ((tags   (denote-extract-keywords-from-path path))
