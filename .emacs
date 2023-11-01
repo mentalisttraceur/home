@@ -1187,7 +1187,8 @@
     (advice-add 'evil-quit :around (lambda (evil-quit &rest arguments)
         (with-advice ('delete-window :override 'kill-current-buffer)
             (apply evil-quit arguments))))
-    (define-key evil-motion-state-map "gG" 'end-of-buffer)
+    (define-key evil-motion-state-map "gG" (lambda () (interactive)
+        (goto-char (buffer-end 1))))
     (define-prefix-command 'space-map)
     (define-key evil-motion-state-map " " 'space-map)
     (dolist (map (list evil-motion-state-map evil-insert-state-map
