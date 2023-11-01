@@ -1462,7 +1462,10 @@
     (define-key space-map "vT" (git push --tags --force))
     (define-key space-map "vc" (git commit))
     (define-key space-map "vC" (git commit --amend))
-    (define-key space-map "vb" 'vc-annotate)
+    (define-key space-map "vb" (lambda () (interactive)
+        (if (vc-root-dir)
+            (call-interactively 'vc-annotate)
+            (pop-to-command-eshell--not-in-a-git-repository "Annotate"))))
     (define-key space-map "zy" (lambda () (interactive)
         (let ((default-directory "~/Downloads"))
             (pop-to-command-eshell
