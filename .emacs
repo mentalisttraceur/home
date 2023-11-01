@@ -414,6 +414,21 @@
             (replace-field new-command position))))
 
 
+(defun funcall-process (program &rest arguments)
+    (with-temp-buffer
+        (let* ((result (apply 'call-process program nil t nil arguments))
+               (output (string-remove-suffix "\n" (buffer-string))))
+            (list result output))))
+
+(defun funcall-process-log-error (program &rest arguments)
+    (let-unpack ((result output) (apply 'funcall-process program arguments))
+        (if (eql result 0)
+            output
+            (message "Process %S in %S exit=%S output=%S"
+                (cons program arguments) default-directory result output)
+            nil)))
+
+
 (defun buffer-process-send-string (string)
     (process-send-string (get-buffer-process (current-buffer)) string))
 
