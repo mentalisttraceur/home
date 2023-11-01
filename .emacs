@@ -801,6 +801,17 @@
             (ignore-errors (vc-responsible-backend default-directory))
             (apply vc-deduce-backend arguments)))
     (advice-add 'vc-deduce-backend :around 'fixed-vc-deduce-backend)
+    (defun git-repo-root ()
+        (when-let (gitdir (funcall-process-log-error
+                              "git" "rev-parse" "--absolute-git-dir"))
+            (abbreviate-file-name (concat (file-name-directory gitdir)))))
+    (defun fixed-vc-git-root (file)
+        (let ((file (expand-file-name file)))
+            (unless (file-directory-p file)
+                (setq file (file-name-directory file)))
+            (let ((default-directory file))
+                (git-repo-root))))
+    (advice-add 'vc-git-root :override 'fixed-vc-git-root)
     (add-hook 'vc-annotate-mode-hook (lambda ()
         (setq truncate-lines nil))))
 
