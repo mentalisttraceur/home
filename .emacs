@@ -793,6 +793,11 @@
     (setq dired-dwim-target t)
     (define-key dired-mode-map "I" 'dired-kill-subdir))
 
+(defun git-repo-root ()
+    (when-let (gitdir (funcall-process-log-error
+                          "git" "rev-parse" "--absolute-git-dir"))
+        (abbreviate-file-name (concat (file-name-directory gitdir)))))
+
 (use-package vc
     :config
     (defun fixed-vc-deduce-backend (vc-deduce-backend &rest arguments)
@@ -801,10 +806,6 @@
             (ignore-errors (vc-responsible-backend default-directory))
             (apply vc-deduce-backend arguments)))
     (advice-add 'vc-deduce-backend :around 'fixed-vc-deduce-backend)
-    (defun git-repo-root ()
-        (when-let (gitdir (funcall-process-log-error
-                              "git" "rev-parse" "--absolute-git-dir"))
-            (abbreviate-file-name (concat (file-name-directory gitdir)))))
     (defun fixed-vc-git-root (file)
         (let ((file (expand-file-name file)))
             (unless (file-directory-p file)
