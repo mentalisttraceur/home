@@ -424,8 +424,9 @@
     (let-unpack ((result output) (apply 'funcall-process program arguments))
         (if (eql result 0)
             output
-            (message "Process %S in %S exit=%S output=%S"
-                (cons program arguments) default-directory result output)
+            (let ((inhibit-message t))
+                (message "Process %S in %S exit=%S output=%S"
+                    (cons program arguments) default-directory result output))
             nil)))
 
 
