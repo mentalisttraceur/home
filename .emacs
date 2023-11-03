@@ -1766,7 +1766,7 @@
 (defun histdir-repl-evil-replace-delete () (interactive)
     (let-unpack ((start-of-input start-of-replace end-of-replace end-of-input)
                      histdir-repl--evil-replace-edges)
-        (histdir-repl-delete-char-in-input)
+        (call-interactively 'eat-self-input)
         (setq histdir-repl--evil-replace-edges (list
             start-of-input
             (min start-of-replace (point))
