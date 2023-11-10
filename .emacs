@@ -794,11 +794,6 @@
     (setq dired-dwim-target t)
     (define-key dired-mode-map "I" 'dired-kill-subdir))
 
-(use-package org
-    :config
-    (setq org-agenda-start-on-weekday nil)
-    (setq org-agenda-files '("~/Documents/agenda.org")))
-
 (defun git-repo-root ()
     (when-let (gitdir (funcall-process-log-error
                           "git" "rev-parse" "--absolute-git-dir"))
@@ -2381,10 +2376,6 @@
                 (become-command 'consult-history-remove))))
     (define-key evil-motion-state-map "gh" 'history-or-tag-execute-or-add)
     (define-key evil-motion-state-map "gr" 'history-or-tag-remove))
-
-(use-packages org evil
-    :config
-    (define-key space-map "a" 'org-agenda))
 
 
 (defun message-time () (interactive)
