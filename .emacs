@@ -2300,13 +2300,6 @@
         (let ((file (file-name-nondirectory path)))
             (string-match denote-title-regexp file)
             (match-string 1 file)))
-    (defun fixed-denote-rename-file (denote-rename-file &rest arguments)
-        (let ((cell (cons nil nil)))
-            (with-advice ('denote-format-file-name
-                             :filter-return (apply-partially 'setcar cell))
-                (apply denote-rename-file arguments))
-            (car cell)))
-    (advice-add 'denote-rename-file :around 'fixed-denote-rename-file)
     (defun fixed-denote-rewrite-front-matter
             (denote-rewrite-front-matter path &rest arguments)
         (let* ((buffer (find-file-noselect path))
