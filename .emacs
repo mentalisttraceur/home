@@ -2295,10 +2295,10 @@
     (defun hack-denote-rename-file (path title keywords)
         (unless title
             (setq title ""))
-        (with-advice ('denote-sluggify :override 'identity
+        (with-advice ('denote-sluggify :override 'identity+ignore
                       'denote-rewrite-front-matter
                           :around 'hack-denote-rewrite-front-matter)
-            (denote-rename-file path title keywords)))
+            (denote-rename-file path title keywords nil)))
     (defun tag--add-nil-denote-id (path)
         (concat
             (file-name-directory path)
