@@ -859,22 +859,6 @@
           eshell-bol))
     (setq consult-find-args "find .")
     (setq consult-project-function (lambda (_may-prompt) (git-repo-root)))
-    (defun consult-fd (&optional directory initial-query) (interactive "P")
-        (let-unpack ((prompt paths directory)
-                         (consult--directory-prompt "Fd" directory))
-            (let* ((default-directory directory)
-                   (file (consult--find
-                             prompt 'consult--fd-builder initial-query)))
-                (find-file file))))
-    (defun consult--fd-builder (query)
-        (let-uncons (patterns options (consult--command-split query)
-                     patterns highlight-function (funcall
-                         consult--regexp-compiler patterns 'extended t))
-            (when patterns
-                (list-interject patterns "--and")
-                (cons
-                    `("fd" "--color=never" "--full-path" ,@patterns ,@options)
-                    highlight-function))))
     (defun fixed-consult--insertion-preview (preview)
         (when preview
             (lambda-let ((window (selected-window)) preview) (&rest arguments)
