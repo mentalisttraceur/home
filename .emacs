@@ -309,13 +309,6 @@
     value)
 
 
-(defun list-interject (list separator)
-    (let ((next list))
-        (dotimes (_ (length (cdr list)))
-            (setcdr next (cons separator (cdr next)))
-            (setq next (cddr next)))))
-
-
 (defun delete-forward-in-line (start count)
     (delete-region start (save-excursion
         (goto-char start)
