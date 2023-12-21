@@ -1584,7 +1584,8 @@
         (evil-local-set-key 'normal "gP"
             'histdir-repl-evil-replacing-paste-before)
         (evil-local-set-key 'insert "\C-q" 'eat-quoted-input)
-        (dolist (key '("\C-a" "\C-d" "\C-e" "\C-k" "\C-l" "\C-u"))
+        (dolist (key '("\C-a" "\C-d" "\C-e" "\C-k" "\C-l" "\C-u"
+                       [delete] [deletechar]))
             (evil-local-set-key 'insert key 'eat-self-input))
         (dolist (key '([\C-left] [\C-right]))
             (evil-local-set-key 'insert key 'eat-self-input)
