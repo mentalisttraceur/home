@@ -2274,7 +2274,10 @@
     (defun denote-keywords-prompt-without-blank-candidate ()
         (let ((denote-known-keywords (remove "" denote-known-keywords)))
             (denote-keywords-prompt)))
-    (define-key space-map "m" 'denote)
+    (define-key space-map "m" (lambda () (interactive)
+        (with-advice ('denote-sluggify :override 'identity+ignore
+                      'denote-sluggify-keywords :override 'identity)
+            (call-interactively 'denote))))
     (define-key space-map "M" (lambda () (interactive)
         (dired denote-directory)))
     (defun denote-extract-title-slug-from-path (path)
