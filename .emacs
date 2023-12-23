@@ -2356,6 +2356,34 @@
     (define-key evil-motion-state-map "gr" 'history-or-tag-remove))
 
 
+(defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
+(defconst tumblr--script (expand-file-name "~/.tumblr/tumblr.py"))
+(defvar tumblr-blogs '(
+    "mentalisttraceur"
+    "mentalisttraceur-process"
+    "mentalisttraceur-reactions"
+    "mentalisttraceur-software"))
+(defun tumblr-prompt-for-blog ()
+    (completing-read "Tumblr blog: " tumblr-blogs nil 'confirm))
+(defmacro tumblr (&rest arguments)
+    `(funcall-process-log-error tumblr--python tumblr--script ,@arguments))
+(defun tumblr-publish () (interactive)
+    (let ((blog (tumblr "get" "blog" buffer-file-name)))
+        (when (equal blog "")
+            (setq blog (tumblr-prompt-for-blog)))
+        (refresh-modified-state (current-buffer))
+        (tumblr "publish" buffer-file-name blog))
+    (unless (buffer-modified-p (current-buffer))
+        (revert-buffer t t)))
+(defun tumblr-delete () (interactive)
+    (refresh-modified-state (current-buffer))
+    (tumblr "delete" buffer-file-name)
+    (unless (buffer-modified-p (current-buffer))
+        (revert-buffer t t)))
+(define-key space-map "zw" 'tumblr-publish)
+(define-key space-map "zd" 'tumblr-delete)
+
+
 (defun message-time () (interactive)
     (message "%s" (format-time-string "%H:%M:%S")))
 (defun message-date () (interactive)
