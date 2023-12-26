@@ -2316,6 +2316,8 @@
     (defun hack-denote-rename-file (path title keywords)
         (unless title
             (setq title ""))
+        (unless keywords
+            (setq keywords ""))
         (with-advice ('denote-sluggify :override 'identity+ignore
                       'denote-sluggify-keywords :override 'identity
                       'denote-rewrite-front-matter
