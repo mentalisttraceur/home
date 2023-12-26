@@ -2282,6 +2282,7 @@
         (dired denote-directory)))
     (define-key space-map "sm" (lambda () (interactive)
         (dired denote-directory)
+        (revert-buffer)
         (goto-char 1)
         (dired-next-line 1)
         (consult-line)))
