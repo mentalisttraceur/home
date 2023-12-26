@@ -2357,8 +2357,8 @@
                      (substring (file-name-nondirectory path) 15)))))
     (defun tag-add (path)
         (let* ((tags   (denote-extract-keywords-from-path path))
-               (added  (denote-keywords-prompt-without-blank-candidate))
-               (added  (denote-sluggify-keywords added))
+               (added  (denote-sluggify-keywords
+                           (denote-keywords-prompt-without-blank-candidate)))
                (merged (append tags added))
                (unique (seq-uniq merged))
                (sorted (denote-keywords-sort unique)))
