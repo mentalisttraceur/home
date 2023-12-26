@@ -2346,7 +2346,7 @@
     (defun tag-add (path)
         (let* ((tags   (denote-extract-keywords-from-path path))
                (added  (denote-keywords-prompt-without-blank-candidate))
-               (added  (fix-denote-sluggify-keywords added))
+               (added  (denote-sluggify-keywords added))
                (merged (append tags added))
                (unique (seq-uniq merged))
                (sorted (denote-keywords-sort unique)))
