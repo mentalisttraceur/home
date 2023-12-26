@@ -30,6 +30,7 @@
 
 
 (define-key minibuffer-inactive-mode-map [mouse-1] nil)
+(define-key mode-line-buffer-identification-keymap [mode-line mouse-1] 'ignore)
 
 
 (setq init-gc-cons-threshold gc-cons-threshold
