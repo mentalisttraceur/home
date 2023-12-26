@@ -2276,9 +2276,13 @@
     (defun denote-keywords-prompt-without-blank-candidate ()
         (let ((denote-known-keywords (remove "" denote-known-keywords)))
             (denote-keywords-prompt)))
+    (defun hack-denote-sluggify-keyword (keyword)
+        (denote-sluggify keyword 'keywords))
+    (defun hack-denote-sluggify-keywords (keywords)
+        (mapcar 'hack-denote-sluggify-keyword keywords))
     (define-key space-map "m" (lambda () (interactive)
-        (with-advice ('denote-sluggify :override 'identity+ignore
-                      'denote-sluggify-keywords :override 'identity)
+        (with-advice ('denote-sluggify-keywords
+                          :override 'hack-denote-sluggify-keywords)
             (call-interactively 'denote))))
     (define-key space-map "M" (lambda () (interactive)
         (dired denote-directory)
@@ -2329,6 +2333,7 @@
                  (string-remove-prefix "--"
                      (substring (file-name-nondirectory path) 15)))))
     (defun tag-set (path tags)
+        (setq tags (hack-denote-sluggify-keywords tags))
         (let ((denote-directory default-directory))
             (if (denote-file-has-identifier-p path)
                 (let ((title (denote-extract-title-slug-from-path path)))
