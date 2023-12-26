@@ -2334,7 +2334,6 @@
                  (string-remove-prefix "--"
                      (substring (file-name-nondirectory path) 15)))))
     (defun tag-set (path tags)
-        (setq tags (fix-denote-sluggify-keywords tags))
         (let ((denote-directory default-directory))
             (if (denote-file-has-identifier-p path)
                 (let ((title (denote-extract-title-slug-from-path path)))
@@ -2347,6 +2346,7 @@
     (defun tag-add (path)
         (let* ((tags   (denote-extract-keywords-from-path path))
                (added  (denote-keywords-prompt-without-blank-candidate))
+               (added  (fix-denote-sluggify-keywords added))
                (merged (append tags added))
                (unique (seq-uniq merged))
                (sorted (denote-keywords-sort unique)))
