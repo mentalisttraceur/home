@@ -2313,15 +2313,37 @@
             (denote-rewrite-front-matter path &rest arguments)
         (with-advice ('y-or-n-p :override (ignore+return t))
             (apply denote-rewrite-front-matter path arguments)))
-    (defun hack-denote-rename-file (path title keywords)
+    (defun hack-denote-sluggify (title-slug)
+        (lambda-let (title-slug) (denote-sluggify string &optional component)
+            (if (eq component 'title)
+                title-slug
+                (funcall denote-sluggify string component))))
+    (defun hack-denote-rename-file (path title title-slug keywords)
         (unless title
             (setq title ""))
         (unless keywords
             (setq keywords ""))
-        (with-advice ('denote-sluggify :override 'identity+ignore
+        (with-advice ('denote-sluggify :around (hack-denote-sluggify title-slug)
                       'denote-rewrite-front-matter
                           :around 'hack-denote-rewrite-front-matter)
             (denote-rename-file path title keywords nil)))
+    (defun tag-set (path tags)
+        (let ((denote-directory default-directory))
+            (if (denote-file-has-identifier-p path)
+                (tag-set--with-identifier path tags)
+                (tag-set--without-identifier path tags))))
+    (defun tag-set--with-identifier (path tags)
+        (let ((title-slug (denote-extract-title-slug-from-path path)))
+            (if-let ((_     (denote-file-is-note-p path))
+                     (title (denote-retrieve-title-value path 'markdown-yaml)))
+                (hack-denote-rename-file path title      title-slug tags)
+                (hack-denote-rename-file path title-slug title-slug tags))))
+    (defun tag-set--without-identifier (path tags)
+        (let ((title-slug (denote-extract-title-slug-from-path
+                              (tag--add-nil-denote-id path))))
+            (with-advice ('denote-format-file-name
+                              :filter-return 'tag--remove-denote-id)
+                (hack-denote-rename-file path title-slug title-slug tags))))
     (defun tag--add-nil-denote-id (path)
         (concat
             (file-name-directory path)
@@ -2333,16 +2355,6 @@
              (string-remove-prefix "__"
                  (string-remove-prefix "--"
                      (substring (file-name-nondirectory path) 15)))))
-    (defun tag-set (path tags)
-        (let ((denote-directory default-directory))
-            (if (denote-file-has-identifier-p path)
-                (let ((title (denote-extract-title-slug-from-path path)))
-                    (hack-denote-rename-file path title tags))
-                (let ((title (denote-extract-title-slug-from-path
-                                (tag--add-nil-denote-id path))))
-                    (with-advice ('denote-format-file-name
-                                     :filter-return 'tag--remove-denote-id)
-                        (hack-denote-rename-file path title tags))))))
     (defun tag-add (path)
         (let* ((tags   (denote-extract-keywords-from-path path))
                (added  (denote-keywords-prompt-without-blank-candidate))
