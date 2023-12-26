@@ -2273,6 +2273,7 @@
     :config
     (setq denote-file-type 'markdown-yaml)
     (setq denote-known-keywords '(""))
+    (setq denote--title-history '(""))
     (defun denote-keywords-prompt-without-blank-candidate ()
         (let ((denote-known-keywords (remove "" denote-known-keywords)))
             (denote-keywords-prompt)))
