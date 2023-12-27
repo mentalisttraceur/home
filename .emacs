@@ -2276,6 +2276,10 @@
     :config
     (define-key space-map "C" 'rainbow-mode))
 
+(use-package markdown-mode
+    :config
+    (define-key markdown-mode-map [backtab] nil))
+
 (use-package denote
     :config
     (setq denote-file-type 'markdown-yaml)
