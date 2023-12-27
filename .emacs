@@ -2318,7 +2318,7 @@
         :around 'fixed-denote-rewrite-front-matter)
     (defun hack-denote-rewrite-front-matter
             (denote-rewrite-front-matter path &rest arguments)
-        (with-advice ('y-or-n-p :override (ignore+return t))
+        (with-advice ('y-or-n-p :override 'always)
             (apply denote-rewrite-front-matter path arguments)))
     (defun hack-denote-sluggify (title-slug)
         (lambda-let (title-slug) (denote-sluggify string &optional component)
