@@ -2388,6 +2388,7 @@
 (defconst tumblr--script (expand-file-name "~/.tumblr/tumblr.py"))
 (defvar tumblr-blogs '(
     "mentalisttraceur"
+    "mentalisttraceur-humor"
     "mentalisttraceur-process"
     "mentalisttraceur-reactions"
     "mentalisttraceur-software"))
