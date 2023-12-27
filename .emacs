@@ -812,6 +812,13 @@
     (add-hook 'vc-annotate-mode-hook (lambda ()
         (setq truncate-lines nil))))
 
+(use-package diff-mode
+    :config
+    (set-face-background 'diff-added "#005000")
+    (set-face-background 'diff-removed "#500000")
+    (set-face-background 'diff-refine-added "#008000")
+    (set-face-background 'diff-refine-removed "#800000"))
+
 (use-package undo-tree
     :config
     (global-undo-tree-mode 1)
