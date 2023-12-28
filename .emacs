@@ -378,6 +378,10 @@
     (apply-partially 'identity+ignore value))
 
 
+(defun file-size (filename)
+    (file-attribute-size (file-attributes filename)))
+
+
 (defun field-string-no-properties (&optional position)
     (substring-no-properties (field-string position)))
 (defun replace-field (new-contents &optional position)
@@ -1364,7 +1368,10 @@
                 (let ((file    (concat directory "/file"))
                       (unsaved (concat directory "/unsaved"))
                       (default-directory "~"))
-                    (copy-file buffer-file-name file)
+
+                    (if (file-exists-p buffer-file-name)
+                        (copy-file buffer-file-name file)
+                        (write-region 1 1 file))
                     (write-region (buffer-end -1) (buffer-end 1) unsaved)
                     (pop-to-command-eshell
                         (list "gp" file unsaved)
@@ -1375,9 +1382,12 @@
                 (setq directory nil))))
     (defun partial-save--finish (buffer directory)
         (unwind-protect
-            (with-current-buffer buffer
-                (copy-file (concat directory "/file") buffer-file-name t)
-                (refresh-modified-state buffer))
+            (let ((file (concat directory "/file")))
+                (with-current-buffer buffer
+                    (when (or (file-exists-p buffer-file-name)
+                              (> (file-size file) 0))
+                        (copy-file file buffer-file-name t))
+                    (refresh-modified-state buffer)))
             (delete-directory directory t)))
     (define-key space-map "w" 'partial-save)
     (defun partial-revert () (interactive)
