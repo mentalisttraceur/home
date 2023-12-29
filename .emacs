@@ -232,11 +232,12 @@
     (unless buffer
         (setq buffer (current-buffer)))
     (with-current-buffer buffer
-        (let ((differs (buffer-differs-from-visited-file-p)))
-            (with-advice ('ask-user-about-supersession-threat
-                              :override (lambda (_)))
-                (set-buffer-modified-p differs)))
-        (set-visited-file-modtime)))
+        (when buffer-file-name
+            (let ((differs (buffer-differs-from-visited-file-p)))
+                (with-advice ('ask-user-about-supersession-threat
+                                  :override (lambda (_)))
+                    (set-buffer-modified-p differs)))
+            (set-visited-file-modtime))))
 
 
 (defun dlist-cons (item dlist)
