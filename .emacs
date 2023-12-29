@@ -249,14 +249,12 @@
         (setq buffer (current-buffer)))
     (with-current-buffer buffer
         (when buffer-file-name
-            (if (file-exists-p buffer-file-name)
-                (let ((differs (buffer-differs-from-visited-file-p)))
-                    (with-advice ('ask-user-about-supersession-threat
-                                      :override 'ignore)
-                        (set-buffer-modified-p differs)))
+            (let ((differs (if (file-exists-p buffer-file-name)
+                               (buffer-differs-from-visited-file-p)
+                               (> (buffer-size) 0))))
                 (with-advice ('ask-user-about-supersession-threat
                                   :override 'ignore)
-                    (set-buffer-modified-p (> (buffer-size) 0))))
+                    (set-buffer-modified-p differs)))
             (set-visited-file-modtime))))
 
 
