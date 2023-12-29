@@ -176,6 +176,10 @@
                 (delete-directory ,name t)))))
 
 
+(defun advice-where (function symbol)
+    (when-let (advice (advice-member-p function symbol))
+        (aref (aref advice 2) 2)))
+
 (defmacro with-advice-1 (symbol where function &rest body)
     `(unwind-protect
         (progn
