@@ -235,7 +235,7 @@
         (when buffer-file-name
             (let ((differs (buffer-differs-from-visited-file-p)))
                 (with-advice ('ask-user-about-supersession-threat
-                                  :override (lambda (_)))
+                                  :override 'ignore)
                     (set-buffer-modified-p differs)))
             (set-visited-file-modtime))))
 
