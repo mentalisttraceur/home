@@ -1542,6 +1542,10 @@
     (with-current-buffer (messages-buffer)
         (evil-force-normal-state)))
 
+(use-packages evil undo-tree
+    :config
+    (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode))
+
 (define-derived-mode histdir-repl-mode eat-mode "HER")
 (add-to-list 'consult-mode-histories
     '(histdir-repl-mode
