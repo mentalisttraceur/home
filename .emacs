@@ -190,6 +190,18 @@
 (defmacro with-advice (advice-list &rest body)
     `(apply-split-nest with-advice-1 ,advice-list 3 ,body))
 
+(defmacro without-advice-1 (symbol function &rest body)
+    `(if-let (where (advice-where ,function ,symbol))
+        (unwind-protect
+            (progn
+                (advice-remove ,symbol ,function)
+                ,@body)
+            (advice-add ,symbol where ,function))
+         ,@body))
+
+(defmacro without-advice (advice-list &rest body)
+    `(apply-split-nest without-advice-1 ,advice-list 2 ,body))
+
 
 (defmacro with-face-attribute-1 (face attribute value &rest body)
     `(let ((--with-face-attribute-1-- (face-attribute ,face ,attribute)))
