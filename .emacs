@@ -1347,7 +1347,9 @@
                 (let ((file    (concat directory "/file"))
                       (unsaved (concat directory "/unsaved"))
                       (default-directory "~"))
-                    (copy-file buffer-file-name file)
+                    (if (file-exists-p buffer-file-name)
+                        (copy-file buffer-file-name file)
+                        (write-region 1 1 file))
                     (write-region (buffer-end -1) (buffer-end 1) unsaved)
                     (pop-to-command-eshell
                         (list "cdexec" directory "gd" "file" "unsaved")
