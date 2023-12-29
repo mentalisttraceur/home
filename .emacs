@@ -2357,7 +2357,8 @@
             (setq title ""))
         (unless keywords
             (setq keywords ""))
-        (with-advice ('denote-sluggify :around (hack-denote-sluggify title-slug)
+        (with-advice ('denote-sluggify
+                          :around (hack-denote-sluggify title-slug)
                       'denote-rewrite-front-matter
                           :around 'hack-denote-rewrite-front-matter)
             (denote-rename-file path title keywords nil)))
