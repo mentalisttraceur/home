@@ -400,12 +400,6 @@
 (defun file-size (filename)
     (file-attribute-size (file-attributes filename)))
 
-(defun rename-file-if-it-exists
-        (file new-name &optional ok-if-destination-exists)
-    (when (file-exists-p file)
-        (without-advice ('rename-file 'rename-file-if-exists)
-            (rename-file file new-name ok-if-destination-exists))))
-
 
 (defun field-string-no-properties (&optional position)
     (substring-no-properties (field-string position)))
