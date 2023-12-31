@@ -464,10 +464,6 @@
         (concat "*" name "*")))
 
 
-(unless (and (fboundp 'package-installed-p)
-             (package-installed-p 'use-package))
-    (defmacro use-package (&rest _)))
-
 (defmacro use-packages (&rest packages-:config-body)
     (let ((head (cons 'use-package packages-:config-body))
           (tail packages-:config-body))
