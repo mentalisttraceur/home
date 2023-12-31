@@ -842,6 +842,9 @@
     :config
     (defun fixed-package--with-response-buffer-1
             (package--with-response-buffer-1 url body &rest keywords)
+        (setq body (lambda-let (body) ()
+                       (funcall body)
+                       (package-menu--post-refresh)))
         (apply package--with-response-buffer-1 url body :async t keywords))
     (advice-add 'package--with-response-buffer-1
         :around 'fixed-package--with-response-buffer-1))
