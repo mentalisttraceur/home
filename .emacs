@@ -838,6 +838,14 @@
     (set-face-background 'diff-refine-added "#008000")
     (set-face-background 'diff-refine-removed "#800000"))
 
+(use-package package
+    :config
+    (defun fixed-package--with-response-buffer-1
+            (package--with-response-buffer-1 url body &rest keywords)
+        (apply package--with-response-buffer-1 url body :async t keywords))
+    (advice-add 'package--with-response-buffer-1
+        :around 'fixed-package--with-response-buffer-1))
+
 (use-package undo-tree
     :config
     (global-undo-tree-mode 1)
