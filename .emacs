@@ -1259,6 +1259,12 @@
     (define-key space-map "f" 'find-file)
     (define-key space-map "F" 'find-alternate-file)
     (define-key space-map "d" 'dired)
+    (defun delete-buffer-file () (interactive)
+        (if buffer-file-name
+            (when (y-or-n-p (format "Delete %s?" buffer-file-name))
+                (delete-file buffer-file-name))
+            (message "%s is not visiting a file" buffer-file-name)))
+    (define-key space-map "D" 'delete-buffer-file)
     (add-to-list 'evil-motion-state-modes 'dired-mode)
     (define-key space-map "y" 'execute-extended-command)
     (define-key space-map "," 'eval-expression)
