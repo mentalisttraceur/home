@@ -1920,6 +1920,7 @@
         (histdir-repl-backward-char-in-input length)))
 (defun histdir-repl-name (name)
     (cond
+        ((string-prefix-p "zsh"    name) "sh")
         ((string-prefix-p "python" name) "python")
         ((string-prefix-p "pypy"   name) "python")
         ((string-prefix-p "node"   name) "js")
