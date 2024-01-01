@@ -2460,19 +2460,28 @@
     (completing-read "Tumblr blog: " tumblr-blogs nil 'confirm))
 (defmacro tumblr (&rest arguments)
     `(funcall-process-log-error tumblr--python tumblr--script ,@arguments))
+(defmacro tumblr--ensure-file (&rest body)
+    `(let ((already-existed (file-exists-p buffer-file-name)))
+        (unwind-protect
+            (progn
+                (if already-existed
+                    (refresh-modified-state)
+                    (basic-save-buffer))
+                ,@body
+                (unless (buffer-modified-p)
+                    (revert-buffer t t)))
+            (unless already-existed
+                (delete-file buffer-file-name)
+                (refresh-modified-state)))))
 (defun tumblr-publish () (interactive)
-    (let ((blog (tumblr "get" "blog" buffer-file-name)))
-        (when (equal blog "")
-            (setq blog (tumblr-prompt-for-blog)))
-        (refresh-modified-state)
-        (tumblr "publish" buffer-file-name blog))
-    (unless (buffer-modified-p)
-        (revert-buffer t t)))
+    (tumblr--ensure-file
+        (let ((blog (tumblr "get" "blog" buffer-file-name)))
+            (when (equal blog "")
+                (setq blog (tumblr-prompt-for-blog)))
+            (tumblr "publish" buffer-file-name blog))))
 (defun tumblr-delete () (interactive)
-    (refresh-modified-state)
-    (tumblr "delete" buffer-file-name)
-    (unless (buffer-modified-p)
-        (revert-buffer t t)))
+    (tumblr--ensure-file
+        (tumblr "delete" buffer-file-name)))
 (define-key space-map "zw" 'tumblr-publish)
 (define-key space-map "zd" 'tumblr-delete)
 
