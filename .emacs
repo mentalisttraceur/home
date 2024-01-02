@@ -1257,7 +1257,7 @@
                 (delete-file buffer-file-name)
                 (set-buffer-modified-p t)
                 (kill-buffer))
-            (message "%s is not visiting a file" buffer-file-name)))
+            (message "%s is not visiting a file" (buffer-name))))
     (define-key space-map "D" 'delete-buffer-file)
     (add-to-list 'evil-motion-state-modes 'dired-mode)
     (define-key space-map "y" 'execute-extended-command)
