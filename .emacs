@@ -47,7 +47,7 @@
     (setq woman-manpath '("~/../usr/share/man")))
 
 
-(defalias 'yes-or-no-p 'y-or-n-p)
+(setq use-short-answers t)
 
 
 (blink-cursor-mode -1)
