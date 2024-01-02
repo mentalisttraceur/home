@@ -1254,7 +1254,9 @@
     (defun delete-buffer-file () (interactive)
         (if buffer-file-name
             (when (y-or-n-p (format "Delete %s?" buffer-file-name))
-                (delete-file buffer-file-name))
+                (delete-file buffer-file-name)
+                (set-buffer-modified-p t)
+                (kill-buffer))
             (message "%s is not visiting a file" buffer-file-name)))
     (define-key space-map "D" 'delete-buffer-file)
     (add-to-list 'evil-motion-state-modes 'dired-mode)
