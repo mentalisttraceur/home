@@ -1667,6 +1667,9 @@
         (evil-local-set-key 'insert [down] 'histdir-input-newer)
         (evil-local-set-key 'replace [up] 'histdir-repl-evil-replace-up)
         (evil-local-set-key 'replace [down] 'histdir-repl-evil-replace-down)
+        (evil-local-set-key 'insert [mouse-1] 'histdir-repl-mouse-set-point)
+        (evil-local-set-key 'replace [down-mouse-1]
+            'histdir-repl-mouse-set-point)
         buffer))
 (defun histdir-repl-beginning-of-input () (interactive)
     (goto-char (eat-point))
@@ -1936,6 +1939,10 @@
         (histdir-repl-enter+delete-input length)
         (buffer-process-send-string string)
         (histdir-repl-backward-char-in-input length)))
+(defun histdir-repl-mouse-set-point (event &optional promote-to-region)
+    (interactive "e\np")
+    (mouse-set-point event promote-to-region)
+    (histdir-repl-enter-input 0))
 (defun histdir-repl-name (name)
     (cond
         ((string-prefix-p "zsh"    name) "sh")
