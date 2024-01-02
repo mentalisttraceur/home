@@ -2317,7 +2317,11 @@
     :config
     (defun fixed-with-editor-return (with-editor-return cancel)
         (with-advice ('delete-file :override 'ignore
-                      (if cancel 'save-buffer nil) :override 'ignore)
+                      (if cancel 'save-buffer nil) :override 'ignore
+                      'kill-buffer
+                          :filter-return (lambda (killed)
+                                             (unless killed
+                                                 (user-error "Not cancelled"))))
             (funcall with-editor-return cancel)))
     (advice-add 'with-editor-return :around 'fixed-with-editor-return)
     (add-hook 'eshell-mode-hook 'with-editor-export-editor)
