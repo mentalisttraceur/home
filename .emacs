@@ -2494,14 +2494,11 @@
     `(funcall-process-log-error tumblr--python tumblr--script ,@arguments))
 (defmacro tumblr--ensure-file (&rest body)
     `(let ((already-existed (file-exists-p buffer-file-name)))
+        (basic-save-buffer)
         (unwind-protect
             (progn
-                (if already-existed
-                    (refresh-modified-state)
-                    (basic-save-buffer))
                 ,@body
-                (unless (buffer-modified-p)
-                    (revert-buffer t t)))
+                (revert-buffer t t))
             (unless already-existed
                 (delete-file buffer-file-name)
                 (refresh-modified-state)))))
