@@ -1377,6 +1377,8 @@
     (define-key space-map "L" 'consult-line-resume)
     (define-key space-map "sl" 'consult-ripgrep)
     (define-key space-map "sf" 'consult-fd)
+    (define-key space-map "st" (lambda () (interactive)
+        (consult-fd "~/storage/shared" "\\.trashed -- -H")))
     (define-key space-map "x" 'tramp-cleanup-connection)
     (add-hook 'pop-to-command-setup-hook (lambda ()
         (evil-initialize-state)
