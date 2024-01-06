@@ -2487,15 +2487,8 @@
     (define-key evil-motion-state-map "gr" 'history-or-tag-remove)
     (defconst task-tag "qq")
     (setq denote-excluded-keywords-regexp "qq.*")
-    (defun task--denote-keywords-prompt (denote-keywords-prompt &rest arguments)
-        (let ((keywords (apply denote-keywords-prompt arguments)))
-            (if (listp keywords)
-                (cons task-tag keywords)
-                (list task-tag))))
     (defun task-create () (interactive)
-        (with-advice ('denote-keywords-prompt
-                          :around 'task--denote-keywords-prompt)
-            (call-interactively 'denote))
+        (denote (denote-title-prompt nil "Task") (list task-tag))
         (save-buffer-maybe-kill))
     (define-key space-map "g" 'task-create))
 
