@@ -1254,6 +1254,7 @@
     (define-key space-map "f" 'find-file)
     (define-key space-map "F" 'find-alternate-file)
     (define-key space-map "d" 'dired)
+    (add-to-list 'evil-motion-state-modes 'dired-mode)
     (defun delete-buffer-file-or-directory--switch ()
         (if buffer-file-name
             (apply-partially 'delete-file buffer-file-name)
@@ -1272,7 +1273,6 @@
                         (kill-buffer))
                     (set-buffer-modified-p t)))))
     (define-key space-map "D" 'delete-buffer-file-or-directory)
-    (add-to-list 'evil-motion-state-modes 'dired-mode)
     (define-key space-map "y" 'execute-extended-command)
     (define-key space-map "," 'eval-expression)
     (define-key space-map "h" help-map)
