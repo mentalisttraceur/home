@@ -2494,7 +2494,8 @@
     (defun task-create () (interactive)
         (with-advice ('denote-keywords-prompt
                           :around 'task--denote-keywords-prompt)
-            (call-interactively 'denote)))
+            (call-interactively 'denote))
+        (save-buffer-maybe-close))
     (define-key space-map "g" 'task-create))
 
 
