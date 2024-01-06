@@ -2486,6 +2486,7 @@
     (define-key evil-motion-state-map "gh" 'history-or-tag-execute-or-add)
     (define-key evil-motion-state-map "gr" 'history-or-tag-remove)
     (defconst task-tag "qq")
+    (setq denote-excluded-keywords-regexp "qq.*")
     (defun task--denote-keywords-prompt (denote-keywords-prompt &rest arguments)
         (let ((keywords (apply denote-keywords-prompt arguments)))
             (if (listp keywords)
