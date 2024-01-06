@@ -1441,11 +1441,11 @@
                     (refresh-modified-state buffer)))
             (delete-directory directory t)))
     (define-key space-map "w" 'partial-save)
-    (defun save-buffer-maybe-close () (interactive)
+    (defun save-buffer-maybe-kill () (interactive)
         (save-buffer)
         (when (y-or-n-p (format "Kill %s?" (buffer-name)))
             (kill-buffer)))
-    (define-key space-map "W" 'save-buffer-maybe-close)
+    (define-key space-map "W" 'save-buffer-maybe-kill)
     (defun partial-revert () (interactive)
         (if (not buffer-file-name)
             (call-interactively 'revert-buffer)
@@ -2496,7 +2496,7 @@
         (with-advice ('denote-keywords-prompt
                           :around 'task--denote-keywords-prompt)
             (call-interactively 'denote))
-        (save-buffer-maybe-close))
+        (save-buffer-maybe-kill))
     (define-key space-map "g" 'task-create))
 
 
