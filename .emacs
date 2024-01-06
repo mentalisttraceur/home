@@ -2446,7 +2446,7 @@
     (defun tag-set--with-identifier (path tags)
         (let ((title-slug (denote-extract-title-slug-from-path path)))
             (if-let ((_     (denote-file-is-note-p path))
-                     (title (denote-retrieve-title-value path 'markdown-yaml)))
+                     (title (denote-retrieve-title-value path denote-file-type)))
                 (hack-denote-rename-file path title      title-slug tags)
                 (hack-denote-rename-file path title-slug title-slug tags))))
     (defun tag-set--without-identifier (path tags)
