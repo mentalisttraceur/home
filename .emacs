@@ -2387,6 +2387,7 @@
     (defun goto-newest-in-denote-dired () (interactive)
         (goto-denote-dired)
         (goto-char (point-max))
+        (redisplay)
         (dired-previous-line 1))
     (defun goto-oldest-in-denote-dired () (interactive)
         (goto-denote-dired)
