@@ -2484,7 +2484,18 @@
                 (dired-goto-file (tag-remove (dired-get-filename)))
                 (become-command 'consult-history-remove))))
     (define-key evil-motion-state-map "gh" 'history-or-tag-execute-or-add)
-    (define-key evil-motion-state-map "gr" 'history-or-tag-remove))
+    (define-key evil-motion-state-map "gr" 'history-or-tag-remove)
+    (defconst task-tag "qq")
+    (defun task--denote-keywords-prompt (denote-keywords-prompt &rest arguments)
+        (let ((keywords (apply denote-keywords-prompt arguments)))
+            (if (listp keywords)
+                (cons task-tag keywords)
+                (list task-tag))))
+    (defun task-create () (interactive)
+        (with-advice ('denote-keywords-prompt
+                          :around 'task--denote-keywords-prompt)
+            (call-interactively 'denote)))
+    (define-key space-map "g" 'task-create))
 
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
