@@ -2489,7 +2489,12 @@
     (setq denote-excluded-keywords-regexp "qq.*")
     (defun task-create () (interactive)
         (denote (denote-title-prompt nil "Task") (list task-tag))
-        (save-buffer-maybe-kill))
+        (basic-save-buffer)
+        (kill-buffer)
+        (dired denote-directory)
+        (revert-buffer)
+        (goto-char (point-max))
+        (dired-previous-line 1))
     (define-key space-map "g" 'task-create))
 
 
