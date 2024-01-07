@@ -2378,6 +2378,11 @@
         (mapcar 'fix-denote-sluggify-keyword keywords))
     (advice-add 'denote-sluggify-keywords
         :override 'fix-denote-sluggify-keywords)
+    (defun fix-denote--slug-hyphenate (string)
+        (replace-regexp-in-string "^-+\\|-+$" ""
+            (replace-regexp-in-string "-\\{3,\\}" "-"
+                (replace-regexp-in-string "_\\|\s" "-" string))))
+    (advice-add 'denote--slug-hyphenate :override 'fix-denote--slug-hyphenate)
     (define-key space-map "m" 'denote)
     (defun goto-denote-dired () (interactive)
         (dired denote-directory)
