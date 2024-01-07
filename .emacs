@@ -345,6 +345,21 @@
     (string-join (make-list count string)))
 
 
+(defun point-position-with-scroll ()
+    (list
+        (point)
+        (window-start)
+        (window-vscroll nil t)
+        (window-hscroll)))
+
+(defun jump-to-position-with-scroll (position-with-scroll)
+    (let-unpack ((position start vscroll hscroll) position-with-scroll)
+        (goto-char position)
+        (let ((window (selected-window)))
+            (set-window-start window start t)
+            (set-window-vscroll window vscroll t)
+            (set-window-hscroll window hscroll))))
+
 (defun point-marker-with-scroll ()
     (list
         (point-marker)
