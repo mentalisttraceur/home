@@ -2537,6 +2537,10 @@
     (defun task-prompt () (interactive)
         (let ((denote--title-history))
             (denote-title-prompt nil "Task")))
+    (defun task--filter-dired ()
+        (dired-mark-files-regexp (concat "_" task-tag))
+        (dired-toggle-marks)
+        (dired-do-kill-lines))
     (defun task-create () (interactive)
         (denote (task-prompt) (list task-tag))
         (basic-save-buffer)
@@ -2545,9 +2549,7 @@
     (define-key space-map "g" 'task-create)
     (defun task-list () (interactive)
         (goto-oldest-in-denote-dired)
-        (dired-mark-files-regexp (concat "_" task-tag))
-        (dired-toggle-marks)
-        (dired-do-kill-lines))
+        (task--filter-dired))
     (define-key space-map "G" 'task-list))
 
 
