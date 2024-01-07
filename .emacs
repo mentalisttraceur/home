@@ -2417,19 +2417,12 @@
             (denote-rewrite-front-matter path &rest arguments)
         (with-advice ('y-or-n-p :override 'always)
             (apply denote-rewrite-front-matter path arguments)))
-    (defun hack-denote-sluggify (title-slug)
-        (lambda-let (title-slug) (denote-sluggify string &optional component)
-            (if (eq component 'title)
-                title-slug
-                (funcall denote-sluggify string component))))
-    (defun hack-denote-rename-file (path title title-slug keywords)
+    (defun hack-denote-rename-file (path title keywords)
         (unless title
             (setq title ""))
         (unless keywords
             (setq keywords ""))
-        (with-advice ('denote-sluggify
-                          :around (hack-denote-sluggify title-slug)
-                      'denote-rewrite-front-matter
+        (with-advice ('denote-rewrite-front-matter
                           :around 'hack-denote-rewrite-front-matter)
             (if (file-exists-p path)
                 (denote-rename-file path title keywords nil)
@@ -2449,17 +2442,17 @@
                 (tag-set--with-identifier path tags)
                 (tag-set--without-identifier path tags))))
     (defun tag-set--with-identifier (path tags)
-        (let ((title-slug (denote-extract-title-slug-from-path path)))
-            (if-let ((_     (denote-file-is-note-p path))
-                     (title (denote-retrieve-title-value path denote-file-type)))
-                (hack-denote-rename-file path title      title-slug tags)
-                (hack-denote-rename-file path title-slug title-slug tags))))
+        (if-let ((_     (denote-file-is-note-p path))
+                 (title (denote-retrieve-title-value path denote-file-type)))
+            (hack-denote-rename-file path title tags)
+            (setq title (denote-extract-title-slug-from-path path))
+            (hack-denote-rename-file path title tags)))
     (defun tag-set--without-identifier (path tags)
-        (let ((title-slug (denote-extract-title-slug-from-path
-                              (tag--add-nil-denote-id path))))
+        (let ((title (denote-extract-title-slug-from-path
+                         (tag--add-nil-denote-id path))))
             (with-advice ('denote-format-file-name
                               :filter-return 'tag--remove-denote-id)
-                (hack-denote-rename-file path title-slug title-slug tags))))
+                (hack-denote-rename-file path title tags))))
     (defun tag--add-nil-denote-id (path)
         (concat
             (file-name-directory path)
