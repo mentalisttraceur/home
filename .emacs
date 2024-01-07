@@ -2527,7 +2527,13 @@
         (basic-save-buffer)
         (kill-buffer)
         (goto-newest-in-denote-dired))
-    (define-key space-map "g" 'task-create))
+    (define-key space-map "g" 'task-create)
+    (defun task-list () (interactive)
+        (goto-oldest-in-denote-dired)
+        (dired-mark-files-regexp (concat "_" task-tag))
+        (dired-toggle-marks)
+        (dired-do-kill-lines))
+    (define-key space-map "G" 'task-list))
 
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
