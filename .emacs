@@ -2551,7 +2551,27 @@
     (defun task-list () (interactive)
         (goto-oldest-in-denote-dired)
         (task--filter-dired))
-    (define-key space-map "G" 'task-list))
+    (define-key space-map "G" 'task-list)
+    (defun task--recreate (path)
+        (let* ((title (title-get path))
+               (tags  (denote-extract-keywords-from-path path)))
+            (denote title tags))
+        (copy-file path (buffer-file-name) t)
+        (delete-file path)
+        (set-buffer-modified-p nil)
+        (kill-buffer)
+        (jump-to-position-with-scroll (prog1
+            (point-position-with-scroll)
+            (revert-buffer)
+            (task--filter-dired))))
+    (defun task-recreate () (interactive)
+        (if-let (path (buffer-file-name))
+            (task--recreate path)
+            (if (derived-mode-p 'dired-mode)
+                (task--recreate (dired-get-filename))
+                (user-error "%s is not visiting a file or directory"
+                            (buffer-name)))))
+    (define-key space-map "j" 'task-recreate))
 
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
