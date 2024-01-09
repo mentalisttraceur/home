@@ -2492,7 +2492,7 @@
             (if (denote-file-has-identifier-p path)
                 (or (when (denote-file-is-note-p path)
                         (denote-retrieve-title-value path denote-file-type))
-                    (denote-extract-title-slug-from-path))
+                    (denote-extract-title-slug-from-path path))
                 (denote-extract-title-slug-from-path
                     (tag--add-nil-denote-id path)))))
     (defun title--edit (path)
