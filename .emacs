@@ -2513,7 +2513,9 @@
                 (user-error "%s is not visiting a file or directory"
                             (buffer-name)))))
     (define-key evil-motion-state-map "gc" 'title-edit)
-    (define-key space-map "m" 'denote)
+    (define-key space-map "m" (lambda () (interactive)
+        (let ((denote--title-history nil))
+            (call-interactively 'denote))))
     (defun note-list () (interactive)
         (dired denote-directory)
         (dired-hide-details-mode 1)
