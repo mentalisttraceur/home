@@ -825,7 +825,8 @@
     (setq dired-dwim-target t)
     (define-key dired-mode-map "I" 'dired-kill-subdir)
     (define-key dired-mode-map [mouse-2] 'ignore)
-    (define-key dired-mode-map "a" 'dired-hide-details-mode))
+    (define-key dired-mode-map "a" 'dired-hide-details-mode)
+    (add-hook 'dired-mode-hook 'dired-hide-details-mode))
 
 (defun git-repo-root ()
     (when-let (gitdir (funcall-process-log-error
