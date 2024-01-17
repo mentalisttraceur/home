@@ -39,7 +39,9 @@
       file-name-handler-alist nil)
 
 
-(when (getenv "TERMUX_VERSION")
+(defconst termux (getenv "TERMUX_VERSION"))
+
+(when termux
     (defun fixed-browse-url-xdg-open (url &optional _unused)
         (message "opening %s" url)
         (browse-url-xdg-open url))
