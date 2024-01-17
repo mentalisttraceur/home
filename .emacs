@@ -29,10 +29,6 @@
 (load custom-file 'noerror)
 
 
-(define-key minibuffer-inactive-mode-map [mouse-1] nil)
-(define-key mode-line-buffer-identification-keymap [mode-line mouse-1] 'ignore)
-
-
 (setq init-gc-cons-threshold gc-cons-threshold
       init-file-name-handler-alist file-name-handler-alist)
 (setq gc-cons-threshold (* 1024 1024 1024)
@@ -42,6 +38,9 @@
 (defconst termux (getenv "TERMUX_VERSION"))
 
 (when termux
+    (define-key minibuffer-inactive-mode-map [mouse-1] nil)
+    (define-key mode-line-buffer-identification-keymap
+        [mode-line mouse-1] 'ignore)
     (defun fixed-browse-url-xdg-open (url &optional _unused)
         (message "opening %s" url)
         (browse-url-xdg-open url))
@@ -826,7 +825,8 @@
     :config
     (setq dired-dwim-target t)
     (define-key dired-mode-map "I" 'dired-kill-subdir)
-    (define-key dired-mode-map [mouse-2] 'ignore)
+    (when termux
+        (define-key dired-mode-map [mouse-2] 'ignore))
     (define-key dired-mode-map "a" 'dired-hide-details-mode)
     (add-hook 'dired-mode-hook 'dired-hide-details-mode))
 
