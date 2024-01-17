@@ -401,6 +401,18 @@
         (add-hook hook wrapper depth local)))
 
 
+(defmacro with-hook-1 (add-hook-arguments &rest body)
+    (let-unpack-1 (hook function depth local) add-hook-arguments
+        `(unwind-protect
+             (progn
+                 (add-hook ,hook ,function ,depth ,local)
+                 ,@body)
+             (remove-hook ,hook ,function ,local))))
+
+(defmacro with-hook (hook-list &rest body)
+    `(apply-split-nest with-hook-1 ,hook-list 1 ,body))
+
+
 (defun become-command (command)
     (let ((this-command command))
         (call-interactively command)))
