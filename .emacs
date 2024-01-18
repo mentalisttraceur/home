@@ -896,7 +896,8 @@
             (apply org-read-date arguments)
             (with-hook (('post-command-hook 'org-read-date-display))
                 (apply org-read-date arguments))))
-    (advice-add 'org-read-date :around 'fixed-org-read-date))
+    (advice-add 'org-read-date :around 'fixed-org-read-date)
+    (setq org-read-date-popup-calendar nil))
 
 (use-package undo-tree
     :config
