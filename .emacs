@@ -891,11 +891,12 @@
             (error (message "%s" (error-message-string error)))))
     (advice-add 'org-read-date-display :around 'fixed-org-read-date-display)
     (defun fixed-org-read-date (org-read-date &rest arguments)
-        (if (or org-read-date-popup-calendar
-                (not org-read-date-display-live))
-            (apply org-read-date arguments)
-            (with-hook (('post-command-hook 'org-read-date-display))
-                (apply org-read-date arguments))))
+        (let ((org-read-date-inactive (nth 6 arguments)))
+            (if (or org-read-date-popup-calendar
+                    (not org-read-date-display-live))
+                (apply org-read-date arguments)
+                (with-hook (('post-command-hook 'org-read-date-display))
+                    (apply org-read-date arguments)))))
     (advice-add 'org-read-date :around 'fixed-org-read-date)
     (setq org-read-date-popup-calendar nil))
 
