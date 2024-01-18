@@ -2577,10 +2577,10 @@
     (define-key space-map "sg" (lambda () (interactive)
         (task-list)
         (consult-line)))
-    (defun task--recreate (path)
+    (defun task--recreate (path &optional date)
         (let* ((title (title-get path))
                (tags  (denote-extract-keywords-from-path path)))
-            (denote title tags))
+            (denote title tags nil nil date))
         (copy-file path (buffer-file-name) t)
         (delete-file path)
         (set-buffer-modified-p nil)
@@ -2589,14 +2589,31 @@
             (point-position-with-scroll)
             (revert-buffer)
             (task--filter-dired))))
-    (defun task-recreate () (interactive)
+    (defun task-recreate (&optional date) (interactive)
         (if-let (path (buffer-file-name))
-            (task--recreate path)
+            (task--recreate path date)
             (if (derived-mode-p 'dired-mode)
-                (task--recreate (dired-get-filename))
+                (task--recreate (dired-get-filename) date)
                 (user-error "%s is not visiting a file or directory"
                             (buffer-name)))))
     (define-key space-map "j" 'task-recreate))
+(use-packages org denote
+    :config
+    (defun hack-org-read-date-display ()
+        (ignore-errors (org-read-date-display)))
+    (defun task-datetime-prompt ()
+        (let ((org-read-date-popup-calendar nil)
+              (org-time-was-given nil))
+            (with-hook (('post-command-hook 'hack-org-read-date-display))
+                (let ((datetime (org-read-date)))
+                    (substring
+                        (concat datetime " 00:00")
+                        0
+                        (max (length datetime)
+                             (length "YYYY-MM-DD HH:MM")))))))
+    (defun task-schedule () (interactive)
+        (task-recreate (task-datetime-prompt)))
+    (define-key space-map "J" 'task-schedule))
 
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
