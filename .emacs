@@ -883,6 +883,14 @@
     (advice-add 'package--with-response-buffer-1
         :around 'fixed-package--with-response-buffer-1))
 
+(use-package org
+    :config
+    (defun fixed-org-read-date-display (org-read-date-display &rest arguments)
+        (condition-case error
+            (apply org-read-date-display arguments)
+            (error (message "%s" (error-message-string error)))))
+    (advice-add 'org-read-date-display :around 'fixed-org-read-date-display))
+
 (use-package undo-tree
     :config
     (global-undo-tree-mode 1)
