@@ -570,8 +570,7 @@
                 ((string-match-p "^de" word)
                     (setq month 12))
                 (t
-                    (push word bad-words))
-                ))
+                    (push word bad-words))))
         (let ((now (decode-time (current-time))))
             (datetime-parse--use-offsets year   now)
             (datetime-parse--use-offsets month  now)
