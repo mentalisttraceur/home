@@ -629,6 +629,10 @@
             (message "%S" (datetime-parse input))
             (error (message "%s" (error-message-string error))))))
 
+(defun datetime-read (&optional initial-input)
+    (with-hook (('post-command-hook 'datetime-parse-preview))
+        (datetime-parse (read-string "Date+time: " initial-input))))
+
 
 (defmacro use-packages (&rest packages-:config-body)
     (let ((head (cons 'use-package packages-:config-body))
