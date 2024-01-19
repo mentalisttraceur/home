@@ -884,6 +884,7 @@
         :around 'fixed-package--with-response-buffer-1))
 
 (use-package org
+    :defer
     :config
     (defun fixed-org-read-date-display (org-read-date-display &rest arguments)
         (condition-case error
