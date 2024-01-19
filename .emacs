@@ -2664,7 +2664,7 @@
                 (denote--valid-date input-with-time))))
     (define-key space-map "j" (lambda () (interactive)
         (task-schedule (format-time-string denote-id-format (current-time)))))
-    (define-key space-map "J" (lambda ()
+    (define-key space-map "J" (lambda () (interactive)
         (task-schedule (task-schedule-prompt)))))
 
 
