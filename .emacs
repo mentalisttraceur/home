@@ -534,7 +534,7 @@
 
 (defun datetime-parse (string)
     (let (year  month  day  hour  minute  second  weekday
-          year+ month+ day+ hour+ minute+ second+ weekday+
+          year+ month+ day+ hour+ minute+ second+
           (now (decode-time (current-time)))
           (integers ())
           (bad-words ()))
