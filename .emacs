@@ -495,6 +495,7 @@
 (defun datetime-parse (string)
     (let (year  month  day  hour  minute  second  weekday
           year+ month+ day+ hour+ minute+ second+ weekday+
+          (now (decode-time (current-time)))
           (integers ())
           (bad-words ()))
         (dolist (word (split-string string))
@@ -571,13 +572,17 @@
                     (setq month 12))
                 (t
                     (push word bad-words))))
-        (let ((now (decode-time (current-time))))
-            (datetime-parse--use-offsets year   now)
-            (datetime-parse--use-offsets month  now)
-            (datetime-parse--use-offsets day    now)
-            (datetime-parse--use-offsets hour   now)
-            (datetime-parse--use-offsets minute now)
-            (datetime-parse--use-offsets second now))
+        (datetime-parse--use-offsets year   now)
+        (datetime-parse--use-offsets month  now)
+        (datetime-parse--use-offsets day    now)
+        (datetime-parse--use-offsets hour   now)
+        (datetime-parse--use-offsets minute now)
+        (datetime-parse--use-offsets second now)
+        (datetime-parse--implies-now second minute now)
+        (datetime-parse--implies-now minute hour   now)
+        (datetime-parse--implies-now hour   day    now)
+        (datetime-parse--implies-now day    month  now)
+        (datetime-parse--implies-now month  year   now)
         (let ((open-slots (+ (if year   0 1)
                              (if month  0 1)
                              (if day    0 1)
@@ -617,6 +622,12 @@
             (unless ,slot
                 (setq ,slot (,decoded-time-slot ,now)))
             (setq ,slot (+ ,slot ,slot+)))))
+(defmacro datetime-parse--implies-now (smaller-slot larger-slot now)
+    (let* ((name              (symbol-name larger-slot))
+           (decoded-time-slot (intern (concat "decoded-time-" name))))
+        `(when ,smaller-slot
+             (unless ,larger-slot
+                 (setq ,larger-slot (,decoded-time-slot ,now))))))
 (defmacro datetime-parse--consume-integer-if-needed (slot integers)
     `(unless ,slot
         (when-let (string (pop ,integers))
