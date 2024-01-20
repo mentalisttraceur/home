@@ -608,7 +608,8 @@
         (unless hour   (setq hour   0))
         (unless minute (setq minute 0))
         (unless second (setq second 0))
-        (list second minute hour day month year weekday -1 nil)))
+        (format "%04d-%02d-%02d %02d:%02d:%02d (%S)"
+            year month day hour minute second weekday)))
 (defmacro datetime-parse--add-offset (slot+ word)
     `(progn
         (unless ,slot+
