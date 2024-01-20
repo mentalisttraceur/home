@@ -527,6 +527,11 @@
         prefixes))
 
 
+(defun regexp-opt-prefix-group (string &optional shortest longest paren lax)
+    (let ((strings (string-prefixes string shortest longest)))
+        (regexp-opt-group strings paren lax)))
+
+
 (defun datetime-parse (string)
     (let (year  month  day  hour  minute  second  weekday
           year+ month+ day+ hour+ minute+ second+ weekday+
