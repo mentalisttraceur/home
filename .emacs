@@ -652,10 +652,11 @@
             (setq ,slot (string-to-number string)))))
 
 (defun datetime-parse-preview ()
-    (let ((input (minibuffer-contents)))
-        (condition-case error
-            (message "%S" (datetime-parse input))
-            (error (message "%s" (error-message-string error))))))
+    (when (minibufferp)
+        (let ((input (minibuffer-contents)))
+            (condition-case error
+                (message "%S" (datetime-parse input))
+                (error (message "%s" (error-message-string error)))))))
 
 (defun datetime-read (&optional initial-input)
     (with-hook (('post-command-hook 'datetime-parse-preview))
