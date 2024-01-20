@@ -570,7 +570,7 @@
                     (datetime-parse--add-offset hour+ word))
                 ((string-match-p "^[-+][0-9]+mi" word)
                     (datetime-parse--add-offset minute+ word))
-                ((string-match-p "^[-+][0-9]+s" word)
+                ((string-match-p "^[-+][0-9]+s\\($\\|[^t]\\)" word)
                     (datetime-parse--add-offset second+ word))
                 ((string-match-p "^su" word)
                     (setq weekday 0))
