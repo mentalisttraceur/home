@@ -80,6 +80,19 @@
 (setq lisp-indent-offset 4)
 
 
+(defmacro apply-split (callable arguments count)
+    (setq count (1- count))
+    (let* ((forms '(progn))
+           (last-cons forms))
+        (while arguments
+            (setcdr last-cons (list (cons callable arguments)))
+            (setq last-cons (cdr last-cons))
+            (let ((end (nthcdr count arguments)))
+                (setq arguments (cdr end))
+                (setcdr end nil)))
+        forms))
+
+
 (defmacro apply-split-nest (callable arguments count body)
     (setq count (1- count))
     (let* ((forms '(unused))
