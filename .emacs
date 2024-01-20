@@ -533,7 +533,7 @@
 
 
 (defun datetime--parse (string)
-    (let (year  month  day  hour  minute  second  weekday
+    (let (year  month  day  hour  minute  second  day-of-week
           year+ month+ day+ hour+ minute+ second+
           (now (decode-time (current-time)))
           (integers ())
@@ -583,19 +583,19 @@
                 ((string-match-p "^[-+][0-9]+s\\($\\|[^t]\\)" word)
                     (datetime-parse--add-offset second+ word))
                 ((string-match-p "^su" word)
-                    (setq weekday 0))
+                    (setq day-of-week 0))
                 ((string-match-p "^mo" word)
-                    (setq weekday 1))
+                    (setq day-of-week 1))
                 ((string-match-p "^tu" word)
-                    (setq weekday 2))
+                    (setq day-of-week 2))
                 ((string-match-p "^we" word)
-                    (setq weekday 3))
+                    (setq day-of-week 3))
                 ((string-match-p "^th" word)
-                    (setq weekday 4))
+                    (setq day-of-week 4))
                 ((string-match-p "^fr" word)
-                    (setq weekday 5))
+                    (setq day-of-week 5))
                 ((string-match-p "^sa" word)
-                    (setq weekday 6))
+                    (setq day-of-week 6))
                 ((string-match-p "^ja" word)
                     (setq month 01))
                 ((string-match-p "^fe" word)
