@@ -259,8 +259,7 @@
 
 
 (defun refresh-modified-state (&optional buffer) (interactive)
-    (unless buffer
-        (setq buffer (current-buffer)))
+    (setq-if-nil buffer (current-buffer))
     (with-current-buffer buffer
         (when buffer-file-name
             (let ((differs (if (file-exists-p buffer-file-name)
@@ -507,8 +506,7 @@
 (defvar pop-to-command--callback nil)
 (make-variable-buffer-local 'pop-to-command--callback)
 (defun pop-to-command-buffer-name (type command &optional context name)
-    (unless name
-        (setq name (concat type ": " (string-join command " "))))
+    (setq-if-nil name (concat type ": " (string-join command " ")))
     (if context
         (concat "*" name " (" context ")*")
         (concat "*" name "*")))
@@ -624,33 +622,30 @@
         (datetime-parse--consume-integer-if-needed second integers)
         (when bad-words
             (user-error "bad: %S" bad-words))
-        (unless year   (setq year   0))
-        (unless month  (setq month  0))
-        (unless day    (setq day    0))
-        (unless hour   (setq hour   0))
-        (unless minute (setq minute 0))
-        (unless second (setq second 0))
+        (setq-if-nil year   0)
+        (setq-if-nil month  0)
+        (setq-if-nil day    0)
+        (setq-if-nil hour   0)
+        (setq-if-nil minute 0)
+        (setq-if-nil second 0)
         (format "%04d-%02d-%02d %02d:%02d:%02d (%S)"
             year month day hour minute second weekday)))
 (defmacro datetime-parse--add-offset (slot+ word)
     `(progn
-        (unless ,slot+
-            (setq ,slot+ 0))
+        (setq-if-nil ,slot+ 0)
         (setq ,slot+ (+ ,slot+ (string-to-number ,word)))))
 (defmacro datetime-parse--use-offsets (slot now)
     (let* ((name              (symbol-name slot))
            (slot+             (intern (concat name "+")))
            (decoded-time-slot (intern (concat "decoded-time-" name))))
         `(when ,slot+
-            (unless ,slot
-                (setq ,slot (,decoded-time-slot ,now)))
+            (setq-if-nil ,slot (,decoded-time-slot ,now))
             (setq ,slot (+ ,slot ,slot+)))))
 (defmacro datetime-parse--implies-now (smaller-slot larger-slot now)
     (let* ((name              (symbol-name larger-slot))
            (decoded-time-slot (intern (concat "decoded-time-" name))))
         `(when ,smaller-slot
-             (unless ,larger-slot
-                 (setq ,larger-slot (,decoded-time-slot ,now))))))
+            (setq-if-nil ,larger-slot (,decoded-time-slot ,now)))))
 (defmacro datetime-parse--consume-integer-if-needed (slot integers)
     `(unless ,slot
         (when-let (string (pop ,integers))
@@ -1771,15 +1766,13 @@
     (evil-define-key 'motion doc-view-mode-map [right] 'image-forward-hscroll)
     (evil-define-key 'motion doc-view-mode-map [left] 'image-backward-hscroll)
     (evil-define-motion evil-vertico-next-line (count)
-        (unless count
-            (setq count 1))
+        (setq-if-nil count 1)
         (dotimes (_ count)
             (condition-case _error
                 (evil-next-line)
                 (end-of-buffer (vertico-next)))))
     (evil-define-motion evil-vertico-previous-line (count)
-        (unless count
-            (setq count 1))
+        (setq-if-nil count 1)
         (dotimes (_ count)
             (condition-case _error
                 (evil-previous-line)
@@ -2353,8 +2346,7 @@
         (let ((operator-name (intern (concat (symbol-name name) "-operator"))))
             `(cons
                 (defun ,name (&optional window)
-                    (unless window
-                        (setq window (selected-window)))
+                    (setq-if-nil window (selected-window))
                     (with-selected-window window
                         ,@body)
                     (window-state--normal))
@@ -2468,13 +2460,11 @@
                 (setq window-state-last-search-target window))
             (quit)))
     (defun window-state-vi-search-next (&optional window)
-        (unless window
-            (setq window window-state-last-search-target))
+        (setq-if-nil window window-state-last-search-target)
         (with-selected-window window
             (call-interactively 'evil-ex-search-next)))
     (defun window-state-vi-search-previous (&optional window)
-        (unless window
-            (setq window window-state-last-search-target))
+        (setq-if-nil window window-state-last-search-target)
         (with-selected-window window
             (call-interactively 'evil-ex-search-previous)))
     (defun window-state-use-register ()
@@ -2631,10 +2621,8 @@
         (with-advice ('y-or-n-p :override 'always)
             (apply denote-rewrite-front-matter path arguments)))
     (defun hack-denote-rename-file (path title keywords &optional id)
-        (unless title
-            (setq title ""))
-        (unless keywords
-            (setq keywords ""))
+        (setq-if-nil title "")
+        (setq-if-nil keywords "")
         (with-advice ('denote-rewrite-front-matter
                           :around 'hack-denote-rewrite-front-matter
                       'denote--add-front-matter :override 'ignore
@@ -2746,8 +2734,7 @@
     (defconst denoted-try--default-fallback
         '(user-error "%s is not visiting a file or directory" (buffer-name)))
     (defmacro denoted-try (function &rest fallback-body)
-        (unless fallback-body
-            (setq fallback-body denoted-try--default-fallback))
+        (setq-if-nil fallback-body denoted-try--default-fallback)
         `(if-let (path (buffer-file-name))
             (,function path)
             (if (derived-mode-p 'dired-mode)
