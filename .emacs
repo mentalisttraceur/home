@@ -541,11 +541,7 @@
           (bad-words ()))
         (dotimes (index (length words))
             (let ((word (nth index words)))
-                (when (and (string-match-p "^-" word)
-                           (or (string-match-p
-                                   "^-[0-9]+\\(st\\|nd\\|rd\\|th\\|am\\|pm\\)"
-                                   word)
-                               (not (string-match-p "^-[0-9]+[^0-9]+" word))))
+                (when (string-match-p "^x" word)
                     (setq word (substring word 1))
                     (when-let (position (cl-position word words :test 'equal))
                         (when (< position index)
