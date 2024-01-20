@@ -537,8 +537,22 @@
           year+ month+ day+ hour+ minute+ second+
           (now (decode-time (current-time)))
           (integers ())
+          (words (split-string string))
           (bad-words ()))
-        (dolist (word (split-string string))
+        (dotimes (index (length words))
+            (let ((word (nth index words)))
+                (when (and (string-match-p "^-" word)
+                           (or (string-match-p
+                                   "^-[0-9]+\\(st\\|nd\\|rd\\|th\\|am\\|pm\\)"
+                                   word)
+                               (not (string-match-p "^-[0-9]+[^0-9]+" word))))
+                    (setq word (substring word 1))
+                    (when-let (position (cl-position word words :test 'equal))
+                        (when (< position index)
+                            (setcar (nthcdr index    words) nil)
+                            (setcar (nthcdr position words) nil))))))
+        (setq words (delq nil words))
+        (dolist (word words)
             (cond
                 ((string-match-p "^[0-9]\\{3,\\}$" word)
                     (setq year (string-to-number word)))
