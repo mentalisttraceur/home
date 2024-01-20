@@ -532,7 +532,7 @@
         (regexp-opt-group strings paren lax)))
 
 
-(defun datetime-parse (string)
+(defun datetime--parse (string)
     (let (year  month  day  hour  minute  second  weekday
           year+ month+ day+ hour+ minute+ second+
           (now (decode-time (current-time)))
@@ -648,8 +648,15 @@
         (setq-if-nil hour   0)
         (setq-if-nil minute 0)
         (setq-if-nil second 0)
-        (format "%04d-%02d-%02d %02d:%02d:%02d (%S)"
-            year month day hour minute second weekday)))
+        (list year  month  day  hour  minute  second
+              year+ month+ day+ hour+ minute+ second+)))
+
+(defun datetime-parse (string)
+    (let ((parsed (datetime--parse string)))
+        (let-unpack ((year month day hour minute second) parsed)
+            (format "%04d%02d%02dT%02d%02d%02d"
+                year month day hour minute second))))
+
 (defmacro datetime-parse--add-offset (slot+ word)
     `(progn
         (setq-if-nil ,slot+ 0)
@@ -675,8 +682,31 @@
     (when (minibufferp)
         (let ((input (minibuffer-contents)))
             (condition-case error
-                (message "%S" (datetime-parse input))
+                (let ((parsed (datetime--parse input)))
+                    (message "%s" (datetime-parse--preview-format parsed)))
                 (error (message "%s" (error-message-string error)))))))
+(defun datetime-parse--preview-format (parsed)
+    (let-unpack ((year  month  day  hour  minute  second
+                  year+ month+ day+ hour+ minute+ second+)
+                      parsed)
+        (concat
+            (datetime-parse--preview-format-1 year   "4" year+)
+            "-"
+            (datetime-parse--preview-format-1 month  "2" month+)
+            "-"
+            (datetime-parse--preview-format-1 day    "2" day+)
+            " "
+            (datetime-parse--preview-format-1 hour   "2" hour+)
+            ":"
+            (datetime-parse--preview-format-1 minute "2" minute+)
+            ":"
+            (datetime-parse--preview-format-1 second "2" second+))))
+(defun datetime-parse--preview-format-1 (slot digits slot+)
+    (let ((format (concat "%0" digits "d")))
+        (if (or (not slot+) (zerop slot+))
+            (format format slot)
+            (format (concat format "[" format "%+d]")
+                slot (- slot slot+) slot+))))
 
 (defun datetime-read (&optional initial-input)
     (with-hook (('post-command-hook 'datetime-read-preview))
