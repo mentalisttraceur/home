@@ -492,6 +492,15 @@
     (process-send-string (get-buffer-process (current-buffer)) string))
 
 
+(defmacro setq-if-nil-1 (symbol value)
+    `(if ,symbol
+         ,symbol
+         (setq ,symbol ,value)))
+
+(defmacro setq-if-nil (&rest symbol-value-pairs)
+    `(apply-split setq-if-nil-1 ,symbol-value-pairs 2))
+
+
 (defconst pop-to-command-buffer nil)
 (make-variable-buffer-local 'pop-to-command-buffer)
 (defvar pop-to-command-setup-hook nil)
