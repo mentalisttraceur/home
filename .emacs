@@ -629,7 +629,7 @@
                              (if hour   0 1)
                              (if minute 0 1)
                              (if second 0 1))))
-            (setq integers (nreverse (last integers open-slots))))
+            (setq integers (nreverse (ntake open-slots integers))))
         (unless year
             (when-let (string (pop integers))
                 (setq year (string-to-number string))
