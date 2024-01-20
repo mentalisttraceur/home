@@ -512,6 +512,21 @@
         (concat "*" name "*")))
 
 
+(defun string-prefixes (string &optional shortest longest)
+    (if (not shortest)
+        (setq shortest 1)
+        (when (< shortest 0)
+            (setq shortest 0)))
+    (when (or (not longest) (length< string longest))
+        (setq longest (length string)))
+    (let ((prefixes ())
+          (size     longest))
+        (while (>= size shortest)
+            (push (substring string 0 size) prefixes)
+            (setq size (1- size)))
+        prefixes))
+
+
 (defun datetime-parse (string)
     (let (year  month  day  hour  minute  second  weekday
           year+ month+ day+ hour+ minute+ second+ weekday+
