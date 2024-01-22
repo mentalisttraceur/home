@@ -648,6 +648,15 @@
                     (setq year (+ year 2000)))))
         (datetime-parse--consume-integer-if-needed month  integers)
         (datetime-parse--consume-integer-if-needed day    integers)
+        (when (and day-of-week (not (equal year 0)))
+            (unless day
+                (setq day (decoded-time-day now))
+                (unless month
+                    (setq month (decoded-time-month now))
+                    (unless year
+                        (setq year (decoded-time-year now)))))
+            (let ((start (calendar-day-of-week (list month day year))))
+                (setq day (+ day (% (- (+ day-of-week 7) start) 7)))))
         (datetime-parse--consume-integer-if-needed hour   integers)
         (datetime-parse--consume-integer-if-needed minute integers)
         (datetime-parse--consume-integer-if-needed second integers)
