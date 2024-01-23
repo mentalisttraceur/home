@@ -2964,6 +2964,10 @@
     (define-key space-map "J" (lambda () (interactive)
         (task-schedule (task-schedule-prompt)))))
 
+(use-packages calendar denote
+    :config
+    (define-key space-map "a" 'calendar))
+
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
 (defconst tumblr--script (expand-file-name "~/.tumblr/tumblr.py"))
