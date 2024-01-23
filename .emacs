@@ -534,7 +534,7 @@
 
 (defun datetime--parse (string)
     (let (year  month  day  hour  minute  second  day-of-week
-          year+ month+ day+ hour+ minute+ second+
+          year+ month+ day+ hour+ minute+ second+ day-of-week+
           (now (decode-time (current-time)))
           (integers ())
           (words (split-string string))
@@ -656,7 +656,8 @@
                     (unless year
                         (setq year (decoded-time-year now)))))
             (let ((start (calendar-day-of-week (list month day year))))
-                (setq day (+ day (% (- (+ day-of-week 7) start) 7)))))
+                (setq day-of-week+ (% (- (+ day-of-week 7) start) 7))
+                (setq day (+ day day-of-week+))))
         (datetime-parse--consume-integer-if-needed hour   integers)
         (datetime-parse--consume-integer-if-needed minute integers)
         (datetime-parse--consume-integer-if-needed second integers)
@@ -669,7 +670,7 @@
         (setq-if-nil minute 0)
         (setq-if-nil second 0)
         (list year  month  day  hour  minute  second
-              year+ month+ day+ hour+ minute+ second+)))
+              year+ month+ day+ hour+ minute+ second+ day-of-week+)))
 
 (defun datetime-parse (string)
     (let ((parsed (datetime--parse string)))
@@ -719,7 +720,7 @@
                 (error (message "%s" (error-message-string error)))))))
 (defun datetime-parse--preview-format (parsed)
     (let-unpack ((year  month  day  hour  minute  second
-                  year+ month+ day+ hour+ minute+ second+)
+                  year+ month+ day+ hour+ minute+ second+ day-of-week+)
                       parsed)
         (concat
             (datetime-parse--preview-format-1 year   "4" year+)
@@ -727,7 +728,15 @@
             (datetime-parse--preview-format-1 month  "2" month+)
             "-"
             (datetime-parse--preview-format-1 day    "2" day+)
-            " "
+            (if (or (equal year 0) (equal month 0) (equal day 0))
+                " "
+                (let* ((index (calendar-day-of-week (list month day year)))
+                       (names '(Sun Mon Tue Wed Thu Fri Sat))
+                       (name  (nth index names)))
+                    (if (or (not day-of-week+) (= day-of-week+ 0))
+                        (format " (%s) " name)
+                        (let ((previous (- index day-of-week+)))
+                            (format " (%s->%s) " (nth previous names) name)))))
             (datetime-parse--preview-format-1 hour   "2" hour+)
             ":"
             (datetime-parse--preview-format-1 minute "2" minute+)
