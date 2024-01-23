@@ -1136,6 +1136,53 @@
     (advice-add 'package--with-response-buffer-1
         :around 'fixed-package--with-response-buffer-1))
 
+(use-package calendar
+    :config
+    (defvar calendar-months-before-current (if termux 0 1))
+    (defvar calendar-months-after-current 1)
+    (defun calendar-generate (month year)
+        (setq displayed-month month)
+        (setq displayed-year year)
+        (erase-buffer)
+        (calendar-increment-month month year (- calendar-months-before-current))
+        (dotimes (index (+ calendar-months-before-current
+                           1
+                           calendar-months-after-current))
+            (calendar-generate-month month year
+                (+ calendar-left-margin
+                    (* calendar-month-width index)))
+            (calendar-increment-month month year 1)))
+    (defun calendar-date-is-visible-p (date)
+        (and (calendar-date-is-valid-p date)
+             (let* ((year  (calendar-extract-year  date))
+                    (month (calendar-extract-month date))
+                    (delta (calendar-interval displayed-month displayed-year
+                                              month           year)))
+                 (<= (- calendar-months-before-current)
+                     delta
+                     calendar-months-after-current))))
+    (defun hack-calendar-cursor-to-visible-date (arguments)
+        (advice-remove 'calendar-cursor-to-visible-date
+            'hack-calendar-cursor-to-visible-date)
+        (setcar arguments (list displayed-month 1 displayed-year))
+        arguments)
+    (defun hack-calendar-scroll-left
+            (calendar-scroll-left &rest arguments)
+        (with-advice ('calendar-cursor-to-visible-date
+                          :filter-args 'hack-calendar-cursor-to-visible-date)
+            (apply calendar-scroll-left arguments)))
+    (advice-add 'calendar-scroll-left :around 'hack-calendar-scroll-left)
+    (defun hack-calendar-displayed-date (function &rest arguments)
+        (let ((displayed-month displayed-month)
+              (displayed-year  displayed-year))
+            (calendar-increment-month displayed-month displayed-year
+                (- 1 calendar-months-before-current))
+            (apply function arguments)))
+    (advice-add 'calendar-cursor-to-date
+        :around 'hack-calendar-displayed-date)
+    (advice-add 'calendar-cursor-to-visible-date
+        :around 'hack-calendar-displayed-date))
+
 (use-package org
     :defer
     :config
