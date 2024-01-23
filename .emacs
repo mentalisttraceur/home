@@ -1058,6 +1058,10 @@
                     (setq month 11))
                 ((string-match-p "^de" word)
                     (setq month 12))
+                ((string-match-p "^to" word)
+                    (setq year  (decoded-time-year  now))
+                    (setq month (decoded-time-month now))
+                    (setq day   (decoded-time-day   now)))
                 (t
                     (push word bad-words))))
         (datetime-parse--use-offsets year   now)
