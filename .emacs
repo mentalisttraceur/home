@@ -2959,19 +2959,10 @@
             (task-list)
             (jump-to-position-with-scroll position)))
     (defun task-schedule-prompt (&optional default)
-        (require 'org)
-        (let* ((default-time    (when default
-                                    (date-to-time default)))
-               (default-input   (when default
-                                    (format-time-string "%Y-%m-%d %H:%M"
-                                        default-time)))
-               (input           (org-read-date nil nil nil nil
-                                    default-time default-input))
-               (input-with-time (if (length= input (length "YYYY-MM-DD"))
-                                    (concat input " 00:00")
-                                    input)))
-            (format-time-string denote-id-format
-                (denote--valid-date input-with-time))))
+        (datetime-read
+            (when default
+                (format-time-string "%Y %m %d %H %M %S"
+                    (date-to-time default)))))
     (define-key space-map "j" (lambda () (interactive)
         (task-schedule (format-time-string denote-id-format (current-time)))))
     (define-key space-map "J" (lambda () (interactive)
