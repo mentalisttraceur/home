@@ -1397,6 +1397,7 @@
     (define-key evil-motion-state-map "\"" 'evil-use-register)
     (define-key evil-normal-state-map "U" 'evil-redo)
     (define-key evil-normal-state-map "H" 'evil-join)
+    (define-key evil-motion-state-map "H" nil)
     (define-key evil-normal-state-map "J" nil)
     (define-key evil-motion-state-map "J" 'evil-window-bottom)
     (define-key evil-motion-state-map "K" 'evil-window-top)
