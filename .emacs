@@ -1774,7 +1774,6 @@
                 (let ((file    (concat directory "/file"))
                       (unsaved (concat directory "/unsaved"))
                       (default-directory "~"))
-
                     (if (file-exists-p buffer-file-name)
                         (copy-file buffer-file-name file)
                         (write-region 1 1 file))
