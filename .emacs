@@ -1157,7 +1157,10 @@
                 (let ((parsed (datetime--parse input)))
                     (let-unpack ((year month day) parsed)
                         (when datetime-read-popup-calendar
-                            (calendar)
+                            (if-let (buffer (get-buffer "*Calendar*"))
+                                (switch-to-buffer buffer)
+                                (calendar))
+                            (calendar-unmark)
                             (unless (or (= year 0) (= month 0) (= day 0))
                                 (let ((date (list month day year)))
                                     (calendar-goto-date date)
