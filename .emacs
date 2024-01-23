@@ -716,18 +716,18 @@
         (let ((input (minibuffer-contents)))
             (condition-case error
                 (let ((parsed (datetime--parse input)))
-                    (message "%s" (datetime-parse--preview-format parsed)))
+                    (message "%s" (datetime-read--preview-format parsed)))
                 (error (message "%s" (error-message-string error)))))))
-(defun datetime-parse--preview-format (parsed)
+(defun datetime-read--preview-format (parsed)
     (let-unpack ((year  month  day  hour  minute  second
                   year+ month+ day+ hour+ minute+ second+ day-of-week+)
                       parsed)
         (concat
-            (datetime-parse--preview-format-1 year   "4" year+)
+            (datetime-read--preview-format-1 year   "4" year+)
             "-"
-            (datetime-parse--preview-format-1 month  "2" month+)
+            (datetime-read--preview-format-1 month  "2" month+)
             "-"
-            (datetime-parse--preview-format-1 day    "2" day+)
+            (datetime-read--preview-format-1 day    "2" day+)
             (if (or (equal year 0) (equal month 0) (equal day 0))
                 " "
                 (let* ((index (calendar-day-of-week (list month day year)))
@@ -737,12 +737,12 @@
                         (format " (%s) " name)
                         (let ((previous (- index day-of-week+)))
                             (format " (%s->%s) " (nth previous names) name)))))
-            (datetime-parse--preview-format-1 hour   "2" hour+)
+            (datetime-read--preview-format-1 hour   "2" hour+)
             ":"
-            (datetime-parse--preview-format-1 minute "2" minute+)
+            (datetime-read--preview-format-1 minute "2" minute+)
             ":"
-            (datetime-parse--preview-format-1 second "2" second+))))
-(defun datetime-parse--preview-format-1 (slot digits slot+)
+            (datetime-read--preview-format-1 second "2" second+))))
+(defun datetime-read--preview-format-1 (slot digits slot+)
     (let ((format (concat "%0" digits "d")))
         (if (or (not slot+) (zerop slot+))
             (format format slot)
