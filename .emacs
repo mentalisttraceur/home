@@ -744,7 +744,7 @@
             (datetime-read--preview-format-1 second "2" second+))))
 (defun datetime-read--preview-format-1 (slot digits slot+)
     (let ((format (concat "%0" digits "d")))
-        (if (or (not slot+) (zerop slot+))
+        (if (or (not slot+) (= slot+ 0))
             (format format slot)
             (format (concat format "[" format "%+d]")
                 slot (- slot slot+) slot+))))
