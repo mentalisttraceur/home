@@ -1149,11 +1149,22 @@
         (when-let (string (pop ,integers))
             (setq ,slot (string-to-number string)))))
 
+(defvar datetime-read-popup-calendar nil)
 (defun datetime-read-preview ()
     (when (minibufferp)
         (let ((input (minibuffer-contents)))
             (condition-case error
                 (let ((parsed (datetime--parse input)))
+                    (let-unpack ((year month day) parsed)
+                        (when datetime-read-popup-calendar
+                            (calendar)
+                            (unless (or (= year 0) (= month 0) (= day 0))
+                                (let ((date (list month day year)))
+                                    (calendar-goto-date date)
+                                    (calendar-mark-visible-date date
+                                        '(:foreground "red"))))
+                            (setq cursor-type nil)
+                            (select-window (minibuffer-window))))
                     (message "%s" (datetime-read--preview-format parsed)))
                 (error (message "%s" (error-message-string error)))))))
 (defun datetime-read--preview-format (parsed)
