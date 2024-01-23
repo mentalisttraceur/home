@@ -1943,6 +1943,11 @@
     (with-current-buffer (messages-buffer)
         (evil-force-normal-state)))
 
+(use-packages calendar evil
+    :config
+    (evil-define-key 'motion calendar-mode-map "H" 'calendar-scroll-right)
+    (evil-define-key 'motion calendar-mode-map "L" 'calendar-scroll-left))
+
 (use-packages evil undo-tree
     :config
     (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode))
