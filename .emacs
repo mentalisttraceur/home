@@ -1191,7 +1191,7 @@
                        (name  (nth index names)))
                     (if (or (not day-of-week+) (= day-of-week+ 0))
                         (format " (%s) " name)
-                        (let ((previous (- index day-of-week+)))
+                        (let ((previous (% (- (+ index 7) day-of-week+) 7)))
                             (format " (%s->%s) " (nth previous names) name)))))
             (datetime-read--preview-format-1 hour   "2" hour+)
             ":"
