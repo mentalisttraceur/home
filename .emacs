@@ -1970,7 +1970,8 @@
 (use-packages calendar evil
     :config
     (evil-define-key 'motion calendar-mode-map "H" 'calendar-scroll-right)
-    (evil-define-key 'motion calendar-mode-map "L" 'calendar-scroll-left))
+    (evil-define-key 'motion calendar-mode-map "L" 'calendar-scroll-left)
+    (define-key space-map "P" (toggle datetime-read-popup-calendar)))
 
 (use-packages evil undo-tree
     :config
