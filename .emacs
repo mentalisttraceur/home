@@ -1154,8 +1154,8 @@
             (setq ,slot (string-to-number string)))))
 
 (defvar datetime-read-popup-calendar nil)
-(defun datetime-read-preview ()
-    (when (minibufferp)
+(defun datetime-read--preview (cell)
+    (when (eq (current-buffer) (car cell))
         (let ((input (minibuffer-contents)))
             (condition-case error
                 (let ((parsed (datetime--parse input)))
@@ -1206,8 +1206,15 @@
                 slot (- slot slot+) slot+))))
 
 (defun datetime-read (&optional initial-input)
-    (with-hook (('post-command-hook 'datetime-read-preview))
-        (datetime-parse (read-string "Date+time: " initial-input))))
+    (let ((cell (cons nil nil)))
+        (add-single-use-hook 'minibuffer-setup-hook (lambda ()
+            (when datetime-read-popup-calendar
+                (calendar)
+                (select-window (minibuffer-window)))
+            (setcar cell (current-buffer))))
+        (with-hook (('post-command-hook (apply-partially
+                                            'datetime-read--preview cell)))
+            (datetime-parse (read-string "Date+time: " initial-input)))))
 
 (use-package org
     :defer
