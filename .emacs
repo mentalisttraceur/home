@@ -1160,9 +1160,14 @@
             (condition-case error
                 (let ((parsed (datetime--parse input)))
                     (let-unpack ((year month day) parsed)
-                        (when datetime-read-popup-calendar
-                            (if-let (buffer (get-buffer "*Calendar*"))
+                        (if (not datetime-read-popup-calendar)
+                            (progn
+                                (setcdr cell nil)
+                                (calendar-exit))
+                            (if-let ((_      (cdr cell))
+                                     (buffer (get-buffer "*Calendar*")))
                                 (switch-to-buffer buffer)
+                                (setcdr cell t)
                                 (calendar))
                             (calendar-unmark)
                             (unless (or (= year 0) (= month 0) (= day 0))
@@ -1208,9 +1213,6 @@
 (defun datetime-read (&optional initial-input)
     (let ((cell (cons nil nil)))
         (add-single-use-hook 'minibuffer-setup-hook (lambda ()
-            (when datetime-read-popup-calendar
-                (calendar)
-                (select-window (minibuffer-window)))
             (setcar cell (current-buffer))))
         (with-hook (('post-command-hook (apply-partially
                                             'datetime-read--preview cell)))
