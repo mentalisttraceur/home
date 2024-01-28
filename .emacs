@@ -2820,17 +2820,13 @@
     (defun denoted--remove-id (path)
          (concat
              (file-name-directory path)
-             (string-remove-prefix "__"
-                 (string-remove-prefix "--"
-                     (substring (file-name-nondirectory path) 15)))))
+             (string-remove-prefix "--"
+                 (substring (file-name-nondirectory path) 15))))
     (defun denoted--add-nil-id (path)
         (let ((name (file-name-nondirectory path)))
             (concat
                 (file-name-directory path)
-                (if (and (not (string-match-p "__" name))
-                         (string-match-p "_" name))
-                    "00000000T000000__"
-                    "00000000T000000--")
+                "00000000T000000--"
                 name)))
     (defun denoted-title-get (path)
         (let ((denote-directory default-directory))
