@@ -2979,6 +2979,20 @@
     (define-key space-map "sg" (lambda () (interactive)
         (task-list)
         (consult-line)))
+    (defun task-tags ()
+        (denote-keywords-sort
+            (seq-uniq
+                (delete task-tag
+                    (mapcan 'denote-extract-keywords-from-path
+                        (denote-directory-files (concat "_" task-tag)))))))
+    (defun task-tag-search () (interactive)
+        (task-list)
+        (let* ((tags  (denote--keywords-crm (task-tags)))
+               (regex (concat "_" (regexp-opt-group tags t) "[_.]")))
+            (dired-mark-files-regexp regex))
+        (dired-toggle-marks)
+        (dired-do-kill-lines))
+    (define-key space-map "sh" 'task-tag-search)
     (defun task-schedule (timestamp)
         (let ((position (point-position-with-scroll))
               (denote-rename-no-confirm t))
