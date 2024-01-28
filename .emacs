@@ -2794,6 +2794,11 @@
             (denote-rewrite-front-matter path &rest arguments)
         (with-advice ('y-or-n-p :override 'always)
             (apply denote-rewrite-front-matter path arguments)))
+    (defun hack-denote-get-file-extension (arguments)
+        (let ((path (car arguments)))
+            (unless (denote-file-has-identifier-p path)
+                (setcar arguments (denoted--add-nil-id path))))
+        arguments)
     (defun hack-denote-rename-file (path title keywords &optional id)
         (setq-if-nil title "")
         (setq-if-nil keywords "")
@@ -2801,7 +2806,9 @@
                           :around 'hack-denote-rewrite-front-matter
                       'denote--add-front-matter :override 'ignore
                       (if id 'denote-retrieve-filename-identifier nil)
-                          :override (ignore+return id))
+                          :override (ignore+return id)
+                      'denote-get-file-extension
+                          :filter-args 'hack-denote-get-file-extension)
             (if (file-exists-p path)
                 (denote-rename-file path title keywords nil)
                 (with-current-buffer (find-file-noselect path)
