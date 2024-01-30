@@ -2892,13 +2892,16 @@
         (let ((title     (denoted-title-get path))
               (timestamp (denoted-timestamp-get path)))
             (denoted-rename-file path title tags timestamp)))
+    (defun denoted-tag-sort (tags)
+        (let ((denote-sort-keywords t))
+            (denote-keywords-sort tags)))
     (defun denoted-tag-add (path)
         (let* ((tags   (denoted-tag-get path))
                (added  (denote-sluggify-keywords
                            (denote-keywords-prompt-without-blank-candidate)))
                (merged (append tags added))
                (unique (seq-uniq merged))
-               (sorted (denote-keywords-sort unique)))
+               (sorted (denoted-tag-sort unique)))
             (denoted-tag-set path sorted)))
     (defun denoted-tag-remove (path)
         (let* ((tags      (denoted-tag-get path))
@@ -3006,7 +3009,7 @@
         (task-list)
         (consult-line)))
     (defun task-tags ()
-        (denote-keywords-sort
+        (denoted-tag-sort
             (seq-uniq
                 (delete task-tag
                     (mapcan 'denote-extract-keywords-from-path
