@@ -899,7 +899,14 @@
     (defun independent-dired (directory &rest arguments)
         (let* ((existing (assoc directory dired-buffers))
                (dired-buffers (remq existing dired-buffers)))
-            (apply 'dired directory arguments))))
+            (apply 'dired directory arguments)))
+    (defun reuse-independent-dired (name directory &rest arguments)
+        (let ((buffer (get-buffer name)))
+            (if buffer
+                (pop-to-buffer-same-window buffer)
+                (setq buffer (independent-dired directory))
+                (rename-buffer name))
+            buffer)))
 
 (defun git-repo-root ()
     (when-let (gitdir (funcall-process-log-error
