@@ -888,7 +888,11 @@
     (when termux
         (define-key dired-mode-map [mouse-2] 'ignore))
     (define-key dired-mode-map "a" 'dired-hide-details-mode)
-    (add-hook 'dired-mode-hook 'dired-hide-details-mode))
+    (add-hook 'dired-mode-hook 'dired-hide-details-mode)
+    (defun independent-dired (directory &rest arguments)
+        (let* ((existing (assoc directory dired-buffers))
+               (dired-buffers (remq existing dired-buffers)))
+            (apply 'dired directory arguments))))
 
 (defun git-repo-root ()
     (when-let (gitdir (funcall-process-log-error
