@@ -165,6 +165,14 @@
             ,@arguments)))
 
 
+(defmacro compose (&rest functions)
+    (setq functions (nreverse functions))
+    (let ((form `(apply ,(car functions) arguments)))
+        (while (setq functions (cdr functions))
+            (setq form `(funcall ,(car functions) ,form)))
+        `(lambda (&rest arguments) ,form)))
+
+
 (defmacro save-mutation (&rest body)
     `(let ((buffer-undo-list ()))
         (unwind-protect (progn ,@body)
