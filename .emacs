@@ -1305,6 +1305,19 @@
         (append '(cursor-intangible t) minibuffer-prompt-properties))
     (add-hook 'minibuffer-setup-hook 'cursor-intangible-mode))
 
+(use-packages crm vertico
+    :config
+    (defun vertico-crm-comma () (interactive)
+        (vertico-insert)
+        (insert ","))
+    (defun hack-completing-read-multiple (&rest _)
+        (add-single-use-hook 'minibuffer-setup-hook (lambda ()
+            (local-set-key "," 'vertico-crm-comma)
+            (local-set-key "\M-," (lambda () (interactive)
+                (insert ","))))))
+    (advice-add 'completing-read-multiple
+        :before 'hack-completing-read-multiple))
+
 (use-package consult
     :config
     (add-to-list 'consult-mode-histories
