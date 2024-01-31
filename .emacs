@@ -80,6 +80,9 @@
 (setq lisp-indent-offset 4)
 
 
+(advice-add 'blink-matching-open :override 'ignore)
+
+
 (defmacro apply-split (callable arguments count)
     (setq count (1- count))
     (let* ((forms '(progn))
