@@ -1408,7 +1408,14 @@
             (replace-regexp-in-string "\\([\\][\\]\\)*[\\]$" "\\1" string)))
     (defun just-backslashes (string)
         (regexp-quote (just-backslashes--parse string)))
-    (setq orderless-matching-styles '(just-backslashes)))
+    (setq orderless-matching-styles '(just-backslashes))
+    (add-to-list 'orderless-style-dispatchers (lambda (string index count)
+        (when (string-match-p "\\([\\][\\]\\)*!$" string)
+            (setq string (just-backslashes--parse string))
+            (setq string (string-remove-suffix "!" string))
+            (if (equal string "")
+                (cons 'orderless-literal "")
+                (cons 'orderless-without-literal string))))))
 
 (use-package eat
     :config
