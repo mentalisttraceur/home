@@ -3046,6 +3046,7 @@
         (denote (task-prompt) (list task-tag))
         (basic-save-buffer)
         (kill-buffer)
+        (denote-update-dired-buffers)
         (task-list)
         (dired-goto-last-file))
     (define-key space-map "g" 'task-create)
