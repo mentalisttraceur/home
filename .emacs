@@ -2808,17 +2808,18 @@
     (defun denote-keywords-prompt-without-blank-candidate ()
         (let ((denote-known-keywords (remove "" denote-known-keywords)))
             (denote-keywords-prompt)))
-    (defun fix-denote-sluggify-keyword (keyword)
+    (defun fixed-denote-sluggify-keyword (keyword)
         (denote-sluggify keyword 'keywords))
-    (defun fix-denote-sluggify-keywords (keywords)
-        (mapcar 'fix-denote-sluggify-keyword keywords))
+    (defun fixed-denote-sluggify-keywords (keywords)
+        (mapcar 'fixed-denote-sluggify-keyword keywords))
     (advice-add 'denote-sluggify-keywords
-        :override 'fix-denote-sluggify-keywords)
-    (defun fix-denote--slug-hyphenate (string)
+        :override 'fixed-denote-sluggify-keywords)
+    (defun fixed-denote--slug-hyphenate (string)
         (replace-regexp-in-string "^-+\\|-+$" ""
             (replace-regexp-in-string "-\\{3,\\}" "-"
                 (replace-regexp-in-string "_\\|\s" "-" string))))
-    (advice-add 'denote--slug-hyphenate :override 'fix-denote--slug-hyphenate)
+    (advice-add 'denote--slug-hyphenate
+        :override 'fixed-denote--slug-hyphenate)
     (defun fixed-denote-rewrite-front-matter
             (denote-rewrite-front-matter path &rest arguments)
         (let* ((buffers (buffer-list))
