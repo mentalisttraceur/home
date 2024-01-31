@@ -1391,7 +1391,24 @@
 
 (use-package orderless
     :config
-    (add-to-list 'completion-styles 'orderless))
+    (add-to-list 'completion-styles 'orderless)
+    (setq orderless-component-separator (lambda (string)
+        (let ((parts (string-split string " "))
+              (final ()))
+            (while parts
+                (let ((part (pop parts)))
+                    (while (and (string-match-p "\\([\\][\\]\\)*[\\]$" part)
+                                parts)
+                        (setq part (concat part " "))
+                        (setq part (concat part (pop parts))))
+                    (push part final)))
+            (nreverse final))))
+    (defun just-backslashes--parse (string)
+        (replace-regexp-in-string "[\\]\\(.\\)" "\\1"
+            (replace-regexp-in-string "\\([\\][\\]\\)*[\\]$" "\\1" string)))
+    (defun just-backslashes (string)
+        (regexp-quote (just-backslashes--parse string)))
+    (setq orderless-matching-styles '(just-backslashes)))
 
 (use-package eat
     :config
