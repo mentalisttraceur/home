@@ -2821,13 +2821,16 @@
     (advice-add 'denote--slug-hyphenate :override 'fix-denote--slug-hyphenate)
     (defun fixed-denote-rewrite-front-matter
             (denote-rewrite-front-matter path &rest arguments)
-        (let* ((buffer (find-file-noselect path))
+        (let* ((buffers (buffer-list))
+               (buffer  (find-file-noselect path))
                (_ (refresh-modified-state buffer))
                (had-unsaved-changes (buffer-modified-p buffer)))
             (apply denote-rewrite-front-matter path arguments)
             (unless had-unsaved-changes
                 (with-current-buffer buffer
-                    (basic-save-buffer)))))
+                    (basic-save-buffer))
+                (unless (memq buffer buffers)
+                    (kill-buffer buffer)))))
     (advice-add 'denote-rewrite-front-matter
         :around 'fixed-denote-rewrite-front-matter)
     (defun denote-extract-title-slug-from-path (path)
