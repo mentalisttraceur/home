@@ -1101,6 +1101,13 @@
                     (setq year  (decoded-time-year  now))
                     (setq month (decoded-time-month now))
                     (setq day   (decoded-time-day   now)))
+                ((string-match-p "^z" word)
+                    (setq year   0)
+                    (setq month  0)
+                    (setq day    0)
+                    (setq hour   0)
+                    (setq minute 0)
+                    (setq second 0))
                 (t
                     (push word bad-words))))
         (datetime-parse--use-offsets year   now)
