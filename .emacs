@@ -2608,6 +2608,7 @@
                     (setq-if-nil window (selected-window))
                     (with-selected-window window
                         ,@body)
+                    (run-hooks 'buffer-list-update-hook)
                     (window-state--normal))
                 (defun ,operator-name ()
                     (cond
