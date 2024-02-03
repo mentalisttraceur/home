@@ -2676,22 +2676,11 @@
         (setq window-state--action 'aw-swap-window)
         (setq window-state window-state-target-pending)
         (setq window-state--execute-once t))
-    (defun window-state--fast-paste-move (window)
-        (let ((marker (point-marker-with-scroll)))
-            (select-window window)
+    (window-state-define-operator window-state-fast-paste
+        (let ((marker (with-selected-window origin-window
+                          (point-marker-with-scroll))))
             (with-advice ('push-mark :override 'ignore)
                 (jump-to-marker-with-scroll marker))))
-    (defun window-state--fast-paste (window)
-        (save-selected-window
-            (window-state--fast-paste-move window)))
-    (defun window-state-fast-paste ()
-        (setq window-state--action 'window-state--fast-paste)
-        (setq window-state window-state-target-pending)
-        (setq window-state--execute-once t))
-    (defun window-state-fast-paste-move ()
-        (setq window-state--action 'window-state--fast-paste-move)
-        (setq window-state window-state-target-pending)
-        (setq window-state--execute-once t))
     (window-state-define-operator window-state-change
         (condition-case _error
             (call-interactively 'switch-to-buffer)
@@ -2804,8 +2793,8 @@
         (?g (lambda ()
                 (let* ((key (read-key "g-"))
                        (action (alist-get key '(
-                        (?p . window-state-fast-paste)
-                        (?P . window-state-fast-paste-move)
+                        (?p . window-state-fast-paste-operator)
+                        (?P . window-state-fast-paste-move-operator)
                         (?q . window-state-quit)
                         (?\C-\[ . window-state-quit)))))
                     (if action
