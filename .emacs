@@ -2528,7 +2528,6 @@
     (defconst window-state-target-pending
         '("#00FF00" "#C08040" "#302010" "T" "Target-pending window state"))
     (defvar window-state-this-register nil)
-    (defvar window-state-last-search-target nil)
     (defvar window-state--action nil)
     (defvar window-state--execute-once nil)
     (defvar window-state--execute-more nil)
@@ -2708,6 +2707,7 @@
         (condition-case _error
             (evil-ex)
             (quit)))
+    (defvar window-state-last-search-target nil)
     (window-state-define-operator window-state-vi-search-forward
         (condition-case _error
             (progn
