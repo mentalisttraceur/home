@@ -84,8 +84,9 @@
 
 
 (defmacro apply-split (callable arguments count)
+    (setq arguments (copy-sequence arguments))
     (setq count (1- count))
-    (let* ((forms '(progn))
+    (let* ((forms (list 'progn))
            (last-cons forms))
         (while arguments
             (setcdr last-cons (list (cons callable arguments)))
@@ -97,8 +98,9 @@
 
 
 (defmacro apply-split-nest (callable arguments count body)
+    (setq arguments (copy-sequence arguments))
     (setq count (1- count))
-    (let* ((forms '(unused))
+    (let* ((forms (list 'unused))
            (last-cons forms))
         (while arguments
             (setcdr last-cons (list (cons callable arguments)))
