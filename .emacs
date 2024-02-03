@@ -2668,7 +2668,8 @@
     (defun window-state--fast-paste-move (window)
         (let ((marker (point-marker-with-scroll)))
             (select-window window)
-            (jump-to-marker-with-scroll marker)))
+            (with-advice ('push-mark :override 'ignore)
+                (jump-to-marker-with-scroll marker))))
     (defun window-state--fast-paste (window)
         (save-selected-window
             (window-state--fast-paste-move window)))
