@@ -3048,6 +3048,14 @@
         (dired-mark-files-regexp (concat "_" task-tag))
         (dired-toggle-marks)
         (dired-do-kill-lines))
+    (defun task--narrow-dired ()
+        (widen)
+        (narrow-to-region
+            (save-excursion
+                (goto-char 1)
+                (beginning-of-line 2)
+                (point))
+            (buffer-end 1)))
     (defun task--buffer (title regex)
         (reuse-independent-dired title denote-directory)
         (dired-hide-details-mode 1)
@@ -3072,7 +3080,8 @@
             (when filter-regex
                 (dired-mark-files-regexp filter-regex)
                 (dired-toggle-marks)
-                (dired-do-kill-lines))))
+                (dired-do-kill-lines))
+            (task--narrow-dired)))
     (defun task--delete-update (&rest _)
         (when (equal (expand-file-name dired-directory) denote-directory)
             (denote-update-dired-buffers)))
