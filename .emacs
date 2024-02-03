@@ -2665,17 +2665,14 @@
                             (- window-state-this-register ?1))
                         (gethash window-state-this-register
                             window-state--register-bank))))))
-    (defun window-state--swap (window)
-        (save-selected-window
-            (aw-swap-window window)))
-    (defun window-state-swap ()
-        (setq window-state--action 'window-state--swap)
-        (setq window-state window-state-target-pending)
-        (setq window-state--execute-once t))
-    (defun window-state-swap-move ()
-        (setq window-state--action 'aw-swap-window)
-        (setq window-state window-state-target-pending)
-        (setq window-state--execute-once t))
+    (window-state-define-operator window-state-swap
+        (let ((marker1 (point-marker-with-scroll))
+              (marker2 nil))
+            (with-advice ('push-mark :override 'ignore)
+                (with-selected-window origin-window
+                    (setq marker2 (point-marker-with-scroll))
+                    (jump-to-marker-with-scroll marker1))
+                (jump-to-marker-with-scroll marker2))))
     (window-state-define-operator window-state-fast-paste
         (let ((marker (with-selected-window origin-window
                           (point-marker-with-scroll))))
@@ -2768,8 +2765,8 @@
         (?D window-state-delete)
         (?p window-state-paste-operator)
         (?P window-state-paste)
-        (?x window-state-swap)
-        (?X window-state-swap-move)
+        (?x window-state-swap-operator)
+        (?X window-state-swap-move-operator)
         (?c window-state-change-operator)
         (?C window-state-change)
         (?o window-state-open-operator)
