@@ -2604,11 +2604,12 @@
         (let ((operator-name (intern (concat (symbol-name name) "-operator"))))
             `(cons
                 (defun ,name (&optional window)
-                    (setq-if-nil window (selected-window))
-                    (with-selected-window window
-                        ,@body)
-                    (run-hooks 'buffer-list-update-hook)
-                    (window-state--normal))
+                    (let ((origin-window (selected-window)))
+                        (setq-if-nil window origin-window)
+                        (with-selected-window window
+                            ,@body)
+                        (run-hooks 'buffer-list-update-hook)
+                        (window-state--normal)))
                 (defun ,operator-name ()
                     (cond
                         ((eq window-state--action ',name)
