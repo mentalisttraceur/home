@@ -2602,14 +2602,13 @@
         (setq evil-auto-balance-windows (not evil-auto-balance-windows))
         (message "evil-auto-balance-windows: %s" evil-auto-balance-windows)
         (setq window-state--execute-once t))
-    (defmacro window-state-define-operator (name &rest body)
+    (defmacro window-state--define-operator (name &rest body)
         (let ((operator-name (intern (concat (symbol-name name) "-operator"))))
-            `(cons
+            `(list
                 (defun ,name (&optional window)
                     (let ((origin-window (selected-window)))
                         (setq-if-nil window origin-window)
-                        (with-selected-window window
-                            ,@body)
+                        ,@body
                         (run-hooks 'buffer-list-update-hook)
                         (window-state--normal)))
                 (defun ,operator-name ()
@@ -2622,6 +2621,15 @@
                             (setq window-state--execute-once t))
                         (t
                             (keyboard-quit)))))))
+    (defmacro window-state-define-operator (name &rest body)
+        (let ((move-name (intern (concat (symbol-name name) "-move"))))
+            `(append
+                (window-state--define-operator ,name
+                    (with-selected-window window
+                        ,@body))
+                (window-state--define-operator ,move-name
+                    (select-window window t)
+                    ,@body))))
     (defconst window-state--register-ring (make-ring 9))
     (setcar (cdr window-state--register-ring) 9)
     (defconst window-state--register-bank (make-hash-table :size 27))
