@@ -1406,12 +1406,13 @@
 (use-package orderless
     :config
     (add-to-list 'completion-styles 'orderless)
+    (defconst trailing-backslash "\\([\\][\\]\\)*[\\]$")
     (setq orderless-component-separator (lambda (string)
         (let ((parts (string-split string " "))
               (final ()))
             (while parts
                 (let ((part (pop parts)))
-                    (while (and (string-match-p "\\([\\][\\]\\)*[\\]$" part)
+                    (while (and (string-match-p trailing-backslash part)
                                 parts)
                         (setq part (concat part " "))
                         (setq part (concat part (pop parts))))
@@ -1419,7 +1420,7 @@
             (nreverse final))))
     (defun just-backslashes--parse (string)
         (replace-regexp-in-string "[\\]\\(.\\)" "\\1"
-            (replace-regexp-in-string "\\([\\][\\]\\)*[\\]$" "\\1" string)))
+            (replace-regexp-in-string trailing-backslash "\\1" string)))
     (defun just-backslashes (string)
         (regexp-quote (just-backslashes--parse string)))
     (setq orderless-matching-styles '(just-backslashes))
