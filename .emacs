@@ -3152,7 +3152,8 @@
                 (revert-buffer t t))
             (unless already-existed
                 (delete-file buffer-file-name)
-                (refresh-modified-state)))))
+                (refresh-modified-state))
+        (run-hooks 'buffer-list-update-hook))))
 (defun tumblr-publish () (interactive)
     (tumblr--ensure-file
         (let ((blog (tumblr "get" "blog" buffer-file-name)))
