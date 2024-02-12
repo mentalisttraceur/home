@@ -1009,10 +1009,10 @@
     (advice-add 'calendar-cursor-to-visible-date
         :around 'hack-calendar-displayed-date))
 
-(defun datetime--parse (string)
+(defun datetime--parse (string &optional now)
     (let (year  month  day  hour  minute  second  day-of-week
           year+ month+ day+ hour+ minute+ second+ day-of-week+
-          (now (decode-time (current-time)))
+          (now (or now (decode-time (current-time))))
           (integers ())
           (words (split-string string))
           (bad-words ()))
@@ -1164,8 +1164,8 @@
         (list year  month  day  hour  minute  second
               year+ month+ day+ hour+ minute+ second+ day-of-week+)))
 
-(defun datetime-parse (string)
-    (let ((parsed (datetime--parse string)))
+(defun datetime-parse (string &optional now)
+    (let ((parsed (datetime--parse string now)))
         (let-unpack ((year month day hour minute second) parsed)
             (format "%04d%02d%02dT%02d%02d%02d"
                 year month day hour minute second))))
@@ -1204,11 +1204,11 @@
             (setq ,slot (string-to-number string)))))
 
 (defvar datetime-read-popup-calendar nil)
-(defun datetime-read--preview (cell)
+(defun datetime-read--preview (now cell)
     (when (eq (current-buffer) (car cell))
         (let ((input (minibuffer-contents)))
             (condition-case error
-                (let ((parsed (datetime--parse input)))
+                (let ((parsed (datetime--parse input now)))
                     (let-unpack ((year month day) parsed)
                         (if (not datetime-read-popup-calendar)
                             (progn
@@ -1261,12 +1261,13 @@
                 slot (- slot slot+) slot+))))
 
 (defun datetime-read (&optional initial-input)
-    (let ((cell (cons nil nil)))
+    (let ((cell (cons nil nil))
+          (now  (decode-time (current-time))))
         (add-single-use-hook 'minibuffer-setup-hook (lambda ()
             (setcar cell (current-buffer))))
         (with-hook (('post-command-hook (apply-partially
-                                            'datetime-read--preview cell)))
-            (datetime-parse (read-string "Date+time: " initial-input)))))
+                                            'datetime-read--preview now cell)))
+            (datetime-parse (read-string "Date+time: " initial-input) now))))
 
 (use-package org
     :defer
