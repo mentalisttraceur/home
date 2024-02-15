@@ -207,6 +207,20 @@
     (when-let (advice (advice-member-p function symbol))
         (aref (aref advice 2) 2)))
 
+(defun advice-list (symbol)
+    (let ((advice-list ()))
+        (advice-mapc
+            (lambda-let (symbol) (function properties)
+                (let ((where (advice-where function symbol))
+                      (advice ()))
+                    (when properties
+                        (push properties advice))
+                    (push function advice)
+                    (push where advice)
+                    (push advice advice-list)))
+            symbol)
+        advice-list))
+
 (defmacro with-advice-1 (symbol where function &rest body)
     `(unwind-protect
         (progn
