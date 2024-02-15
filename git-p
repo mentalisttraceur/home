@@ -1,0 +1,14 @@
+#!/bin/sh -
+branch=`git branch --show-current` &&
+remote=`git config branch."$branch".pushRemote`
+status=$?
+case $status in
+0) :;;
+1) remote=`git config branch."$branch".remote` || exit "$?";;
+*) exit "$status"
+esac
+commitish=${1-"$branch"}
+case ${1+x} in x)
+    shift
+esac
+git push "$remote" "$commitish":"$branch" "$@"
