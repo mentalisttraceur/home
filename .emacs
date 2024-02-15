@@ -1281,30 +1281,10 @@
     (advice-add 'org-read-date :around 'fixed-org-read-date)
     (setq org-read-date-popup-calendar nil))
 
-(use-package undo-tree
+(use-package vundo
     :config
-    (global-undo-tree-mode 1)
-    (setq undo-tree-auto-save-history nil)
-    (define-key undo-tree-visualizer-mode-map
-        "a" 'undo-tree-visualizer-abort)
-    (define-key undo-tree-visualizer-mode-map
-        "h" 'undo-tree-visualize-switch-branch-left)
-    (define-key undo-tree-visualizer-mode-map
-        "j" 'undo-tree-visualize-redo)
-    (define-key undo-tree-visualizer-mode-map
-        "k" 'undo-tree-visualize-undo)
-    (define-key undo-tree-visualizer-mode-map
-        "l" 'undo-tree-visualize-switch-branch-right)
-    (defun undo-tree-visualize-swing-left (count) (interactive "p")
-        (dotimes (_ count)
-            (undo-tree-visualize-undo)
-            (undo-tree-visualize-switch-branch-left 1)
-            (undo-tree-visualize-redo)))
-    (defun undo-tree-visualize-swing-right (count) (interactive "p")
-        (dotimes (_ count)
-            (undo-tree-visualize-undo)
-            (undo-tree-visualize-switch-branch-right 1)
-            (undo-tree-visualize-redo))))
+    (setq vundo-compact-display t)
+    (setq vundo-glyph-alist vundo-unicode-symbols))
 
 (use-package vertico
     :config
@@ -1478,7 +1458,7 @@
 
 (use-package evil
     :init
-    (setq evil-undo-system 'undo-tree)
+    (setq evil-undo-system 'undo-redo)
     (setq evil-want-C-u-scroll t)
     :config
     (evil-mode 1)
@@ -1718,11 +1698,6 @@
                     (message ,format-string ,variable))
                 (evil-declare-not-repeat ',function))))
     (define-key space-map "." (toggle evil-repeat-move-cursor))
-    (define-key space-map "u" 'undo-tree-visualize)
-    (add-hook 'undo-tree-visualizer-mode-hook (lambda ()
-        (evil-local-set-key 'motion [escape] 'undo-tree-visualizer-quit)
-        (evil-local-set-key 'motion "H" 'undo-tree-visualize-swing-left)
-        (evil-local-set-key 'motion "L" 'undo-tree-visualize-swing-right)))
     (define-key space-map "b" 'switch-to-buffer)
     (define-key space-map "B" 'ibuffer)
     (define-key space-map "k" 'kill-buffer)
@@ -2067,9 +2042,19 @@
     (evil-define-key 'motion calendar-mode-map "L" 'calendar-scroll-left)
     (define-key space-map "P" (toggle datetime-read-popup-calendar)))
 
-(use-packages evil undo-tree
+(use-packages evil vundo
     :config
-    (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode))
+    (add-to-list 'evil-motion-state-modes 'vundo-mode)
+    (evil-define-key 'motion vundo-mode-map [escape] 'vundo-quit)
+    (evil-define-key 'motion vundo-mode-map "h" 'vundo-backward)
+    (evil-define-key 'motion vundo-mode-map "j" 'vundo-next)
+    (evil-define-key 'motion vundo-mode-map "k" 'vundo-previous)
+    (evil-define-key 'motion vundo-mode-map "l" 'vundo-forward)
+    (evil-define-key 'motion vundo-mode-map [left] 'vundo-backward)
+    (evil-define-key 'motion vundo-mode-map [right] 'vundo-forward)
+    (evil-define-key 'motion vundo-mode-map [down] 'vundo-next)
+    (evil-define-key 'motion vundo-mode-map [up] 'vundo-previous)
+    (define-key space-map "u" 'vundo))
 
 (define-derived-mode histdir-repl-mode eat-mode "HER")
 (add-to-list 'consult-mode-histories
