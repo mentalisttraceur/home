@@ -2048,7 +2048,7 @@
     (evil-declare-not-repeat 'ignore)
     (add-to-list 'evil-motion-state-modes 'shortdoc-mode)
     (with-current-buffer (messages-buffer)
-        (evil-force-normal-state)))
+        (evil-motion-state)))
 
 (use-packages calendar evil
     :config
