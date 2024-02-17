@@ -602,7 +602,22 @@
         (set-window-start (selected-window) (point)))
     (advice-add 'help-function-def--button-function
         :after 'fixed-help-view-source)
-    (define-key help-mode-map "\C-m" 'help-view-source))
+    (define-key help-mode-map "\C-m" 'help-view-source)
+    (defun independent-help (type)
+        (lambda-let (type) (function &optional thing &rest arguments)
+            (let ((name (if thing
+                            (format "*Help (%s: %s)*" type thing)
+                            (format "*Help (%s)*" type))))
+                (with-advice ('help-buffer :override (lambda-let (name) ()
+                                  (get-buffer-create name)
+                                  name))
+                    (when (or thing arguments)
+                        (push thing arguments))
+                    (apply function arguments)))))
+    (dolist (thing '("function" "variable" "key" "face"))
+        (let ((function (intern (concat "describe-" thing))))
+            (advice-remove-all function)
+            (advice-add function :around (independent-help thing)))))
 
 (defun make-histdir-history ()
     (let ((table (make-ordered-hash-table :test 'eq)))
