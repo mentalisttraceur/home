@@ -2747,13 +2747,7 @@
             (quit))
         (setq window-state--execute-once t))
     (window-state-define-operator window-state-space
-        (condition-case _error
-            (let* ((keys (read-key-sequence-in-keymap space-map "SPC-"))
-                   (binding (lookup-key space-map keys t)))
-                (if binding
-                    (call-interactively binding)
-                    (undefined)))
-            (quit)))
+        (command-execute-in-keymap space-map " "))
     (window-state-define-operator window-state-send
         (condition-case _error
             (let* ((keys (read-key-sequence nil))
