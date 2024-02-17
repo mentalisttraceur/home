@@ -221,6 +221,11 @@
             symbol)
         advice-list))
 
+(defun advice-remove-all (symbol)
+    (dolist (advice (advice-list symbol))
+        (let-unpack ((_where function) advice)
+            (advice-remove symbol function))))
+
 (defmacro with-advice-1 (symbol where function &rest body)
     `(unwind-protect
         (progn
