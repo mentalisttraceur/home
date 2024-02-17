@@ -2757,8 +2757,7 @@
     (window-state-define-operator window-state-send
         (condition-case _error
             (let* ((keys (read-key-sequence nil))
-                   (maps (current-active-maps t))
-                   (binding (lookup-key maps keys t)))
+                   (binding (key-binding keys t)))
                 (setq last-command-event (aref keys (1- (length keys))))
                 (if binding
                     (call-interactively binding)
