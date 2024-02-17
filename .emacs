@@ -1706,6 +1706,11 @@
     (define-key space-map "n" 'universal-argument)
     (define-key universal-argument-map " n" 'universal-argument-more)
     (define-key universal-argument-map [escape] 'ignore)
+    (defun digit-argument-in-space-map (prefix-argument) (interactive "P")
+        (digit-argument prefix-argument)
+        (command-execute-in-keymap space-map " "))
+    (dolist (key '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
+        (define-key space-map key 'digit-argument-in-space-map))
     (defun fixed-last-s-expression (function &rest arguments)
         (save-excursion
             (condition-case _error
