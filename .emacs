@@ -434,8 +434,7 @@
             (let* ((keys (apply 'read-key-sequence-in-keymap
                              keymap nil arguments))
                    (binding (lookup-key keymap keys t)))
-                (setq keys (listify-key-sequence keys))
-                (setq last-command-event (car (last keys)))
+                (setq last-command-event (aref keys (1- (length keys))))
                 (if binding
                     (command-execute binding)
                     (with-advice ('this-single-command-keys
@@ -2758,9 +2757,9 @@
             (let* ((keys (read-key-sequence nil))
                    (maps (current-active-maps t))
                    (binding (lookup-key maps keys t)))
+                (setq last-command-event (aref keys (1- (length keys))))
                 (if binding
-                    (let ((last-command-event (aref keys (1- (length keys)))))
-                        (call-interactively binding))
+                    (call-interactively binding)
                     (undefined)))
             (quit)))
     (setq aw-dispatch-alist `(
