@@ -430,7 +430,9 @@
 (defun command-execute-in-keymap (keymap &optional prefix &rest arguments)
     (condition-case _error
         (with-hook (('prefix-command-echo-keystrokes-functions
-                         (apply-partially 'key-description prefix)))
+                         (lambda-let (prefix) ()
+                             (when (length> prefix 0)
+                                 (key-description prefix)))))
             (let* ((keys (apply 'read-key-sequence-in-keymap
                              keymap nil arguments))
                    (binding (lookup-key keymap keys t)))
