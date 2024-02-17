@@ -427,6 +427,24 @@
             (use-global-map saved-global-map))))
 
 
+(defun command-execute-in-keymap (keymap &optional prefix &rest arguments)
+    (condition-case _error
+        (with-hook (('prefix-command-echo-keystrokes-functions
+                         (apply-partially 'key-description prefix)))
+            (let* ((keys (apply 'read-key-sequence-in-keymap
+                             keymap nil arguments))
+                   (binding (lookup-key keymap keys t)))
+                (setq keys (listify-key-sequence keys))
+                (setq last-command-event (car (last keys)))
+                (if binding
+                    (command-execute binding)
+                    (with-advice ('this-single-command-keys
+                                     :filter-return
+                                     (apply-partially 'vconcat prefix))
+                        (undefined)))))
+        (quit)))
+
+
 (defun add-single-use-hook--wrapper (remove-arguments function &rest arguments)
     (unwind-protect
         (apply function arguments)
