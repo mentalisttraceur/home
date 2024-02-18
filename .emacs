@@ -1336,6 +1336,18 @@
 
 (use-package vundo
     :config
+    (defconst fixed-vundo-recenter--last-line-number 1)
+    (defun fixed-vundo-recenter (&rest _)
+        (let ((line-number (line-number-at-pos)))
+            (when (and (/= line-number fixed-vundo-recenter--last-line-number)
+                       (< line-number (count-lines (point-min) (point-max))))
+                (setq-local fixed-vundo-recenter--last-line-number line-number)
+                (recenter))))
+    (dolist (function '(vundo
+                        vundo-next vundo-previous
+                        vundo-forward vundo-backward
+                        vundo-stem-end vundo-stem-root))
+        (advice-add function :after 'fixed-vundo-recenter))
     (setq vundo-compact-display t)
     (setq vundo-glyph-alist vundo-unicode-symbols))
 
