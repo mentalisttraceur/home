@@ -1334,22 +1334,30 @@
     (advice-add 'org-read-date :around 'fixed-org-read-date)
     (setq org-read-date-popup-calendar nil))
 
-(use-package vundo
+(use-package undo-tree
     :config
-    (defconst fixed-vundo-recenter--last-line-number 1)
-    (defun fixed-vundo-recenter (&rest _)
-        (let ((line-number (line-number-at-pos)))
-            (when (and (/= line-number fixed-vundo-recenter--last-line-number)
-                       (< line-number (count-lines (point-min) (point-max))))
-                (setq-local fixed-vundo-recenter--last-line-number line-number)
-                (recenter))))
-    (dolist (function '(vundo
-                        vundo-next vundo-previous
-                        vundo-forward vundo-backward
-                        vundo-stem-end vundo-stem-root))
-        (advice-add function :after 'fixed-vundo-recenter))
-    (setq vundo-compact-display t)
-    (setq vundo-glyph-alist vundo-unicode-symbols))
+    (global-undo-tree-mode 1)
+    (setq undo-tree-auto-save-history nil)
+    (define-key undo-tree-visualizer-mode-map
+        "a" 'undo-tree-visualizer-abort)
+    (define-key undo-tree-visualizer-mode-map
+        "h" 'undo-tree-visualize-switch-branch-left)
+    (define-key undo-tree-visualizer-mode-map
+        "j" 'undo-tree-visualize-redo)
+    (define-key undo-tree-visualizer-mode-map
+        "k" 'undo-tree-visualize-undo)
+    (define-key undo-tree-visualizer-mode-map
+        "l" 'undo-tree-visualize-switch-branch-right)
+    (defun undo-tree-visualize-swing-left (count) (interactive "p")
+        (dotimes (_ count)
+            (undo-tree-visualize-undo)
+            (undo-tree-visualize-switch-branch-left 1)
+            (undo-tree-visualize-redo)))
+    (defun undo-tree-visualize-swing-right (count) (interactive "p")
+        (dotimes (_ count)
+            (undo-tree-visualize-undo)
+            (undo-tree-visualize-switch-branch-right 1)
+            (undo-tree-visualize-redo))))
 
 (use-package vertico
     :config
@@ -1523,7 +1531,7 @@
 
 (use-package evil
     :init
-    (setq evil-undo-system 'undo-redo)
+    (setq evil-undo-system 'undo-tree)
     (setq evil-want-C-u-scroll t)
     :config
     (evil-mode 1)
@@ -2112,27 +2120,16 @@
     (evil-define-key 'motion calendar-mode-map "L" 'calendar-scroll-left)
     (define-key space-map "P" (toggle datetime-read-popup-calendar)))
 
-(use-packages evil vundo
+(use-packages evil undo-tree
     :config
-    (add-to-list 'evil-motion-state-modes 'vundo-mode)
-    (evil-define-key 'motion vundo-mode-map [escape] 'vundo-quit)
-    (evil-define-key 'motion vundo-mode-map "h" 'vundo-backward)
-    (evil-define-key 'motion vundo-mode-map "j" 'vundo-next)
-    (evil-define-key 'motion vundo-mode-map "k" 'vundo-previous)
-    (evil-define-key 'motion vundo-mode-map "l" 'vundo-forward)
-    (evil-define-key 'motion vundo-mode-map [left] 'vundo-backward)
-    (evil-define-key 'motion vundo-mode-map [right] 'vundo-forward)
-    (evil-define-key 'motion vundo-mode-map [down] 'vundo-next)
-    (evil-define-key 'motion vundo-mode-map [up] 'vundo-previous)
-    (evil-define-key 'motion vundo-mode-map "b" 'vundo-stem-root)
-    (evil-define-key 'motion vundo-mode-map "e" 'vundo-stem-end)
-    (evil-define-key 'motion vundo-mode-map "w" (lambda () (interactive)
-        (vundo-stem-end)
-        (vundo-forward 1)))
-    (evil-define-key 'motion vundo-mode-map "ge" (lambda () (interactive)
-        (vundo-stem-root)
-        (vundo-backward 1)))
-    (define-key space-map "u" 'vundo))
+    (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map
+        [escape] 'undo-tree-visualizer-quit)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map
+        "H" 'undo-tree-visualize-swing-left)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map
+        "L" 'undo-tree-visualize-swing-right)
+    (define-key space-map "u" 'undo-tree-visualize))
 
 (define-derived-mode histdir-repl-mode eat-mode "HER")
 (add-to-list 'consult-mode-histories
