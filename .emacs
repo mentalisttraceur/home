@@ -2122,9 +2122,6 @@
 (use-packages evil undo-tree
     :config
     (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
-    (defun evil-undo-tree-visualize () (interactive)
-        (undo-tree-visualize)
-        (evil-undo-tree-replace-state))
     (defun evil-undo-tree-replace-state () (interactive)
         (evil-replace-state)
         (overwrite-mode -1)
@@ -2133,6 +2130,7 @@
     (defun evil-undo-tree-motion-state () (interactive)
         (evil-motion-state)
         (undo-tree-visualizer-selection-mode 1))
+    (advice-add 'undo-tree-visualize :after 'evil-undo-tree-replace-state)
     (evil-define-key 'replace undo-tree-visualizer-mode-map
         [escape] 'undo-tree-visualizer-abort)
     (dolist (key '(" " "g" "z"))
@@ -2164,7 +2162,7 @@
         "H" 'undo-tree-visualize-switch-branch-left)
     (evil-define-key 'replace undo-tree-visualizer-mode-map
         "L" 'undo-tree-visualize-switch-branch-right)
-    (define-key space-map "u" 'evil-undo-tree-visualize))
+    (define-key space-map "u" 'undo-tree-visualize))
 
 (define-derived-mode histdir-repl-mode eat-mode "HER")
 (add-to-list 'consult-mode-histories
