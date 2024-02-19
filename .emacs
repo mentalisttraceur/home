@@ -2898,6 +2898,12 @@
     (define-key evil-motion-state-map "S" 'window-state)
     (define-key evil-normal-state-map "S" nil))
 
+(use-packages ace-window evil undo-tree
+    :config
+    (dolist (key '("s" "S"))
+        (evil-define-key 'replace undo-tree-visualizer-mode-map
+            key (lookup-key evil-motion-state-map key))))
+
 (use-package with-editor
     :config
     (defun fixed-with-editor-return (with-editor-return cancel)
