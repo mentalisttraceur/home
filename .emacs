@@ -1338,6 +1338,8 @@
     :config
     (global-undo-tree-mode 1)
     (setq undo-tree-auto-save-history nil)
+    (add-to-list 'undo-tree-visualizer-mode-hook (lambda ()
+        (setq mode-name "Undo")))
     (define-key undo-tree-visualizer-mode-map
         "\C-m" 'undo-tree-visualizer-quit)
     (define-key undo-tree-visualizer-mode-map
