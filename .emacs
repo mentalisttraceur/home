@@ -1342,16 +1342,24 @@
         "\C-m" 'undo-tree-visualizer-quit)
     (define-key undo-tree-visualizer-mode-map
         "q" 'undo-tree-visualizer-abort)
-    (defun undo-tree-visualize-swing-left (count) (interactive "p")
-        (dotimes (_ count)
-            (undo-tree-visualize-undo)
-            (undo-tree-visualize-switch-branch-left 1)
-            (undo-tree-visualize-redo)))
-    (defun undo-tree-visualize-swing-right (count) (interactive "p")
-        (dotimes (_ count)
-            (undo-tree-visualize-undo)
-            (undo-tree-visualize-switch-branch-right 1)
-            (undo-tree-visualize-redo))))
+    (defun undo-tree-visualize-jump-branch-left (count) (interactive "p")
+        (if undo-tree-visualizer-selection-mode
+            (dotimes (_ count)
+                (undo-tree-visualizer-select-left 1))
+            (undo-tree-visualizer-selection-mode 1)
+            (dotimes (_ count)
+                (undo-tree-visualizer-select-left 1))
+            (undo-tree-visualizer-set)
+            (undo-tree-visualizer-selection-mode -1)))
+    (defun undo-tree-visualize-jump-branch-right (count) (interactive "p")
+        (if undo-tree-visualizer-selection-mode
+            (dotimes (_ count)
+                (undo-tree-visualizer-select-right 1))
+            (undo-tree-visualizer-selection-mode 1)
+            (dotimes (_ count)
+                (undo-tree-visualizer-select-right 1))
+            (undo-tree-visualizer-set)
+            (undo-tree-visualizer-selection-mode -1))))
 
 (use-package vertico
     :config
@@ -2120,9 +2128,21 @@
     (evil-define-key 'motion undo-tree-visualizer-mode-map
         [escape] 'undo-tree-visualizer-abort)
     (evil-define-key 'motion undo-tree-visualizer-mode-map
-        "H" 'undo-tree-visualize-swing-left)
+        [left] 'undo-tree-visualize-jump-branch-left)
     (evil-define-key 'motion undo-tree-visualizer-mode-map
-        "L" 'undo-tree-visualize-swing-right)
+        [right] 'undo-tree-visualize-jump-branch-right)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map
+        "h" 'undo-tree-visualize-jump-branch-left)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map
+        "l" 'undo-tree-visualize-jump-branch-right)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map
+        [\S-left] 'undo-tree-visualize-switch-branch-left)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map
+        [\S-right] 'undo-tree-visualize-switch-branch-right)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map
+        "H" 'undo-tree-visualize-switch-branch-left)
+    (evil-define-key 'motion undo-tree-visualizer-mode-map
+        "L" 'undo-tree-visualize-switch-branch-right)
     (define-key space-map "u" 'undo-tree-visualize))
 
 (define-derived-mode histdir-repl-mode eat-mode "HER")
