@@ -1342,14 +1342,6 @@
         "\C-m" 'undo-tree-visualizer-quit)
     (define-key undo-tree-visualizer-mode-map
         "q" 'undo-tree-visualizer-abort)
-    (define-key undo-tree-visualizer-mode-map
-        "h" 'undo-tree-visualize-switch-branch-left)
-    (define-key undo-tree-visualizer-mode-map
-        "j" 'undo-tree-visualize-redo)
-    (define-key undo-tree-visualizer-mode-map
-        "k" 'undo-tree-visualize-undo)
-    (define-key undo-tree-visualizer-mode-map
-        "l" 'undo-tree-visualize-switch-branch-right)
     (defun undo-tree-visualize-swing-left (count) (interactive "p")
         (dotimes (_ count)
             (undo-tree-visualize-undo)
