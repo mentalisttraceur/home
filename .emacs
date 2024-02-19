@@ -1341,7 +1341,7 @@
     (define-key undo-tree-visualizer-mode-map
         "\C-m" 'undo-tree-visualizer-quit)
     (define-key undo-tree-visualizer-mode-map
-        "a" 'undo-tree-visualizer-abort)
+        "q" 'undo-tree-visualizer-abort)
     (define-key undo-tree-visualizer-mode-map
         "h" 'undo-tree-visualize-switch-branch-left)
     (define-key undo-tree-visualizer-mode-map
@@ -2126,7 +2126,7 @@
     :config
     (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
     (evil-define-key 'motion undo-tree-visualizer-mode-map
-        [escape] 'undo-tree-visualizer-quit)
+        [escape] 'undo-tree-visualizer-abort)
     (evil-define-key 'motion undo-tree-visualizer-mode-map
         "H" 'undo-tree-visualize-swing-left)
     (evil-define-key 'motion undo-tree-visualizer-mode-map
