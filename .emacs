@@ -1343,23 +1343,17 @@
     (define-key undo-tree-visualizer-mode-map
         "q" 'undo-tree-visualizer-abort)
     (defun undo-tree-visualize-jump-branch-left (count) (interactive "p")
-        (if undo-tree-visualizer-selection-mode
-            (dotimes (_ count)
-                (undo-tree-visualizer-select-left 1))
-            (undo-tree-visualizer-selection-mode 1)
-            (dotimes (_ count)
-                (undo-tree-visualizer-select-left 1))
-            (undo-tree-visualizer-set)
-            (undo-tree-visualizer-selection-mode -1)))
+        (undo-tree-visualizer-selection-mode 1)
+        (dotimes (_ count)
+            (undo-tree-visualizer-select-left 1))
+        (undo-tree-visualizer-set)
+        (undo-tree-visualizer-selection-mode -1))
     (defun undo-tree-visualize-jump-branch-right (count) (interactive "p")
-        (if undo-tree-visualizer-selection-mode
-            (dotimes (_ count)
-                (undo-tree-visualizer-select-right 1))
-            (undo-tree-visualizer-selection-mode 1)
-            (dotimes (_ count)
-                (undo-tree-visualizer-select-right 1))
-            (undo-tree-visualizer-set)
-            (undo-tree-visualizer-selection-mode -1))))
+        (undo-tree-visualizer-selection-mode 1)
+        (dotimes (_ count)
+            (undo-tree-visualizer-select-right 1))
+        (undo-tree-visualizer-set)
+        (undo-tree-visualizer-selection-mode -1)))
 
 (use-package vertico
     :config
@@ -2125,25 +2119,49 @@
 (use-packages evil undo-tree
     :config
     (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map
+    (defun evil-undo-tree-visualize () (interactive)
+        (undo-tree-visualize)
+        (evil-undo-tree-replace-state))
+    (defun evil-undo-tree-replace-state () (interactive)
+        (evil-replace-state)
+        (overwrite-mode -1)
+        (remove-hook 'pre-command-hook 'evil-replace-pre-command t)
+        (undo-tree-visualizer-selection-mode -1))
+    (defun evil-undo-tree-motion-state () (interactive)
+        (evil-motion-state)
+        (undo-tree-visualizer-selection-mode 1))
+    (evil-define-key 'replace undo-tree-visualizer-mode-map
         [escape] 'undo-tree-visualizer-abort)
+    (dolist (key '(" " "g" "z"))
+        (evil-define-key 'replace undo-tree-visualizer-mode-map
+            key (lookup-key evil-motion-state-map key)))
+    (evil-define-key 'replace undo-tree-visualizer-mode-map
+        "i" 'evil-undo-tree-motion-state)
     (evil-define-key 'motion undo-tree-visualizer-mode-map
+        [escape] 'evil-undo-tree-replace-state)
+    (define-key undo-tree-visualizer-selection-mode-map
+        "q" 'evil-undo-tree-replace-state)
+    (evil-define-key 'replace undo-tree-visualizer-mode-map
         [left] 'undo-tree-visualize-jump-branch-left)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map
+    (evil-define-key 'replace undo-tree-visualizer-mode-map
         [right] 'undo-tree-visualize-jump-branch-right)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map
+    (evil-define-key 'replace undo-tree-visualizer-mode-map
         "h" 'undo-tree-visualize-jump-branch-left)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map
+    (evil-define-key 'replace undo-tree-visualizer-mode-map
+        "j" 'undo-tree-visualize-redo)
+    (evil-define-key 'replace undo-tree-visualizer-mode-map
+        "k" 'undo-tree-visualize-undo)
+    (evil-define-key 'replace undo-tree-visualizer-mode-map
         "l" 'undo-tree-visualize-jump-branch-right)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map
+    (evil-define-key 'replace undo-tree-visualizer-mode-map
         [\S-left] 'undo-tree-visualize-switch-branch-left)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map
+    (evil-define-key 'replace undo-tree-visualizer-mode-map
         [\S-right] 'undo-tree-visualize-switch-branch-right)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map
+    (evil-define-key 'replace undo-tree-visualizer-mode-map
         "H" 'undo-tree-visualize-switch-branch-left)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map
+    (evil-define-key 'replace undo-tree-visualizer-mode-map
         "L" 'undo-tree-visualize-switch-branch-right)
-    (define-key space-map "u" 'undo-tree-visualize))
+    (define-key space-map "u" 'evil-undo-tree-visualize))
 
 (define-derived-mode histdir-repl-mode eat-mode "HER")
 (add-to-list 'consult-mode-histories
