@@ -1339,6 +1339,8 @@
     (global-undo-tree-mode 1)
     (setq undo-tree-auto-save-history nil)
     (define-key undo-tree-visualizer-mode-map
+        "\C-m" 'undo-tree-visualizer-quit)
+    (define-key undo-tree-visualizer-mode-map
         "a" 'undo-tree-visualizer-abort)
     (define-key undo-tree-visualizer-mode-map
         "h" 'undo-tree-visualize-switch-branch-left)
