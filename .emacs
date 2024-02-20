@@ -2126,6 +2126,7 @@
         (evil-replace-state)
         (overwrite-mode -1)
         (remove-hook 'pre-command-hook 'evil-replace-pre-command t)
+        (add-hook 'post-command-hook (lambda () (overwrite-mode -1)) nil t)
         (undo-tree-visualizer-selection-mode -1))
     (defun evil-undo-tree-motion-state () (interactive)
         (evil-motion-state)
