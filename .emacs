@@ -611,7 +611,7 @@
                               (get-buffer-create name)
                               name))
                 (apply function arguments))))
-    (dolist (type '("function" "variable" "key" "face"))
+    (dolist (type '("function" "variable" "face"))
         (let ((function (intern (concat "describe-" type))))
             (advice-add function
                 :around (apply-partially 'independent-help type)))))
