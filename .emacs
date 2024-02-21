@@ -2119,6 +2119,15 @@
     (evil-define-key 'motion calendar-mode-map "L" 'calendar-scroll-left)
     (define-key space-map "P" (toggle datetime-read-popup-calendar)))
 
+(use-packages eshell eat evil
+    :config
+    (add-hook 'eat-eshell-exec-hook (lambda ()
+        (evil-local-set-key 'insert "\C-v" 'eat-self-input)
+        (evil-local-set-key 'insert "\C-q" 'eat-quoted-input)))
+    (add-hook 'eat-eshell-exit-hook (lambda ()
+        (evil-local-set-key 'insert "\C-v" nil)
+        (evil-local-set-key 'insert "\C-q" nil))))
+
 (use-packages evil undo-tree
     :config
     (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
