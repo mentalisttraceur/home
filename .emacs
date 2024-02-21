@@ -614,9 +614,9 @@
                     (when (or thing arguments)
                         (push thing arguments))
                     (apply function arguments)))))
-    (dolist (thing '("function" "variable" "key" "face"))
-        (let ((function (intern (concat "describe-" thing))))
-            (advice-add function :around (independent-help thing)))))
+    (dolist (type '("function" "variable" "key" "face"))
+        (let ((function (intern (concat "describe-" type))))
+            (advice-add function :around (independent-help type)))))
 
 (defun make-histdir-history ()
     (let ((table (make-ordered-hash-table :test 'eq)))
