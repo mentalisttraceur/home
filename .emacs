@@ -616,7 +616,6 @@
                     (apply function arguments)))))
     (dolist (thing '("function" "variable" "key" "face"))
         (let ((function (intern (concat "describe-" thing))))
-            (advice-remove-all function)
             (advice-add function :around (independent-help thing)))))
 
 (defun make-histdir-history ()
