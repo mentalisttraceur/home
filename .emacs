@@ -604,15 +604,13 @@
         :after 'fixed-help-view-source)
     (define-key help-mode-map "\C-m" 'help-view-source)
     (defun independent-help (type)
-        (lambda-let (type) (function &optional thing &rest arguments)
-            (let ((name (if thing
-                            (format "*Help (%s: %s)*" type thing)
+        (lambda-let (type) (function &rest arguments)
+            (let ((name (if arguments
+                            (format "*Help (%s: %s)*" type (car arguments))
                             (format "*Help (%s)*" type))))
                 (with-advice ('help-buffer :override (lambda-let (name) ()
                                   (get-buffer-create name)
                                   name))
-                    (when (or thing arguments)
-                        (push thing arguments))
                     (apply function arguments)))))
     (dolist (type '("function" "variable" "key" "face"))
         (let ((function (intern (concat "describe-" type))))
