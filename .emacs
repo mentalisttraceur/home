@@ -248,6 +248,18 @@
 (defmacro without-advice (advice-list &rest body)
     `(apply-split-nest without-advice-1 ,advice-list 2 ,body))
 
+(defmacro without-advice-all-1 (symbol &rest body)
+    `(let ((advice-list (advice-list ,symbol)))
+         (unwind-protect
+             (progn
+                 (advice-remove-all ,symbol)
+                 ,@body)
+             (dolist (advice advice-list)
+                 (apply 'advice-add ,symbol advice)))))
+
+(defmacro without-advice-all (symbol-list &rest body)
+    `(apply-split-nest without-advice-all-1 ,symbol-list 1 ,body))
+
 
 (defmacro with-hook-1 (add-hook-arguments &rest body)
     (let-unpack-1 (hook function depth local) add-hook-arguments
