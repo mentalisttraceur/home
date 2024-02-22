@@ -615,18 +615,22 @@
     (advice-add 'help-function-def--button-function
         :after 'fixed-help-view-source)
     (define-key help-mode-map "\C-m" 'help-view-source)
-    (defun independent-help (type function &rest arguments)
-        (let ((name (if arguments
-                        (format "*Help (%s: %s)*" type (car arguments))
-                        (format "*Help (%s)*" type))))
+    (defun independent-help--name (type formatter arguments)
+        (if arguments
+            (format "*Help (%s: %s)*" type (apply formatter arguments))
+            (format "*Help (%s)*" type)))
+    (defun independent-help (type formatter function &rest arguments)
+        (let ((name (independent-help--name type formatter arguments)))
             (with-advice ('help-buffer :override (lambda-let (name) ()
                               (get-buffer-create name)
                               name))
                 (apply function arguments))))
-    (dolist (type '("function" "variable" "face"))
-        (let ((function (intern (concat "describe-" type))))
-            (advice-add function
-                :around (apply-partially 'independent-help type)))))
+    (advice-add 'describe-function
+        :around (apply-partially 'independent-help "function" 'identity))
+    (advice-add 'describe-variable
+        :around (apply-partially 'independent-help "variable" 'identity+ignore))
+    (advice-add 'describe-face
+        :around (apply-partially 'independent-help "face" 'identity+ignore)))
 
 (defun make-histdir-history ()
     (let ((table (make-ordered-hash-table :test 'eq)))
