@@ -619,24 +619,26 @@
         (if arguments
             (format "*Help (%s: %s)*" type (apply formatter arguments))
             (format "*Help (%s)*" type)))
-    (defun independent-help (type formatter function &rest arguments)
+    (defun independent-help--advice (type formatter function &rest arguments)
         (let ((name (independent-help--name type formatter arguments)))
             (with-advice ('help-buffer :override (lambda-let (name) ()
                               (get-buffer-create name)
                               name))
                 (apply function arguments))))
+    (defun independent-help (type formatter)
+        (apply-partially 'independent-help--advice type formatter))
     (advice-add 'describe-function
-        :around (apply-partially 'independent-help "function" 'identity))
+        :around (independent-help "function" 'identity))
     (advice-add 'describe-variable
-        :around (apply-partially 'independent-help "variable" 'identity+ignore))
+        :around (independent-help "variable" 'identity+ignore))
     (advice-add 'describe-face
-        :around (apply-partially 'independent-help "face"
+        :around (independent-help "face"
             (lambda (face &rest _)
                 (if (listp face)
                     (substring (format "%s" face) 1 -1)
                     face))))
     (advice-add 'describe-package
-        :around (apply-partially 'independent-help "package"
+        :around (independent-help "package"
             (lambda (package)
                 (if (package-desc-p package)
                     (package-desc-name package)
