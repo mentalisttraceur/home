@@ -634,7 +634,13 @@
             (lambda (face &rest _)
                 (if (listp face)
                     (substring (format "%s" face) 1 -1)
-                    face)))))
+                    face))))
+    (advice-add 'describe-package
+        :around (apply-partially 'independent-help "package"
+            (lambda (package)
+                (if (package-desc-p package)
+                    (package-desc-name package)
+                    package)))))
 
 (defun make-histdir-history ()
     (let ((table (make-ordered-hash-table :test 'eq)))
