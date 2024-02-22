@@ -630,7 +630,11 @@
     (advice-add 'describe-variable
         :around (apply-partially 'independent-help "variable" 'identity+ignore))
     (advice-add 'describe-face
-        :around (apply-partially 'independent-help "face" 'identity+ignore)))
+        :around (apply-partially 'independent-help "face"
+            (lambda (face &rest _)
+                (if (listp face)
+                    (substring (format "%s" face) 1 -1)
+                    face)))))
 
 (defun make-histdir-history ()
     (let ((table (make-ordered-hash-table :test 'eq)))
