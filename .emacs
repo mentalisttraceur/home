@@ -1802,7 +1802,7 @@
     (define-key space-map "h" help-map)
     (evil-define-key 'motion help-mode-map "H" 'help-go-back)
     (evil-define-key 'motion help-mode-map "L" 'help-go-forward)
-    (define-key space-map "p" 'list-packages)
+    (define-key space-map "P" 'list-packages)
     (add-to-list 'evil-motion-state-modes 'package-menu-mode)
     (defun consult-history-execute (prefix-argument) (interactive "P")
         (let* ((consult-history-execute t)
@@ -2114,7 +2114,7 @@
     :config
     (evil-define-key 'motion calendar-mode-map "H" 'calendar-scroll-right)
     (evil-define-key 'motion calendar-mode-map "L" 'calendar-scroll-left)
-    (define-key space-map "P" (toggle datetime-read-popup-calendar)))
+    (define-key space-map "p" (toggle datetime-read-popup-calendar)))
 
 (use-packages eshell eat evil
     :config
