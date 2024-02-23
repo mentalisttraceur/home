@@ -1980,12 +1980,12 @@
         (unwind-protect
             (refresh-modified-state buffer)
             (delete-directory directory t)))
-    (defun diff-buffer--from ()
+    (defun diff-buffer--from (action)
         (if-let (window (next-window-other-buffer nil 'never))
             (window-buffer window)
-            (read-other-buffer "Diff from buffer: ")))
+            (read-other-buffer (concat action " from buffer: "))))
     (defun diff-buffer (buffer-1 buffer-2)
-        (interactive (list (diff-buffer--from) (current-buffer)))
+        (interactive (list (diff-buffer--from "Diff") (current-buffer)))
         (setq buffer-1 (get-buffer buffer-1))
         (setq buffer-2 (get-buffer buffer-2))
         (with-temporary-directory directory
@@ -2073,7 +2073,51 @@
                     (abbreviate-file-name (file-truename buffer-file-name)))
                 (refresh-modified-state buffer))
             (delete-directory directory t)))
-    (define-key space-map "r" 'partial-revert)
+    (defun partial-copy (buffer-1 buffer-2)
+        (interactive (list (diff-buffer--from "Copy") (current-buffer)))
+        (setq buffer-1 (get-buffer buffer-1))
+        (setq buffer-2 (get-buffer buffer-2))
+        (if (not (or (derived-mode-p 'text-mode 'prog-mode)
+                     (eq major-mode 'fundamental-mode)))
+            (pop-to-command-eshell
+                (list "echo" (concat (buffer-name buffer-2) " is special"))
+                (buffer-name)
+                "Partial copy")
+            (with-temporary-directory directory
+                (let* ((name-1 (file-name-nondirectory (buffer-name buffer-1)))
+                       (file-1 (concat directory "/" name-1))
+                       (name-2 (file-name-nondirectory (buffer-name buffer-2)))
+                       (file-2 (concat directory "/" name-2))
+                       (default-directory "~"))
+                    (when (equal name-1 name-2)
+                        (setq name-2 (concat "(2) " name-2))
+                        (setq file-2 (concat directory "/" name-2)))
+                    (let ((jka-compr-inhibit t))
+                        (with-current-buffer buffer-1
+                            (write-region (buffer-end -1) (buffer-end 1) file-1)))
+                    (with-current-buffer buffer-2
+                        (write-region (buffer-end -1) (buffer-end 1) file-2))
+                    (pop-to-command-eshell
+                        (list "gp" file-2 file-1)
+                        (concat name-1 " -> " name-2)
+                        "Partial copy"
+                        (apply-partially 'partial-copy--finish
+                            buffer-2 directory file-2)))
+                (setq directory nil))))
+    (defun partial-copy--finish (buffer-2 directory file-2)
+        (unwind-protect
+            (with-current-buffer buffer-2
+                (let ((buffer-file-name file-2))
+                    (revert-buffer t t t))
+                (when buffer-file-name
+                    (setq buffer-file-truename
+                        (abbreviate-file-name (file-truename buffer-file-name)))
+                    (refresh-modified-state buffer-2)))
+            (delete-directory directory t)))
+    (define-key space-map "r" (lambda (prefix-argument) (interactive "P")
+        (if prefix-argument
+            (become-command 'partial-copy)
+            (become-command 'partial-revert))))
     (define-key space-map "R" 'revert-buffer)
     (defun pop-to-command-eshell--not-in-a-git-repository (name)
         (pop-to-command-eshell
