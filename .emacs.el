@@ -1980,7 +1980,37 @@
         (unwind-protect
             (refresh-modified-state buffer)
             (delete-directory directory t)))
-    (define-key space-map "c" 'diff-unsaved-changes)
+    (defun diff-buffer--from ()
+        (if-let (window (next-window-other-buffer nil 'never))
+            (window-buffer window)
+            (read-other-buffer "Diff from buffer: ")))
+    (defun diff-buffer (buffer-1 buffer-2)
+        (interactive (list (diff-buffer--from) (current-buffer)))
+        (setq buffer-1 (get-buffer buffer-1))
+        (setq buffer-2 (get-buffer buffer-2))
+        (with-temporary-directory directory
+            (let* ((name-1 (file-name-nondirectory (buffer-name buffer-1)))
+                   (file-1 (concat directory "/" name-1))
+                   (name-2 (file-name-nondirectory (buffer-name buffer-2)))
+                   (file-2 (concat directory "/" name-2))
+                   (default-directory "~"))
+                (when (equal name-1 name-2)
+                    (setq name-2 (concat "(2) " name-2))
+                    (setq file-2 (concat directory "/" name-2)))
+                (with-current-buffer buffer-1
+                    (write-region (buffer-end -1) (buffer-end 1) file-1))
+                (with-current-buffer buffer-2
+                    (write-region (buffer-end -1) (buffer-end 1) file-2))
+                (pop-to-command-eshell
+                    (list "cdexec" directory "gd" name-1 name-2)
+                    (concat name-1 " -> " name-2)
+                    "Diff buffer"
+                    (apply-partially 'delete-directory directory t)))
+            (setq directory nil)))
+    (define-key space-map "c" (lambda (prefix-argument) (interactive "P")
+        (if prefix-argument
+            (become-command 'diff-buffer)
+            (become-command 'diff-unsaved-changes))))
     (defun partial-save () (interactive)
         (if (not buffer-file-name)
             (pop-to-command-eshell--not-a-file "Partial save")
