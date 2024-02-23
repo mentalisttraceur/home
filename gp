@@ -9,9 +9,10 @@ output=${3-"$1"}
 directory=`mktemp -d` &&
 trap cleanup EXIT TERM INT HUP &&
 (cd "$directory" && git init --quiet) &&
-cp "$1" "$directory"/contents &&
-(cd "$directory" && git add contents) &&
-cp "$2" "$directory"/contents &&
-(cd "$directory" && git add -p contents) &&
-(cd "$directory" && git checkout --quiet contents) &&
-cp "$directory"/contents "$output"
+name=${1##*/} &&
+cp "$1" "$directory/$name" &&
+(cd "$directory" && git add "$name") &&
+cp "$2" "$directory/$name" &&
+(cd "$directory" && git add -p "$name") &&
+(cd "$directory" && git checkout --quiet "$name") &&
+cp "$directory/$name" "$output"
