@@ -595,6 +595,18 @@
         (regexp-opt-group strings paren lax)))
 
 
+(defun next-window-other-buffer (&optional window minibuffer all-frames)
+    (let* ((window (next-window window minibuffer all-frames))
+           (buffer (window-buffer window)))
+        (while (and (eq buffer (current-buffer))
+                    (not (eq window (selected-window))))
+            (setq window (next-window window minibuffer all-frames))
+            (setq buffer (window-buffer window)))
+        (if (eq window (selected-window))
+            nil
+            window)))
+
+
 (defun read-other-buffer (prompt)
     (with-advice ('confirm-nonexistent-file-or-buffer :override 'always)
         (read-buffer-to-switch prompt)))
