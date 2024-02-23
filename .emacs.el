@@ -1973,7 +1973,7 @@
                     (if (file-exists-p buffer-file-name)
                         (copy-file buffer-file-name file)
                         (write-region 1 1 file))
-                    (write-region (buffer-end -1) (buffer-end 1) unsaved)
+                    (write-file-no-visit unsaved)
                     (pop-to-command-eshell
                         (list "cdexec" directory "gd" file-name unsaved-name)
                         (buffer-name)
@@ -2004,9 +2004,9 @@
                     (setq file-2 (concat directory "/" name-2)))
                 (let ((jka-compr-inhibit t))
                     (with-current-buffer buffer-1
-                        (write-region (buffer-end -1) (buffer-end 1) file-1))
+                        (write-file-no-visit file-1))
                     (with-current-buffer buffer-2
-                        (write-region (buffer-end -1) (buffer-end 1) file-2)))
+                        (write-file-no-visit file-2)))
                 (pop-to-command-eshell
                     (list "cdexec" directory "gd" name-1 name-2)
                     (concat name-1 " -> " name-2)
@@ -2028,7 +2028,7 @@
                     (if (file-exists-p buffer-file-name)
                         (copy-file buffer-file-name file)
                         (write-region 1 1 file))
-                    (write-region (buffer-end -1) (buffer-end 1) unsaved)
+                    (write-file-no-visit unsaved)
                     (pop-to-command-eshell
                         (list "gp" file unsaved)
                         (buffer-name)
@@ -2061,7 +2061,7 @@
                     (if (file-exists-p buffer-file-name)
                         (copy-file buffer-file-name file)
                         (write-region 1 1 file))
-                    (write-region (buffer-end -1) (buffer-end 1) unsaved)
+                    (write-file-no-visit unsaved)
                     (pop-to-command-eshell
                         (list "gp" unsaved file)
                         (buffer-name)
@@ -2099,9 +2099,9 @@
                         (setq file-2 (concat directory "/" name-2)))
                     (let ((jka-compr-inhibit t))
                         (with-current-buffer buffer-1
-                            (write-region (buffer-end -1) (buffer-end 1) file-1)))
+                            (write-file-no-visit file-1)))
                     (with-current-buffer buffer-2
-                        (write-region (buffer-end -1) (buffer-end 1) file-2))
+                        (write-file-no-visit file-2))
                     (pop-to-command-eshell
                         (list "gp" file-2 file-1)
                         (concat name-1 " -> " name-2)
@@ -3125,7 +3125,7 @@
             (if (file-exists-p path)
                 (denote-rename-file path title keywords nil)
                 (with-current-buffer (find-file-noselect path)
-                    (write-region (buffer-end -1) (buffer-end 1) path))
+                    (write-file-no-visit path))
                 (let ((new-path (denote-rename-file path title keywords nil)))
                     (delete-file new-path)
                     (refresh-modified-state)
