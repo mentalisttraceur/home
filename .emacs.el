@@ -1802,18 +1802,6 @@
         (command-execute-in-keymap space-map " "))
     (dolist (key '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
         (define-key space-map key 'digit-argument-in-space-map))
-    (defun universal-argument-in-ctl-x-map (prefix-argument) (interactive "P")
-        (if prefix-argument
-            (universal-argument-more prefix-argument)
-            (universal-argument))
-        (command-execute-in-keymap ctl-x-map "\C-x"))
-    (define-key space-map "\C-x" 'universal-argument-in-ctl-x-map)
-    (defun universal-argument-in-ctl-c-map (prefix-argument) (interactive "P")
-        (if prefix-argument
-            (universal-argument-more prefix-argument)
-            (universal-argument))
-        (command-execute-in-keymap (key-binding "\C-c") "\C-c"))
-    (define-key space-map "\C-c" 'universal-argument-in-ctl-c-map)
     (defun fixed-last-s-expression (function &rest arguments)
         (save-excursion
             (condition-case _error
