@@ -1790,8 +1790,6 @@
     (define-key space-map "q" 'ignore)
     (define-key space-map "Q" 'delete-frame)
     (define-key space-map "!" 'save-buffers-kill-emacs)
-    (define-key space-map "n" 'universal-argument)
-    (define-key universal-argument-map " n" 'universal-argument-more)
     (define-key universal-argument-map [escape] 'ignore)
     (defun universal-argument-in-space-map (prefix-argument) (interactive "P")
         (if prefix-argument
