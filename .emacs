@@ -1968,9 +1968,10 @@
         (if (not buffer-file-name)
             (pop-to-command-eshell--not-a-file "Partial save")
             (with-temporary-directory directory
-                (let ((file    (concat directory "/file"))
-                      (unsaved (concat directory "/unsaved"))
-                      (default-directory "~"))
+                (let* ((file-name (file-name-nondirectory buffer-file-name))
+                       (file      (concat directory "/" file-name))
+                       (unsaved   (concat directory "/unsaved " file-name))
+                       (default-directory "~"))
                     (if (file-exists-p buffer-file-name)
                         (copy-file buffer-file-name file)
                         (write-region 1 1 file))
@@ -1980,17 +1981,16 @@
                         (buffer-name)
                         "Partial save"
                         (apply-partially 'partial-save--finish
-                            (current-buffer) directory)))
+                            (current-buffer) directory file)))
                 (setq directory nil))))
-    (defun partial-save--finish (buffer directory)
+    (defun partial-save--finish (buffer directory file)
         (unwind-protect
-            (let ((file (concat directory "/file")))
-                (with-current-buffer buffer
-                    (when (or (file-exists-p buffer-file-name)
-                              (> (file-size file) 0))
-                        (copy-file file buffer-file-name t))
-                    (refresh-modified-state buffer)))
-            (delete-directory directory t)))
+            (with-current-buffer buffer
+                (when (or (file-exists-p buffer-file-name)
+                          (> (file-size file) 0))
+                    (copy-file file buffer-file-name t))
+                (refresh-modified-state buffer)))
+            (delete-directory directory t))
     (define-key space-map "w" 'partial-save)
     (defun save-buffer-maybe-kill () (interactive)
         (save-buffer)
@@ -2001,9 +2001,10 @@
         (if (not buffer-file-name)
             (call-interactively 'revert-buffer)
             (with-temporary-directory directory
-                (let ((file    (concat directory "/file"))
-                      (unsaved (concat directory "/unsaved"))
-                      (default-directory "~"))
+                (let* ((file-name (file-name-nondirectory buffer-file-name))
+                       (file      (concat directory "/" file-name))
+                       (unsaved   (concat directory "/unsaved " file-name))
+                       (default-directory "~"))
                     (if (file-exists-p buffer-file-name)
                         (copy-file buffer-file-name file)
                         (write-region 1 1 file))
@@ -2013,12 +2014,12 @@
                         (buffer-name)
                         "Partial revert"
                         (apply-partially 'partial-revert--finish
-                            (current-buffer) directory)))
+                            (current-buffer) directory unsaved)))
                 (setq directory nil))))
-    (defun partial-revert--finish (buffer directory)
+    (defun partial-revert--finish (buffer directory unsaved)
         (unwind-protect
             (with-current-buffer buffer
-                (let ((buffer-file-name (concat directory "/unsaved")))
+                (let ((buffer-file-name unsaved))
                     (revert-buffer t t t))
                 (setq buffer-file-truename
                     (abbreviate-file-name (file-truename buffer-file-name)))
