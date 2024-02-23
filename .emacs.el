@@ -595,6 +595,11 @@
         (regexp-opt-group strings paren lax)))
 
 
+(defun read-other-buffer (prompt)
+    (with-advice ('confirm-nonexistent-file-or-buffer :override 'always)
+        (read-buffer-to-switch prompt)))
+
+
 (defmacro use-packages (&rest packages-:config-body)
     (let ((head (cons 'use-package packages-:config-body))
           (tail packages-:config-body))
