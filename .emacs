@@ -1943,15 +1943,17 @@
         (if (not buffer-file-name)
             (pop-to-command-eshell--not-a-file "Diff unsaved")
             (with-temporary-directory directory
-                (let ((file    (concat directory "/file"))
-                      (unsaved (concat directory "/unsaved"))
-                      (default-directory "~"))
+                (let* ((file-name    (file-name-nondirectory buffer-file-name))
+                       (file         (concat directory "/" file-name))
+                       (unsaved-name (concat "unsaved " file-name))
+                       (unsaved      (concat directory "/" unsaved-name))
+                       (default-directory "~"))
                     (if (file-exists-p buffer-file-name)
                         (copy-file buffer-file-name file)
                         (write-region 1 1 file))
                     (write-region (buffer-end -1) (buffer-end 1) unsaved)
                     (pop-to-command-eshell
-                        (list "cdexec" directory "gd" "file" "unsaved")
+                        (list "cdexec" directory "gd" file-name unsaved-name)
                         (buffer-name)
                         "Diff unsaved"
                         (apply-partially 'diff-unsaved-changes--finish
