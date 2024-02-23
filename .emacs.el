@@ -612,6 +612,11 @@
         (read-buffer-to-switch prompt)))
 
 
+(defun write-file-no-visit (filename)
+    (without-restriction
+        (write-region 1 (point-max) filename)))
+
+
 (defmacro use-packages (&rest packages-:config-body)
     (let ((head (cons 'use-package packages-:config-body))
           (tail packages-:config-body))
