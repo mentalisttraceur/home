@@ -1997,10 +1997,11 @@
                 (when (equal name-1 name-2)
                     (setq name-2 (concat "(2) " name-2))
                     (setq file-2 (concat directory "/" name-2)))
-                (with-current-buffer buffer-1
-                    (write-region (buffer-end -1) (buffer-end 1) file-1))
-                (with-current-buffer buffer-2
-                    (write-region (buffer-end -1) (buffer-end 1) file-2))
+                (let ((jka-compr-inhibit t))
+                    (with-current-buffer buffer-1
+                        (write-region (buffer-end -1) (buffer-end 1) file-1))
+                    (with-current-buffer buffer-2
+                        (write-region (buffer-end -1) (buffer-end 1) file-2)))
                 (pop-to-command-eshell
                     (list "cdexec" directory "gd" name-1 name-2)
                     (concat name-1 " -> " name-2)
