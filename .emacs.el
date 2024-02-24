@@ -438,7 +438,10 @@
 
 (defun jump-to-marker-with-scroll (marker-with-scroll)
     (let-unpack ((marker start vscroll hscroll) marker-with-scroll)
-        (register-val-jump-to marker nil)
+        (if-let (buffer (marker-buffer marker))
+            (switch-to-buffer buffer)
+            (user-error "Buffer no longer exists"))
+        (goto-char marker)
         (let ((window (selected-window)))
             (set-window-start window start t)
             (set-window-vscroll window vscroll t)
@@ -2891,29 +2894,26 @@
                 window-state--register-bank))
         (evil-window-delete))
     (window-state-define-operator window-state-paste
-        (with-advice ('push-mark :override 'ignore)
-            (jump-to-marker-with-scroll
-                (if (or (not window-state-this-register)
-                        (equal window-state-this-register ?\"))
-                    (ring-ref window-state--register-ring 0)
-                    (if (<= ?1 window-state-this-register ?9)
-                        (ring-ref window-state--register-ring
-                            (- window-state-this-register ?1))
-                        (gethash window-state-this-register
-                            window-state--register-bank))))))
+        (jump-to-marker-with-scroll
+            (if (or (not window-state-this-register)
+                    (equal window-state-this-register ?\"))
+                (ring-ref window-state--register-ring 0)
+                (if (<= ?1 window-state-this-register ?9)
+                    (ring-ref window-state--register-ring
+                        (- window-state-this-register ?1))
+                    (gethash window-state-this-register
+                        window-state--register-bank)))))
     (window-state-define-operator window-state-swap
         (let ((marker1 (point-marker-with-scroll))
               (marker2 nil))
-            (with-advice ('push-mark :override 'ignore)
-                (with-selected-window origin-window
-                    (setq marker2 (point-marker-with-scroll))
-                    (jump-to-marker-with-scroll marker1))
-                (jump-to-marker-with-scroll marker2))))
+            (with-selected-window origin-window
+                (setq marker2 (point-marker-with-scroll))
+                (jump-to-marker-with-scroll marker1))
+            (jump-to-marker-with-scroll marker2)))
     (window-state-define-operator window-state-fast-paste
         (let ((marker (with-selected-window origin-window
                           (point-marker-with-scroll))))
-            (with-advice ('push-mark :override 'ignore)
-                (jump-to-marker-with-scroll marker))))
+            (jump-to-marker-with-scroll marker)))
     (window-state-define-operator window-state-change
         (condition-case _error
             (call-interactively 'switch-to-buffer)
