@@ -1051,6 +1051,12 @@
     (set-face-background 'diff-refine-added "#008000")
     (set-face-background 'diff-refine-removed "#800000"))
 
+(use-package smerge-mode
+    :config
+    (set-face-background 'smerge-lower "#005000")
+    (set-face-background 'smerge-upper "#500000")
+    (set-face-background 'smerge-base "#505000"))
+
 (use-package package
     :config
     (defun fixed-package--with-response-buffer-1
