@@ -22,4 +22,5 @@ bindkey "^K" kill-line
 case ${TERMUX_VERSION+x} in x)
     PATH=$PREFIX/local/bin:$PATH
     export XDG_RUNTIME_DIR=$PREFIX/var/run
+    export TZ=utc
 esac
