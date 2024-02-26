@@ -1,0 +1,2 @@
+#!/bin/sh -
+exec sudo loadkeys /usr/share/kbd/keymaps/i386/qwerty/us.map.gz
