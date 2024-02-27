@@ -1395,6 +1395,7 @@
     (add-to-list 'undo-tree-incompatible-major-modes
         'undo-tree-visualizer-mode)
     (add-to-list 'undo-tree-visualizer-mode-hook (lambda ()
+        (set-window-dedicated-p (selected-window) nil)
         (setq mode-name "Undo")))
     (define-key undo-tree-visualizer-mode-map
         "\C-m" 'undo-tree-visualizer-quit)
