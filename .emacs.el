@@ -3039,6 +3039,7 @@
         (?K window-state-split-up)
         (?L window-state-split-right)
         (?a window-state-toggle-auto-balance)
+        (?A balance-windows)
         (?y window-state-yank-operator)
         (?Y window-state-yank)
         (?d window-state-delete-operator)
