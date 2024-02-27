@@ -576,6 +576,7 @@
     (if context
         (concat "*" name " (" context ")*")
         (concat "*" name "*")))
+(provide 'pop-to-command)
 
 
 (defun string-prefixes (string &optional shortest longest)
