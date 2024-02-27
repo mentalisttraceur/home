@@ -704,7 +704,6 @@
            (unordered-table (car table))
            (older-duplicate (gethash key unordered-table)))
         (when older-duplicate
-            (dlist-setcar older-duplicate nil)
             (when (eq older-duplicate (histdir-history--last history))
                 (histdir-history--set-last history (caar older-duplicate))))
         (ordered-hash-table-put table key string))
