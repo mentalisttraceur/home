@@ -1,4 +1,0 @@
-#!/bin/sh -
-mount --bind /glibc/usr /usr
-mount --bind /glibc/var/db/xbps /var/db/xbps
-exec "$@"
