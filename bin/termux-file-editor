@@ -1,3 +1,35 @@
 #!/bin/sh -
+unescaped=$1
+backslashes_escaped=
+while :
+do
+    case $unescaped in
+    *'\'*)
+        backslashes_escaped=$backslashes_escaped${unescaped%%'\'*}'\\'
+        unescaped=${unescaped#*'\'}
+    ;;
+    *)
+        backslashes_escaped=$backslashes_escaped$unescaped
+        break
+    esac
+done
+escaped=
+while :
+do
+    case $backslashes_escaped in
+    *'"'*)
+        escaped=$escaped${backslashes_escaped%%'"'*}'\"'
+        backslashes_escaped=${backslashes_escaped#*'"'}
+    ;;
+    *)
+        escaped=$escaped$backslashes_escaped
+        break
+    esac
+done
 export XDG_RUNTIME_DIR=$PREFIX/var/run
-exec emacsclient --no-wait "$@"
+exec emacsclient --no-wait --eval '
+    (run-with-timer 0 nil (lambda ()
+        (let ((file "'"$escaped"'"))
+            (when (y-or-n-p (format "Open %s?" (abbreviate-file-name file)))
+                (find-file file)))))
+'
