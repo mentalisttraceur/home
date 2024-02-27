@@ -1630,6 +1630,7 @@
     (define-key evil-motion-state-map "K" 'evil-window-top)
     (define-key evil-motion-state-map "L" nil)
     (define-key evil-normal-state-map "q" nil)
+    (define-key evil-visual-state-map "q" 'evil-exit-visual-state)
     (define-key evil-operator-state-map "q" 'evil-force-normal-state)
     (define-key evil-motion-state-map "Q" 'quit-previous-window)
     (defvar override-evil-mode-line-tag nil)
