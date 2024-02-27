@@ -2317,6 +2317,52 @@
         "L" 'undo-tree-visualize-switch-branch-right)
     (define-key space-map "u" 'undo-tree-visualize))
 
+(use-packages evil pop-to-command undo-tree
+    :config
+    (defun hack-undo-tree-diff (&optional node)
+        (with-temporary-directory directory
+            (let* ((name   (file-name-nondirectory (buffer-name)))
+                   (name-1 (concat "(1) " name))
+                   (name-2 (concat "(2) " name))
+                   (file-1 (concat directory "/" name-1))
+                   (file-2 (concat directory "/" name-2))
+                   (node-2 (undo-tree-current buffer-undo-tree))
+                   (node-1 (or node
+                               (undo-tree-node-previous node-2)
+                               node-2))
+                   (default-directory "~"))
+                (let ((undo-tree-inhibit-kill-visualizer t))
+                    (undo-tree-set node-1 'preserve-timestamps)
+                    (write-file-no-visit file-1)
+                    (undo-tree-set node-2 'preserve-timestamps)
+                    (write-file-no-visit file-2))
+                (pop-to-command-eshell
+                    (list "*env" "PAGER=cat"
+                        "cdexec" directory "gd" name-1 name-2)
+                    nil
+                    "undo-tree Diff"
+                    (apply-partially 'delete-directory directory t))
+                (select-window
+                    (get-buffer-window undo-tree-visualizer-buffer-name))
+                (setq directory nil))))
+    (defun hack-undo-tree-visualizer-show-diff (&optional node)
+        (setq undo-tree-visualizer-diff t)
+        (with-current-buffer undo-tree-visualizer-parent-buffer
+	    (hack-undo-tree-diff node)))
+    (advice-add 'undo-tree-visualizer-show-diff
+        :override 'hack-undo-tree-visualizer-show-diff)
+    (defun hack-undo-tree-visualizer-update-diff (&optional node)
+        (with-current-buffer undo-tree-visualizer-parent-buffer
+	    (hack-undo-tree-diff node)))
+    (advice-add 'undo-tree-visualizer-update-diff
+        :override 'hack-undo-tree-visualizer-update-diff)
+    (defun hack-undo-tree-visualizer-hide-diff ()
+        (setq undo-tree-visualizer-diff nil)
+        (if-let (window (get-buffer-window undo-tree-diff-buffer-name))
+            (quit-window nil window)))
+    (advice-add 'undo-tree-visualizer-hide-diff
+        :override 'hack-undo-tree-visualizer-hide-diff))
+
 (define-derived-mode histdir-repl-mode eat-mode "HER")
 (add-to-list 'consult-mode-histories
     '(histdir-repl-mode
