@@ -1,0 +1,4 @@
+#!/bin/sh -
+columns=$1
+shift
+exec rg --max-columns="$columns" --max-columns-preview "$@"

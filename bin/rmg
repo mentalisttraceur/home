@@ -1,0 +1,5 @@
+#!/bin/sh -
+for argument
+do
+    rm -r "$argument"/.git </dev/null && rm -r "$argument"
+done
