@@ -2,14 +2,14 @@
 case $# in 0) exit 0; esac
 if command -v nice 1>/dev/null
 then
- nice='nice -n 19'
+    nice='nice -n 19'
 else
- nice=
+    nice=
 fi
 if command -v ionice 1>/dev/null
 then
- ionice='ionice -c 3'
+    ionice='ionice -c 3'
 else
- ionice=
+    ionice=
 fi
 exec $nice $ionice "$@"
