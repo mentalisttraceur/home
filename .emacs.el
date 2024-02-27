@@ -1787,6 +1787,12 @@
             (apply evil-quit arguments))))
     (define-key evil-motion-state-map "gG" (lambda () (interactive)
         (goto-char (buffer-end 1))))
+    (defun evil-ex-nosearch () (interactive)
+        (setq evil-ex-search-pattern nil)
+        (setq evil-ex-search-direction nil)
+        (evil-ex-nohighlight))
+    (add-to-list 'evil-ex-commands '("nosearch" . evil-ex-nosearch))
+    (add-to-list 'evil-ex-commands '("nos" . "nosearch"))
     (define-prefix-command 'space-map)
     (define-key evil-motion-state-map " " 'space-map)
     (dolist (map (list evil-motion-state-map evil-insert-state-map
