@@ -975,6 +975,14 @@
                 (rename-buffer name))
             buffer)))
 
+(when termux
+    (use-package image-mode
+        :config
+        (defun hack-image-mode ()
+            (add-single-use-hook 'post-command-hook 'kill-buffer)
+            (browse-url-xdg-open (buffer-file-name)))
+        (advice-add 'image-mode :override 'hack-image-mode)))
+
 (defun git-repo-root ()
     (when-let (gitdir (funcall-process-log-error
                           "git" "rev-parse" "--absolute-git-dir"))
