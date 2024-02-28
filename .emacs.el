@@ -1957,6 +1957,7 @@
         (let* ((history-quit nil)
                (old-entry (history--match prefix-argument))
                (new-entry (unless history-quit
+                              (setq this-command 'history-change)
                               (read-string "Change history to: " old-entry)))
                (history (car (consult--current-history))))
             (unless history-quit
@@ -1967,7 +1968,8 @@
                     (when (ring-p history)
                         (while-let ((index (ring-member history old-entry)))
                             (ring-remove history index))
-                        (ring-insert history new-entry)))
+                        (ring-insert history new-entry))))
+            (when new-entry
                 (evil-end-undo-step)
                 (evil-start-undo-step)
                 (replace-command new-entry))))
