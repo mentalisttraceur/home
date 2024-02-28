@@ -1,6 +1,5 @@
 #!/bin/sh -
 case $GIT_CEILING_DIRECTORIES in '')
-    GIT_CEILING_DIRECTORIES=~ exec /usr/bin/exa --color=always "$@"
+    GIT_CEILING_DIRECTORIES=~ exec /usr/bin/exa "$@"
 esac
-GIT_CEILING_DIRECTORIES=~:$GIT_CEILING_DIRECTORIES \
-    exec /usr/bin/exa --color=always "$@"
+GIT_CEILING_DIRECTORIES=~:$GIT_CEILING_DIRECTORIES exec /usr/bin/exa "$@"

@@ -1,6 +1,0 @@
-#!/bin/sh -
-if unused=`command -v fdfind`
-then
-    exec /usr/bin/fdfind --color=always "$@"
-fi
-exec /usr/bin/fd --color=always "$@"
