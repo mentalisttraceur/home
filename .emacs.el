@@ -2260,7 +2260,7 @@
             (condition-case _error
                 (evil-previous-line)
                 (beginning-of-buffer (vertico-previous)))))
-    (add-hook 'minibuffer-setup-hook (lambda ()
+    (defun misc-minibuffer-setup ()
         (evil-local-set-key 'normal "j"    'evil-vertico-next-line)
         (evil-local-set-key 'normal [down] 'evil-vertico-next-line)
         (evil-local-set-key 'normal "k"    'evil-vertico-previous-line)
@@ -2279,7 +2279,8 @@
             (evil-local-set-key 'normal   [escape] quit)
             (evil-local-set-key 'normal   "q"      quit)
             (evil-local-set-key 'operator [escape] 'evil-force-normal-state)
-            (evil-local-set-key 'operator "q"      'evil-force-normal-state))))
+            (evil-local-set-key 'operator "q"      'evil-force-normal-state)))
+    (add-hook 'minibuffer-setup-hook 'misc-minibuffer-setup)
     (add-hook 'isearch-mode-hook (lambda ()
         (define-key overriding-terminal-local-map [escape]
             (lambda () (interactive)
