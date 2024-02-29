@@ -1366,9 +1366,12 @@
     (setq undo-tree-auto-save-history nil)
     (add-to-list 'undo-tree-incompatible-major-modes
         'undo-tree-visualizer-mode)
-    (add-to-list 'undo-tree-visualizer-mode-hook (lambda ()
-        (set-window-dedicated-p (selected-window) nil)
-        (setq mode-name "Undo")))
+    (defun hack-undo-tree-visualize (undo-tree-visualize &rest arguments)
+        (with-advice ('switch-to-buffer-other-window
+                          :override 'pop-to-buffer)
+            (apply undo-tree-visualize arguments))
+        (setq mode-name "Undo"))
+    (advice-add 'undo-tree-visualize :around 'hack-undo-tree-visualize)
     (define-key undo-tree-visualizer-mode-map
         "\C-m" 'undo-tree-visualizer-quit)
     (define-key undo-tree-visualizer-mode-map
