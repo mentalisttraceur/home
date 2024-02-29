@@ -1462,13 +1462,13 @@
         (interactive "P")
         (when (eq this-command 'consult-line-resume)
             (setq this-command 'consult-line))
-        (delete-dups consult--line-history)
         (consult-line
             (cond
                 ((not prefix-argument)
                     (nth 0 consult--line-history))
                 ((and (integerp prefix-argument) (>= prefix-argument 0))
-                    (nth (- prefix-argument 1) consult--line-history))
+                    (nth (- prefix-argument 1)
+                        (seq-uniq consult--line-history)))
                 (t
                     (completing-read
                         "Resume consult-line: "
@@ -1480,9 +1480,8 @@
     (defun consult-line-quit ()
         (interactive)
         (let ((query (field-string-no-properties)))
-            (if (length> query 0)
-                (push query consult--line-history)
-                (delete-dups consult--line-history)))
+            (when (length> query 0)
+                (push query consult--line-history)))
         (abort-minibuffers)))
 
 (use-package orderless
