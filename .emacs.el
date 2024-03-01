@@ -694,8 +694,10 @@
     (let* ((table           (histdir-history-table history))
            (unordered-table (car table))
            (older-duplicate (gethash key unordered-table)))
-        (when (eq older-duplicate (histdir-history--last history))
-            (histdir-history--set-last history (caar older-duplicate)))
+        (when older-duplicate
+            (dlist-setcar older-duplicate nil)
+            (when (eq older-duplicate (histdir-history--last history))
+                (histdir-history--set-last history (caar older-duplicate))))
         (ordered-hash-table-put table key string))
     (histdir--update-buffer-local-history-pointers history))
 (defun histdir-history--add-oldest (history key string)
