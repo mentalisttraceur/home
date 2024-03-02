@@ -3246,6 +3246,11 @@
     :config
     (define-key markdown-mode-map [backtab] nil))
 
+(use-packages evil markdown-mode
+    :config
+    (evil-define-key 'normal markdown-mode-map
+        "\C-m" 'markdown-follow-thing-at-point))
+
 (use-package denote
     :config
     (setq denote-file-type 'markdown-yaml)
