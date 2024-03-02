@@ -2303,6 +2303,7 @@
         (command-execute-in-keymap git-map " v"))
     (dolist (key '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
         (define-key git-map key 'digit-argument-in-git-map))
+    (define-key git-map [escape] 'ignore)
     (define-key space-map "zy" (lambda ()
         (interactive)
         (let ((default-directory "~/Downloads"))
