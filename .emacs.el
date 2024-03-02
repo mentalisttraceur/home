@@ -1369,6 +1369,15 @@
     (add-to-list 'undo-tree-visualizer-mode-hook (lambda ()
         (set-window-dedicated-p (selected-window) nil)
         (setq mode-name "Undo")))
+    (defun undo-tree-visualizer-quit ()
+        (interactive)
+        (undo-tree-clear-visualizer-data buffer-undo-tree)
+        (if-let (parent undo-tree-visualizer-parent-buffer)
+            (with-current-buffer parent
+	        (remove-hook 'before-change-functions 'undo-tree-kill-visualizer t)))
+        (when undo-tree-visualizer-diff
+            (undo-tree-visualizer-hide-diff))
+        (quit-window t))
     (define-key undo-tree-visualizer-mode-map
         "\C-m" 'undo-tree-visualizer-quit)
     (define-key undo-tree-visualizer-mode-map
