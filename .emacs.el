@@ -3466,7 +3466,9 @@
             (quit
                 (quit-window)
                 (signal (car error) (cdr error))))
-        (dired-find-file)))
+        (dired-find-file)
+        (dired denote-directory)
+        (bury-buffer)))
     (defconst task-tag "qq")
     (setq denote-excluded-keywords-regexp "qq.*")
     (defun task-prompt ()
