@@ -889,7 +889,7 @@
     (defun in-eshell-prompt-p ()
         (eq (get-text-property (point) 'field) 'prompt))
     (defun in-eshell-scrollback-p ()
-        (text-property-any (point) (buffer-end 1) 'field 'prompt))
+        (text-property-any (point) (point-max) 'field 'prompt))
     (defun hack-insert-before-markers-and-inherit (arguments)
         (if (and (equal (length arguments) 1) (equal (car arguments) ?\n))
             (list (propertize "\n" 'field 'end-of-input 'rear-nonsticky t))
@@ -912,7 +912,7 @@
                         (move-end-of-line 1)
                         (goto-char (field-beginning)))
                     (when (in-eshell-scrollback-p)
-                        (goto-char (buffer-end 1))
+                        (goto-char (point-max))
                         (histdir-input-older)))
                 (beginning-of-buffer
                     (histdir-input-older)))))
@@ -1444,7 +1444,7 @@
             (progn
                 (consult-history)
                 (command-string))
-            (let* ((input   (buffer-end 1))
+            (let* ((input   (point-max))
                    (source  (if prefix-argument (point) input))
                    (command (command-string source))
                    (preview (apply-partially 'hack-consult-preview
@@ -1648,7 +1648,7 @@
     (defun evil-yank-string (string &optional register yank-handler)
         (with-temp-buffer
             (insert string)
-            (evil-yank-characters 1 (buffer-end 1) register yank-handler)))
+            (evil-yank-characters 1 (point-max) register yank-handler)))
     (defun evil-paste-to-string (count &optional register)
         (repeat-string
             (if register
@@ -1823,7 +1823,7 @@
             (apply evil-quit arguments))))
     (define-key evil-motion-state-map "gG" (lambda ()
         (interactive)
-        (goto-char (buffer-end 1))))
+        (goto-char (point-max))))
     (defun evil-ex-nosearch ()
         (interactive)
         (setq evil-ex-search-pattern nil)
@@ -3485,7 +3485,7 @@
                 (goto-char 1)
                 (beginning-of-line 2)
                 (point))
-            (buffer-end 1)))
+            (point-max)))
     (defun task--buffer (title regex)
         (reuse-independent-dired title denote-directory)
         (dired-hide-details-mode 1)
