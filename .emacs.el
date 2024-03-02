@@ -151,7 +151,7 @@
 
 
 (defmacro lambda-let (varlist args &rest body)
-    (let (parameters parameter arguments argument)
+    (let (bindings parameter argument)
         (dolist (var varlist)
             (if (listp var)
                 (if (length= var 2)
@@ -160,16 +160,14 @@
                         (setq parameter (setq argument (car var)))
                         (eval `(let (,var)))))
                 (setq parameter (setq argument var)))
-            (setq parameters (cons parameter parameters))
-            (setq arguments (cons argument arguments)))
-        (dolist (arg args)
-            (setq parameters (cons arg parameters)))
-        (setq parameters (nreverse parameters))
-        (setq arguments (nreverse arguments))
-        `(apply-partially
-            (lambda ,parameters
+            (push `(cons ',parameter ,argument) bindings))
+        (if bindings
+            (setq bindings (cons 'list (nreverse bindings)))
+            (setq bindings t))
+        `(eval
+            '(lambda ,args
                 ,@body)
-            ,@arguments)))
+            ,bindings)))
 
 
 (defmacro compose (&rest functions)
