@@ -1855,6 +1855,11 @@
         (command-execute-in-keymap space-map " "))
     (dolist (key '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
         (define-key space-map key 'digit-argument-in-space-map))
+    (defun negative-argument-in-space-map (prefix-argument)
+        (interactive "P")
+        (negative-argument prefix-argument)
+        (command-execute-in-keymap space-map " "))
+    (define-key space-map "-" 'negative-argument-in-space-map)
     (defun fixed-last-s-expression (function &rest arguments)
         (save-excursion
             (condition-case _error
@@ -2321,6 +2326,11 @@
         (command-execute-in-keymap git-map " v"))
     (dolist (key '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
         (define-key git-map key 'digit-argument-in-git-map))
+    (defun negative-argument-in-git-map (prefix-argument)
+        (interactive "P")
+        (negative-argument prefix-argument)
+        (command-execute-in-keymap git-map " v"))
+    (define-key git-map "-" 'negative-argument-in-git-map)
     (define-key git-map [escape] 'ignore)
     (define-key space-map "zy" (lambda ()
         (interactive)
