@@ -3461,7 +3461,11 @@
         (interactive)
         (note-list)
         (dired-goto-first-file)
-        (consult-line)
+        (condition-case error
+            (consult-line)
+            (quit
+                (quit-window)
+                (signal (car error) (cdr error))))
         (dired-find-file)))
     (defconst task-tag "qq")
     (setq denote-excluded-keywords-regexp "qq.*")
