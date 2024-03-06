@@ -3324,7 +3324,7 @@
         :override 'fixed-denote-sluggify-keywords)
     (defun fixed-denote--slug-hyphenate (string)
         (replace-regexp-in-string "^-+\\|-+$" ""
-            (replace-regexp-in-string "-\\{3,\\}" "-"
+            (replace-regexp-in-string "---+" "-"
                 (replace-regexp-in-string "_\\|\s" "-" string))))
     (advice-add 'denote--slug-hyphenate
         :override 'fixed-denote--slug-hyphenate)
