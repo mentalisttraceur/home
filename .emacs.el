@@ -624,6 +624,7 @@
     :config
     (setq help-window-select t)
     (define-key help-map "t" 'describe-face)
+    (define-key help-map "g" nil)
     (defun fixed-help-view-source (&rest _)
         (set-window-start (selected-window) (point)))
     (advice-add 'help-function-def--button-function
