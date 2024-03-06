@@ -3311,6 +3311,11 @@
     (defun denote-keywords-prompt-without-blank-candidate ()
         (let ((denote-known-keywords (remove "" denote-known-keywords)))
             (denote-keywords-prompt)))
+    (defun fixed-denote-keywords-sort (arguments)
+        (when denote-sort-keywords
+            (setcar arguments (copy-sequence (car arguments))))
+        arguments)
+    (advice-add 'denote-keywords-sort :filter-args 'fixed-denote-keywords-sort)
     (defun fixed-denote-sluggify-keyword (keyword)
         (denote-sluggify keyword 'keywords))
     (defun fixed-denote-sluggify-keywords (keywords)
