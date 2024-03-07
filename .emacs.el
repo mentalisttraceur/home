@@ -3403,7 +3403,7 @@
     (defun denoted-title-get (path)
         (let ((denote-directory default-directory))
             (if (denote-file-has-identifier-p path)
-                (or (when (denote-filename-is-note-p path)
+                (or (when (denote-file-or-visiting-buffer-is-note-p path)
                         (denote-retrieve-title-value path denote-file-type))
                     (denote-extract-title-slug-from-path path))
                 (denote-extract-title-slug-from-path
