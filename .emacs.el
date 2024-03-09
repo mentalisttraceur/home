@@ -3401,7 +3401,11 @@
         (let ((name (file-name-nondirectory path)))
             (concat
                 (file-name-directory path)
-                "00000000T000000--"
+                "00000000T000000"
+                (if (or (string-prefix-p "==" name)
+                        (string-prefix-p "__" name))
+                    ""
+                    "--")
                 name)))
     (defun denoted-title-get (path)
         (let ((denote-directory default-directory))
