@@ -3334,6 +3334,24 @@
                     (kill-buffer buffer)))))
     (advice-add 'denote-rewrite-front-matter
         :around 'fixed-denote-rewrite-front-matter)
+    (defvar fixed-denote-rename-file--missing nil)
+    (defun hack-rename-file (rename-file &rest arguments)
+        (condition-case error
+            (apply rename-file arguments)
+            (file-missing
+                (setq fixed-denote-rename-file--missing t))))
+    (defun hack-denote--file-regular-writable-p
+            (denote--file-regular-writable-p file)
+        (if fixed-denote-rename-file--missing
+            (find-buffer-visiting file)
+            (funcall denote--file-regular-writable-p file)))
+    (defun fixed-denote-rename-file (denote-rename-file &rest arguments)
+        (with-advice ('rename-file :around 'hack-rename-file
+                      'denote--file-regular-writable-p
+                          :around 'hack-denote--file-regular-writable-p)
+            (let ((fixed-denote-rename-file--missing nil))
+                (apply denote-rename-file arguments))))
+    (advice-add 'denote-rename-file :around 'fixed-denote-rename-file)
     (defun denote-extract-title-slug-from-path (path)
         (let ((file (file-name-nondirectory path)))
             (string-match denote-title-regexp file)
