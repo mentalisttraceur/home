@@ -3416,13 +3416,14 @@
                     "--")
                 name)))
     (defun denoted-title-get (path)
-        (let ((denote-directory default-directory))
-            (if (denote-file-has-identifier-p path)
-                (or (when (denote-file-or-visiting-buffer-is-note-p path)
-                        (denote-retrieve-title-value path denote-file-type))
-                    (denote-extract-title-slug-from-path path))
-                (denote-extract-title-slug-from-path
-                    (denoted--add-nil-id path)))))
+        (let ((denote-directory default-directory)
+              (note-type (denote-file-note-type path)))
+            (if note-type
+                (denote-retrieve-title-value path note-type)
+                (if (denote-file-has-identifier-p path)
+                    (denote-extract-title-slug-from-path path)
+                    (denote-extract-title-slug-from-path
+                        (denoted--add-nil-id path))))))
     (defun denoted-tag-get (path)
         (denote-extract-keywords-from-path
             (if (denote-file-has-identifier-p path)
