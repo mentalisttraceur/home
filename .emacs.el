@@ -3425,10 +3425,7 @@
                     (denote-extract-title-slug-from-path
                         (denoted--add-nil-id path))))))
     (defun denoted-tag-get (path)
-        (denote-extract-keywords-from-path
-            (if (denote-file-has-identifier-p path)
-                path
-                (denoted--add-nil-id path))))
+        (denote-extract-keywords-from-path path))
     (defun denoted-timestamp-get (path)
         (denote-extract-id-from-string path))
     (defun denoted-title-set (path title)
