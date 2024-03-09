@@ -501,7 +501,7 @@
     value)
 
 (defun ignore+return (value)
-    (apply-partially 'identity+ignore value))
+    (lambda-let (value) (&rest _) value))
 
 
 (defun file-size (filename)
