@@ -3374,24 +3374,23 @@
             (unless (denote-file-has-identifier-p path)
                 (setcar arguments (denoted--add-nil-id path))))
         arguments)
-    (defun hack-denote-rename-file (path title keywords &optional id)
-        (setq-if-nil title "")
-        (setq-if-nil keywords "")
-        (with-advice ('denote-rewrite-front-matter
-                          :around 'hack-denote-rewrite-front-matter
-                      'denote--add-front-matter :override 'ignore
-                      (if id 'denote-retrieve-filename-identifier nil)
-                          :override (ignore+return id)
-                      'denote-get-file-extension
-                          :filter-args 'hack-denote-get-file-extension)
-            (denote-rename-file path title keywords nil)))
     (defun denoted-rename-file (path title tags timestamp)
+        (setq-if-nil title "")
+        (setq-if-nil tags "")
+        (setq-if-nil timestamp "")
         (let ((denote-directory default-directory))
-            (if (and timestamp (not (equal timestamp "")))
-                (hack-denote-rename-file path title tags timestamp)
-                (with-advice ('denote-format-file-name
-                                  :filter-return 'denoted--remove-id)
-                    (hack-denote-rename-file path title tags timestamp)))))
+            (with-advice ('denote-rewrite-front-matter
+                              :around 'hack-denote-rewrite-front-matter
+                          'denote--add-front-matter :override 'ignore
+                          'denote-get-file-extension
+                              :filter-args 'hack-denote-get-file-extension)
+                (if (equal timestamp "")
+                    (with-advice ('denote-format-file-name
+                                      :filter-return 'denoted--remove-id)
+                        (denote-rename-file path title tags nil))
+                    (with-advice ('denote-retrieve-filename-identifier
+                                      :override (ignore+return timestamp))
+                        (denote-rename-file path title tags nil))))))
     (defun denoted--remove-id (path)
          (concat
              (file-name-directory path)
