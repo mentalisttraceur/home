@@ -3300,9 +3300,6 @@
     :config
     (setq denote-file-type 'markdown-yaml)
     (setq denote-known-keywords '(""))
-    (defun denote-keywords-prompt-without-blank-candidate ()
-        (let ((denote-known-keywords (remove "" denote-known-keywords)))
-            (denote-keywords-prompt)))
     (defun fixed-denote-keywords-sort (arguments)
         (when denote-sort-keywords
             (setcar arguments (copy-sequence (car arguments))))
@@ -3443,17 +3440,22 @@
     (defun denoted-tag-sort (tags)
         (let ((denote-sort-keywords t))
             (denote-keywords-sort tags)))
+    (defun denoted-tag-prompt (tags)
+        (denote--keywords-crm tags "File tags"))
     (defun denoted-tag-add (path)
         (let* ((tags   (denoted-tag-get path))
                (added  (denote-sluggify-keywords
-                           (denote-keywords-prompt-without-blank-candidate)))
+                           (denoted-tag-prompt
+                               (seq-difference
+                                   (denote-keywords)
+                                   (cons "" tags)))))
                (merged (append tags added))
                (unique (seq-uniq merged))
                (sorted (denoted-tag-sort unique)))
             (denoted-tag-set path sorted)))
     (defun denoted-tag-remove (path)
         (let* ((tags      (denoted-tag-get path))
-               (deleted   (denote--keywords-delete-prompt tags))
+               (deleted   (denoted-tag-prompt tags))
                (remaining (seq-difference tags deleted)))
             (denoted-tag-set path remaining)))
     (defun denoted-timestamp-prompt (&optional default)
@@ -3470,7 +3472,7 @@
                         (substring default 11 13)
                         ":"
                         (substring default 13))))
-        (let ((input (read-string "Date+time: " default)))
+        (let ((input (read-string "File date+time: " default)))
             (setq input (string-replace "-" "" input))
             (setq input (string-replace ":" "" input))
             (setq input (replace-regexp-in-string "[ \n]+" "" input))
