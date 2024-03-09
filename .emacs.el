@@ -3360,6 +3360,15 @@
         (and (or (file-regular-p file)
                  (find-buffer-visiting file))
              (denote-filename-is-note-p file)))
+    (defun denote-file-note-type (path)
+        (when-let ((extension (denote-get-file-extension-sans-encryption path))
+                   (types (denote--file-types-with-extension extension)))
+            (car (seq-find
+                     (lambda-let (path) (type)
+                         (denote--regexp-in-file-p
+                             (plist-get (cdr type) :title-key-regexp)
+                             path))
+                     types))))
     (defconst hack-denote-title-candidates nil)
     (defun hack-denote-title-prompt (denote-title-prompt &rest arguments)
         (let ((denote--title-history hack-denote-title-candidates))
