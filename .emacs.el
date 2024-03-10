@@ -3399,10 +3399,10 @@
                                       :override (ignore+return datetime))
                         (denote-rename-file path title tags prefix))))))
     (defun denoted--remove-id (path)
-         (concat
-             (file-name-directory path)
-             (string-remove-prefix "--"
-                 (substring (file-name-nondirectory path) 15))))
+        (concat
+            (file-name-directory path)
+            (string-remove-prefix "--"
+                (substring (file-name-nondirectory path) 15))))
     (defun denoted--add-nil-id (path)
         (let ((name (file-name-nondirectory path)))
             (concat
