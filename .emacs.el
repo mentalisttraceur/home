@@ -3508,6 +3508,31 @@
         (let* ((prefix (denoted-prefix-get path))
                (new    (denote-signature-prompt prefix "File prefix")))
             (denoted-prefix-set path new)))
+    (defun denoted-name-prompt (&optional default)
+        (read-string "File name: " default))
+    (defun denoted-name-set (path name)
+        (let ((datetime (denoted-datetime-get name))
+              (prefix   (denoted-prefix-get name))
+              (title    (denote-extract-title-slug-from-path name))
+              (tags     (denoted-tag-get name))
+              (new-path (concat (file-name-directory path) "/" name))
+              (denote-directory (if-let (directory (file-name-directory path))
+                                    (expand-file-name directory)
+                                    default-directory)))
+            (when (equal title (denote-extract-title-slug-from-path path))
+                (setq title (denoted-title-get path)))
+            (with-advice ('denote-rewrite-front-matter
+                              :around 'hack-denote-rewrite-front-matter
+                          'denote--add-front-matter :override 'ignore
+                          'denote-get-file-extension
+                              :filter-args 'hack-denote-get-file-extension
+                          'denote-format-file-name
+                               :filter-return (ignore+return new-path))
+                (denote-rename-file path title tags prefix))))
+    (defun denoted-name-edit (path)
+        (let* ((name (file-name-nondirectory path))
+               (new  (denoted-name-prompt name)))
+            (denoted-name-set path new)))
     (defconst denoted-try--default-fallback
         '(user-error "%s is not visiting a file or directory" (buffer-name)))
     (defmacro denoted-try (function &rest fallback-body)
@@ -3540,6 +3565,10 @@
         (interactive)
         (denoted-try denoted-prefix-edit))
     (define-key evil-motion-state-map "gS" 'prefix-edit)
+    (defun name-change (prefix-argument)
+        (interactive "P")
+        (denoted-try denoted-name-edit))
+    (define-key evil-motion-state-map "gC" 'name-change)
     (define-key space-map "m" 'denote)
     (defun note--filter-dired ()
         (dired-mark-if (member (dired-get-filename t t) '("." "..")) nil)
