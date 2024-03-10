@@ -3385,7 +3385,9 @@
         (setq-if-nil prefix "")
         (setq-if-nil title "")
         (setq-if-nil tags "")
-        (let ((denote-directory default-directory))
+        (let ((denote-directory (if-let (directory (file-name-directory path))
+                                    (expand-file-name directory)
+                                    default-directory)))
             (with-advice ('denote-rewrite-front-matter
                               :around 'hack-denote-rewrite-front-matter
                           'denote--add-front-matter :override 'ignore
