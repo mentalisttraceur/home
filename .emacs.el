@@ -3282,6 +3282,7 @@
     :config
     (setq denote-file-type 'markdown-yaml)
     (setq denote-known-keywords '(""))
+    (setq denote-sort-keywords nil)
     (defun fixed-denote-keywords-sort (arguments)
         (when denote-sort-keywords
             (setcar arguments (copy-sequence (car arguments))))
@@ -3444,8 +3445,7 @@
                                    (denote-keywords)
                                    (cons "" tags)))))
                (merged (append tags added))
-               (unique (seq-uniq merged))
-               (sorted (denoted-tag-sort unique)))
+               (unique (seq-uniq merged)))
             (denoted-tag-set path sorted)))
     (defun denoted-tag-remove (path)
         (let* ((tags      (denoted-tag-get path))
