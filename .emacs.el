@@ -3296,7 +3296,7 @@
     (defun fixed-denote--slug-hyphenate (string)
         (replace-regexp-in-string "^-+\\|-+$" ""
             (replace-regexp-in-string "---+" "-"
-                (replace-regexp-in-string "_\\|\s" "-" string))))
+                (replace-regexp-in-string "[ _]" "-" string))))
     (advice-add 'denote--slug-hyphenate
         :override 'fixed-denote--slug-hyphenate)
     (defun fixed-denote-rewrite-front-matter
