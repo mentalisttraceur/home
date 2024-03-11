@@ -3331,6 +3331,20 @@
             (let ((fixed-denote-rename-file--missing nil))
                 (apply denote-rename-file arguments))))
     (advice-add 'denote-rename-file :around 'fixed-denote-rename-file)
+    (defun fixed-denote-format-file-name--remove-id (path)
+        (concat
+            (file-name-directory path)
+            (string-remove-prefix "--"
+                (substring (file-name-nondirectory path) 15))))
+    (defun fixed-denote-format-file-name
+            (denote-format-file-name directory id &rest arguments)
+        (if (length> id 0)
+            (apply denote-format-file-name directory id arguments)
+            (setq id "00000000T000000")
+            (fixed-denote-format-file-name--remove-id
+                (apply denote-format-file-name directory id arguments))))
+    (advice-add 'denote-format-file-name
+        :around 'fixed-denote-format-file-name)
     (defun denote-extract-title-slug-from-path (path)
         (let ((file (file-name-nondirectory path)))
             (string-match denote-title-regexp file)
@@ -3362,35 +3376,22 @@
             (unless (denote-file-has-identifier-p path)
                 (setcar arguments (denoted--add-nil-id path))))
         arguments)
-    (defmacro denoted--with-hacked-denote-rename (&rest body)
+    (defmacro denoted--with-hacked-denote-rename (datetime &rest body)
         `(with-advice ('denote-rewrite-front-matter
                           :around 'hack-denote-rewrite-front-matter
                       'denote--add-front-matter :override 'ignore
-                      'denote--get-all-used-ids :override 'ignore
-                      'denote-create-unique-file-identifier
-                         :override (ignore+return "00000000T000000")
+                      'denote-retrieve-filename-identifier
+                          :override (ignore+return (or ,datetime ""))
                       'denote-get-file-extension
                           :filter-args 'hack-denote-get-file-extension)
              ,@body))
     (defun denoted-rename-file (path datetime prefix title tags)
-        (setq-if-nil datetime "")
         (setq-if-nil prefix "")
         (setq-if-nil title "")
         (setq-if-nil tags "")
         (let ((denote-directory (file-name-directory (expand-file-name path))))
-            (denoted--with-hacked-denote-rename
-                (if (equal datetime "")
-                    (with-advice ('denote-format-file-name
-                                      :filter-return 'denoted--remove-id)
-                        (denote-rename-file path title tags prefix))
-                    (with-advice ('denote-retrieve-filename-identifier
-                                      :override (ignore+return datetime))
-                        (denote-rename-file path title tags prefix))))))
-    (defun denoted--remove-id (path)
-        (concat
-            (file-name-directory path)
-            (string-remove-prefix "--"
-                (substring (file-name-nondirectory path) 15))))
+            (denoted--with-hacked-denote-rename datetime
+                (denote-rename-file path title tags prefix))))
     (defun denoted--add-nil-id (path)
         (let ((name (file-name-nondirectory path)))
             (concat
@@ -3505,7 +3506,7 @@
               (denote-directory (file-name-directory (expand-file-name path))))
             (when (equal title (denote-extract-title-slug-from-path path))
                 (setq title (denoted-title-get path)))
-            (denoted--with-hacked-denote-rename
+            (denoted--with-hacked-denote-rename datetime
                 (with-advice ('denote-format-file-name
                                   :override (ignore+return new-path))
                     (denote-rename-file path title tags prefix)))))
