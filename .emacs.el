@@ -1344,24 +1344,6 @@
                                             'datetime-read--preview now cell)))
             (datetime-parse (read-string "Date+time: " initial-input) now))))
 
-(use-package org
-    :defer
-    :config
-    (defun fixed-org-read-date-display (org-read-date-display &rest arguments)
-        (condition-case error
-            (apply org-read-date-display arguments)
-            (error (message "%s" (error-message-string error)))))
-    (advice-add 'org-read-date-display :around 'fixed-org-read-date-display)
-    (defun fixed-org-read-date (org-read-date &rest arguments)
-        (let ((org-read-date-inactive (nth 6 arguments)))
-            (if (or org-read-date-popup-calendar
-                    (not org-read-date-display-live))
-                (apply org-read-date arguments)
-                (with-hook (('post-command-hook 'org-read-date-display))
-                    (apply org-read-date arguments)))))
-    (advice-add 'org-read-date :around 'fixed-org-read-date)
-    (setq org-read-date-popup-calendar nil))
-
 (use-package undo-tree
     :config
     (setq undo-tree-auto-save-history nil)
