@@ -3367,9 +3367,7 @@
         (setq-if-nil prefix "")
         (setq-if-nil title "")
         (setq-if-nil tags "")
-        (let ((denote-directory (if-let (directory (file-name-directory path))
-                                    (expand-file-name directory)
-                                    default-directory)))
+        (let ((denote-directory (file-name-directory (expand-file-name path))))
             (with-advice ('denote-rewrite-front-matter
                               :around 'hack-denote-rewrite-front-matter
                           'denote--add-front-matter :override 'ignore
@@ -3498,9 +3496,7 @@
               (title    (denote-extract-title-slug-from-path name))
               (tags     (denoted-tag-get name))
               (new-path (concat (file-name-directory path) "/" name))
-              (denote-directory (if-let (directory (file-name-directory path))
-                                    (expand-file-name directory)
-                                    default-directory)))
+              (denote-directory (file-name-directory (expand-file-name path))))
             (when (equal title (denote-extract-title-slug-from-path path))
                 (setq title (denoted-title-get path)))
             (with-advice ('denote-rewrite-front-matter
