@@ -3362,20 +3362,23 @@
             (unless (denote-file-has-identifier-p path)
                 (setcar arguments (denoted--add-nil-id path))))
         arguments)
+    (defmacro denoted--with-hacked-denote-rename (&rest body)
+        `(with-advice ('denote-rewrite-front-matter
+                          :around 'hack-denote-rewrite-front-matter
+                      'denote--add-front-matter :override 'ignore
+                      'denote--get-all-used-ids :override 'ignore
+                      'denote-create-unique-file-identifier
+                         :override (ignore+return "00000000T000000")
+                      'denote-get-file-extension
+                          :filter-args 'hack-denote-get-file-extension)
+             ,@body))
     (defun denoted-rename-file (path datetime prefix title tags)
         (setq-if-nil datetime "")
         (setq-if-nil prefix "")
         (setq-if-nil title "")
         (setq-if-nil tags "")
         (let ((denote-directory (file-name-directory (expand-file-name path))))
-            (with-advice ('denote-rewrite-front-matter
-                              :around 'hack-denote-rewrite-front-matter
-                          'denote--add-front-matter :override 'ignore
-                          'denote--get-all-used-ids :override 'ignore
-                          'denote-create-unique-file-identifier
-                             :override (ignore+return "00000000T000000")
-                          'denote-get-file-extension
-                              :filter-args 'hack-denote-get-file-extension)
+            (denoted--with-hacked-denote-rename
                 (if (equal datetime "")
                     (with-advice ('denote-format-file-name
                                       :filter-return 'denoted--remove-id)
@@ -3502,17 +3505,10 @@
               (denote-directory (file-name-directory (expand-file-name path))))
             (when (equal title (denote-extract-title-slug-from-path path))
                 (setq title (denoted-title-get path)))
-            (with-advice ('denote-rewrite-front-matter
-                              :around 'hack-denote-rewrite-front-matter
-                          'denote--add-front-matter :override 'ignore
-                          'denote--get-all-used-ids :override 'ignore
-                          'denote-create-unique-file-identifier
-                             :override (ignore+return "00000000T000000")
-                          'denote-get-file-extension
-                              :filter-args 'hack-denote-get-file-extension
-                          'denote-format-file-name
-                              :override (ignore+return new-path))
-                (denote-rename-file path title tags prefix))))
+            (denoted--with-hacked-denote-rename
+                (with-advice ('denote-format-file-name
+                                  :override (ignore+return new-path))
+                    (denote-rename-file path title tags prefix)))))
     (defun denoted-name-edit (path)
         (let* ((name (file-name-nondirectory path))
                (new  (denoted-name-prompt name)))
