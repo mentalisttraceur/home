@@ -3399,8 +3399,7 @@
             (denoted--with-hacked-denote-rename datetime
                 (denote-rename-file path title tags prefix))))
     (defun denoted-title-get (path)
-        (let ((denote-directory default-directory)
-              (note-type (denote-file-note-type path)))
+        (let ((note-type (denote-file-note-type path)))
             (if note-type
                 (denote-retrieve-title-value path note-type)
                 (if (denote-file-has-identifier-p path)
