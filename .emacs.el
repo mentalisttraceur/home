@@ -3367,6 +3367,16 @@
         (let ((denote--title-history hack-denote-title-candidates))
             (apply denote-title-prompt arguments)))
     (advice-add 'denote-title-prompt :around 'hack-denote-title-prompt)
+    (defun denoted--add-nil-id (path)
+        (let ((name (file-name-nondirectory path)))
+            (concat
+                (file-name-directory path)
+                "00000000T000000"
+                (if (or (string-prefix-p "==" name)
+                        (string-prefix-p "__" name))
+                    ""
+                    "--")
+                name)))
     (defun hack-denote-rewrite-front-matter
             (denote-rewrite-front-matter path &rest arguments)
         (with-advice ('y-or-n-p :override 'always)
@@ -3392,16 +3402,6 @@
         (let ((denote-directory (file-name-directory (expand-file-name path))))
             (denoted--with-hacked-denote-rename datetime
                 (denote-rename-file path title tags prefix))))
-    (defun denoted--add-nil-id (path)
-        (let ((name (file-name-nondirectory path)))
-            (concat
-                (file-name-directory path)
-                "00000000T000000"
-                (if (or (string-prefix-p "==" name)
-                        (string-prefix-p "__" name))
-                    ""
-                    "--")
-                name)))
     (defun denoted-title-get (path)
         (let ((denote-directory default-directory)
               (note-type (denote-file-note-type path)))
