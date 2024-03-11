@@ -3371,6 +3371,9 @@
             (with-advice ('denote-rewrite-front-matter
                               :around 'hack-denote-rewrite-front-matter
                           'denote--add-front-matter :override 'ignore
+                          'denote--get-all-used-ids :override 'ignore
+                          'denote-create-unique-file-identifier
+                             :override (ignore+return "00000000T000000")
                           'denote-get-file-extension
                               :filter-args 'hack-denote-get-file-extension)
                 (if (equal datetime "")
@@ -3502,6 +3505,9 @@
             (with-advice ('denote-rewrite-front-matter
                               :around 'hack-denote-rewrite-front-matter
                           'denote--add-front-matter :override 'ignore
+                          'denote--get-all-used-ids :override 'ignore
+                          'denote-create-unique-file-identifier
+                             :override (ignore+return "00000000T000000")
                           'denote-get-file-extension
                               :filter-args 'hack-denote-get-file-extension
                           'denote-format-file-name
