@@ -3527,7 +3527,7 @@
                           'denote-get-file-extension
                               :filter-args 'hack-denote-get-file-extension
                           'denote-format-file-name
-                               :filter-return (ignore+return new-path))
+                              :override (ignore+return new-path))
                 (denote-rename-file path title tags prefix))))
     (defun denoted-name-edit (path)
         (let* ((name (file-name-nondirectory path))
