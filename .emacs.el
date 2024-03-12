@@ -3333,6 +3333,12 @@
         (let ((denote--title-history hack-denote-title-candidates))
             (apply denote-title-prompt arguments)))
     (advice-add 'denote-title-prompt :around 'hack-denote-title-prompt)
+    (defconst hack-denote-signature-candidates nil)
+    (defun hack-denote-signature-prompt
+            (denote-signature-prompt &rest arguments)
+        (let ((denote--signature-history hack-denote-signature-candidates))
+            (apply denote-signature-prompt arguments)))
+    (advice-add 'denote-signature-prompt :around 'hack-denote-signature-prompt)
     (defun denoted--add-nil-id (path)
         (let ((name (file-name-nondirectory path)))
             (concat
