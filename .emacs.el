@@ -3569,6 +3569,7 @@
     (defun note ()
         (interactive)
         (denote)
+        (set-buffer-modified-p nil)
         (evil-insert-state))
     (define-key space-map "m" 'note)
     (defun note--filter-dired ()
