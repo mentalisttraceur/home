@@ -48,36 +48,6 @@
     (setq woman-manpath '("~/../usr/share/man")))
 
 
-(setq use-short-answers t)
-(defun read-multiple-choice-name (choice)
-    (cdr (rmc--add-key-description choice)))
-(defun hack-read-multiple-choice (prompt choices &rest _)
-    (let ((names (mapcar 'read-multiple-choice-name choices)))
-        (setq prompt (concat prompt " (" (string-join names ", ") "): ")))
-    (let ((map   (make-sparse-keymap)))
-        (dolist (choice choices)
-            (let ((key (char-to-string (car choice))))
-                (define-key map key
-                    (lambda-let (key) ()
-                        (interactive)
-                        (insert key)
-                        (exit-minibuffer)))))
-        (define-key map [t]
-            (lambda ()
-                (interactive)
-                (user-error "invalid choice")))
-        (let* ((this-command this-command)
-               (choice (read-from-minibuffer prompt nil map)))
-            (assoc (string-to-char choice) choices))))
-(advice-add 'read-multiple-choice :override 'hack-read-multiple-choice)
-
-
-(defun hack-save-buffers-kill-emacs (save-buffers-kill-emacs &rest arguments)
-    (with-advice ('save-some-buffers :override 'ignore)
-        (apply save-buffers-kill-emacs arguments)))
-(advice-add 'save-buffers-kill-emacs :around 'hack-save-buffers-kill-emacs)
-
-
 (blink-cursor-mode -1)
 
 
@@ -634,6 +604,36 @@
 (defun write-file-no-visit (filename)
     (without-restriction
         (write-region 1 (point-max) filename)))
+
+
+(setq use-short-answers t)
+(defun read-multiple-choice-name (choice)
+    (cdr (rmc--add-key-description choice)))
+(defun hack-read-multiple-choice (prompt choices &rest _)
+    (let ((names (mapcar 'read-multiple-choice-name choices)))
+        (setq prompt (concat prompt " (" (string-join names ", ") "): ")))
+    (let ((map   (make-sparse-keymap)))
+        (dolist (choice choices)
+            (let ((key (char-to-string (car choice))))
+                (define-key map key
+                    (lambda-let (key) ()
+                        (interactive)
+                        (insert key)
+                        (exit-minibuffer)))))
+        (define-key map [t]
+            (lambda ()
+                (interactive)
+                (user-error "invalid choice")))
+        (let* ((this-command this-command)
+               (choice (read-from-minibuffer prompt nil map)))
+            (assoc (string-to-char choice) choices))))
+(advice-add 'read-multiple-choice :override 'hack-read-multiple-choice)
+
+
+(defun hack-save-buffers-kill-emacs (save-buffers-kill-emacs &rest arguments)
+    (with-advice ('save-some-buffers :override 'ignore)
+        (apply save-buffers-kill-emacs arguments)))
+(advice-add 'save-buffers-kill-emacs :around 'hack-save-buffers-kill-emacs)
 
 
 (defmacro use-packages (&rest packages-:config-body)
