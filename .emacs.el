@@ -3281,20 +3281,8 @@
 (use-package denote
     :config
     (setq denote-file-type 'markdown-yaml)
-    (setq denote-known-keywords '(""))
+    (setq denote-known-keywords '())
     (setq denote-sort-keywords nil)
-    (defun fixed-denote-sluggify-keyword (keyword)
-        (denote-sluggify keyword 'keywords))
-    (defun fixed-denote-sluggify-keywords (keywords)
-        (mapcar 'fixed-denote-sluggify-keyword keywords))
-    (advice-add 'denote-sluggify-keywords
-        :override 'fixed-denote-sluggify-keywords)
-    (defun fixed-denote--slug-hyphenate (string)
-        (replace-regexp-in-string "^-+\\|-+$" ""
-            (replace-regexp-in-string "---+" "-"
-                (replace-regexp-in-string "[ _]" "-" string))))
-    (advice-add 'denote--slug-hyphenate
-        :override 'fixed-denote--slug-hyphenate)
     (defun fixed-denote-rewrite-front-matter
             (denote-rewrite-front-matter path &rest arguments)
         (let* ((buffers (buffer-list))
@@ -3309,24 +3297,6 @@
                     (kill-buffer buffer)))))
     (advice-add 'denote-rewrite-front-matter
         :around 'fixed-denote-rewrite-front-matter)
-    (defvar fixed-denote-rename-file--missing nil)
-    (defun hack-rename-file (rename-file &rest arguments)
-        (condition-case error
-            (apply rename-file arguments)
-            (file-missing
-                (setq fixed-denote-rename-file--missing t))))
-    (defun hack-denote--file-regular-writable-p
-            (denote--file-regular-writable-p file)
-        (if fixed-denote-rename-file--missing
-            (find-buffer-visiting file)
-            (funcall denote--file-regular-writable-p file)))
-    (defun fixed-denote-rename-file (denote-rename-file &rest arguments)
-        (with-advice ('rename-file :around 'hack-rename-file
-                      'denote--file-regular-writable-p
-                          :around 'hack-denote--file-regular-writable-p)
-            (let ((fixed-denote-rename-file--missing nil))
-                (apply denote-rename-file arguments))))
-    (advice-add 'denote-rename-file :around 'fixed-denote-rename-file)
     (defun fixed-denote-format-file-name--remove-id (path)
         (concat
             (file-name-directory path)
@@ -3373,31 +3343,6 @@
                     ""
                     "--")
                 name)))
-    (defun hack-denote-rewrite-front-matter
-            (denote-rewrite-front-matter path &rest arguments)
-        (with-advice ('y-or-n-p :override 'always)
-            (apply denote-rewrite-front-matter path arguments)))
-    (defun hack-denote-get-file-extension (arguments)
-        (let ((path (car arguments)))
-            (unless (denote-file-has-identifier-p path)
-                (setcar arguments (denoted--add-nil-id path))))
-        arguments)
-    (defmacro denoted--with-hacked-denote-rename (datetime &rest body)
-        `(with-advice ('denote-rewrite-front-matter
-                          :around 'hack-denote-rewrite-front-matter
-                      'denote--add-front-matter :override 'ignore
-                      'denote-retrieve-filename-identifier
-                          :override (ignore+return (or ,datetime ""))
-                      'denote-get-file-extension
-                          :filter-args 'hack-denote-get-file-extension)
-             ,@body))
-    (defun denoted-rename-file (path datetime prefix title tags)
-        (setq-if-nil prefix "")
-        (setq-if-nil title "")
-        (setq-if-nil tags "")
-        (let ((denote-directory (file-name-directory (expand-file-name path))))
-            (denoted--with-hacked-denote-rename datetime
-                (denote-rename-file path title tags prefix))))
     (defun denoted-title-get (path)
         (let ((note-type (denote-file-note-type path)))
             (if note-type
@@ -3412,6 +3357,58 @@
         (denote-retrieve-filename-signature path))
     (defun denoted-datetime-get (path)
         (denote-extract-id-from-string path))
+    (defun denoted-extension-get (path)
+        (let ((name (file-name-nondirectory path)))
+            (string-match "\\.\\(.*\\)" name)
+            (match-string 1 name)))
+    (defun denoted--slug (string)
+        (replace-regexp-in-string "^-+\\|-+$" ""
+            (replace-regexp-in-string denote-excluded-punctuation-regexp ""
+                (replace-regexp-in-string "[ _]" "-"
+                    (downcase string)))))
+    (defun denoted-title-slug (title)
+        (replace-regexp-in-string "---+" "--" (denoted--slug title)))
+    (defun denoted-tag-slug (tags)
+        (mapcar 'denoted-prefix-slug tags))
+    (defun denoted-prefix-slug (prefix)
+        (replace-regexp-in-string "--+" "-" (denoted--slug prefix)))
+    (advice-add 'denote-sluggify-keywords :override 'identity)
+    (defun denoted-rename-file-prompt (old-path new-path)
+        (y-or-n-p
+            (format "Rename %s to %s?"
+                (propertize (file-name-nondirectory old-path)
+                    'face 'denote-faces-prompt-old-name)
+                (propertize (file-name-nondirectory new-path)
+                    'face 'denote-faces-prompt-new-name))))
+    (defun hack-rename-file (rename-file &rest arguments)
+        (condition-case _error
+            (apply rename-file arguments)
+            (file-missing)))
+    (defun denoted--rename (path new-path directory title tags)
+        (if (not (denoted-rename-file-prompt path new-path))
+            path
+            (with-advice ('rename-file :around 'hack-rename-file)
+                (denote-rename-file-and-buffer path new-path))
+            (let ((denote-directory directory))
+                (denote-update-dired-buffers))
+            (when-let (type (denote-file-note-type new-path))
+                (denote-rewrite-front-matter new-path title tags type t))
+            new-path))
+    (defun denoted-rename-file (path datetime prefix title tags)
+        (setq-if-nil datetime "")
+        (setq-if-nil prefix "")
+        (setq-if-nil title "")
+        (setq tags (denoted-tag-slug tags))
+        (let* ((directory (file-name-directory (expand-file-name path)))
+               (extension (denoted-extension-get path))
+               (new-path  (denote-format-file-name
+                              directory
+                              datetime
+                              tags
+                              (denoted-title-slug title)
+                              (concat "." extension)
+                              (denoted-prefix-slug prefix))))
+            (denoted--rename path new-path directory title tags)))
     (defun denoted-title-set (path title)
         (let ((tags     (denoted-tag-get path))
               (prefix   (denoted-prefix-get path))
@@ -3427,16 +3424,13 @@
               (datetime (denoted-datetime-get path)))
             (denoted-rename-file path datetime prefix title tags)))
     (defun denoted-tag-prompt (tags)
-        (denote--keywords-crm tags "File tags"))
+        (denoted-tag-slug (denote--keywords-crm tags "File tags")))
     (defun denoted-tag-add (path)
-        (let* ((tags   (denoted-tag-get path))
-               (added  (denote-sluggify-keywords
-                           (denoted-tag-prompt
-                               (seq-difference
-                                   (denote-keywords)
-                                   (cons "" tags)))))
-               (merged (append tags added))
-               (unique (seq-uniq merged)))
+        (let* ((tags    (denoted-tag-get path))
+               (options (seq-difference (denote-keywords) tags))
+               (added   (denoted-tag-prompt options))
+               (merged  (append tags added))
+               (unique  (seq-uniq merged)))
             (denoted-tag-set path unique)))
     (defun denoted-tag-remove (path)
         (let* ((tags      (denoted-tag-get path))
@@ -3489,18 +3483,16 @@
     (defun denoted-name-prompt (&optional default)
         (read-string "File name: " default))
     (defun denoted-name-set (path name)
-        (let ((datetime (denoted-datetime-get name))
-              (prefix   (denoted-prefix-get name))
-              (title    (denote-extract-title-slug-from-path name))
-              (tags     (denoted-tag-get name))
-              (new-path (concat (file-name-directory path) "/" name))
-              (denote-directory (file-name-directory (expand-file-name path))))
+        (let* ((directory (file-name-directory (expand-file-name path)))
+               (datetime  (denoted-datetime-get name))
+               (prefix    (denoted-prefix-get name))
+               (title     (denote-extract-title-slug-from-path name))
+               (tags      (denoted-tag-get name))
+               (extension (denoted-extension-get name))
+               (new-path  (concat directory name)))
             (when (equal title (denote-extract-title-slug-from-path path))
                 (setq title (denoted-title-get path)))
-            (denoted--with-hacked-denote-rename datetime
-                (with-advice ('denote-format-file-name
-                                  :override (ignore+return new-path))
-                    (denote-rename-file path title tags prefix)))))
+            (denoted--rename path new-path directory title tags)))
     (defun denoted-name-edit (path)
         (let* ((name (file-name-nondirectory path))
                (new  (denoted-name-prompt name)))
