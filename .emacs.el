@@ -72,6 +72,12 @@
 (advice-add 'read-multiple-choice :override 'hack-read-multiple-choice)
 
 
+(defun hack-save-buffers-kill-emacs (save-buffers-kill-emacs &rest arguments)
+    (with-advice ('save-some-buffers :override 'ignore)
+        (apply save-buffers-kill-emacs arguments)))
+(advice-add 'save-buffers-kill-emacs :around 'hack-save-buffers-kill-emacs)
+
+
 (blink-cursor-mode -1)
 
 
