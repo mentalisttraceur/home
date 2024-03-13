@@ -488,6 +488,8 @@
             (let* ((keys (apply 'read-key-sequence-in-keymap
                              keymap nil arguments))
                    (binding (lookup-key keymap keys t)))
+                (run-post-command-hook)
+                (run-pre-command-hook)
                 (setq last-command-event (aref keys (1- (length keys))))
                 (if binding
                     (command-execute binding)
