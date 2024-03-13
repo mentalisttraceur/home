@@ -632,7 +632,13 @@
 
 (setq use-short-answers t)
 (defun read-multiple-choice-name (choice)
-    (cdr (rmc--add-key-description choice)))
+    (let ((raw   (cdr choice))
+          (fancy (cdr (rmc--add-key-description choice))))
+        (if raw
+            (if (length= raw 0)
+                (substring fancy 0 -1)
+                fancy)
+            (substring fancy 0 -4))))
 (defun hack-read-multiple-choice (prompt choices &rest _)
     (let ((names (mapcar 'read-multiple-choice-name choices)))
         (setq prompt (concat prompt " (" (string-join names ", ") "): ")))
