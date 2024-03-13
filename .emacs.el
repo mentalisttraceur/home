@@ -492,8 +492,8 @@
                 (if binding
                     (command-execute binding)
                     (with-advice ('this-single-command-keys
-                                     :filter-return
-                                     (apply-partially 'vconcat prefix))
+                                      :filter-return
+                                      (apply-partially 'vconcat prefix))
                         (undefined)))))
         (quit)))
 
