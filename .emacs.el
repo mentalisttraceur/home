@@ -1908,7 +1908,12 @@
     (define-key space-map "." (toggle evil-repeat-move-cursor))
     (define-key space-map "b" 'switch-to-buffer)
     (define-key space-map "B" 'ibuffer)
-    (define-key space-map "k" 'kill-buffer)
+    (defun smoother-kill-buffer (prefix-argument)
+        (interactive "P")
+        (if prefix-argument
+            (kill-buffer (read-buffer-to-switch "Kill buffer"))
+            (kill-buffer (current-buffer))))
+    (define-key space-map "k" 'smoother-kill-buffer)
     (define-key space-map "f" 'find-file)
     (define-key space-map "F" 'find-alternate-file)
     (define-key space-map "d" 'dired)
