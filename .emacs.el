@@ -1942,7 +1942,15 @@
         (interactive "P")
         (if prefix-argument
             (kill-buffer (read-buffer-to-switch "Kill buffer"))
-            (kill-buffer (current-buffer))))
+            (when (read-multiple-choice "Kill?" '((?\r )))
+                (add-hook
+                    'kill-buffer-hook
+                    (lambda ()
+                        (let ((buffer (current-buffer)))
+                            (quit-window)
+                            (set-buffer buffer)))
+                    nil t)
+                (kill-buffer (current-buffer)))))
     (define-key space-map "k" 'smoother-kill-buffer)
     (define-key space-map "f" 'find-file)
     (define-key space-map "F" 'find-alternate-file)
