@@ -446,6 +446,28 @@
             (set-window-hscroll window hscroll))))
 
 
+(defun run-pre-command-hook ()
+    (run-hook-wrapped 'pre-command-hook 'pre-command-hook--wrap))
+(defun pre-command-hook--wrap (function)
+    (let ((format (format "Error in pre-command-hook %S: %%S" function)))
+        (condition-case error
+            (funcall function)
+            (error
+                (remove-hook 'pre-command-hook function)
+                (message format error))))
+    nil)
+(defun run-post-command-hook ()
+    (run-hook-wrapped 'post-command-hook 'post-command-hook--wrap))
+(defun post-command-hook--wrap (function)
+    (let ((format (format "Error in post-command-hook %S: %%S" function)))
+        (condition-case error
+            (funcall function)
+            (error
+                (remove-hook 'post-command-hook function)
+                (message format error))))
+    nil)
+
+
 (defun read-key-sequence-in-keymap (keymap prompt &rest arguments)
     (let ((overriding-terminal-local-map nil)
           (overriding-local-map keymap)
