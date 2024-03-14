@@ -3436,6 +3436,112 @@
                              (plist-get (cdr type) :title-key-regexp)
                              path))
                      types))))
+    (defconst date-t-time-regex
+        (concat
+            "\\(?1:[0-9][0-9][0-9][0-9]\\)"
+            "\\(?2:[0-9][0-9]\\)"
+            "\\(?3:[0-9][0-9]\\)"
+            "\\(?7:T\\)"
+            "\\(?4:[0-9][0-9]\\)"
+            "\\(?5:[0-9][0-9]\\)"
+            "\\(?6:[0-9][0-9]\\)"))
+    (defun denote--delimiter-search-forward (end-of-name)
+        (let ((start-of-match (point-marker)))
+            (if (re-search-forward "==\\|--\\|__\\|\\." end-of-name t)
+                (goto-char (match-beginning 0))
+                (goto-char end-of-name))
+            (let ((end-of-match (point-marker)))
+                (set-match-data (list start-of-match end-of-match))))
+        (point))
+    (defun denote--field-search-forward (separator end-of-name)
+        (when (re-search-forward separator end-of-name t)
+            (denote--delimiter-search-forward end-of-name)))
+    (defun denote--dired-search-forward (separator bound)
+        (let ((old-match-data (match-data)))
+            (if (dired-filename-search-forward bound)
+                (progn
+                    (goto-char (match-beginning 0))
+                    (denote--field-search-forward separator (match-end 0)))
+                (set-match-data old-match-data)
+                nil)))
+    (defun denote-dired-signature-search-forward (bound)
+        (denote--dired-search-forward "==" bound))
+    (defun denote-dired-keywords-search-forward (bound)
+        (denote--dired-search-forward "__" bound))
+    (defun denote-dired-title-search-forward (bound)
+        (let ((old-match-data (match-data)))
+            (if (dired-filename-search-forward bound)
+                (let ((end-of-name (match-end 0)))
+                    (goto-char (match-beginning 0))
+                    (if (re-search-forward date-t-time-regex end-of-name t)
+                        (denote--field-search-forward "--" end-of-name)
+                        (denote--delimiter-search-forward end-of-name)))
+                (set-match-data old-match-data)
+                nil)))
+    (defconst point-to-match-beginning-form
+        '(progn
+            (goto-char (match-beginning 0))
+            (point)))
+    (defconst point-to-match-end-form
+        '(progn
+            (goto-char (match-end 0))
+            (point)))
+    (setq denote-faces-file-name-keywords
+        `((dired-filename-search-forward
+           (,date-t-time-regex
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (1 'denote-faces-year)
+               (2 'denote-faces-month)
+               (3 'denote-faces-day)
+               (7 'denote-faces-delimiter)
+               (4 'denote-faces-hour)
+               (5 'denote-faces-minute)
+               (6 'denote-faces-second))
+           ("\\..*$"
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (0 'denote-faces-extension))
+           ("==\\|--\\|__"
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (0 'denote-faces-delimiter)))
+          (denote-dired-keywords-search-forward
+           ("[^_]"
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (0 'denote-faces-keywords))
+           ("_"
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (0 'denote-faces-delimiter)))
+          (denote-dired-title-search-forward
+           ("[^-]"
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (0 'denote-faces-title))
+           ("-"
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (0 'denote-faces-delimiter)))
+          (denote-dired-signature-search-forward
+           ("[^=]"
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (0 'denote-faces-signature))
+           ("="
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (0 'denote-faces-delimiter)))))
+    (defface denote-faces-year   '((t :inherit denote-faces-date)) "")
+    (defface denote-faces-month  '((t :inherit denote-faces-date)) "")
+    (defface denote-faces-day    '((t :inherit denote-faces-date)) "")
+    (defface denote-faces-hour   '((t :inherit denote-faces-time)) "")
+    (defface denote-faces-minute '((t :inherit denote-faces-time)) "")
+    (defface denote-faces-second '((t :inherit denote-faces-time)) "")
+    (set-face-foreground 'denote-faces-month  "#FFA060")
+    (set-face-foreground 'denote-faces-minute "#FFA060")
+    (set-face-foreground 'denote-faces-extension "grey30")
     (defconst hack-denote-title-candidates nil)
     (defun hack-denote-title-prompt (denote-title-prompt &rest arguments)
         (let ((denote--title-history hack-denote-title-candidates))
