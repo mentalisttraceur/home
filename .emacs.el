@@ -631,6 +631,7 @@
 
 
 (setq use-short-answers t)
+(define-key y-or-n-p-map "\C-m" 'act)
 (define-key y-or-n-p-map [return] 'act)
 (defun read-multiple-choice-name (choice)
     (let ((raw   (cdr choice))
@@ -661,6 +662,7 @@
 (advice-add 'read-multiple-choice :override 'hack-read-multiple-choice)
 (defun confirm-p (prompt)
     (let ((map (make-sparse-keymap)))
+        (define-key map "\C-m" 'exit-minibuffer)
         (define-key map [return] 'exit-minibuffer)
         (define-key map [t]
             (lambda ()
