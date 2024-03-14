@@ -659,6 +659,19 @@
                (choice (read-from-minibuffer prompt nil map)))
             (assoc (string-to-char choice) choices))))
 (advice-add 'read-multiple-choice :override 'hack-read-multiple-choice)
+(defun confirm-p (prompt)
+    (let ((map (make-sparse-keymap)))
+        (define-key map [return] 'exit-minibuffer)
+        (define-key map [t]
+            (lambda ()
+                (interactive)
+                (user-error
+                    (concat
+                        (propertize "RET" 'face 'help-key-description)
+                        " to confirm"))))
+        (if (read-from-minibuffer (concat prompt " ") nil map)
+            t
+            nil)))
 
 
 (defun hack-save-buffers-kill-emacs (save-buffers-kill-emacs &rest arguments)
