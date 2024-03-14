@@ -1956,7 +1956,7 @@
         (interactive "P")
         (if prefix-argument
             (kill-buffer (read-buffer-to-switch "Kill buffer"))
-            (when (y-or-n-p (format "Kill %s?" (buffer-name)))
+            (when (confirm-p (format "Kill %s?" (buffer-name)))
                 (add-hook
                     'kill-buffer-hook
                     (lambda ()
