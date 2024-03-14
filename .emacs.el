@@ -631,6 +631,7 @@
 
 
 (setq use-short-answers t)
+(define-key y-or-n-p-map [return] 'act)
 (defun read-multiple-choice-name (choice)
     (let ((raw   (cdr choice))
           (fancy (cdr (rmc--add-key-description choice))))
