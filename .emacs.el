@@ -1103,7 +1103,9 @@
     :config
     (set-face-background 'smerge-lower "#005000")
     (set-face-background 'smerge-upper "#500000")
-    (set-face-background 'smerge-base "#505000"))
+    (set-face-background 'smerge-base "#505000")
+    (set-face-background 'smerge-refined-added "#008000")
+    (set-face-background 'smerge-refined-removed "#800000"))
 
 (use-package package
     :config
