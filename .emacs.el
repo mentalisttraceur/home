@@ -698,6 +698,7 @@
     (setq help-window-select t)
     (define-key help-map "t" 'describe-face)
     (define-key help-map "g" nil)
+    (define-key help-map "r" nil)
     (defun fixed-help-view-source (&rest _)
         (set-window-start (selected-window) (point)))
     (advice-add 'help-function-def--button-function
