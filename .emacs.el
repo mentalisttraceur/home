@@ -3837,10 +3837,6 @@
         (dired-goto-last-file))
     (define-key space-map "g" 'task-create)
     (define-key space-map "G" 'task-list)
-    (define-key space-map "sg" (lambda ()
-        (interactive)
-        (task-list)
-        (consult-line)))
     (defun task-tags ()
         (denoted-tag-sort
             (seq-uniq
