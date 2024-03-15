@@ -3774,14 +3774,16 @@
         (interactive)
         (note-list)
         (dired-goto-first-file)
-        (condition-case error
-            (consult-line)
-            (quit
-                (quit-window)
-                (signal (car error) (cdr error))))
-        (dired-find-file)
-        (dired denote-directory)
-        (bury-buffer)))
+        (run-with-idle-timer 0 nil
+            (lambda ()
+                (condition-case error
+                    (consult-line)
+                    (quit
+                        (quit-window)
+                        (signal (car error) (cdr error))))
+                (dired-find-file)
+                (dired denote-directory)
+                (bury-buffer)))))
     (defconst task-tag "qq")
     (setq denote-excluded-keywords-regexp "qq.*")
     (defun task-prompt ()
