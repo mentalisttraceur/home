@@ -1110,7 +1110,9 @@
                 (git-repo-root))))
     (advice-add 'vc-git-root :override 'fixed-vc-git-root)
     (add-hook 'vc-annotate-mode-hook (lambda ()
-        (setq truncate-lines nil))))
+        (setq truncate-lines nil)))
+    (defun vc-dir ()
+        (error "vc-dir called")))
 
 (use-package diff-mode
     :config
