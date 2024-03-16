@@ -1568,25 +1568,61 @@
                         'consult--line-history)))))
     (defun consult-line-next (count)
         (interactive "p")
-        (add-single-use-hook 'consult-after-jump-hook
-            (lambda-let ((start (line-number-at-pos))) ()
-                (unless (equal (line-number-at-pos) start)
-                    (setq count (1- count)))
-                (push 'return unread-command-events)
-                (dotimes (_ count)
-                    (push 'down unread-command-events))))
-        (let ((vertico-count 0))
-            (consult-line-resume nil))
+        (let ((consult-after-jump-hook nil))
+            (add-single-use-hook 'consult-after-jump-hook
+                (lambda-let ((count)
+                             (start (line-number-at-pos)))
+                        ()
+                    (unless (equal (line-number-at-pos) start)
+                        (setq count (1- count)))
+                    (push 'consult-line-next-done unread-command-events)
+                    (dotimes (_ count)
+                        (push 'consult-line-next unread-command-events))))
+            (add-single-use-hook 'minibuffer-setup-hook
+                (lambda-let ((pending-events (list 'unused))) ()
+                    (use-local-map (make-sparse-keymap))
+                    (local-set-key [consult-line-next] 'vertico-next)
+                    (local-set-key [consult-line-next-done]
+                        (lambda-let (pending-events) ()
+                            (interactive)
+                            (pop pending-events)
+                            (setq unread-command-events
+                                (nconc pending-events unread-command-events))
+                            (vertico-exit)))
+                    (local-set-key [t]
+                        (lambda-let (pending-events) ()
+                            (interactive)
+                            (nconc pending-events
+                                (listify-key-sequence (this-command-keys)))))))
+            (let ((vertico-count 0))
+                (consult-line-resume nil)))
         (pulse-momentary-highlight-one-line))
     (defun consult-line-previous (count)
         (interactive "p")
-        (add-single-use-hook 'consult-after-jump-hook
-            (lambda ()
-                (push 'return unread-command-events)
-                (dotimes (_ count)
-                    (push 'up unread-command-events))))
-        (let ((vertico-count 0))
-            (consult-line-resume nil))
+        (let ((consult-after-jump-hook nil))
+            (add-single-use-hook 'consult-after-jump-hook
+                (lambda ()
+                    (push 'consult-line-previous-done unread-command-events)
+                    (dotimes (_ count)
+                        (push 'consult-line-previous unread-command-events))))
+            (add-single-use-hook 'minibuffer-setup-hook
+                (lambda-let ((pending-events (list 'unused))) ()
+                    (use-local-map (make-sparse-keymap))
+                    (local-set-key [consult-line-previous] 'vertico-previous)
+                    (local-set-key [consult-line-previous-done]
+                        (lambda-let (pending-events) ()
+                            (interactive)
+                            (pop pending-events)
+                            (setq unread-command-events
+                                (nconc pending-events unread-command-events))
+                            (vertico-exit)))
+                    (local-set-key [t]
+                        (lambda-let (pending-events) ()
+                            (interactive)
+                            (nconc pending-events
+                                (listify-key-sequence (this-command-keys)))))))
+            (let ((vertico-count 0))
+                (consult-line-resume nil)))
         (pulse-momentary-highlight-one-line))
     (defun consult-line-quit ()
         (interactive)
