@@ -1566,6 +1566,28 @@
                         nil
                         nil
                         'consult--line-history)))))
+    (defun consult-line-next (count)
+        (interactive "p")
+        (add-single-use-hook 'consult-after-jump-hook
+            (lambda-let ((start (line-number-at-pos))) ()
+                (unless (equal (line-number-at-pos) start)
+                    (setq count (1- count)))
+                (push 'return unread-command-events)
+                (dotimes (_ count)
+                    (push 'down unread-command-events))))
+        (let ((vertico-count 0))
+            (consult-line-resume nil))
+        (pulse-momentary-highlight-one-line))
+    (defun consult-line-previous (count)
+        (interactive "p")
+        (add-single-use-hook 'consult-after-jump-hook
+            (lambda ()
+                (push 'return unread-command-events)
+                (dotimes (_ count)
+                    (push 'up unread-command-events))))
+        (let ((vertico-count 0))
+            (consult-line-resume nil))
+        (pulse-momentary-highlight-one-line))
     (defun consult-line-quit ()
         (interactive)
         (let ((query (field-string-no-properties)))
