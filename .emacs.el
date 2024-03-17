@@ -1804,7 +1804,7 @@
     (define-key evil-operator-state-map "q" 'evil-force-normal-state)
     (define-key evil-motion-state-map "Q" 'quit-previous-window)
     (defvar override-evil-mode-line-tag nil)
-    (defmacro save-override-evil-mode-line-tag (tag help-string &rest body)
+    (defmacro with-override-evil-mode-line-tag (tag help-string &rest body)
         `(unwind-protect
             (progn
                 (setq override-evil-mode-line-tag (propertize ,tag
@@ -3178,7 +3178,7 @@
                         'aw-background-face   :foreground tint
                         'line-number          :foreground tint
                         'default              :background dim)
-                    (save-override-evil-mode-line-tag tag help-string
+                    (with-override-evil-mode-line-tag tag help-string
                         (fixed-aw-select 'window-state--do-action))))))
     (defun window-state--do-action (window)
         (funcall window-state--action window)
