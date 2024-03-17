@@ -1584,6 +1584,10 @@
     (defun consult-line-next (count)
         (interactive "p")
         (let ((consult-after-jump-hook nil))
+            (add-single-use-hook 'post-command-hook
+                (lambda ()
+                    (when (< vertico--index 0)
+                        (push 'fail unread-command-events))))
             (add-single-use-hook 'consult-after-jump-hook
                 (lambda-let ((count)
                              (start (line-number-at-pos))
@@ -1603,6 +1607,12 @@
                     (define-key defer-input-map [next] 'vertico-next)
                     (define-key defer-input-map [previous] 'vertico-previous)
                     (define-key defer-input-map [done] 'vertico-exit)
+                    (define-key defer-input-map [fail]
+                        (lambda ()
+                            (interactive)
+                            (throw 'exit
+                                (lambda-let ((query (minibuffer-contents))) ()
+                                    (user-error "Search failed: %S" query)))))
                     (consult-line-resume nil)))
         (pulse-momentary-highlight-one-line)))
     (defun consult-line-previous (count)
