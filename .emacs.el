@@ -1599,6 +1599,7 @@
                         (push direction unread-command-events))))
             (let ((vertico-count 0))
                 (defer-input
+                    (define-key defer-input-map "\C-g" 'abort-minibuffers)
                     (define-key defer-input-map [next] 'vertico-next)
                     (define-key defer-input-map [previous] 'vertico-previous)
                     (define-key defer-input-map [done] 'vertico-exit)
