@@ -2201,6 +2201,35 @@
     (define-key space-map "]" (toggle select-enable-clipboard))
     (define-key space-map "l" 'consult-line)
     (define-key space-map "L" 'consult-line-resume)
+    (defvar evil-consult--consult-is-last-search nil)
+    (defun evil-consult--evil-start (&rest _)
+        (setq evil-consult--consult-is-last-search nil))
+    (advice-add 'evil-ex-start-search :after 'evil-consult--evil-start)
+    (defun evil-consult--consult-start (&rest _)
+        (setq evil-consult--consult-is-last-search t)
+        (evil-ex-nohighlight))
+    (advice-add 'consult-line :after 'evil-consult--consult-start)
+    (defun evil-consult--clear (&rest _)
+        (setq evil-consult--consult-is-last-search nil))
+    (advice-add 'evil-ex-nosearch :after 'evil-consult--clear)
+    (defun evil-ex-search-or-consult-line-next (count)
+        (interactive "p")
+        (if evil-consult--consult-is-last-search
+            (consult-line-next count)
+            (if evil-ex-search-pattern
+                (evil-ex-search-next count)
+                (user-error "No search to resume"))))
+    (defun evil-ex-search-or-consult-line-previous (count)
+        (interactive "p")
+        (if evil-consult--consult-is-last-search
+            (consult-line-previous count)
+            (if evil-ex-search-pattern
+                (evil-ex-search-previous count)
+                (user-error "No search to resume"))))
+    (define-key evil-motion-state-map "n"
+        'evil-ex-search-or-consult-line-next)
+    (define-key evil-motion-state-map "N"
+        'evil-ex-search-or-consult-line-previous)
     (define-key space-map "sl" 'consult-ripgrep)
     (define-key space-map "sf" 'consult-fd)
     (define-key space-map "st" (lambda ()
