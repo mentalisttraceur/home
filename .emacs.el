@@ -676,6 +676,21 @@
             nil)))
 
 
+(defmacro defer-input (&rest body)
+    `(let ((defer-input-map (make-sparse-keymap))
+           (defer-input--events (list 'unused)))
+        (define-key defer-input-map [t]
+            (lambda-let (defer-input--events) ()
+                (interactive)
+                (nconc defer-input--events
+                    (listify-key-sequence (this-command-keys)))))
+        (let ((overriding-terminal-local-map defer-input-map))
+            ,@body)
+        (pop defer-input--events)
+        (setq unread-command-events
+            (nconc defer-input--events unread-command-events))))
+
+
 (defun hack-save-buffers-kill-emacs (save-buffers-kill-emacs &rest arguments)
     (with-advice ('save-some-buffers :override 'ignore)
         (apply save-buffers-kill-emacs arguments)))
