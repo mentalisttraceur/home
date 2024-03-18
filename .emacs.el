@@ -4,15 +4,20 @@
 (setq auto-save-list-file-prefix nil)
 
 
+(defconst termux (getenv "TERMUX_VERSION"))
+
+
 (menu-bar-mode -1)
 (defun init-graphic-frame (frame)
     (if (not (display-graphic-p frame))
-        (set-face-background 'default "#202020")
+        (if termux
+            (set-face-background 'default "#202020")
+            (set-face-background 'default "#141414"))
         (tool-bar-mode -1)
         (scroll-bar-mode -1)
         (select-frame frame)
         (set-frame-font "DejaVu Sans Mono-13")
-        (set-background-color "#202020")
+        (set-background-color "#141414")
         (set-foreground-color "#A0A0A0")
         (set-cursor-color "#FFFFFF")))
 (init-graphic-frame (selected-frame))
@@ -33,9 +38,6 @@
       init-file-name-handler-alist file-name-handler-alist)
 (setq gc-cons-threshold (* 1024 1024 1024)
       file-name-handler-alist nil)
-
-
-(defconst termux (getenv "TERMUX_VERSION"))
 
 (when termux
     (define-key minibuffer-inactive-mode-map [mouse-1] nil)
@@ -3163,9 +3165,12 @@
             (aw-select "" action)))
     (defvar window-state nil)
     (defconst window-state-normal
-        '("#00FF00" "#808080" "#202020" "W" "Window state"))
+        '("#00FF00" "#808080" "#141414" "W" "Window state"))
     (defconst window-state-target-pending
-        '("#00FF00" "#C08040" "#302010" "T" "Target-pending window state"))
+        '("#00FF00" "#C08040" "#1E140A" "T" "Target-pending window state"))
+    (when termux
+        (setcar (nthcdr 2 window-state-normal) "#202020")
+        (setcar (nthcdr 2 window-state-target-pending) "#302010"))
     (defvar window-state-this-register nil)
     (defvar window-state--action nil)
     (defvar window-state--execute-once nil)
