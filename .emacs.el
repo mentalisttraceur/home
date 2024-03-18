@@ -3729,7 +3729,8 @@
             (apply rename-file arguments)
             (file-missing)))
     (defun denoted--rename (path new-path directory title tags)
-        (if (not (denoted-rename-file-prompt path new-path))
+        (if (not (or denote-rename-no-confirm
+                     (denoted-rename-file-prompt path new-path)))
             path
             (with-advice ('rename-file :around 'hack-rename-file)
                 (denote-rename-file-and-buffer path new-path))
