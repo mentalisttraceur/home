@@ -3703,8 +3703,8 @@
         (denote-extract-id-from-string path))
     (defun denoted-extension-get (path)
         (let ((name (file-name-nondirectory path)))
-            (string-match "\\.\\(.*\\)" name)
-            (match-string 1 name)))
+            (when (string-match "\\..*" name)
+                (match-string 0 name))))
     (defun denoted--slug (string)
         (replace-regexp-in-string "^-+\\|-+$" ""
             (replace-regexp-in-string denote-excluded-punctuation-regexp ""
@@ -3751,7 +3751,7 @@
                               datetime
                               tags
                               (denoted-title-slug title)
-                              (concat "." extension)
+                              extension
                               (denoted-prefix-slug prefix))))
             (denoted--rename path new-path directory title tags)))
     (defun denoted-title-set (path title)
