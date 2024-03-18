@@ -82,6 +82,9 @@
 (advice-add 'blink-matching-open :override 'ignore)
 
 
+(setq read-minibuffer-restore-windows nil)
+
+
 (defmacro apply-split (callable arguments count)
     (setq arguments (copy-sequence arguments))
     (setq count (1- count))
