@@ -3532,7 +3532,7 @@
             "\\(?4:[0-9][0-9]\\)"
             "\\(?5:[0-9][0-9]\\)"
             "\\(?6:[0-9][0-9]\\)"))
-    (defun denote--delimiter-search-forward (end-of-name)
+    (defun denote--field-search-forward (end-of-name)
         (let ((start-of-match (point-marker)))
             (if (re-search-forward "==\\|--\\|__\\|\\." end-of-name t)
                 (goto-char (match-beginning 0))
@@ -3540,31 +3540,77 @@
             (let ((end-of-match (point-marker)))
                 (set-match-data (list start-of-match end-of-match))))
         (point))
-    (defun denote--field-search-forward (separator end-of-name)
+    (defun denote-field-search-forward (separator end-of-name)
         (when (re-search-forward separator end-of-name t)
-            (denote--delimiter-search-forward end-of-name)))
-    (defun denote--dired-search-forward (separator bound)
-        (let ((old-match-data (match-data)))
+            (denote--field-search-forward end-of-name)))
+    (defun denote--dired-filename-search-forward (bound)
+        (let ((old-point (point)))
+            (when (and (dired-file-name-at-point)
+                       (<= (line-end-position) bound))
+                (dired-move-to-filename))
             (if (dired-filename-search-forward bound)
+                (let ((start-of-match (max (match-beginning 0) old-point)))
+                    (set-match-data (list start-of-match (match-end 0)))
+                    (goto-char (match-end 0)))
+                (goto-char old-point)
+                nil)))
+    (defun denote--dired-field-search-forward (separator bound)
+        (let ((old-match-data (match-data)))
+            (if (denote--dired-filename-search-forward bound)
                 (progn
                     (goto-char (match-beginning 0))
-                    (denote--field-search-forward separator (match-end 0)))
+                    (denote-field-search-forward separator (match-end 0)))
                 (set-match-data old-match-data)
                 nil)))
     (defun denote-dired-signature-search-forward (bound)
-        (denote--dired-search-forward "==" bound))
+        (denote--dired-field-search-forward "==" bound))
     (defun denote-dired-keywords-search-forward (bound)
-        (denote--dired-search-forward "__" bound))
+        (denote--dired-field-search-forward "__" bound))
     (defun denote-dired-title-search-forward (bound)
         (let ((old-match-data (match-data)))
-            (if (dired-filename-search-forward bound)
+            (if (denote--dired-filename-search-forward bound)
                 (let ((end-of-name (match-end 0)))
                     (goto-char (match-beginning 0))
                     (if (re-search-forward date-t-time-regex end-of-name t)
-                        (denote--field-search-forward "--" end-of-name)
-                        (denote--delimiter-search-forward end-of-name)))
+                        (denote-field-search-forward "--" end-of-name)
+                        (denote--field-search-forward end-of-name)))
                 (set-match-data old-match-data)
                 nil)))
+    (defun denote--subfield-search-forward (delimiter bound)
+        (save-excursion
+            (save-match-data
+                (denote--field-search-forward bound)
+                (setq bound (match-end 0))))
+        (when (> bound (point))
+            (let ((start-of-match      (point-marker))
+                  (start-of-submatch-1 (point-marker))
+                  (end-of-submatch-1   nil)
+                  (start-of-submatch-2 nil)
+                  (end-of-submatch-2   nil)
+                  (end-of-match        nil)
+                  (delimiters (format "%c*" delimiter))
+                  (not-delimiters (format "[^%c]*" delimiter)))
+                (re-search-forward delimiters bound t)
+                (setq end-of-submatch-1 (point-marker))
+                (setq start-of-submatch-2 (point-marker))
+                (re-search-forward not-delimiters bound 'match-the-rest)
+                (setq end-of-submatch-2 (point-marker))
+                (setq end-of-match (point-marker))
+                (set-match-data
+                    (list
+                        start-of-match
+                        end-of-match
+                        start-of-submatch-1
+                        end-of-submatch-1
+                        start-of-submatch-2
+                        end-of-submatch-2))
+                (point))))
+    (defun denote-signature-subfield-search-forward (bound)
+        (denote--subfield-search-forward ?= bound))
+    (defun denote-title-subfield-search-forward (bound)
+        (denote--subfield-search-forward ?- bound))
+    (defun denote-keywords-subfield-search-forward (bound)
+        (denote--subfield-search-forward ?_ bound))
     (defconst point-to-match-beginning-form
         '(progn
             (goto-char (match-beginning 0))
@@ -3593,33 +3639,24 @@
                ,point-to-match-beginning-form
                ,point-to-match-end-form
                (0 'denote-faces-delimiter)))
-          (denote-dired-keywords-search-forward
-           ("[^_]"
-               ,point-to-match-beginning-form
-               ,point-to-match-end-form
-               (0 'denote-faces-keywords))
-           ("_"
-               ,point-to-match-beginning-form
-               ,point-to-match-end-form
-               (0 'denote-faces-delimiter)))
-          (denote-dired-title-search-forward
-           ("[^-]"
-               ,point-to-match-beginning-form
-               ,point-to-match-end-form
-               (0 'denote-faces-title))
-           ("-"
-               ,point-to-match-beginning-form
-               ,point-to-match-end-form
-               (0 'denote-faces-delimiter)))
           (denote-dired-signature-search-forward
-           ("[^=]"
+           (denote-signature-subfield-search-forward
                ,point-to-match-beginning-form
                ,point-to-match-end-form
-               (0 'denote-faces-signature))
-           ("="
+               (1 'denote-faces-delimiter)
+               (2 'denote-faces-signature)))
+          (denote-dired-title-search-forward
+           (denote-title-subfield-search-forward
                ,point-to-match-beginning-form
                ,point-to-match-end-form
-               (0 'denote-faces-delimiter)))))
+               (1 'denote-faces-delimiter)
+               (2 'denote-faces-title)))
+          (denote-dired-keywords-search-forward
+           (denote-keywords-subfield-search-forward
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (1 'denote-faces-delimiter)
+               (2 'denote-faces-keywords)))))
     (defface denote-faces-year   '((t :inherit denote-faces-date)) "")
     (defface denote-faces-month  '((t :inherit denote-faces-date)) "")
     (defface denote-faces-day    '((t :inherit denote-faces-date)) "")
