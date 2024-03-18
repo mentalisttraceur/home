@@ -3926,7 +3926,10 @@
         (save-excursion
             (goto-char 1)
             (let ((inhibit-read-only t))
-                (delete-line))))
+                (delete-line)))
+        (if-let ((marker-at-1    (set-marker (make-marker) 1))
+                 (directory-at-1 (rassoc marker-at-1 dired-subdir-alist)))
+            (setcdr directory-at-1 0)))
     (defun task--buffer (title regex)
         (reuse-independent-dired title denote-directory)
         (dired-hide-details-mode 1)
