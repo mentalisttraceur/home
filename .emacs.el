@@ -3714,17 +3714,30 @@
                 (setq name (substring name 1)))
             (when (string-match "\\..*" name)
                 (match-string 0 name))))
+    (defconst denoted--exclude-regex "[^-[:alnum:]]")
     (defun denoted--slug (string)
-        (replace-regexp-in-string "^-+\\|-+$" ""
-            (replace-regexp-in-string denote-excluded-punctuation-regexp ""
-                (replace-regexp-in-string "[ _]" "-"
-                    (downcase string)))))
+        (string-trim
+            (replace-regexp-in-string denoted--exclude-regex ""
+                (replace-regexp-in-string "[ _]+" "-"
+                    (downcase string)))
+            "-+" "-+"))
     (defun denoted-title-slug (title)
-        (replace-regexp-in-string "---+" "--" (denoted--slug title)))
+        (replace-regexp-in-string "---+" "--"
+            (denoted--slug
+                (replace-regexp-in-string ";+" "-" title))))
+    (defun denoted-tag--slug (tag)
+        (replace-regexp-in-string "--+" "-"
+            (denoted--slug tag)))
     (defun denoted-tag-slug (tags)
-        (mapcar 'denoted-prefix-slug tags))
+        (mapcar 'denoted-tag--slug tags))
+    (defconst denoted-prefix--exclude-regex "[^-=[:alnum:]]")
     (defun denoted-prefix-slug (prefix)
-        (replace-regexp-in-string "--+" "-" (denoted--slug prefix)))
+        (string-trim
+            (replace-regexp-in-string "==+" "="
+                (replace-regexp-in-string "--+" "-"
+                    (replace-regexp-in-string denoted-prefix--exclude-regex ""
+                        (replace-regexp-in-string "[ _]" "=" prefix))))
+            "[-=]+" "[-=]+"))
     (advice-add 'denote-sluggify-keywords :override 'identity)
     (defun denoted-rename-file-prompt (old-path new-path)
         (y-or-n-p
