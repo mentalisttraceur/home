@@ -3871,7 +3871,7 @@
                (new  (denoted-name-prompt name)))
             (denoted-name-set path new)))
     (defconst denoted-try--default-fallback
-        '(user-error "%s is not visiting a file or directory" (buffer-name)))
+        '((user-error "%s is not visiting a file or directory" (buffer-name))))
     (defmacro denoted-try (function &rest fallback-body)
         (setq-if-nil fallback-body denoted-try--default-fallback)
         `(if-let (path (buffer-file-name))
