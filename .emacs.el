@@ -3529,10 +3529,28 @@
             "\\(?1:[0-9][0-9][0-9][0-9]\\)"
             "\\(?2:[0-9][0-9]\\)"
             "\\(?3:[0-9][0-9]\\)"
-            "\\(?7:T\\)"
+            "\\(?10:T\\)"
             "\\(?4:[0-9][0-9]\\)"
             "\\(?5:[0-9][0-9]\\)"
             "\\(?6:[0-9][0-9]\\)"))
+    (defconst p-duration-regex
+        (concat
+            "\\(?20:P\\)"
+            "\\(?1:\\(?11:[0-9]+\\)\\(?21:Y\\)\\)?"
+            "\\(?2:\\(?12:[0-9]+\\)\\(?22:M\\)\\)?"
+            "\\(?7:\\(?17:[0-9]+\\)\\(?27:W\\)\\)?"
+            "\\(?3:\\(?13:[0-9]+\\)\\(?23:D\\)\\)?"
+            "\\(?:"
+            "\\(?10:T\\)"
+            "\\(?4:\\(?14:[0-9]+\\)\\(?24:H\\)\\)?"
+            "\\(?5:\\(?15:[0-9]+\\)\\(?25:M\\)\\)?"
+            "\\(?6:\\(?16:[0-9]+\\)\\(?26:S\\)\\)?"
+            "\\)?"))
+    (defconst r-repeat-p-duration-regex
+        (concat
+            "\\(?30:R\\)"
+            "\\(?18:[0-9]*\\)"
+            p-duration-regex))
     (defun denote--field-search-forward (end-of-name)
         (let ((start-of-match (point-marker)))
             (if (re-search-forward "==\\|--\\|__\\|\\." end-of-name t)
@@ -3625,13 +3643,38 @@
            (,date-t-time-regex
                ,point-to-match-beginning-form
                ,point-to-match-end-form
-               (1 'denote-faces-year)
-               (2 'denote-faces-month)
-               (3 'denote-faces-day)
-               (7 'denote-faces-delimiter)
-               (4 'denote-faces-hour)
-               (5 'denote-faces-minute)
-               (6 'denote-faces-second))
+               (1  'denote-faces-year)
+               (2  'denote-faces-month)
+               (3  'denote-faces-day)
+               (10 'denote-faces-delimiter)
+               (4  'denote-faces-hour)
+               (5  'denote-faces-minute)
+               (6  'denote-faces-second))
+           (,r-repeat-p-duration-regex
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (30 'denote-faces-repeat nil t)
+               (20 'denote-faces-repeat nil t)
+               (21 'denote-faces-repeat nil t)
+               (22 'denote-faces-repeat nil t)
+               (27 'denote-faces-repeat nil t)
+               (23 'denote-faces-repeat nil t)
+               (10 'denote-faces-delimiter nil t)
+               (24 'denote-faces-repeat nil t)
+               (25 'denote-faces-repeat nil t)
+               (26 'denote-faces-repeat nil t))
+           (,p-duration-regex
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (20 'denote-faces-duration nil t)
+               (21 'denote-faces-duration nil t)
+               (22 'denote-faces-duration nil t)
+               (27 'denote-faces-duration nil t)
+               (23 'denote-faces-duration nil t)
+               (10 'denote-faces-delimiter nil t)
+               (24 'denote-faces-duration nil t)
+               (25 'denote-faces-duration nil t)
+               (26 'denote-faces-duration nil t))
            ("\\..*$"
                (progn
                    (goto-char (match-beginning 0))
@@ -3671,6 +3714,10 @@
     (set-face-foreground 'denote-faces-month  "#FFA060")
     (set-face-foreground 'denote-faces-minute "#FFA060")
     (set-face-foreground 'denote-faces-extension "grey30")
+    (defface denote-faces-repeat   '((t :inherit default)) "")
+    (defface denote-faces-duration '((t :inherit default)) "")
+    (set-face-foreground 'denote-faces-repeat   "#FF0000")
+    (set-face-foreground 'denote-faces-duration "#00FF00")
     (defconst hack-denote-title-candidates nil)
     (defun hack-denote-title-prompt (denote-title-prompt &rest arguments)
         (let ((denote--title-history hack-denote-title-candidates))
