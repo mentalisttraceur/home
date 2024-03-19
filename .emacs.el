@@ -2218,6 +2218,7 @@
             (if evil-ex-search-pattern
                 (evil-ex-search-next count)
                 (user-error "No search to resume"))))
+    (evil-declare-not-repeat 'evil-ex-search-or-consult-line-next)
     (defun evil-ex-search-or-consult-line-previous (count)
         (interactive "p")
         (if evil-consult--consult-is-last-search
@@ -2225,6 +2226,7 @@
             (if evil-ex-search-pattern
                 (evil-ex-search-previous count)
                 (user-error "No search to resume"))))
+    (evil-declare-not-repeat 'evil-ex-search-or-consult-line-previous)
     (define-key evil-motion-state-map "n"
         'evil-ex-search-or-consult-line-next)
     (define-key evil-motion-state-map "N"
