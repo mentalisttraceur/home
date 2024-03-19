@@ -3730,14 +3730,13 @@
             (denoted--slug tag)))
     (defun denoted-tag-slug (tags)
         (mapcar 'denoted-tag--slug tags))
-    (defconst denoted-prefix--exclude-regex "[^-=[:alnum:]]")
+    (defconst denoted-prefix--exclude-regex "[^=[:alnum:]]")
     (defun denoted-prefix-slug (prefix)
         (string-trim
             (replace-regexp-in-string "==+" "="
-                (replace-regexp-in-string "--+" "-"
-                    (replace-regexp-in-string denoted-prefix--exclude-regex ""
-                        (replace-regexp-in-string "[ _]" "=" prefix))))
-            "[-=]+" "[-=]+"))
+                (replace-regexp-in-string denoted-prefix--exclude-regex ""
+                    (replace-regexp-in-string "[- _]" "=" prefix)))
+            "=+" "=+"))
     (advice-add 'denote-sluggify-keywords :override 'identity)
     (defun denoted-rename-file-prompt (old-path new-path)
         (y-or-n-p
