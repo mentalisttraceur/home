@@ -3632,7 +3632,11 @@
                (5 'denote-faces-minute)
                (6 'denote-faces-second))
            ("\\..*$"
-               ,point-to-match-beginning-form
+               (progn
+                   (goto-char (match-beginning 0))
+                   (when (equal (char-after) ?.)
+                       (forward-char))
+                   (point))
                ,point-to-match-end-form
                (0 'denote-faces-extension))
            ("==\\|--\\|__"
