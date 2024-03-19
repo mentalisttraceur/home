@@ -3736,7 +3736,8 @@
         (string-trim
             (replace-regexp-in-string "==+" "="
                 (replace-regexp-in-string denoted-prefix--exclude-regex ""
-                    (replace-regexp-in-string "[- _]" "=" prefix)))
+                    (replace-regexp-in-string "[- _]" "="
+                        (upcase prefix))))
             "=+" "=+"))
     (advice-add 'denote-sluggify-keywords :override 'identity)
     (defun denoted-rename-file-prompt (old-path new-path)
