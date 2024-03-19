@@ -28,6 +28,7 @@
     file-removed-label = "file removed:"
     file-renamed-label = "file renamed:"
     hunk-label = "line"
+    syntax-theme = Coldark-Dark
     minus-style = syntax "#500000"
     plus-style = syntax "#005000"
     minus-emph-style = syntax "#800000"
