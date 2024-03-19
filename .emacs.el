@@ -2203,6 +2203,7 @@
     (defun evil-consult--evil-start (&rest _)
         (setq evil-consult--consult-is-last-search nil))
     (advice-add 'evil-ex-start-search :after 'evil-consult--evil-start)
+    (advice-add 'evil-ex-start-word-search :after 'evil-consult--evil-start)
     (defun evil-consult--consult-start (&rest _)
         (setq evil-consult--consult-is-last-search t)
         (evil-ex-nohighlight))
