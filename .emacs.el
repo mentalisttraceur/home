@@ -4070,44 +4070,6 @@
 (define-key space-map "zd" 'tumblr-delete)
 
 
-(defun message-time ()
-    (interactive)
-    (message "%s" (format-time-string "%H:%M:%S")))
-(defun message-date ()
-    (interactive)
-    (message "%s" (format-time-string "%Y-%m-%d")))
-(defun message-battery ()
-    (interactive)
-    (require 'battery)
-    (message "%s" (battery-format "%p%%" (funcall battery-status-function))))
-
-
-(when (display-graphic-p)
-    (add-to-list 'command-switch-alist '("-exwm" . (lambda (_option)
-        (use-package exwm
-            :config
-            (windmove-default-keybindings 'meta)
-            (set-frame-parameter nil 'fullscreen 'fullboth)
-            (add-hook 'exwm-update-title-hook
-                (lambda () (rename-buffer exwm-title t)))
-            (setq exwm-input-global-keys `(
-                ([?\s-r] . exwm-reset)
-                ([?\s-w] . exwm-workspace-switch)
-                ([?\s-&] . (lambda (command)
-                    (interactive (list (read-shell-command "$ ")))
-                    (start-process-shell-command command nil command)))
-                ,@(mapcar
-                    (lambda (i) `(,(kbd (format "s-%d" i)) .
-                        (lambda ()
-                            (interactive)
-                            (exwm-workspace-switch-create ,i))))
-                    (number-sequence 0 9))
-                ([?\s-t] . message-time)
-                ([?\s-d] . message-date)
-                ([?\s-b] . message-battery)))
-            (exwm-enable))))))
-
-
 (setq gc-cons-threshold init-gc-cons-threshold
       file-name-handler-alist init-file-name-handler-alist)
 
