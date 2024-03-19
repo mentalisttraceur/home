@@ -3691,6 +3691,9 @@
         (let ((note-type (denote-file-note-type path)))
             (if note-type
                 (denote-retrieve-title-value path note-type)
+                (let ((name (file-name-nondirectory path)))
+                    (when (string-prefix-p "." name)
+                        (setq path (substring name 1))))
                 (if (denote-file-has-identifier-p path)
                     (denote-extract-title-slug-from-path path)
                     (denote-extract-title-slug-from-path
@@ -3703,6 +3706,8 @@
         (denote-extract-id-from-string path))
     (defun denoted-extension-get (path)
         (let ((name (file-name-nondirectory path)))
+            (when (string-prefix-p "." name)
+                (setq name (substring name 1)))
             (when (string-match "\\..*" name)
                 (match-string 0 name))))
     (defun denoted--slug (string)
@@ -3753,6 +3758,12 @@
                               (denoted-title-slug title)
                               extension
                               (denoted-prefix-slug prefix))))
+            (when (string-prefix-p "." (file-name-nondirectory path))
+                (setq new-path
+                    (concat
+                        (file-name-directory new-path)
+                        "."
+                        (file-name-nondirectory new-path))))
             (denoted--rename path new-path directory title tags)))
     (defun denoted-title-set (path title)
         (let ((tags     (denoted-tag-get path))
