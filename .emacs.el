@@ -593,6 +593,15 @@
     `(apply-split setq-if-nil-1 ,symbol-value-pairs 2))
 
 
+(defun string-to-number-or-nil (string)
+    (when (length> string 0)
+        (string-to-number string)))
+
+(defun number-to-string-or-nil (number)
+    (when number
+        (number-to-string number)))
+
+
 (defun string-prefixes (string &optional shortest longest)
     (if (not shortest)
         (setq shortest 1)
