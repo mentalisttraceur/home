@@ -1353,6 +1353,186 @@
     (advice-add 'calendar-cursor-to-visible-date
         :around 'hack-calendar-displayed-date))
 
+(defun datetime-is-leap (year)
+    (and (= (mod year 4) 0)
+         (or (> (mod year 100) 0)
+             (= (% year 400) 0))))
+
+(defconst datetime--days-in-month
+    ;00 Ja Fe Mr Ap My Jn Jl Au Se Oc No De 13
+    [99 31 28 31 30 31 30 31 31 30 31 30 31 99])
+
+(defun datetime-days-in-month (year month)
+    (+
+        (aref datetime--days-in-month (min month 13))
+        (if (and (= month 2)
+                 (datetime-is-leap year))
+            1
+            0)))
+
+(defun datetime-days-in-year (year)
+    (if (datetime-is-leap year)
+        366
+        365))
+
+(defconst datetime--days-until-month--nonleap
+    ; 00 Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+    [  0   0  31  59  90 120 151 181 212 243 273 304 334])
+
+(defconst datetime--days-until-month--leap
+    ; 00 Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+    [  0   0  31  60  91 121 152 182 213 244 274 305 335])
+
+(defun datetime-days-until-month (year month)
+    (if (datetime-is-leap year)
+        (aref datetime--days-until-month--leap month)
+        (aref datetime--days-until-month--nonleap month)))
+
+(defun datetime-ordinal-day (year month day)
+    (+ (datetime-days-until-month year month) day))
+
+(defconst datetime--month-of-ordinal-day--nonleap
+    (vconcat
+        [0]
+        (make-vector 31 1)
+        (make-vector 28 2)
+        (make-vector 31 3)
+        (make-vector 30 4)
+        (make-vector 31 5)
+        (make-vector 30 6)
+        (make-vector 31 7)
+        (make-vector 31 8)
+        (make-vector 30 9)
+        (make-vector 31 10)
+        (make-vector 30 11)
+        (make-vector 31 12)))
+
+(defconst datetime--month-of-ordinal-day--leap
+    (vconcat
+        [0]
+        (make-vector 31 1)
+        (make-vector 29 2)
+        (make-vector 31 3)
+        (make-vector 30 4)
+        (make-vector 31 5)
+        (make-vector 30 6)
+        (make-vector 31 7)
+        (make-vector 31 8)
+        (make-vector 30 9)
+        (make-vector 31 10)
+        (make-vector 30 11)
+        (make-vector 31 12)))
+
+(defun datetime-month-of-ordinal-day (year day)
+    (if (datetime-is-leap year)
+        (aref datetime--month-of-ordinal-day--leap day)
+        (aref datetime--month-of-ordinal-day--nonleap day)))
+
+(defmacro datetime--year+ ()
+    `(if (and year (> year 0))
+        (setq year (max (+ year year+) 1))
+        (setq year 0)))
+
+(defmacro datetime--month+ ()
+    `(if (and month (> month 0))
+        (if (> month 12)
+            (setq month (min (max (+ month month+) 13) 99))
+            (let* ((days-in-month (datetime-days-in-month year month))
+                   (day-was-valid (<= 1 day days-in-month)))
+                (setq month (+ month month+))
+                (if (> month 0)
+                    (setq year+ (/ (- month 1) 12))
+                    (setq month (- month 12))
+                    (setq year+ (/ month 12)))
+                (setq month (1+ (mod (1- month) 12)))
+                (when day-was-valid
+                    (setq day (min day (datetime-days-in-month year month))))
+                (datetime--year+)))
+        (setq month 0)))
+
+(defmacro datetime--day+ ()
+    `(if (and day (> day 0))
+        (let ((limit (datetime-days-in-month year month)))
+            (if (> day limit)
+                (setq day (min (max (+ day day+) (1+ limit)) 99))
+                (setq day (datetime-ordinal-day year month day))
+                (setq day (+ day day+))
+                (if (> day 0)
+                    (while-let ((days-in-year (datetime-days-in-year year))
+                                (_            (> day days-in-year)))
+                        (setq day (- day days-in-year))
+                        (setq year (1+ year)))
+                    (while-let ((_            (setq year (1- year)))
+                                (days-in-year (datetime-days-in-year year))
+                                (_            (setq day (+ days-in-year day)))
+                                (_            (< day 1)))))
+                (setq month (datetime-month-of-ordinal-day year day))
+                (setq day (- day (datetime-days-until-month year month)))))
+        (setq day 0)))
+
+(defmacro datetime--hour+ ()
+    `(if hour
+        (if (> hour 24)
+            (setq hour (min (max (+ hour hour+) 25) 99))
+            (when (> hour 23)
+                (setq hour (1- hour)))
+            (setq hour (+ hour hour+))
+            (if (>= hour 0)
+                (setq day+ (/ hour 24))
+                (setq hour (- hour 24))
+                (setq day+ (/ hour 24)))
+            (setq hour (mod hour 24))
+            (datetime--day+))
+        (setq hour 0)))
+
+(defmacro datetime--minute+ ()
+    `(if minute
+        (if (> minute 60)
+            (setq minute (min (max (+ minute minute+) 61) 99))
+            (when (> minute 59)
+                (setq minute (1- minute)))
+            (setq minute (+ minute minute+))
+            (if (>= minute 0)
+                (setq hour+ (/ minute 60))
+                (setq minute (- minute 60))
+                (setq hour+ (/ minute 60)))
+            (setq minute (mod minute 60))
+            (datetime--hour+))
+        (setq minute 0)))
+
+(defmacro datetime--second+ ()
+    `(if second
+        (if (> second 60)
+            (setq second (min (max (+ second second+) 61) 99))
+            (when (> second 59)
+                (setq second (1- second)))
+            (setq second (+ second second+))
+            (if (>= second 0)
+                (setq minute+ (/ second 60))
+                (setq second (- second 60))
+                (setq minute+ (/ second 60)))
+            (setq second (mod second 60))
+            (datetime--minute+))
+        (setq second 0)))
+
+(defun fixed-decoded-time-add (time delta)
+    (let-unpack ((second  minute  hour  day  month  year ) time
+                 (second+ minute+ hour+ day+ month+ year+) delta)
+        (setq-if-nil year+   0)
+        (setq-if-nil month+  0)
+        (setq-if-nil day+    0)
+        (setq-if-nil hour+   0)
+        (setq-if-nil minute+ 0)
+        (setq-if-nil second+ 0)
+        (datetime--year+)
+        (datetime--month+)
+        (datetime--day+)
+        (datetime--hour+)
+        (datetime--minute+)
+        (datetime--second+)
+        (list second minute hour day month year
+            (calendar-day-of-week (list month day year)))))
+
 (defun datetime--parse (string &optional now)
     (let (year  month  day  hour  minute  second  day-of-week
           year+ month+ day+ hour+ minute+ second+ day-of-week+
