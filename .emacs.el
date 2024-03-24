@@ -1167,6 +1167,46 @@
     (advice-add 'package--with-response-buffer-1
         :around 'fixed-package--with-response-buffer-1))
 
+(use-package hexl
+    :config
+    (defun hexl-nibble-insert-1 (nibble)
+        (setq nibble (hexl-hex-char-to-integer nibble))
+        (let ((start (point)))
+            (hexl-goto-address (hexl-current-address))
+            (let ((byte (hexl-char-after-point))
+                  (on-right-nibble (< (point) start)))
+                (if on-right-nibble
+                    (setq byte (logand byte #xF0))
+                    (setq byte (logand byte #x0F))
+                    (setq nibble (ash nibble 4)))
+                (setq byte (logior byte nibble))
+                (if on-right-nibble
+                    (progn
+                        (hexl-insert-char byte 1)
+                        (when (< (point) start)
+                            (forward-char)))
+                    (save-excursion
+                        (hexl-insert-char byte 1))
+                    (forward-char)))))
+    (defun hexl-nibble-insert (nibble &optional count)
+        (unless count
+            (setq count 1))
+        (dotimes (_ count)
+            (hexl-nibble-insert-1 nibble)))
+    (defun hexl-nibble-self-insert-command (nibble &optional count)
+        (interactive
+            (list
+                last-command-event
+                (prefix-numeric-value current-prefix-arg)))
+        (hexl-nibble-insert nibble count))
+    (defun fixed-hexl-self-insert-command (count)
+        (interactive "p")
+        (if (>= (current-column) (hexl-ascii-start-column))
+            (call-interactively 'hexl-self-insert-command)
+            (call-interactively 'hexl-nibble-self-insert-command)))
+    (define-key hexl-mode-map [remap self-insert-command]
+        'fixed-hexl-self-insert-command))
+
 (use-package calendar
     :config
     (defvar calendar-months-before-current (if termux 0 1))
