@@ -1205,7 +1205,14 @@
             (call-interactively 'hexl-self-insert-command)
             (call-interactively 'hexl-nibble-self-insert-command)))
     (define-key hexl-mode-map [remap self-insert-command]
-        'fixed-hexl-self-insert-command))
+        'fixed-hexl-self-insert-command)
+    (defun hexl-switch-column ()
+        (interactive)
+        (let ((ascii-position (overlay-start hexl-ascii-overlay)))
+            (if (equal (point) ascii-position)
+                (hexl-goto-address (hexl-current-address))
+                (goto-char ascii-position))))
+    (define-key hexl-mode-map "\t" 'hexl-switch-column))
 
 (use-package calendar
     :config
