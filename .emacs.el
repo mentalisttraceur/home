@@ -1193,17 +1193,13 @@
             (setq count 1))
         (dotimes (_ count)
             (hexl-nibble-insert-1 nibble)))
-    (defun hexl-nibble-self-insert-command (nibble &optional count)
-        (interactive
-            (list
-                last-command-event
-                (prefix-numeric-value current-prefix-arg)))
-        (hexl-nibble-insert nibble count))
-    (defun fixed-hexl-self-insert-command (count)
+    (defun fixed-hexl-self-insert-command (count &optional character)
         (interactive "p")
+        (unless character
+            (setq character last-command-event))
         (if (>= (current-column) (hexl-ascii-start-column))
-            (call-interactively 'hexl-self-insert-command)
-            (call-interactively 'hexl-nibble-self-insert-command)))
+            (hexl-insert-multibyte-char character count)
+            (hexl-nibble-insert character count)))
     (define-key hexl-mode-map [remap self-insert-command]
         'fixed-hexl-self-insert-command)
     (defun hexl-switch-column ()
