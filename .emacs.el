@@ -2627,6 +2627,19 @@
     (with-current-buffer (messages-buffer)
         (evil-motion-state)))
 
+(use-packages hexl evil
+    :config
+    (defun evil-hexl-replace (count)
+        (interactive "p")
+        (let ((character nil))
+            (unwind-protect
+                (let ((evil-force-cursor 'replace))
+                    (evil-refresh-cursor)
+                    (setq character (evil-read-key)))
+                (evil-refresh-cursor))
+            (fixed-hexl-self-insert-command count character)))
+    (evil-define-key 'normal hexl-mode-map "r" 'evil-hexl-replace))
+
 (use-packages calendar evil
     :config
     (evil-define-key 'motion calendar-mode-map "H" 'calendar-scroll-right)
