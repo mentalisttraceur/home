@@ -1189,10 +1189,7 @@
                     (setq nibble (ash nibble 4)))
                 (setq byte (logior byte nibble))
                 (if on-right-nibble
-                    (progn
-                        (hexl-insert-char byte 1)
-                        (when (< (point) start)
-                            (forward-char)))
+                    (hexl-insert-char byte 1)
                     (save-excursion
                         (hexl-insert-char byte 1))
                     (forward-char)))))
