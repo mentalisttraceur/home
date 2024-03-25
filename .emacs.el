@@ -3556,20 +3556,6 @@
     (setq denote-known-keywords '())
     (setq denote-sort-keywords nil)
     (setq denote-history-completion-in-prompts nil)
-    (defun fixed-denote-rewrite-front-matter
-            (denote-rewrite-front-matter path &rest arguments)
-        (let* ((buffers (buffer-list))
-               (buffer  (find-file-noselect path))
-               (_ (refresh-modified-state buffer))
-               (had-unsaved-changes (buffer-modified-p buffer)))
-            (apply denote-rewrite-front-matter path arguments)
-            (unless had-unsaved-changes
-                (with-current-buffer buffer
-                    (basic-save-buffer))
-                (unless (memq buffer buffers)
-                    (kill-buffer buffer)))))
-    (advice-add 'denote-rewrite-front-matter
-        :around 'fixed-denote-rewrite-front-matter)
     (defun denote-file-or-visiting-buffer-is-note-p (file)
         (and (or (file-regular-p file)
                  (find-buffer-visiting file))
@@ -3846,6 +3832,19 @@
         (condition-case _error
             (apply rename-file arguments)
             (file-missing)))
+    (defun denoted-rewrite-front-matter (path title tags type)
+        (let* ((buffers (buffer-list))
+               (buffer  (find-file-noselect path))
+               (was-already-open    (memq buffer buffers))
+               (had-unsaved-changes (when was-already-open
+                                        (refresh-modified-state buffer)
+                                        (buffer-modified-p buffer))))
+            (with-advice ('y-or-n-p :override 'always)
+                (denote-rewrite-front-matter path title tags type))
+            (unless had-unsaved-changes
+                (save-buffer buffer))
+            (unless was-already-open
+                (kill-buffer buffer))))
     (defun denoted--rename (path new-path directory title tags)
         (if (not (or denote-rename-no-confirm
                      (denoted-rename-file-prompt path new-path)))
@@ -3855,7 +3854,7 @@
             (let ((denote-directory directory))
                 (denote-update-dired-buffers))
             (when-let (type (denote-file-note-type new-path))
-                (denote-rewrite-front-matter new-path title tags type t))
+                (denoted-rewrite-front-matter new-path title tags type))
             new-path))
     (defun denoted-format-file-name (datetime title suffix tags extension) 
         (let ((parts (list extension)))
