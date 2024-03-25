@@ -3570,20 +3570,6 @@
                     (kill-buffer buffer)))))
     (advice-add 'denote-rewrite-front-matter
         :around 'fixed-denote-rewrite-front-matter)
-    (defun fixed-denote-format-file-name--remove-id (path)
-        (concat
-            (file-name-directory path)
-            (string-remove-prefix "--"
-                (substring (file-name-nondirectory path) 15))))
-    (defun fixed-denote-format-file-name
-            (denote-format-file-name directory id &rest arguments)
-        (if (length> id 0)
-            (apply denote-format-file-name directory id arguments)
-            (setq id "00000000T000000")
-            (fixed-denote-format-file-name--remove-id
-                (apply denote-format-file-name directory id arguments))))
-    (advice-add 'denote-format-file-name
-        :around 'fixed-denote-format-file-name)
     (defun denote-extract-title-slug-from-path (path)
         (let ((file (file-name-nondirectory path)))
             (string-match denote-title-regexp file)
