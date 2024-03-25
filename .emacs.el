@@ -1169,14 +1169,16 @@
 
 (use-package hexl
     :config
-    (defun fixed-hexl-insert-char (hexl-insert-char character count)
+    (defun fixed-hexl-insert-char-1 (hexl-insert-char character)
         (let ((start (point)))
-            (funcall hexl-insert-char character count)
-            (when (and (<= (point) start)
-                       (> count 0))
+            (funcall hexl-insert-char character 1)
+            (when (<= (point) start)
                 (if (>= (current-column) (hexl-ascii-start-column))
                     (forward-char 1)
                     (forward-char 2)))))
+    (defun fixed-hexl-insert-char (hexl-insert-char character count)
+        (dotimes (_ count)
+            (fixed-hexl-insert-char-1 hexl-insert-char character)))
     (advice-add 'hexl-insert-char :around 'fixed-hexl-insert-char)
     (defun hexl-nibble-insert-1 (nibble)
         (setq nibble (hexl-hex-char-to-integer nibble))
