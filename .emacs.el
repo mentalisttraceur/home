@@ -3923,7 +3923,7 @@
             (denoted-rename-file path datetime title suffix tags)))
     (defun denoted-title-edit (path)
         (let* ((title (denoted-title-get path))
-               (new   (denote-title-prompt title)))
+               (new   (denote-title-prompt title "File title")))
             (denoted-title-set path new)))
     (defun denoted-tag-set (path tags)
         (let ((title    (denoted-title-get path))
