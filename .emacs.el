@@ -1169,10 +1169,11 @@
 
 (use-package hexl
     :config
-    (defun fixed-hexl-insert-char (hexl-insert-char &rest arguments)
+    (defun fixed-hexl-insert-char (hexl-insert-char character count)
         (let ((start (point)))
-            (apply hexl-insert-char arguments)
-            (unless (> (point) start)
+            (funcall hexl-insert-char character count)
+            (when (and (<= (point) start)
+                       (> count 0))
                 (if (>= (current-column) (hexl-ascii-start-column))
                     (forward-char 1)
                     (forward-char 2)))))
