@@ -570,14 +570,8 @@
                (output (string-remove-suffix "\n" (buffer-string))))
             (list result output))))
 
-(defun funcall-process-log-error (program &rest arguments)
-    (let-unpack ((result output) (apply 'funcall-process program arguments))
-        (if (eql result 0)
-            output
-            (let ((inhibit-message t))
-                (message "Process %S in %S exit=%S output=%S"
-                    (cons program arguments) default-directory result output))
-            nil)))
+(defmacro apply-process (&rest command)
+    `(apply 'funcall-process ,@command))
 
 
 (defun buffer-process-send-string (string)
@@ -4220,8 +4214,12 @@
     "mentalisttraceur-software"))
 (defun tumblr-prompt-for-blog ()
     (completing-read "Tumblr blog: " tumblr-blogs nil 'confirm))
-(defmacro tumblr (&rest arguments)
-    `(funcall-process-log-error tumblr--python tumblr--script ,@arguments))
+(defun tumblr (&rest arguments)
+    (let-unpack ((status output) (apply-process tumblr--python
+                                     tumblr--script arguments))
+         (if (equal status 0)
+             output
+             (error "tumblr error %s" output))))
 (defmacro tumblr--ensure-file (&rest body)
     `(let ((already-existed (file-exists-p buffer-file-name)))
         (basic-save-buffer)
