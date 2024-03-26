@@ -3863,7 +3863,7 @@
                        (not (string-prefix-p "." extension)))
                 (push "." parts))
             (when tags
-                (dolist (tag (nreverse tags))
+                (dolist (tag (reverse tags))
                     (push tag parts)
                     (push "_" parts))
                 (push "_" parts))
