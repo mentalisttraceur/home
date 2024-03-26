@@ -1117,9 +1117,16 @@
         (advice-add 'image-mode :override 'hack-image-mode)))
 
 (defun git-repo-root ()
-    (when-let (gitdir (funcall-process-log-error
-                          "git" "rev-parse" "--absolute-git-dir"))
-        (abbreviate-file-name (concat (file-name-directory gitdir)))))
+    (let ((result (funcall-process "git" "rev-parse" "--absolute-git-dir")))
+        (let-unpack ((status output) result)
+            (if (equal status 0)
+                (abbreviate-file-name (file-name-directory output))
+                (unless (string-prefix-p "fatal: not a git repository" output)
+                    (let ((inhibit-message t))
+                        (message
+                            "git rev-parse in %S exit=%S output=%S"
+                            default-directory result output)))
+                nil))))
 
 (use-package vc
     :config
