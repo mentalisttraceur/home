@@ -1217,7 +1217,20 @@
             (if (equal (point) ascii-position)
                 (hexl-goto-address (hexl-current-address))
                 (goto-char ascii-position))))
-    (define-key hexl-mode-map "\t" 'hexl-switch-column))
+    (defun fixed-hexl-save-buffer ()
+        (let ((scratch (get-buffer-create (concat " hexl " (buffer-name)) t))
+              (buffer  (current-buffer))
+              (path    buffer-file-name))
+            (unwind-protect
+                (with-current-buffer scratch
+                    (insert-buffer-substring buffer)
+                    (dehexlify-buffer)
+                    (write-file-no-visit path))
+                (kill-buffer scratch))
+            (set-buffer-modified-p nil)
+            (set-visited-file-modtime))
+        t)
+    (advice-add 'hexl-save-buffer :override 'fixed-hexl-save-buffer))
 
 (use-package calendar
     :config
