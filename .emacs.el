@@ -3548,6 +3548,11 @@
                                                  (user-error "Not cancelled"))))
             (funcall with-editor-return cancel)))
     (advice-add 'with-editor-return :around 'fixed-with-editor-return)
+    (defun fixed-with-editor-kill-buffer ()
+        (call-interactively 'with-editor-cancel)
+        t)
+    (advice-add 'with-editor-kill-buffer-noop
+        :override 'fixed-with-editor-kill-buffer)
     (add-hook 'eshell-mode-hook 'with-editor-export-editor)
     (shell-command-with-editor-mode 1))
 
