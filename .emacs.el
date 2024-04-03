@@ -997,27 +997,27 @@
                 (eshell-send-input))))
     (defun fixed-eshell-up-arrow ()
         (interactive)
-        (if (in-eshell-scrollback-p)
-            (message "not in input")
-            (condition-case _error
-                (progn
-                    (previous-line)
-                    (when (in-eshell-prompt-p)
-                        (move-end-of-line 1)
-                        (goto-char (field-beginning)))
-                    (when (in-eshell-scrollback-p)
-                        (goto-char (point-max))
-                        (histdir-input-older)))
-                (beginning-of-buffer
-                    (histdir-input-older)))))
+        (when (in-eshell-scrollback-p)
+            (goto-char (point-max)))
+        (condition-case _error
+            (progn
+                (previous-line)
+                (when (in-eshell-prompt-p)
+                    (move-end-of-line 1)
+                    (goto-char (field-beginning)))
+                (when (in-eshell-scrollback-p)
+                    (goto-char (point-max))
+                    (histdir-input-older)))
+            (beginning-of-buffer
+                (histdir-input-older))))
     (defun fixed-eshell-down-arrow ()
         (interactive)
-        (if (in-eshell-scrollback-p)
-            (message "not in input")
-            (condition-case _error
-                (next-line)
-                (end-of-buffer
-                    (histdir-input-newer)))))
+        (when (in-eshell-scrollback-p)
+            (goto-char (point-max)))
+        (condition-case _error
+            (next-line)
+            (end-of-buffer
+                (histdir-input-newer))))
     (advice-add 'eshell-interrupt-process :before (lambda (&rest _)
         (setq histdir-buffer-local-history--position nil)))
     (defun eshell/vi (&rest paths)
