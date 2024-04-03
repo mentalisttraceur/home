@@ -3856,7 +3856,8 @@
             (with-advice ('y-or-n-p :override 'always)
                 (denote-rewrite-front-matter path title tags type))
             (unless had-unsaved-changes
-                (save-buffer buffer))
+                (with-current-buffer buffer
+                    (save-buffer)))
             (unless was-already-open
                 (kill-buffer buffer))))
     (defun denoted--rename (path new-path directory title tags)
