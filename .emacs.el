@@ -61,11 +61,13 @@
 
 
 (define-key global-map [\C-tab] 'other-window)
-(define-key global-map [\C-iso-lefttab] (lambda ()
-    (interactive)
-    (other-window -1)))
-(add-hook 'minibuffer-setup-hook (lambda ()
-    (local-set-key [\C-tab] 'other-window)))
+(define-key global-map [\C-iso-lefttab]
+    (lambda ()
+        (interactive)
+        (other-window -1)))
+(add-hook 'minibuffer-setup-hook
+    (lambda ()
+        (local-set-key [\C-tab] 'other-window)))
 
 
 (defun quit-previous-window ()
@@ -733,9 +735,11 @@
             (format "*Help (%s)*" type)))
     (defun independent-help--advice (type formatter function &rest arguments)
         (let ((name (independent-help--name type formatter arguments)))
-            (with-advice ('help-buffer :override (lambda-let (name) ()
-                              (get-buffer-create name)
-                              name))
+            (with-advice ('help-buffer
+                              :override
+                              (lambda-let (name) ()
+                                  (get-buffer-create name)
+                                  name))
                 (apply function arguments))))
     (defun independent-help (type formatter)
         (apply-partially 'independent-help--advice type formatter))
@@ -965,20 +969,27 @@
     :config
     (setq eshell-highlight-prompt nil)
     (setq eshell-prompt-regexp "^[$#] ")
-    (setq eshell-prompt-function (lambda ()
-        (propertize
-            (if (= (user-uid) 0) "# " "$ ")
-            'read-only t
-            'field 'prompt
-            'front-sticky '(read-only)
-            'rear-nonsticky t)))
+    (setq eshell-prompt-function
+        (lambda ()
+            (propertize
+                (if (= (user-uid) 0) "# " "$ ")
+                'read-only t
+                'field 'prompt
+                'front-sticky '(read-only)
+                'rear-nonsticky t)))
     (setq eshell-history-size 0)
-    (advice-add 'eshell-hist-initialize :before (lambda (&rest _)
-        (setq histdir "~/.history/eshell")))
-    (advice-add 'eshell-read-history :override (lambda (&rest _)
-        (histdir-watch+read)))
-    (advice-add 'eshell-add-input-to-history :override (lambda (input)
-        (histdir-input-add input t)))
+    (advice-add 'eshell-hist-initialize
+        :before
+        (lambda (&rest _)
+            (setq histdir "~/.history/eshell")))
+    (advice-add 'eshell-read-history
+        :override
+        (lambda (&rest _)
+            (histdir-watch+read)))
+    (advice-add 'eshell-add-input-to-history
+        :override
+        (lambda (input)
+            (histdir-input-add input t)))
     (advice-add 'eshell-write-history :override (lambda (&rest _)))
     (defun in-eshell-prompt-p ()
         (eq (get-text-property (point) 'field) 'prompt))
@@ -1018,8 +1029,10 @@
             (next-line)
             (end-of-buffer
                 (histdir-input-newer))))
-    (advice-add 'eshell-interrupt-process :before (lambda (&rest _)
-        (setq histdir-buffer-local-history--position nil)))
+    (advice-add 'eshell-interrupt-process
+        :before
+        (lambda (&rest _)
+            (setq histdir-buffer-local-history--position nil)))
     (defun eshell/vi (&rest paths)
         (let ((default-directory-when-invoked default-directory))
             (dolist (path (nreverse (flatten-list paths)))
@@ -1137,8 +1150,9 @@
             (let ((default-directory file))
                 (git-repo-root))))
     (advice-add 'vc-git-root :override 'fixed-vc-git-root)
-    (add-hook 'vc-annotate-mode-hook (lambda ()
-        (setq truncate-lines nil)))
+    (add-hook 'vc-annotate-mode-hook
+        (lambda ()
+            (setq truncate-lines nil)))
     (defun vc-dir ()
         (error "vc-dir called")))
 
@@ -1161,9 +1175,10 @@
     :config
     (defun fixed-package--with-response-buffer-1
             (package--with-response-buffer-1 url body &rest keywords)
-        (setq body (lambda-let (body) ()
-                       (funcall body)
-                       (package-menu--post-refresh)))
+        (setq body
+            (lambda-let (body) ()
+                (funcall body)
+                (package-menu--post-refresh)))
         (apply package--with-response-buffer-1 url body :async t keywords))
     (advice-add 'package--with-response-buffer-1
         :around 'fixed-package--with-response-buffer-1))
@@ -1527,8 +1542,9 @@
 (defun datetime-read (&optional initial-input)
     (let ((cell (cons nil nil))
           (now  (decode-time (current-time))))
-        (add-single-use-hook 'minibuffer-setup-hook (lambda ()
-            (setcar cell (current-buffer))))
+        (add-single-use-hook 'minibuffer-setup-hook
+            (lambda ()
+                (setcar cell (current-buffer))))
         (with-hook (('post-command-hook (apply-partially
                                             'datetime-read--preview now cell)))
             (datetime-parse (read-string "Date+time: " initial-input) now))))
@@ -1538,9 +1554,10 @@
     (setq undo-tree-auto-save-history nil)
     (add-to-list 'undo-tree-incompatible-major-modes
         'undo-tree-visualizer-mode)
-    (add-to-list 'undo-tree-visualizer-mode-hook (lambda ()
-        (set-window-dedicated-p (selected-window) nil)
-        (setq mode-name "Undo")))
+    (add-to-list 'undo-tree-visualizer-mode-hook
+        (lambda ()
+            (set-window-dedicated-p (selected-window) nil)
+            (setq mode-name "Undo")))
     (defun undo-tree-visualizer-quit ()
         (interactive)
         (undo-tree-clear-visualizer-data buffer-undo-tree)
@@ -1584,11 +1601,13 @@
         (vertico-insert)
         (insert ","))
     (defun hack-completing-read-multiple (&rest _)
-        (add-single-use-hook 'minibuffer-setup-hook (lambda ()
-            (local-set-key "," 'vertico-crm-comma)
-            (local-set-key "\M-," (lambda ()
-                (interactive)
-                (insert ","))))))
+        (add-single-use-hook 'minibuffer-setup-hook
+            (lambda ()
+                (local-set-key "," 'vertico-crm-comma)
+                (local-set-key "\M-,"
+                    (lambda ()
+                        (interactive)
+                        (insert ","))))))
     (advice-add 'completing-read-multiple
         :before 'hack-completing-read-multiple))
 
@@ -1727,11 +1746,12 @@
     (defun just-backslashes (string)
         (regexp-quote (just-backslashes--parse string)))
     (setq orderless-matching-styles '(just-backslashes))
-    (add-to-list 'orderless-style-dispatchers (lambda (string index count)
-        (when (string-match-p "[^\\]\\([\\][\\]\\)*!$" string)
-            (setq string (just-backslashes--parse string))
-            (setq string (string-remove-suffix "!" string))
-            (cons 'orderless-without-literal string)))))
+    (add-to-list 'orderless-style-dispatchers
+        (lambda (string index count)
+            (when (string-match-p "[^\\]\\([\\][\\]\\)*!$" string)
+                (setq string (just-backslashes--parse string))
+                (setq string (string-remove-suffix "!" string))
+                (cons 'orderless-without-literal string)))))
 
 (use-package eat
     :config
@@ -2028,12 +2048,15 @@
     (setq evil-motion-state-modes (append
         evil-motion-state-modes evil-emacs-state-modes))
     (setq evil-emacs-state-modes nil)
-    (advice-add 'evil-quit :around (lambda (evil-quit &rest arguments)
-        (with-advice ('delete-window :override 'kill-current-buffer)
-            (apply evil-quit arguments))))
-    (define-key evil-motion-state-map "gG" (lambda ()
-        (interactive)
-        (goto-char (point-max))))
+    (advice-add 'evil-quit
+        :around
+        (lambda (evil-quit &rest arguments)
+            (with-advice ('delete-window :override 'kill-current-buffer)
+                (apply evil-quit arguments))))
+    (define-key evil-motion-state-map "gG"
+        (lambda ()
+            (interactive)
+            (goto-char (point-max))))
     (defun evil-ex-nosearch ()
         (interactive)
         (setq evil-ex-search-pattern nil)
@@ -2159,11 +2182,12 @@
                (command (fixed-consult-history prefix-argument))
                (run (key-binding "\C-m" t)))
             (evil-repeat-start)
-            (add-to-list 'evil-repeat-info `((lambda ()
-                (end-of-buffer)
-                (replace-command ,command)
-                (unless ,history-quit
-                    (,run)))))
+            (add-to-list 'evil-repeat-info
+                `((lambda ()
+                      (end-of-buffer)
+                      (replace-command ,command)
+                      (unless ,history-quit
+                          (,run)))))
             (evil-repeat-stop)
             (unless history-quit
                 (funcall run))))
@@ -2216,31 +2240,38 @@
     (define-key space-map "t" 'eshell)
     (add-to-list 'evil-normal-state-modes 'eshell-mode)
     (defvar-local evil-eshell-state-for-next-input 'normal)
-    (advice-add 'eshell-send-input :before (lambda (&rest _)
-        (setq evil-eshell-state-for-next-input evil-state)))
+    (advice-add 'eshell-send-input
+        :before
+        (lambda (&rest _)
+            (setq evil-eshell-state-for-next-input evil-state)))
     (defun evil-eshell-force-normal-state ()
         (interactive)
         (evil-force-normal-state)
         (setq evil-eshell-state-for-next-input evil-state))
-    (add-hook 'eshell-mode-hook (lambda ()
-        (evil-local-set-key 'normal [escape] 'eshell-interrupt-process)
-        (evil-local-set-key 'insert [escape] 'evil-eshell-force-normal-state)
-        (evil-local-set-key 'operator [escape] 'evil-force-normal-state)
-        (evil-local-set-key 'insert "\C-d" 'eshell-send-eof-to-process)))
-    (add-hook 'eshell-pre-command-hook (lambda ()
-        (setq evil-eshell-state-for-next-input evil-state)
-        (evil-insert-state)))
-    (add-hook 'eshell-post-command-hook (lambda ()
-        (evil-force-normal-state)
-        (when (eq (current-buffer) (window-buffer (selected-window)))
-            (evil-change-state evil-eshell-state-for-next-input))))
+    (add-hook 'eshell-mode-hook
+        (lambda ()
+            (evil-local-set-key 'normal [escape] 'eshell-interrupt-process)
+            (evil-local-set-key 'insert [escape]
+                'evil-eshell-force-normal-state)
+            (evil-local-set-key 'operator [escape] 'evil-force-normal-state)
+            (evil-local-set-key 'insert "\C-d" 'eshell-send-eof-to-process)))
+    (add-hook 'eshell-pre-command-hook
+        (lambda ()
+            (setq evil-eshell-state-for-next-input evil-state)
+            (evil-insert-state)))
+    (add-hook 'eshell-post-command-hook
+        (lambda ()
+            (evil-force-normal-state)
+            (when (eq (current-buffer) (window-buffer (selected-window)))
+                (evil-change-state evil-eshell-state-for-next-input))))
     (evil-declare-not-repeat 'fixed-eshell-send-input)
     (evil-declare-not-repeat 'eshell-interrupt-process)
     (define-key space-map "T" 'eat)
     (add-to-list 'evil-emacs-state-modes 'eat-mode)
     (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil)))
-    (add-hook 'eat-mode-hook (lambda ()
-        (evil-local-set-key 'emacs "\C-[" 'eat-self-input)))
+    (add-hook 'eat-mode-hook
+        (lambda ()
+            (evil-local-set-key 'emacs "\C-[" 'eat-self-input)))
     (define-key eat-semi-char-mode-map "\C-c\C-z" 'eat-self-input)
     (evil-set-register ?r (repeat-string "1234567890" 8))
     (evil-set-register ?R "\n")
@@ -2308,14 +2339,16 @@
         'evil-ex-search-or-consult-line-previous)
     (define-key space-map "sl" 'consult-ripgrep)
     (define-key space-map "sf" 'consult-fd)
-    (define-key space-map "st" (lambda ()
-        (interactive)
-        (consult-fd "~/storage/shared" "\\.trashed -- -H")))
+    (define-key space-map "st"
+        (lambda ()
+            (interactive)
+            (consult-fd "~/storage/shared" "\\.trashed -- -H")))
     (define-key space-map "x" 'tramp-cleanup-connection)
-    (add-hook 'pop-to-command-setup-hook (lambda ()
-        (evil-initialize-state)
-        (evil-local-set-key 'normal "q" 'quit-window)
-        (evil-local-set-key 'normal [escape] 'quit-window)))
+    (add-hook 'pop-to-command-setup-hook
+        (lambda ()
+            (evil-initialize-state)
+            (evil-local-set-key 'normal "q" 'quit-window)
+            (evil-local-set-key 'normal [escape] 'quit-window)))
     (defun pop-to-command-eshell--not-a-file (name)
         (pop-to-command-eshell
             (list "echo" (concat (buffer-name) " is not visiting a file"))
@@ -2374,11 +2407,12 @@
                     "Diff buffer"
                     (apply-partially 'delete-directory directory t)))
             (setq directory nil)))
-    (define-key space-map "c" (lambda (prefix-argument)
-        (interactive "P")
-        (if prefix-argument
-            (become-command 'diff-buffer)
-            (become-command 'diff-unsaved-changes))))
+    (define-key space-map "c"
+        (lambda (prefix-argument)
+            (interactive "P")
+            (if prefix-argument
+                (become-command 'diff-buffer)
+                (become-command 'diff-unsaved-changes))))
     (defun partial-save ()
         (interactive)
         (if (not buffer-file-name)
@@ -2479,11 +2513,12 @@
                         (abbreviate-file-name (file-truename buffer-file-name)))
                     (refresh-modified-state buffer-2)))
             (delete-directory directory t)))
-    (define-key space-map "r" (lambda (prefix-argument)
-        (interactive "P")
-        (if prefix-argument
-            (become-command 'partial-copy)
-            (become-command 'partial-revert))))
+    (define-key space-map "r"
+        (lambda (prefix-argument)
+            (interactive "P")
+            (if prefix-argument
+                (become-command 'partial-copy)
+                (become-command 'partial-revert))))
     (define-key space-map "R" 'revert-buffer)
     (defun pop-to-command-eshell--not-in-a-git-repository (name)
         (pop-to-command-eshell
@@ -2556,23 +2591,26 @@
                 (pop-to-command-eshell--not-in-a-git-repository
                     (string-join (cons "eshell:" command) " ")))))
     (define-key git-map "r" 'git-reset)
-    (define-key git-map "b" (lambda ()
-        (interactive)
-        (if (vc-root-dir)
-            (call-interactively 'vc-annotate)
-            (pop-to-command-eshell--not-in-a-git-repository "Annotate"))))
+    (define-key git-map "b"
+        (lambda ()
+            (interactive)
+            (if (vc-root-dir)
+                (call-interactively 'vc-annotate)
+                (pop-to-command-eshell--not-in-a-git-repository "Annotate"))))
     (define-universal-argument-space-keys git-map " v")
     (define-key git-map [escape] 'ignore)
-    (define-key space-map "zy" (lambda ()
-        (interactive)
-        (let ((default-directory "~/Downloads"))
-            (pop-to-command-eshell
-                '("sh" "-c" "yt-dlp -f bestaudio \"`p`\"") nil "yt-dlp"))))
-    (define-key space-map "zm" (lambda ()
-        (interactive)
-        (let ((default-directory "~"))
-            (pop-to-command-eshell
-                '("termux-media-scan" "/storage/emulated/0")))))
+    (define-key space-map "zy"
+        (lambda ()
+            (interactive)
+            (let ((default-directory "~/Downloads"))
+                (pop-to-command-eshell
+                    '("sh" "-c" "yt-dlp -f bestaudio \"`p`\"") nil "yt-dlp"))))
+    (define-key space-map "zm"
+        (lambda ()
+            (interactive)
+            (let ((default-directory "~"))
+                (pop-to-command-eshell
+                    '("termux-media-scan" "/storage/emulated/0")))))
     (evil-define-key 'motion doc-view-mode-map "j"
         'doc-view-next-line-or-next-page)
     (evil-define-key 'motion doc-view-mode-map "k"
@@ -2626,20 +2664,24 @@
             (evil-local-set-key 'operator [escape] 'evil-force-normal-state)
             (evil-local-set-key 'operator "q"      'evil-force-normal-state)))
     (add-hook 'minibuffer-setup-hook 'misc-minibuffer-setup)
-    (define-key evil-ex-completion-map [up] (lambda ()
-        (interactive)
-        (beginning-of-line)
-        (previous-complete-history-element 1)
-        (end-of-line)))
-    (define-key evil-ex-completion-map [down] (lambda ()
-        (interactive)
-        (beginning-of-line)
-        (next-complete-history-element 1)
-        (end-of-line)))
-    (add-hook 'isearch-mode-hook (lambda ()
-        (define-key overriding-terminal-local-map [escape] (lambda ()
+    (define-key evil-ex-completion-map [up]
+        (lambda ()
             (interactive)
-            (isearch-done)))))
+            (beginning-of-line)
+            (previous-complete-history-element 1)
+            (end-of-line)))
+    (define-key evil-ex-completion-map [down]
+        (lambda ()
+            (interactive)
+            (beginning-of-line)
+            (next-complete-history-element 1)
+            (end-of-line)))
+    (add-hook 'isearch-mode-hook
+        (lambda ()
+            (define-key overriding-terminal-local-map [escape]
+                (lambda ()
+                    (interactive)
+                    (isearch-done)))))
     (add-hook 'Info-mode-hook (lambda ()
         (evil-local-set-key 'motion "H" 'Info-history-back)
         (evil-local-set-key 'motion "L" 'Info-history-forward)
@@ -2670,12 +2712,14 @@
 
 (use-packages eshell eat evil
     :config
-    (add-hook 'eat-eshell-exec-hook (lambda ()
-        (evil-local-set-key 'insert "\C-v" 'eat-self-input)
-        (evil-local-set-key 'insert "\C-q" 'eat-quoted-input)))
-    (add-hook 'eat-eshell-exit-hook (lambda ()
-        (evil-local-set-key 'insert "\C-v" nil)
-        (evil-local-set-key 'insert "\C-q" nil))))
+    (add-hook 'eat-eshell-exec-hook
+        (lambda ()
+            (evil-local-set-key 'insert "\C-v" 'eat-self-input)
+            (evil-local-set-key 'insert "\C-q" 'eat-quoted-input)))
+    (add-hook 'eat-eshell-exit-hook
+        (lambda ()
+            (evil-local-set-key 'insert "\C-v" nil)
+            (evil-local-set-key 'insert "\C-q" nil))))
 
 (use-packages evil undo-tree
     :config
@@ -3526,12 +3570,14 @@
     (defun window-state--bad-candidate (key)
         (message "No such candidate: %s, hit `C-g' to quit."
             (char-to-string key)))
-    (setq aw-dispatch-function (lambda (character)
-        (if (and (equal character ??) (not (alist-get ?? aw-dispatch-alist)))
-            (window-state--bad-candidate character)
-            (if (equal character ?\C-g)
-                (aw-dispatch-default ?q)
-                (aw-dispatch-default character)))))
+    (setq aw-dispatch-function
+        (lambda (character)
+            (if (and (equal character ??)
+                     (not (alist-get ?? aw-dispatch-alist)))
+                (window-state--bad-candidate character)
+                (if (equal character ?\C-g)
+                    (aw-dispatch-default ?q)
+                    (aw-dispatch-default character)))))
     (define-key evil-motion-state-map "s" 'window-state-for-one-command)
     (define-key evil-normal-state-map "s" nil)
     (define-key evil-motion-state-map "S" 'window-state)
@@ -3549,9 +3595,10 @@
         (with-advice ('delete-file :override 'ignore
                       (if cancel 'save-buffer nil) :override 'ignore
                       'kill-buffer
-                          :filter-return (lambda (killed)
-                                             (unless killed
-                                                 (user-error "Not cancelled"))))
+                          :filter-return
+                          (lambda (killed)
+                              (unless killed
+                                  (user-error "Not cancelled"))))
             (funcall with-editor-return cancel)))
     (advice-add 'with-editor-return :around 'fixed-with-editor-return)
     (defun fixed-with-editor-kill-buffer ()
@@ -3978,24 +4025,26 @@
         (denote-dired-mode 1)
         (revert-buffer)
         (note--filter-dired))
-    (define-key space-map "M" (lambda ()
-        (interactive)
-        (note-list)
-        (dired-goto-last-file)))
-    (define-key space-map "sm" (lambda ()
-        (interactive)
-        (note-list)
-        (dired-goto-first-file)
-        (run-with-idle-timer 0 nil
-            (lambda ()
-                (condition-case error
-                    (consult-line)
-                    (quit
-                        (quit-window)
-                        (signal (car error) (cdr error))))
-                (dired-find-file)
-                (dired denote-directory)
-                (bury-buffer)))))
+    (define-key space-map "M"
+        (lambda ()
+            (interactive)
+            (note-list)
+            (dired-goto-last-file)))
+    (define-key space-map "sm"
+        (lambda ()
+            (interactive)
+            (note-list)
+            (dired-goto-first-file)
+            (run-with-idle-timer 0 nil
+                (lambda ()
+                    (condition-case error
+                        (consult-line)
+                        (quit
+                            (quit-window)
+                            (signal (car error) (cdr error))))
+                    (dired-find-file)
+                    (dired denote-directory)
+                    (bury-buffer)))))
     (defconst task-tag "qq")
     (setq denote-excluded-keywords-regexp "qq.*")
     (defun task-prompt ()
@@ -4130,12 +4179,14 @@
             (when default
                 (format-time-string "%Y %m %d %H %M %S"
                     (date-to-time default)))))
-    (define-key space-map "j" (lambda ()
-        (interactive)
-        (task-schedule (format-time-string denote-id-format (current-time)))))
-    (define-key space-map "J" (lambda ()
-        (interactive)
-        (task-schedule (task-schedule-prompt)))))
+    (define-key space-map "j"
+        (lambda ()
+            (interactive)
+            (task-schedule (format-time-string denote-id-format (current-time)))))
+    (define-key space-map "J"
+        (lambda ()
+            (interactive)
+            (task-schedule (task-schedule-prompt)))))
 
 (use-packages calendar denote
     :config
