@@ -80,7 +80,7 @@
 
 (electric-indent-mode -1)
 (setq-default c-basic-offset 4)
-(setq lisp-indent-offset 4)
+(setq lisp-body-indent 4)
 
 
 (advice-add 'blink-matching-open :override 'ignore)
