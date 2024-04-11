@@ -1764,6 +1764,18 @@
                 (setq string (string-remove-suffix "!" string))
                 (cons 'orderless-without-literal string)))))
 
+(use-package corfu
+    :config
+    (global-corfu-mode 1)
+    (defun fixed-corfu-quit (&rest _)
+        (run-hooks 'buffer-list-update-hook))
+    (advice-add 'corfu-quit :after 'fixed-corfu-quit)
+    (advice-add 'corfu-insert :after 'fixed-corfu-quit))
+
+(use-package corfu-terminal
+    :config
+    (corfu-terminal-mode 1))
+
 (use-package eat
     :config
     (defun eat-point ()
@@ -2731,6 +2743,24 @@
         (lambda ()
             (evil-local-set-key 'insert "\C-v" nil)
             (evil-local-set-key 'insert "\C-q" nil))))
+
+(use-packages corfu evil
+    :config
+    (define-key corfu-map [remap evil-previous-line] 'corfu-previous)
+    (define-key corfu-map [remap evil-next-line] 'corfu-next)
+    (define-key corfu-map [remap evil-goto-first-line] 'corfu-first)
+    (define-key corfu-map [remap evil-goto-line] 'corfu-last)
+    (defun evil-corfu-escape ()
+        (lambda-let ((original-escape-action
+                         (or (lookup-key evil-normal-state-local-map [escape])
+                             (lookup-key evil-normal-state-map [escape]))))
+                    ()
+            (interactive)
+            (corfu-quit)
+            (evil-local-set-key 'normal [escape] original-escape-action)))
+    (defun evil-corfu--in-region (&rest _)
+        (evil-local-set-key 'normal [escape] (evil-corfu-escape)))
+    (advice-add 'corfu--in-region :before 'evil-corfu--in-region))
 
 (use-packages evil undo-tree
     :config
