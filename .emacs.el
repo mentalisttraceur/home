@@ -82,6 +82,15 @@
 (setq-default c-basic-offset 4)
 (setq lisp-body-indent 4)
 
+(defun double-tab ()
+    (interactive)
+    (if (eq last-command 'double-tab)
+        (let ((lisp-indent-offset 4))
+            (indent-for-tab-command))
+        (indent-for-tab-command)))
+
+(define-key global-map [remap indent-for-tab-command] 'double-tab) 
+
 (setq tab-always-indent 'complete)
 
 
