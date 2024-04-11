@@ -82,6 +82,8 @@
 (setq-default c-basic-offset 4)
 (setq lisp-body-indent 4)
 
+(setq tab-always-indent 'complete)
+
 
 (advice-add 'blink-matching-open :override 'ignore)
 
