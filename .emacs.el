@@ -288,8 +288,7 @@
                          (signal (car error) (cdr error))))
                  ,@body)
              (when --with-hook-1--
-                 (setcdr (nthcdr 1 --with-hook-1--)
-                         (nthcdr 3 --with-hook-1--))
+                 (setcdr (cdr --with-hook-1--) (cdddr --with-hook-1--))
                  (apply 'remove-hook --with-hook-1--)))))
 
 (defmacro with-hook (hook-list &rest body)
