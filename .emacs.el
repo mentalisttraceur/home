@@ -101,6 +101,7 @@
 
 
 (defmacro lambda-let (varlist args &rest body)
+    (declare (indent 2))
     (let (bindings parameter argument)
         (dolist (var varlist)
             (if (listp var)
