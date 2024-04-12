@@ -1789,15 +1789,12 @@
     (setq corfu-scroll-margin 0)
     (setq corfu-preview-current nil)
     (defun corfu--preview-current-p ()
-        t)
-    (defun fixed-corfu-quit (&rest _)
-        (run-hooks 'buffer-list-update-hook))
-    (advice-add 'corfu-quit :after 'fixed-corfu-quit)
-    (advice-add 'corfu-insert :after 'fixed-corfu-quit))
+        t))
 
 (use-package corfu-terminal
     :config
-    (corfu-terminal-mode 1))
+    (corfu-terminal-mode 1)
+    (setq corfu-terminal-disable-on-gui nil))
 
 (use-package eat
     :config
