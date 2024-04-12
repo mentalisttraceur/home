@@ -100,6 +100,35 @@
 (setq read-minibuffer-restore-windows nil)
 
 
+(defmacro lambda-let (varlist args &rest body)
+    (let (bindings parameter argument)
+        (dolist (var varlist)
+            (if (listp var)
+                (if (length= var 2)
+                    (setq parameter (car var)
+                          argument  (cadr var))
+                    (if (length= var 1)
+                        (setq parameter (setq argument (car var)))
+                        (eval `(let (,var)))))
+                (setq parameter (setq argument var)))
+            (push `(cons ',parameter ,argument) bindings))
+        (if bindings
+            (setq bindings (cons 'list (nreverse bindings)))
+            (setq bindings t))
+        `(eval
+            '(lambda ,args
+                ,@body)
+            ,bindings)))
+
+
+(defmacro compose (&rest functions)
+    (setq functions (nreverse functions))
+    (let ((form `(apply ,(car functions) arguments)))
+        (while (setq functions (cdr functions))
+            (setq form `(funcall ,(car functions) ,form)))
+        `(lambda (&rest arguments) ,form)))
+
+
 (defmacro apply-split (callable arguments count)
     (setq arguments (copy-sequence arguments))
     (setq count (1- count))
@@ -163,35 +192,6 @@
 (defmacro until (test &rest body)
     `(while (not ,test)
          ,@body))
-
-
-(defmacro lambda-let (varlist args &rest body)
-    (let (bindings parameter argument)
-        (dolist (var varlist)
-            (if (listp var)
-                (if (length= var 2)
-                    (setq parameter (car var)
-                          argument  (cadr var))
-                    (if (length= var 1)
-                        (setq parameter (setq argument (car var)))
-                        (eval `(let (,var)))))
-                (setq parameter (setq argument var)))
-            (push `(cons ',parameter ,argument) bindings))
-        (if bindings
-            (setq bindings (cons 'list (nreverse bindings)))
-            (setq bindings t))
-        `(eval
-            '(lambda ,args
-                ,@body)
-            ,bindings)))
-
-
-(defmacro compose (&rest functions)
-    (setq functions (nreverse functions))
-    (let ((form `(apply ,(car functions) arguments)))
-        (while (setq functions (cdr functions))
-            (setq form `(funcall ,(car functions) ,form)))
-        `(lambda (&rest arguments) ,form)))
 
 
 (defmacro save-mutation (&rest body)
