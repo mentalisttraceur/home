@@ -2747,6 +2747,9 @@
 (use-packages corfu evil
     :config
     (setq corfu-scroll-margin 0)
+    (setq corfu-preview-current nil)
+    (defun corfu--preview-current-p ()
+        t)
     (defun evil-corfu-escape ()
         (lambda-let ((original-escape-action
                          (or (lookup-key evil-normal-state-local-map [escape])
