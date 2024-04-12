@@ -242,15 +242,22 @@
         (let-unpack ((_where function) advice)
             (advice-remove symbol function))))
 
-(defmacro with-advice-1 (symbol where function &rest body)
-    `(unwind-protect
-        (progn
-            (advice-add ,symbol ,where ,function)
-            ,@body)
-        (advice-remove ,symbol ,function)))
+(defmacro with-advice-1 (advice-add-arguments &rest body)
+    `(let ((--with-advice-1-- (list ,@advice-add-arguments)))
+         (unwind-protect
+             (progn
+                 (condition-case error
+                     (apply 'advice-add --with-advice-1--)
+                     (wrong-number-of-arguments
+                         (setq --with-advice-1-- nil)
+                         (signal (car error) (cdr error))))
+                 ,@body)
+             (when --with-advice-1--
+                 (setcdr --with-advice-1-- (cddr --with-advice-1--))
+                 (apply 'advice-remove --with-advice-1--)))))
 
 (defmacro with-advice (advice-list &rest body)
-    `(apply-split-nest with-advice-1 ,advice-list 3 ,body))
+    `(apply-split-nest with-advice-1 ,advice-list 1 ,body))
 
 (defmacro without-advice-1 (symbol function &rest body)
     `(if-let (where (advice-where ,function ,symbol))
@@ -329,8 +336,8 @@
 (defun buffer-differs-from-visited-file-p ()
     (with-visited-file-modtime '(0 0)
         (let ((differs nil))
-            (with-advice ('ask-user-about-supersession-threat
-                             :override (lambda (_) (setq differs t)))
+            (with-advice (('ask-user-about-supersession-threat
+                              :override (lambda (_) (setq differs t))))
                 (with-buffer-modified-p nil
                     (set-buffer-modified-p t)
                     differs)))))
@@ -344,8 +351,8 @@
             (let ((differs (if (file-exists-p buffer-file-name)
                                (buffer-differs-from-visited-file-p)
                                (> (buffer-size) 0))))
-                (with-advice ('ask-user-about-supersession-threat
-                                  :override 'ignore)
+                (with-advice (('ask-user-about-supersession-threat
+                                  :override 'ignore))
                     (set-buffer-modified-p differs)))
             (set-visited-file-modtime))))
 
@@ -518,9 +525,9 @@
                 (setq last-command-event (aref keys (1- (length keys))))
                 (if binding
                     (command-execute binding)
-                    (with-advice ('this-single-command-keys
+                    (with-advice (('this-single-command-keys
                                       :filter-return
-                                      (apply-partially 'vconcat prefix))
+                                      (apply-partially 'vconcat prefix)))
                         (undefined)))))
         (quit)))
 
@@ -649,7 +656,7 @@
 
 
 (defun read-other-buffer (prompt)
-    (with-advice ('confirm-nonexistent-file-or-buffer :override 'always)
+    (with-advice (('confirm-nonexistent-file-or-buffer :override 'always))
         (read-buffer-to-switch prompt)))
 
 
@@ -720,7 +727,7 @@
 
 
 (defun hack-save-buffers-kill-emacs (save-buffers-kill-emacs &rest arguments)
-    (with-advice ('save-some-buffers :override 'ignore)
+    (with-advice (('save-some-buffers :override 'ignore))
         (apply save-buffers-kill-emacs arguments)))
 (advice-add 'save-buffers-kill-emacs :around 'hack-save-buffers-kill-emacs)
 
@@ -753,11 +760,11 @@
             (format "*Help (%s)*" type)))
     (defun independent-help--advice (type formatter function &rest arguments)
         (let ((name (independent-help--name type formatter arguments)))
-            (with-advice ('help-buffer
+            (with-advice (('help-buffer
                               :override
                               (lambda-let (name) ()
                                   (get-buffer-create name)
-                                  name))
+                                  name)))
                 (apply function arguments))))
     (defun independent-help (type formatter)
         (apply-partially 'independent-help--advice type formatter))
@@ -1021,8 +1028,9 @@
         (interactive)
         (if (in-eshell-scrollback-p)
             (message "not in input")
-            (with-advice ('insert-before-markers-and-inherit
-                    :filter-args 'hack-insert-before-markers-and-inherit)
+            (with-advice (('insert-before-markers-and-inherit
+                              :filter-args
+                              'hack-insert-before-markers-and-inherit))
                 (eshell-send-input))))
     (defun fixed-eshell-up-arrow ()
         (interactive)
@@ -1297,8 +1305,9 @@
         arguments)
     (defun hack-calendar-scroll-left
             (calendar-scroll-left &rest arguments)
-        (with-advice ('calendar-cursor-to-visible-date
-                          :filter-args 'hack-calendar-cursor-to-visible-date)
+        (with-advice (('calendar-cursor-to-visible-date
+                          :filter-args
+                          'hack-calendar-cursor-to-visible-date))
             (apply calendar-scroll-left arguments)))
     (advice-add 'calendar-scroll-left :around 'hack-calendar-scroll-left)
     (defun hack-calendar-displayed-date (function &rest arguments)
@@ -1669,8 +1678,8 @@
                         (insert-before-markers command)
                         (run-with-idle-timer 0.04 nil
                             preview 'hack-repeat-preview nil)
-                        (with-advice ('consult--insertion-preview
-                                         :override (ignore+return preview))
+                        (with-advice (('consult--insertion-preview
+                                          :override (ignore+return preview)))
                             (consult-history history index bol))
                         (setq command (buffer-string))))
                 (end-of-buffer)
@@ -2046,11 +2055,11 @@
     (defun evil-replacing-paste (count register move-point)
         (evil-with-single-undo
             (setq evil-replacing-paste--line-or-block nil)
-            (with-advice ('evil-set-marker :before 'hack-evil-set-marker
-                          'evil-yank-line-handler
-                              :before 'hack-evil-yank-line-handler
-                          'evil-yank-block-handler
-                              :before 'hack-evil-yank-block-handler)
+            (with-advice (('evil-set-marker :before 'hack-evil-set-marker)
+                          ('evil-yank-line-handler
+                              :before 'hack-evil-yank-line-handler)
+                          ('evil-yank-block-handler
+                              :before 'hack-evil-yank-block-handler))
                 (evil-paste-before count register))
             (when (eq evil-replacing-paste--line-or-block nil)
                 (let* ((end     (nth 4 hack-evil-last-paste))
@@ -2085,7 +2094,7 @@
     (advice-add 'evil-quit
         :around
         (lambda (evil-quit &rest arguments)
-            (with-advice ('delete-window :override 'kill-current-buffer)
+            (with-advice (('delete-window :override 'kill-current-buffer))
                 (apply evil-quit arguments))))
     (define-key evil-motion-state-map "gG"
         (lambda ()
@@ -2208,7 +2217,7 @@
                 (setcar (nthcdr 3 arguments) 'history--require-match-p)))
         arguments)
     (defun history--match (prefix-argument)
-        (with-advice ('completing-read :filter-args 'history--require-match)
+        (with-advice (('completing-read :filter-args 'history--require-match))
             (fixed-consult-history prefix-argument)))
     (defun history-execute (prefix-argument)
         (interactive "P")
@@ -3378,8 +3387,8 @@
                     (cons `(?0 leaf . ,first-candidate) tree))
                 (funcall avy-tree candidate-list key-list))))
     (defun fixed-aw-select (action)
-        (with-advice ('aw-window-list :filter-return 'hack-aw-window-list
-                      'avy-tree :around 'hack-avy-tree)
+        (with-advice (('aw-window-list :filter-return 'hack-aw-window-list)
+                      ('avy-tree :around 'hack-avy-tree))
             (aw-select "" action)))
     (defvar window-state nil)
     (defconst window-state-normal
@@ -3678,13 +3687,13 @@
 (use-package with-editor
     :config
     (defun fixed-with-editor-return (with-editor-return cancel)
-        (with-advice ('delete-file :override 'ignore
-                      (if cancel 'save-buffer nil) :override 'ignore
-                      'kill-buffer
+        (with-advice (('delete-file :override 'ignore)
+                      ((if cancel 'save-buffer nil) :override 'ignore)
+                      ('kill-buffer
                           :filter-return
                           (lambda (killed)
                               (unless killed
-                                  (user-error "Not cancelled"))))
+                                  (user-error "Not cancelled")))))
             (funcall with-editor-return cancel)))
     (advice-add 'with-editor-return :around 'fixed-with-editor-return)
     (defun fixed-with-editor-kill-buffer ()
@@ -3910,7 +3919,7 @@
                (had-unsaved-changes (when was-already-open
                                         (refresh-modified-state buffer)
                                         (buffer-modified-p buffer))))
-            (with-advice ('y-or-n-p :override 'always)
+            (with-advice (('y-or-n-p :override 'always))
                 (denote-rewrite-front-matter path title tags type))
             (unless had-unsaved-changes
                 (with-current-buffer buffer
@@ -3921,7 +3930,7 @@
         (if (not (or denote-rename-no-confirm
                      (denoted-rename-file-prompt path new-path)))
             path
-            (with-advice ('rename-file :around 'hack-rename-file)
+            (with-advice (('rename-file :around 'hack-rename-file))
                 (denote-rename-file-and-buffer path new-path))
             (let ((denote-directory directory))
                 (denote-update-dired-buffers))
