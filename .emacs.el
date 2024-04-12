@@ -277,12 +277,19 @@
 
 
 (defmacro with-hook-1 (add-hook-arguments &rest body)
-    (let-unpack-1 (hook function depth local) add-hook-arguments
-        `(unwind-protect
+    `(let ((--with-hook-1-- (list ,@add-hook-arguments)))
+         (unwind-protect
              (progn
-                 (add-hook ,hook ,function ,depth ,local)
+                 (condition-case error
+                     (apply 'add-hook --with-hook-1--)
+                     (wrong-number-of-arguments
+                         (setq --with-hook-1-- nil)
+                         (signal (car error) (cdr error))))
                  ,@body)
-             (remove-hook ,hook ,function ,local))))
+             (when --with-hook-1--
+                 (setcdr (nthcdr 1 --with-hook-1--)
+                         (nthcdr 3 --with-hook-1--))
+                 (apply 'remove-hook --with-hook-1--)))))
 
 (defmacro with-hook (hook-list &rest body)
     `(apply-split-nest with-hook-1 ,hook-list 1 ,body))
