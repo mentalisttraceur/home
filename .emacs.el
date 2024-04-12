@@ -2774,8 +2774,18 @@
             (corfu-last)))
     (push 'evil-corfu-goto corfu-continue-commands)
     (define-key corfu-map [remap evil-goto-line] 'evil-corfu-goto)
-    (define-key corfu-map [remap evil-scroll-up] 'corfu-scroll-down)
-    (define-key corfu-map [remap evil-scroll-down] 'corfu-scroll-up))
+    (defun evil-corfu-scroll-up (&optional count)
+        (interactive "p")
+        (let ((corfu-count (/ corfu-count 2)))
+            (corfu-scroll-down count)))
+    (push 'evil-corfu-scroll-up corfu-continue-commands)
+    (defun evil-corfu-scroll-down (&optional count)
+        (interactive "p")
+        (let ((corfu-count (/ corfu-count 2)))
+            (corfu-scroll-up count)))
+    (push 'evil-corfu-scroll-down corfu-continue-commands)
+    (define-key corfu-map [remap evil-scroll-up] 'evil-corfu-scroll-up)
+    (define-key corfu-map [remap evil-scroll-down] 'evil-corfu-scroll-down))
 
 (use-packages evil undo-tree
     :config
