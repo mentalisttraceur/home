@@ -2773,7 +2773,9 @@
             (evil-corfu-goto-nth n)
             (corfu-last)))
     (push 'evil-corfu-goto corfu-continue-commands)
-    (define-key corfu-map [remap evil-goto-line] 'evil-corfu-goto))
+    (define-key corfu-map [remap evil-goto-line] 'evil-corfu-goto)
+    (define-key corfu-map [remap evil-scroll-up] 'corfu-scroll-down)
+    (define-key corfu-map [remap evil-scroll-down] 'corfu-scroll-up))
 
 (use-packages evil undo-tree
     :config
