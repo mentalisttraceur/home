@@ -2746,10 +2746,6 @@
 
 (use-packages corfu evil
     :config
-    (define-key corfu-map [remap evil-previous-line] 'corfu-previous)
-    (define-key corfu-map [remap evil-next-line] 'corfu-next)
-    (define-key corfu-map [remap evil-goto-first-line] 'corfu-first)
-    (define-key corfu-map [remap evil-goto-line] 'corfu-last)
     (defun evil-corfu-escape ()
         (lambda-let ((original-escape-action
                          (or (lookup-key evil-normal-state-local-map [escape])
@@ -2760,7 +2756,23 @@
             (evil-local-set-key 'normal [escape] original-escape-action)))
     (defun evil-corfu--in-region (&rest _)
         (evil-local-set-key 'normal [escape] (evil-corfu-escape)))
-    (advice-add 'corfu--in-region :before 'evil-corfu--in-region))
+    (advice-add 'corfu--in-region :before 'evil-corfu--in-region)
+    (define-key corfu-map [remap evil-previous-line] 'corfu-previous)
+    (define-key corfu-map [remap evil-next-line] 'corfu-next)
+    (defun evil-corfu-goto-nth (&optional n)
+        (interactive "P")
+        (corfu-first)
+        (when n
+            (corfu-next (1- n))))
+    (push 'evil-corfu-goto-nth corfu-continue-commands)
+    (define-key corfu-map [remap evil-goto-first-line] 'evil-corfu-goto-nth)
+    (defun evil-corfu-goto (&optional n)
+        (interactive "P")
+        (if n
+            (evil-corfu-goto-nth n)
+            (corfu-last)))
+    (push 'evil-corfu-goto corfu-continue-commands)
+    (define-key corfu-map [remap evil-goto-line] 'evil-corfu-goto))
 
 (use-packages evil undo-tree
     :config
