@@ -3383,7 +3383,7 @@
             (when (eq first-window (cdadr candidate-list))
                 (setq candidate-list (cdr candidate-list)))
             (if (window-minibuffer-p first-window)
-               (let ((tree (funcall avy-tree (cdr candidate-list) key-list)))
+                (let ((tree (funcall avy-tree (cdr candidate-list) key-list)))
                     (cons `(?0 leaf . ,first-candidate) tree))
                 (funcall avy-tree candidate-list key-list))))
     (defun fixed-aw-select (action)
