@@ -259,17 +259,20 @@
 (defmacro with-advice (advice-list &rest body)
     `(apply-split-nest with-advice-1 ,advice-list 1 ,body))
 
-(defmacro without-advice-1 (symbol function &rest body)
-    `(if-let (where (advice-where ,symbol ,function))
-        (unwind-protect
-            (progn
-                (advice-remove ,symbol ,function)
-                ,@body)
-            (advice-add ,symbol where ,function))
-         ,@body))
+(defmacro without-advice-1 (advice-remove-arguments &rest body)
+    `(let ((--without-advice-1-- (list ,@advice-remove-arguments)))
+         (if-let (where (apply 'advice-where --without-advice-1--))
+             (unwind-protect
+                 (progn
+                     (apply 'advice-remove --without-advice-1--)
+                     ,@body)
+                 (setcdr --without-advice-1--
+                         (cons where (cdr --without-advice-1--)))
+                 (apply 'advice-add --without-advice-1--))
+             ,@body)))
 
 (defmacro without-advice (advice-list &rest body)
-    `(apply-split-nest without-advice-1 ,advice-list 2 ,body))
+    `(apply-split-nest without-advice-1 ,advice-list 1 ,body))
 
 (defmacro without-advice-all-1 (symbol &rest body)
     `(let ((advice-list (advice-list ,symbol)))
