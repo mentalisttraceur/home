@@ -1200,6 +1200,10 @@
     (set-face-background 'smerge-refined-added "#008000")
     (set-face-background 'smerge-refined-removed "#800000"))
 
+(use-package gnutls
+    :config
+    (setq gnutls-verify-error t))
+
 (use-package package
     :config
     (defun fixed-package--with-response-buffer-1
