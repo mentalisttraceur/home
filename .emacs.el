@@ -219,7 +219,7 @@
                 (delete-directory ,name t)))))
 
 
-(defun advice-where (function symbol)
+(defun advice-where (symbol function)
     (when-let (advice (advice-member-p function symbol))
         (aref (aref advice 2) 2)))
 
@@ -227,7 +227,7 @@
     (let ((advice-list ()))
         (advice-mapc
             (lambda-let (symbol) (function properties)
-                (let ((where (advice-where function symbol))
+                (let ((where (advice-where symbol function))
                       (advice ()))
                     (when properties
                         (push properties advice))
@@ -260,7 +260,7 @@
     `(apply-split-nest with-advice-1 ,advice-list 1 ,body))
 
 (defmacro without-advice-1 (symbol function &rest body)
-    `(if-let (where (advice-where ,function ,symbol))
+    `(if-let (where (advice-where ,symbol ,function))
         (unwind-protect
             (progn
                 (advice-remove ,symbol ,function)
