@@ -683,7 +683,7 @@
 (defun hack-read-multiple-choice (prompt choices &rest _)
     (let ((names (mapcar 'read-multiple-choice-name choices)))
         (setq prompt (concat prompt " (" (string-join names ", ") "): ")))
-    (let ((map   (make-sparse-keymap)))
+    (let ((map (make-sparse-keymap)))
         (dolist (choice choices)
             (let ((key (char-to-string (car choice))))
                 (define-key map key
