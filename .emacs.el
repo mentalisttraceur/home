@@ -669,6 +669,19 @@
         (write-region 1 (point-max) filename)))
 
 
+(defmacro with-nested-command-state (&rest body)
+    (declare (indent 0))
+    `(let ((this-command      this-command)
+           (real-this-command real-this-command)
+           (last-command      last-command)
+           (real-last-command real-last-command))
+         ,@body))
+
+(defun funcall-with-nested-command-state (function &rest arguments)
+    (with-nested-command-state
+        (apply function arguments)))
+
+
 (setq use-short-answers t)
 (define-key y-or-n-p-map "\C-m" 'act)
 (define-key y-or-n-p-map [return] 'act)
