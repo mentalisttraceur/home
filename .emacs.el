@@ -685,6 +685,7 @@
 (setq use-short-answers t)
 (define-key y-or-n-p-map "\C-m" 'act)
 (define-key y-or-n-p-map [return] 'act)
+(advice-add 'y-or-n-p :around 'funcall-with-nested-command-state)
 (defun read-multiple-choice-name (choice)
     (let ((raw   (cdr choice))
           (fancy (cdr (rmc--add-key-description choice))))
@@ -708,9 +709,9 @@
             (lambda ()
                 (interactive)
                 (user-error "invalid choice")))
-        (let* ((this-command this-command)
-               (choice (read-from-minibuffer prompt nil map)))
-            (assoc (string-to-char choice) choices))))
+        (let ((choice (with-nested-command-state
+                          (read-from-minibuffer prompt nil map))))
+                (assoc (string-to-char choice) choices))))
 (advice-add 'read-multiple-choice :override 'hack-read-multiple-choice)
 (defun confirm-p (prompt)
     (let ((map (make-sparse-keymap)))
@@ -723,7 +724,8 @@
                     (concat
                         (propertize "RET" 'face 'help-key-description)
                         " to confirm"))))
-        (if (read-from-minibuffer (concat prompt " ") nil map)
+        (if (with-nested-command-state
+                (read-from-minibuffer (concat prompt " ") nil map))
             t
             nil)))
 
