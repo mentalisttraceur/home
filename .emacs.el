@@ -1759,7 +1759,8 @@
                             (throw 'exit
                                 (lambda-let ((query (minibuffer-contents))) ()
                                     (user-error "Search failed: %S" query)))))
-                    (consult-line-resume nil)))
+                    (with-nested-command-state
+                        (consult-line-resume nil))))
         (pulse-momentary-highlight-one-line)))
     (defun consult-line-previous (count)
         (interactive "p")
