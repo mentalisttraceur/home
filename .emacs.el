@@ -4227,7 +4227,7 @@
                         (denote-directory-files (concat "_" task-tag)))))))
     (defun task-tag-search ()
         (interactive)
-        (task-list (denote--keywords-crm (task-tags))))
+        (task-list (denote--keywords-crm (task-tags) "Task tags:")))
     (define-key space-map "sh" 'task-tag-search)
     (defun task--parse-datetime (datetime)
         (string-match date-t-time-regex datetime)
