@@ -2773,7 +2773,10 @@
                     (evil-refresh-cursor)
                     (setq character (evil-read-key)))
                 (evil-refresh-cursor))
-            (fixed-hexl-self-insert-command count character)))
+            (when (> count 1)
+                (fixed-hexl-self-insert-command (1- count) character))
+            (save-point
+                (fixed-hexl-self-insert-command 1 character))))
     (evil-define-key 'normal hexl-mode-map "r" 'evil-hexl-replace))
 
 (use-packages calendar evil
