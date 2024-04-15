@@ -195,6 +195,14 @@
          ,@body))
 
 
+(defmacro save-point (&rest body)
+    `(let ((--save-point-- (point)))
+         (unwind-protect
+             (progn
+                 ,@body)
+             (goto-char --save-point--))))
+
+
 (defmacro save-mutation (&rest body)
     `(let ((buffer-undo-list ()))
         (unwind-protect (progn ,@body)
