@@ -1029,6 +1029,7 @@
                 'field 'prompt
                 'front-sticky '(read-only)
                 'rear-nonsticky t)))
+    (setq eshell-banner-message "")
     (setq eshell-history-size 0)
     (advice-add 'eshell-hist-initialize
         :before
