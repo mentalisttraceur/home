@@ -3970,7 +3970,7 @@
             (when-let (type (denote-file-note-type new-path))
                 (denoted-rewrite-front-matter new-path title tags type))
             new-path))
-    (defun denoted-format-file-name (datetime title suffix tags extension) 
+    (defun denoted-format-file-name (datetime title suffix tags extension)
         (let ((parts (list extension)))
             (when (and (length> extension 0)
                        (not (string-prefix-p "." extension)))
