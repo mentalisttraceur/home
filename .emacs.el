@@ -89,7 +89,7 @@
             (indent-for-tab-command))
         (indent-for-tab-command)))
 
-(define-key global-map [remap indent-for-tab-command] 'double-tab) 
+(define-key global-map [remap indent-for-tab-command] 'double-tab)
 
 (setq tab-always-indent 'complete)
 
