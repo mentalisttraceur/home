@@ -205,7 +205,9 @@
 
 (defmacro save-mutation (&rest body)
     `(let ((buffer-undo-list ()))
-        (unwind-protect (progn ,@body)
+        (unwind-protect
+            (progn
+                ,@body)
             (primitive-undo (length buffer-undo-list) buffer-undo-list))))
 
 
