@@ -118,7 +118,7 @@
             (setq bindings t))
         `(eval
              '(lambda ,args
-                 ,@body)
+                  ,@body)
              ,bindings)))
 
 
@@ -3551,7 +3551,7 @@
     (unless face-remap-selected-window--tagged
         (face-remap-add-relative 'default
             '(:filtered (:window face-remap-selected-window t)
-                (:background "#010101")))
+                 (:background "#010101")))
         (setq face-remap-selected-window--tagged t))
     (set-window-parameter face-remap-selected-window--window
         'face-remap-selected-window t))
@@ -3984,12 +3984,12 @@
             p-duration-regex))
     (defconst point-to-match-beginning-form
         '(progn
-            (goto-char (match-beginning 0))
-            (point)))
+             (goto-char (match-beginning 0))
+             (point)))
     (defconst point-to-match-end-form
         '(progn
-            (goto-char (match-end 0))
-            (point)))
+             (goto-char (match-end 0))
+             (point)))
     (setq denote-faces-file-name-keywords
         `((dired-filename-search-forward
            (,date-t-time-regex
@@ -4536,8 +4536,8 @@
                  (revert-buffer t t))
              (unless already-existed
                  (delete-file buffer-file-name)
-                 (refresh-modified-state))
-             (run-hooks 'buffer-list-update-hook))))
+                 (refresh-modified-state)))
+         (run-hooks 'buffer-list-update-hook)))
 (defun tumblr-publish ()
     (interactive)
     (tumblr--ensure-file
