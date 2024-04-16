@@ -117,9 +117,9 @@
             (setq bindings (cons 'list (nreverse bindings)))
             (setq bindings t))
         `(eval
-            '(lambda ,args
-                ,@body)
-            ,bindings)))
+             '(lambda ,args
+                 ,@body)
+             ,bindings)))
 
 
 (defmacro compose (&rest functions)
@@ -169,22 +169,22 @@
 
 (defmacro let-unpack-1 (names list &rest body)
     `(let ((--let-unpack-1-- ,list) ,@names)
-        (unpack ,names --let-unpack-1--)
-        ,@body))
+         (unpack ,names --let-unpack-1--)
+         ,@body))
 
 (defmacro let-unpack (unpack-list &rest body)
     `(apply-split-nest let-unpack-1 ,unpack-list 2 ,body))
 
 (defmacro uncons (car-name cdr-name cell)
     `(let ((--uncons-- ,cell))
-        (setq ,car-name (car --uncons--)
-              ,cdr-name (cdr --uncons--))
-        nil))
+         (setq ,car-name (car --uncons--)
+               ,cdr-name (cdr --uncons--))
+         nil))
 
 (defmacro let-uncons-1 (car-name cdr-name cell &rest body)
     `(let ((--let-uncons-1-- ,cell) ,car-name ,cdr-name)
-        (uncons ,car-name ,cdr-name --let-uncons-1--)
-        ,@body))
+         (uncons ,car-name ,cdr-name --let-uncons-1--)
+         ,@body))
 
 (defmacro let-uncons (uncons-list &rest body)
     `(apply-split-nest let-uncons-1 ,uncons-list 3 ,body))
@@ -205,29 +205,29 @@
 
 (defmacro save-mutation (&rest body)
     `(let ((buffer-undo-list ()))
-        (unwind-protect
-            (progn
-                ,@body)
-            (primitive-undo (length buffer-undo-list) buffer-undo-list))))
+         (unwind-protect
+             (progn
+                 ,@body)
+             (primitive-undo (length buffer-undo-list) buffer-undo-list))))
 
 
 (defmacro with-temporary-file (name &rest body)
     `(let (,name)
-        (unwind-protect
-            (progn
-                (setq ,name (make-temp-file ""))
-                ,@body)
-            (when ,name
-                (delete-file ,name)))))
+         (unwind-protect
+             (progn
+                 (setq ,name (make-temp-file ""))
+                 ,@body)
+             (when ,name
+                 (delete-file ,name)))))
 
 (defmacro with-temporary-directory (name &rest body)
     `(let (,name)
-        (unwind-protect
-            (progn
-                (setq ,name (make-temp-file "" t))
-                ,@body)
-            (when ,name
-                (delete-directory ,name t)))))
+         (unwind-protect
+             (progn
+                 (setq ,name (make-temp-file "" t))
+                 ,@body)
+             (when ,name
+                 (delete-directory ,name t)))))
 
 
 (defun advice-where (symbol function)
@@ -318,12 +318,12 @@
 
 (defmacro with-face-attribute-1 (face attribute value &rest body)
     `(let ((--with-face-attribute-1-- (face-attribute ,face ,attribute)))
-        (unwind-protect
-            (progn
-                (set-face-attribute ,face nil ,attribute ,value)
-                ,@body)
-            (set-face-attribute ,face nil ,attribute
-                --with-face-attribute-1--))))
+         (unwind-protect
+             (progn
+                 (set-face-attribute ,face nil ,attribute ,value)
+                 ,@body)
+             (set-face-attribute ,face nil ,attribute
+                 --with-face-attribute-1--))))
 
 (defmacro with-face-attribute (face-attribute-list &rest body)
     `(apply-split-nest with-face-attribute-1 ,face-attribute-list 3 ,body))
@@ -331,20 +331,20 @@
 
 (defmacro with-buffer-modified-p (flag &rest body)
     `(let ((--with-buffer-modified-p-- (buffer-modified-p)))
-        (unwind-protect
-            (progn
-                (set-buffer-modified-p ,flag)
-                ,@body)
-            (set-buffer-modified-p --with-buffer-modified-p--))))
+         (unwind-protect
+             (progn
+                 (set-buffer-modified-p ,flag)
+                 ,@body)
+             (set-buffer-modified-p --with-buffer-modified-p--))))
 
 
 (defmacro with-visited-file-modtime (time-flag &rest body)
     `(let ((--with-visited-file-modtime-- (visited-file-modtime)))
-        (unwind-protect
-            (progn
-                (set-visited-file-modtime ,time-flag)
-                ,@body)
-            (set-visited-file-modtime --with-visited-file-modtime--))))
+         (unwind-protect
+             (progn
+                 (set-visited-file-modtime ,time-flag)
+                 ,@body)
+             (set-visited-file-modtime --with-visited-file-modtime--))))
 
 
 (defun buffer-differs-from-visited-file-p ()
@@ -743,16 +743,16 @@
 (defmacro defer-input (&rest body)
     `(let ((defer-input-map (make-sparse-keymap))
            (defer-input--events (list 'unused)))
-        (define-key defer-input-map [t]
-            (lambda-let (defer-input--events) ()
-                (interactive)
-                (nconc defer-input--events
-                    (listify-key-sequence (this-command-keys)))))
-        (let ((overriding-terminal-local-map defer-input-map))
-            ,@body)
-        (pop defer-input--events)
-        (setq unread-command-events
-            (nconc defer-input--events unread-command-events))))
+         (define-key defer-input-map [t]
+             (lambda-let (defer-input--events) ()
+                 (interactive)
+                 (nconc defer-input--events
+                     (listify-key-sequence (this-command-keys)))))
+         (let ((overriding-terminal-local-map defer-input-map))
+             ,@body)
+         (pop defer-input--events)
+         (setq unread-command-events
+             (nconc defer-input--events unread-command-events))))
 
 
 (defun hack-save-buffers-kill-emacs (save-buffers-kill-emacs &rest arguments)
@@ -1700,15 +1700,15 @@
 
 (defmacro datetime-parse--add-offset (slot+ word)
     `(progn
-        (setq-if-nil ,slot+ 0)
-        (setq ,slot+ (+ ,slot+ (string-to-number ,word)))))
+         (setq-if-nil ,slot+ 0)
+         (setq ,slot+ (+ ,slot+ (string-to-number ,word)))))
 (defmacro datetime-parse--use-offsets (slot now)
     (let* ((name              (symbol-name slot))
            (slot+             (intern (concat name "+")))
            (decoded-time-slot (intern (concat "decoded-time-" name))))
         `(when ,slot+
-            (setq-if-nil ,slot (,decoded-time-slot ,now))
-            (setq ,slot (+ ,slot ,slot+)))))
+             (setq-if-nil ,slot (,decoded-time-slot ,now))
+             (setq ,slot (+ ,slot ,slot+)))))
 (defmacro datetime-parse--future-bias (smaller-slot larger-slot now carry)
     (let* ((smaller-name (symbol-name smaller-slot))
            (larger-name  (symbol-name larger-slot))
@@ -1717,19 +1717,19 @@
            (decoded-time-larger-slot
                (intern (concat "decoded-time-" larger-name))))
         `(when ,smaller-slot
-            (let ((smaller-now (,decoded-time-smaller-slot ,now))
-                  (larger-now  (,decoded-time-larger-slot  ,now)))
-                (if (or (< ,smaller-slot smaller-now) ,carry)
-                    (if ,larger-slot
-                        (setq ,carry t)
-                        (setq ,larger-slot (1+ larger-now))
-                        (setq ,carry nil))
-                    (setq-if-nil ,larger-slot larger-now)
-                    (setq ,carry nil))))))
+             (let ((smaller-now (,decoded-time-smaller-slot ,now))
+                   (larger-now  (,decoded-time-larger-slot  ,now)))
+                 (if (or (< ,smaller-slot smaller-now) ,carry)
+                     (if ,larger-slot
+                         (setq ,carry t)
+                         (setq ,larger-slot (1+ larger-now))
+                         (setq ,carry nil))
+                     (setq-if-nil ,larger-slot larger-now)
+                     (setq ,carry nil))))))
 (defmacro datetime-parse--consume-integer-if-needed (slot integers)
     `(unless ,slot
-        (when-let (string (pop ,integers))
-            (setq ,slot (string-to-number string)))))
+         (when-let (string (pop ,integers))
+             (setq ,slot (string-to-number string)))))
 
 (defvar datetime-read-popup-calendar nil)
 (defun datetime-read--preview (now cell)
@@ -2164,10 +2164,10 @@
     (defvar override-evil-mode-line-tag nil)
     (defmacro with-override-evil-mode-line-tag (tag help-string &rest body)
         `(unwind-protect
-            (progn
-                (setq override-evil-mode-line-tag (propertize ,tag
-                    'help-echo ,help-string
-                    'mouse-face 'mode-line-highlight))
+             (progn
+                 (setq override-evil-mode-line-tag (propertize ,tag
+                     'help-echo ,help-string
+                     'mouse-face 'mode-line-highlight))
                 ,@body)
             (setq override-evil-mode-line-tag nil)))
     (setq mode-line-front-space '(:eval
@@ -2344,20 +2344,20 @@
                (digit     (intern (concat "digit" suffix)))
                (negative  (intern (concat "negative" suffix))))
             `(progn
-                (defun ,universal (prefix-argument)
-                    (interactive "P")
-                    (if prefix-argument
-                        (universal-argument-more prefix-argument)
-                        (universal-argument))
-                    (command-execute-in-keymap ,map ,prefix))
-                (defun ,digit (prefix-argument)
-                    (interactive "P")
-                    (digit-argument prefix-argument)
-                    (command-execute-in-keymap ,map ,prefix))
-                (defun ,negative (prefix-argument)
-                    (interactive "P")
-                    (negative-argument prefix-argument)
-                    (command-execute-in-keymap ,map ,prefix))
+                 (defun ,universal (prefix-argument)
+                     (interactive "P")
+                     (if prefix-argument
+                         (universal-argument-more prefix-argument)
+                         (universal-argument))
+                     (command-execute-in-keymap ,map ,prefix))
+                 (defun ,digit (prefix-argument)
+                     (interactive "P")
+                     (digit-argument prefix-argument)
+                     (command-execute-in-keymap ,map ,prefix))
+                 (defun ,negative (prefix-argument)
+                     (interactive "P")
+                     (negative-argument prefix-argument)
+                     (command-execute-in-keymap ,map ,prefix))
                  (define-key ,map " " ',universal)
                  (dolist (key '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
                      (define-key ,map key ',digit))
@@ -2382,11 +2382,11 @@
                (function      (intern (concat "toggle-" name)))
                (format-string (concat name ": %s")))
             `(prog1
-                (defun ,function ()
-                    (interactive)
-                    (setq ,variable (not ,variable))
-                    (message ,format-string ,variable))
-                (evil-declare-not-repeat ',function))))
+                 (defun ,function ()
+                     (interactive)
+                     (setq ,variable (not ,variable))
+                     (message ,format-string ,variable))
+                 (evil-declare-not-repeat ',function))))
     (define-key space-map "." (toggle evil-repeat-move-cursor))
     (define-key space-map "b" 'switch-to-buffer)
     (define-key space-map "B" 'ibuffer)
@@ -2791,17 +2791,17 @@
     (defmacro git (&rest arguments)
         (let ((command (cons "git" (mapcar 'symbol-name arguments))))
             `(lambda (prefix-argument)
-                (interactive "P")
-                (if-let (root (vc-root-dir))
-                    (let ((command (list ,@command)))
-                        (when prefix-argument
-                            (nconc command (list
-                                (or buffer-file-name
-                                    (expand-file-name default-directory)))))
-                        (let ((default-directory root))
-                            (pop-to-command-eshell command default-directory)))
-                    (pop-to-command-eshell--not-in-a-git-repository
-                        ,(string-join (cons "eshell:" command) " "))))))
+                 (interactive "P")
+                 (if-let (root (vc-root-dir))
+                     (let ((command (list ,@command)))
+                         (when prefix-argument
+                             (nconc command (list
+                                 (or buffer-file-name
+                                     (expand-file-name default-directory)))))
+                         (let ((default-directory root))
+                             (pop-to-command-eshell command default-directory)))
+                     (pop-to-command-eshell--not-in-a-git-repository
+                         ,(string-join (cons "eshell:" command) " "))))))
     (define-prefix-command 'git-map)
     (define-key space-map "v" 'git-map)
     (define-key git-map "v" (git status))
@@ -3666,14 +3666,14 @@
             (setq window-state--execute-once t)))
     (defmacro window-state-define-motion (name &rest body)
         `(defun ,name ()
-            (window-state--do-action
-                (condition-case error
-                    (save-selected-window
-                        ,@body
-                        (selected-window))
-                    (error
-                        (message "%s" (error-message-string error))
-                        (selected-window))))))
+             (window-state--do-action
+                 (condition-case error
+                     (save-selected-window
+                         ,@body
+                         (selected-window))
+                     (error
+                         (message "%s" (error-message-string error))
+                         (selected-window))))))
     (window-state-define-motion window-state-move-up
         (windmove-up))
     (window-state-define-motion window-state-move-down
@@ -3699,31 +3699,31 @@
     (defmacro window-state--define-operator (name &rest body)
         (let ((operator-name (intern (concat (symbol-name name) "-operator"))))
             `(list
-                (defun ,name (&optional window)
-                    (let ((origin-window (selected-window)))
-                        (setq-if-nil window origin-window)
-                        ,@body
-                        (run-hooks 'buffer-list-update-hook)
-                        (window-state--normal)))
-                (defun ,operator-name ()
-                    (cond
-                        ((eq window-state--action ',name)
-                            (,name))
-                        ((eq window-state--action 'aw-switch-to-window)
-                            (setq window-state--action ',name)
-                            (setq window-state window-state-target-pending)
-                            (setq window-state--execute-once t))
-                        (t
-                            (keyboard-quit)))))))
+                 (defun ,name (&optional window)
+                     (let ((origin-window (selected-window)))
+                         (setq-if-nil window origin-window)
+                         ,@body
+                         (run-hooks 'buffer-list-update-hook)
+                         (window-state--normal)))
+                 (defun ,operator-name ()
+                     (cond
+                         ((eq window-state--action ',name)
+                             (,name))
+                         ((eq window-state--action 'aw-switch-to-window)
+                             (setq window-state--action ',name)
+                             (setq window-state window-state-target-pending)
+                             (setq window-state--execute-once t))
+                         (t
+                             (keyboard-quit)))))))
     (defmacro window-state-define-operator (name &rest body)
         (let ((move-name (intern (concat (symbol-name name) "-move"))))
             `(append
-                (window-state--define-operator ,name
-                    (with-selected-window window
-                        ,@body))
-                (window-state--define-operator ,move-name
-                    (select-window window t)
-                    ,@body))))
+                 (window-state--define-operator ,name
+                     (with-selected-window window
+                         ,@body))
+                 (window-state--define-operator ,move-name
+                     (select-window window t)
+                     ,@body))))
     (defconst window-state--register-ring (make-ring 9))
     (setcar (cdr window-state--register-ring) 9)
     (defconst window-state--register-bank (make-hash-table :size 27))
@@ -4294,10 +4294,10 @@
     (defmacro denoted-try (function &rest fallback-body)
         (setq-if-nil fallback-body denoted-try--default-fallback)
         `(if-let (path (buffer-file-name))
-            (,function path)
-            (if (derived-mode-p 'dired-mode)
-                (dired-goto-file (,function (dired-get-filename)))
-                ,@fallback-body)))
+             (,function path)
+             (if (derived-mode-p 'dired-mode)
+                 (dired-goto-file (,function (dired-get-filename)))
+                 ,@fallback-body)))
     (defun history-or-tag-execute-or-add (prefix-argument)
         (interactive "P")
         (denoted-try denoted-tag-add
@@ -4529,15 +4529,15 @@
              (error "tumblr error %s" output))))
 (defmacro tumblr--ensure-file (&rest body)
     `(let ((already-existed (file-exists-p buffer-file-name)))
-        (basic-save-buffer)
-        (unwind-protect
-            (progn
-                ,@body
-                (revert-buffer t t))
-            (unless already-existed
-                (delete-file buffer-file-name)
-                (refresh-modified-state))
-        (run-hooks 'buffer-list-update-hook))))
+         (basic-save-buffer)
+         (unwind-protect
+             (progn
+                 ,@body
+                 (revert-buffer t t))
+             (unless already-existed
+                 (delete-file buffer-file-name)
+                 (refresh-modified-state))
+             (run-hooks 'buffer-list-update-hook))))
 (defun tumblr-publish ()
     (interactive)
     (tumblr--ensure-file
