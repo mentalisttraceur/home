@@ -1353,22 +1353,49 @@
     (advice-add 'calendar-cursor-to-visible-date
         :around 'hack-calendar-displayed-date))
 
+(define-error 'datetime-bad "Bad datetime" 'user-error)
+(define-error 'datetime-bad-month "Bad month" 'datetime-bad)
+(define-error 'datetime-bad-day "Bad day" 'datetime-bad)
+(define-error 'datetime-bad-ordinal-day "Bad ordinal day" 'datetime-bad)
+(define-error 'datetime-bad-hour "Bad hour" 'datetime-bad)
+(define-error 'datetime-bad-minute "Bad minute" 'datetime-bad)
+(define-error 'datetime-bad-second "Bad second" 'datetime-bad)
+
+(defun datetime--validate-second (second)
+    (unless (<= 0 second 59)
+        (signal 'datetime-invalid-second (list second))))
+
+(defun datetime--validate-minute (minute)
+    (when (<= 0 minute 59)
+        (signal 'datetime-invalid-minute (list minute))))
+
+(defun datetime--validate-hour (hour)
+    (when (<= 0 hour 23)
+        (signal 'datetime-invalid-hour (list hour))))
+
+(defun datetime--validate-month (month)
+    (unless (<= 1 month 12)
+        (signal 'datetime-bad-month (list month))))
+
 (defun datetime-is-leap (year)
     (and (= (mod year 4) 0)
          (or (> (mod year 100) 0)
              (= (% year 400) 0))))
 
 (defconst datetime--days-in-month
-    ;00 Ja Fe Mr Ap My Jn Jl Au Se Oc No De 13
-    [99 31 28 31 30 31 30 31 31 30 31 30 31 99])
+    ;; 0 Ja Fe Mr Ap My Jn Jl Au Se Oc No De
+    [  0 31 28 31 30 31 30 31 31 30 31 30 31])
 
 (defun datetime-days-in-month (year month)
-    (+
-        (aref datetime--days-in-month (min month 13))
-        (if (and (= month 2)
-                 (datetime-is-leap year))
-            1
-            0)))
+    (datetime--validate-month month)
+    (if (and (= month 2)
+             (datetime-is-leap year))
+        (1+ (aref datetime--days-in-month month))
+        (aref datetime--days-in-month month)))
+
+(defun datetime--validate-month+day (year month day)
+    (unless (< 0 day (1+ (datetime-days-in-month year month)))
+        (signal 'datetime-bad-day (list day))))
 
 (defun datetime-days-in-year (year)
     (if (datetime-is-leap year)
@@ -1376,19 +1403,21 @@
         365))
 
 (defconst datetime--days-until-month--nonleap
-    ; 00 Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+    ;; 0 Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
     [  0   0  31  59  90 120 151 181 212 243 273 304 334])
 
 (defconst datetime--days-until-month--leap
-    ; 00 Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+    ;; 0 Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
     [  0   0  31  60  91 121 152 182 213 244 274 305 335])
 
 (defun datetime-days-until-month (year month)
+    (datetime--validate-month month)
     (if (datetime-is-leap year)
         (aref datetime--days-until-month--leap month)
         (aref datetime--days-until-month--nonleap month)))
 
 (defun datetime-ordinal-day (year month day)
+    (datetime--validate-month+day year month day)
     (+ (datetime-days-until-month year month) day))
 
 (defconst datetime--month-of-ordinal-day--nonleap
@@ -1424,96 +1453,75 @@
         (make-vector 31 12)))
 
 (defun datetime-month-of-ordinal-day (year day)
-    (if (datetime-is-leap year)
-        (aref datetime--month-of-ordinal-day--leap day)
-        (aref datetime--month-of-ordinal-day--nonleap day)))
+    (let ((table (if (datetime-is-leap year)
+                     datetime--month-of-ordinal-day--leap
+                     datetime--month-of-ordinal-day--nonleap)))
+        (unless (< 0 day (length table))
+            (signal 'datetime-bad-ordinal-day (list day)))
+        (aref table day)))
 
 (defmacro datetime--year+ ()
-    `(if (and year (> year 0))
-        (setq year (max (+ year year+) 1))
-        (setq year 0)))
+    `(setq year (+ year year+)))
 
 (defmacro datetime--month+ ()
-    `(if (and month (> month 0))
-        (if (> month 12)
-            (setq month (min (max (+ month month+) 13) 99))
-            (let* ((days-in-month (datetime-days-in-month year month))
-                   (day-was-valid (<= 1 day days-in-month)))
-                (setq month (+ month month+))
-                (if (> month 0)
-                    (setq year+ (/ (- month 1) 12))
-                    (setq month (- month 12))
-                    (setq year+ (/ month 12)))
-                (setq month (1+ (mod (1- month) 12)))
-                (when day-was-valid
-                    (setq day (min day (datetime-days-in-month year month))))
-                (datetime--year+)))
-        (setq month 0)))
+    `(let ((days-in-month (datetime-days-in-month year month)))
+         (setq month (+ month month+))
+         (if (> month 0)
+             (setq year+ (/ (- month 1) 12))
+             (setq month (- month 12))
+             (setq year+ (/ month 12)))
+         (setq month (1+ (mod (1- month) 12)))
+         (datetime--year+)
+         (setq day (min day (datetime-days-in-month year month)))))
 
 (defmacro datetime--day+ ()
-    `(if (and day (> day 0))
-        (let ((limit (datetime-days-in-month year month)))
-            (if (> day limit)
-                (setq day (min (max (+ day day+) (1+ limit)) 99))
-                (setq day (datetime-ordinal-day year month day))
-                (setq day (+ day day+))
-                (if (> day 0)
-                    (while-let ((days-in-year (datetime-days-in-year year))
-                                (_            (> day days-in-year)))
-                        (setq day (- day days-in-year))
-                        (setq year (1+ year)))
-                    (while-let ((_            (setq year (1- year)))
-                                (days-in-year (datetime-days-in-year year))
-                                (_            (setq day (+ days-in-year day)))
-                                (_            (< day 1)))))
-                (setq month (datetime-month-of-ordinal-day year day))
-                (setq day (- day (datetime-days-until-month year month)))))
-        (setq day 0)))
+    `(progn
+         (setq day (datetime-ordinal-day year month day))
+         (setq day (+ day day+))
+         (if (> day 0)
+             (while-let ((days-in-year (datetime-days-in-year year))
+                         (_            (> day days-in-year)))
+                 (setq day (- day days-in-year))
+                 (setq year (1+ year)))
+             (while-let ((_            (setq year (1- year)))
+                         (days-in-year (datetime-days-in-year year))
+                         (_            (setq day (+ days-in-year day)))
+                         (_            (< day 1)))))
+         (setq month (datetime-month-of-ordinal-day year day))
+         (setq day (- day (datetime-days-until-month year month)))))
 
 (defmacro datetime--hour+ ()
-    `(if hour
-        (if (> hour 24)
-            (setq hour (min (max (+ hour hour+) 25) 99))
-            (when (> hour 23)
-                (setq hour (1- hour)))
-            (setq hour (+ hour hour+))
-            (if (>= hour 0)
-                (setq day+ (/ hour 24))
-                (setq hour (- hour 24))
-                (setq day+ (/ hour 24)))
-            (setq hour (mod hour 24))
-            (datetime--day+))
-        (setq hour 0)))
+    `(progn
+         (datetime--validate-hour hour)
+         (setq hour (+ hour hour+))
+         (if (>= hour 0)
+             (setq day+ (/ hour 24))
+             (setq hour (- hour 24))
+             (setq day+ (/ hour 24)))
+         (setq hour (mod hour 24))
+         (datetime--day+)))
 
 (defmacro datetime--minute+ ()
-    `(if minute
-        (if (> minute 60)
-            (setq minute (min (max (+ minute minute+) 61) 99))
-            (when (> minute 59)
-                (setq minute (1- minute)))
-            (setq minute (+ minute minute+))
-            (if (>= minute 0)
-                (setq hour+ (/ minute 60))
-                (setq minute (- minute 60))
-                (setq hour+ (/ minute 60)))
-            (setq minute (mod minute 60))
-            (datetime--hour+))
-        (setq minute 0)))
+    `(progn
+         (datetime--validate-minute minute)
+         (setq minute (+ minute minute+))
+         (if (>= minute 0)
+             (setq hour+ (/ minute 60))
+             (setq minute (- minute 60))
+             (setq hour+ (/ minute 60)))
+         (setq minute (mod minute 60))
+         (datetime--hour+)))
 
 (defmacro datetime--second+ ()
-    `(if second
-        (if (> second 60)
-            (setq second (min (max (+ second second+) 61) 99))
-            (when (> second 59)
-                (setq second (1- second)))
-            (setq second (+ second second+))
-            (if (>= second 0)
-                (setq minute+ (/ second 60))
-                (setq second (- second 60))
-                (setq minute+ (/ second 60)))
-            (setq second (mod second 60))
-            (datetime--minute+))
-        (setq second 0)))
+    `(progn
+         (datetime--validate-second second)
+         (setq second (+ second second+))
+         (if (>= second 0)
+             (setq minute+ (/ second 60))
+             (setq second (- second 60))
+             (setq minute+ (/ second 60)))
+         (setq second (mod second 60))
+         (datetime--minute+)))
 
 (defun fixed-decoded-time-add (time delta)
     (let-unpack ((second  minute  hour  day  month  year ) time
