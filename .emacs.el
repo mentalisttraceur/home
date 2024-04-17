@@ -1209,8 +1209,9 @@
     (add-hook 'vc-annotate-mode-hook
         (lambda ()
             (setq truncate-lines nil)))
-    (defun vc-dir ()
-        (error "vc-dir called")))
+    (defun hack-vc-dir (&rest _)
+        (error "vc-dir called"))
+    (advice-add 'vc-dir :override 'hack-vc-dir))
 
 (use-package diff-mode
     :config
