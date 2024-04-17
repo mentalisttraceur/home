@@ -1559,6 +1559,13 @@
         (when-let (year   (decoded-time-year   delta))
             (- year))))
 
+(defun decoded-time-iterate (time delta count)
+    (when (< count 0)
+        (setq count (- count))
+        (setq delta (decoded-time-negate delta)))
+    (dotimes (_ count time)
+        (setq time (fixed-decoded-time-add time delta))))
+
 (defun datetime--parse (string &optional now)
     (let (year  month  day  hour  minute  second  day-of-week
           year+ month+ day+ hour+ minute+ second+ day-of-week+
