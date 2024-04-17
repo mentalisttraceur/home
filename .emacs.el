@@ -1545,16 +1545,21 @@
             (calendar-day-of-week (list month day year)))))
 
 (defun decoded-time-negate--1 (slot time)
-    (let ((accessor (intern (concat "decoded-time-" (symbol-name slot)))))
-        `(when-let (,slot (,accessor ,time))
-            (setf (,accessor ,time) (- ,slot)))))
+    (let ((accessor (intern (concat "decoded-time-" (symbol-name slot))))
+          (keyword  (intern (concat ":"             (symbol-name slot)))))
+        (list
+            keyword
+            `(when-let (,slot (,accessor ,time))
+                 (- ,slot)))))
 
 (defmacro decoded-time-negate (time)
-    (let ((forms (list `((time ,time)) 'let)))
+    (let* ((form      (list 'make-decoded-time))
+           (last-cons form))
         (dolist (slot '(year month day hour minute second))
-            (push (decoded-time-negate--1 slot 'time) forms))
-        (push 'time forms)
-        (nreverse forms)))
+            (setcdr last-cons (decoded-time-negate--1 slot 'time))
+            (setq last-cons (cddr last-cons)))
+        `(let ((time ,time))
+             ,form)))
 
 (defun datetime--parse (string &optional now)
     (let (year  month  day  hour  minute  second  day-of-week
