@@ -1544,22 +1544,20 @@
         (list second minute hour day month year
             (calendar-day-of-week (list month day year)))))
 
-(defun decoded-time-negate--1 (slot time)
-    (let ((accessor (intern (concat "decoded-time-" (symbol-name slot))))
-          (keyword  (intern (concat ":"             (symbol-name slot)))))
-        (list
-            keyword
-            `(when-let (,slot (,accessor ,time))
-                 (- ,slot)))))
-
-(defmacro decoded-time-negate (time)
-    (let* ((form      (list 'make-decoded-time))
-           (last-cons form))
-        (dolist (slot '(year month day hour minute second))
-            (setcdr last-cons (decoded-time-negate--1 slot 'time))
-            (setq last-cons (cddr last-cons)))
-        `(let ((time ,time))
-             ,form)))
+(defun decoded-time-negate (delta)
+    (list
+        (when-let (second (decoded-time-second delta))
+            (- second))
+        (when-let (minute (decoded-time-minute delta))
+            (- minute))
+        (when-let (hour   (decoded-time-hour   delta))
+            (- hour))
+        (when-let (day    (decoded-time-day    delta))
+            (- day))
+        (when-let (month  (decoded-time-month  delta))
+            (- month))
+        (when-let (year   (decoded-time-year   delta))
+            (- year))))
 
 (defun datetime--parse (string &optional now)
     (let (year  month  day  hour  minute  second  day-of-week
