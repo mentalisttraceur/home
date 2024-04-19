@@ -4503,9 +4503,8 @@
                         (when-let (repetition (task--parse-repetition part))
                             (setq datetime
                                 (task--next-datetime datetime repetition))
-                            (setq next-repetition
+                            (setcar (nthcdr index parts)
                                 (task--next-repetition part repetition))
-                            (setcar (nthcdr index parts) next-repetition)
                             (throw 'break nil)))))
             (setq suffix (string-join (delq nil parts) "="))
             (let ((denote-rename-no-confirm t))
