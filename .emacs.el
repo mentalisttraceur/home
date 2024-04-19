@@ -4490,10 +4490,9 @@
                     (format "R%sP%s" count period))
                 (format "RP%s" period))))
     (defun task-schedule (datetime)
-        (let ((position (point-position-with-scroll))
-              (denote-rename-no-confirm t))
-            (denoted-datetime-set (dired-get-filename) datetime)
-            (jump-to-position-with-scroll position)))
+        (let ((denote-rename-no-confirm t))
+            (dired-goto-file
+                (denoted-datetime-set (dired-get-filename) datetime))))
     (defun task-schedule-repetition (path)
         (let* ((datetime (denoted-datetime-get path))
                (suffix   (denoted-suffix-get path))
@@ -4523,7 +4522,9 @@
     (define-key space-map "j"
         (lambda ()
             (interactive)
-            (task-schedule (format-time-string denote-id-format (current-time)))))
+            (let ((position (point-position-with-scroll)))
+                (task-schedule (format-time-string denote-id-format (current-time)))
+                (jump-to-position-with-scroll position))))
     (define-key space-map "J"
         (lambda ()
             (interactive)
