@@ -4484,7 +4484,8 @@
         (let ((count  (pop parsed))
               (period (cadr (string-split string "P"))))
             (if count
-                (when (> count 1)
+                (if (< count 2)
+                    (format "R0P%s" period)
                     (setq count (1- count))
                     (format "R%sP%s" count period))
                 (format "RP%s" period))))
@@ -4506,7 +4507,7 @@
                             (setcar (nthcdr index parts)
                                 (task--next-repetition part repetition))
                             (throw 'break nil)))))
-            (setq suffix (string-join (delq nil parts) "="))
+            (setq suffix (string-join parts "="))
             (let ((denote-rename-no-confirm t))
                 (denoted-rename-file
                     path
