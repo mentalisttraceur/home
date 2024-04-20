@@ -1369,11 +1369,11 @@
         (signal 'datetime-invalid-second (list second))))
 
 (defun datetime--validate-minute (minute)
-    (when (<= 0 minute 59)
+    (unless (<= 0 minute 59)
         (signal 'datetime-invalid-minute (list minute))))
 
 (defun datetime--validate-hour (hour)
-    (when (<= 0 hour 23)
+    (unless (<= 0 hour 23)
         (signal 'datetime-invalid-hour (list hour))))
 
 (defun datetime--validate-month (month)
