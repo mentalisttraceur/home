@@ -2413,15 +2413,17 @@
     (setq evil-show-paren-range 1)
     (define-key space-map "e" 'eval-last-sexp)
     (define-key space-map "E" 'eval-print-last-sexp)
-    (defmacro toggle (variable)
+    (defmacro toggle (variable &optional skip-preview)
         (let* ((name          (symbol-name variable))
                (function      (intern (concat "toggle-" name)))
                (format-string (concat name ": %s")))
             `(prog1
                  (defun ,function ()
                      (interactive)
-                     (when (eq last-command ',function)
-                         (setq ,variable (not ,variable)))
+                     ,(if skip-preview
+                         `(setq ,variable (not ,variable))
+                         `(when (eq last-command ',function)
+                              (setq ,variable (not ,variable))))
                      (message ,format-string ,variable))
                  (evil-declare-not-repeat ',function))))
     (define-key space-map "." (toggle evil-repeat-move-cursor))
@@ -2986,7 +2988,7 @@
     :config
     (evil-define-key 'motion calendar-mode-map "H" 'calendar-scroll-right)
     (evil-define-key 'motion calendar-mode-map "L" 'calendar-scroll-left)
-    (define-key space-map "p" (toggle datetime-read-popup-calendar)))
+    (define-key space-map "p" (toggle datetime-read-popup-calendar t)))
 
 (use-packages display-fill-column-indicator evil
     :config
