@@ -4508,12 +4508,13 @@
                             (throw 'break nil)))))
             (setq suffix (string-join parts "="))
             (let ((denote-rename-no-confirm t))
-                (denoted-rename-file
-                    path
-                    datetime
-                    (denoted-title-get path)
-                    suffix
-                    (denoted-tag-get path)))))
+                (dired-goto-file
+                    (denoted-rename-file
+                        path
+                        datetime
+                        (denoted-title-get path)
+                        suffix
+                        (denoted-tag-get path))))))
     (defun task-schedule-prompt (&optional default)
         (datetime-read
             (when default
