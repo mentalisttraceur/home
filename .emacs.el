@@ -4523,8 +4523,9 @@
     (define-key space-map "j"
         (lambda ()
             (interactive)
-            (let ((position (point-position-with-scroll)))
-                (task-schedule (format-time-string denote-id-format (current-time)))
+            (let ((position (point-position-with-scroll))
+                  (now (format-time-string denote-id-format (current-time))))
+                (task-schedule now)
                 (jump-to-position-with-scroll position))))
     (define-key space-map "J"
         (lambda ()
