@@ -1228,6 +1228,19 @@
     (set-face-background 'smerge-refined-added "#008000")
     (set-face-background 'smerge-refined-removed "#800000"))
 
+(use-package display-fill-column-indicator
+    :config
+    (setq-default display-fill-column-indicator-column 79)
+    (defun toggle-show-80+-characters ()
+        (interactive)
+        (when (eq last-command 'toggle-show-80+-characters)
+            (display-fill-column-indicator-mode 'toggle)
+            (if display-fill-column-indicator-mode
+                (highlight-regexp   ".\\{79\\}\\(.*\\)" 'hi-yellow 1)
+                (unhighlight-regexp ".\\{79\\}\\(.*\\)")))
+        (message "display-fill-column-indicator-mode: %s"
+            display-fill-column-indicator-mode)))
+
 (use-package gnutls
     :config
     (setq gnutls-verify-error t))
@@ -2565,18 +2578,6 @@
     (evil-set-register ?r (propertize (evil-get-register ?r)
         'yank-handler '(evil-yank-line-handler nil t)))
     (define-key space-map "i" 'insert-char)
-    (setq-default display-fill-column-indicator-column 79)
-    (defun toggle-show-80+-characters ()
-        (interactive)
-        (when (eq last-command 'toggle-show-80+-characters)
-            (display-fill-column-indicator-mode 'toggle)
-            (if display-fill-column-indicator-mode
-                (highlight-regexp   ".\\{79\\}\\(.*\\)" 'hi-yellow 1)
-                (unhighlight-regexp ".\\{79\\}\\(.*\\)")))
-        (message "display-fill-column-indicator-mode: %s"
-            display-fill-column-indicator-mode))
-    (evil-declare-not-repeat 'toggle-show-80+-characters)
-    (define-key space-map "|" 'toggle-show-80+-characters)
     (define-key space-map "I" (toggle inhibit-read-only))
     (define-key space-map "#" 'display-line-numbers-mode)
     (set-face-foreground 'line-number "#808080")
@@ -2986,6 +2987,11 @@
     (evil-define-key 'motion calendar-mode-map "H" 'calendar-scroll-right)
     (evil-define-key 'motion calendar-mode-map "L" 'calendar-scroll-left)
     (define-key space-map "p" (toggle datetime-read-popup-calendar)))
+
+(use-packages display-fill-column-indicator evil
+    :config
+    (evil-declare-not-repeat 'toggle-show-80+-characters)
+    (define-key space-map "|" 'toggle-show-80+-characters))
 
 (use-packages eshell eat evil
     :config
