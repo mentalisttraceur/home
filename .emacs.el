@@ -2564,6 +2564,7 @@
     (evil-set-register ?R "\n")
     (evil-set-register ?r (propertize (evil-get-register ?r)
         'yank-handler '(evil-yank-line-handler nil t)))
+    (define-key space-map "i" 'insert-char)
     (setq-default display-fill-column-indicator-column 79)
     (defun toggle-show-80+-characters ()
         (interactive)
