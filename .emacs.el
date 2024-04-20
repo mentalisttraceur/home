@@ -2981,23 +2981,6 @@
     (with-current-buffer (messages-buffer)
         (evil-motion-state)))
 
-(use-packages hexl evil
-    :config
-    (defun evil-hexl-replace (count)
-        (interactive "p")
-        (let ((character nil))
-            (unwind-protect
-                (let ((evil-force-cursor 'replace))
-                    (evil-refresh-cursor)
-                    (setq character (evil-read-key)))
-                (evil-refresh-cursor))
-            (when (> count 1)
-                (fixed-hexl-self-insert-command (1- count) character))
-            (save-point
-                (fixed-hexl-self-insert-command 1 character))))
-    (evil-define-key 'normal hexl-mode-map "r" 'evil-hexl-replace)
-    (define-key space-map "X" 'hexl-mode))
-
 (use-packages calendar evil
     :config
     (evil-define-key 'motion calendar-mode-map "H" 'calendar-scroll-right)
@@ -3014,6 +2997,23 @@
         (lambda ()
             (evil-local-set-key 'insert "\C-v" nil)
             (evil-local-set-key 'insert "\C-q" nil))))
+
+(use-packages hexl evil
+    :config
+    (defun evil-hexl-replace (count)
+        (interactive "p")
+        (let ((character nil))
+            (unwind-protect
+                (let ((evil-force-cursor 'replace))
+                    (evil-refresh-cursor)
+                    (setq character (evil-read-key)))
+                (evil-refresh-cursor))
+            (when (> count 1)
+                (fixed-hexl-self-insert-command (1- count) character))
+            (save-point
+                (fixed-hexl-self-insert-command 1 character))))
+    (evil-define-key 'normal hexl-mode-map "r" 'evil-hexl-replace)
+    (define-key space-map "X" 'hexl-mode))
 
 (use-packages corfu evil
     :config
