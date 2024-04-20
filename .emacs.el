@@ -2995,7 +2995,8 @@
                 (fixed-hexl-self-insert-command (1- count) character))
             (save-point
                 (fixed-hexl-self-insert-command 1 character))))
-    (evil-define-key 'normal hexl-mode-map "r" 'evil-hexl-replace))
+    (evil-define-key 'normal hexl-mode-map "r" 'evil-hexl-replace)
+    (define-key space-map "X" 'hexl-mode))
 
 (use-packages calendar evil
     :config
