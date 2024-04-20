@@ -2407,7 +2407,8 @@
             `(prog1
                  (defun ,function ()
                      (interactive)
-                     (setq ,variable (not ,variable))
+                     (when (eq last-command ',function)
+                         (setq ,variable (not ,variable)))
                      (message ,format-string ,variable))
                  (evil-declare-not-repeat ',function))))
     (define-key space-map "." (toggle evil-repeat-move-cursor))
@@ -2566,10 +2567,11 @@
     (setq-default display-fill-column-indicator-column 79)
     (defun toggle-show-80+-characters ()
         (interactive)
-        (display-fill-column-indicator-mode 'toggle)
-        (if display-fill-column-indicator-mode
-            (highlight-regexp   ".\\{79\\}\\(.*\\)" 'hi-yellow 1)
-            (unhighlight-regexp ".\\{79\\}\\(.*\\)"))
+        (when (eq last-command 'toggle-show-80+-characters)
+            (display-fill-column-indicator-mode 'toggle)
+            (if display-fill-column-indicator-mode
+                (highlight-regexp   ".\\{79\\}\\(.*\\)" 'hi-yellow 1)
+                (unhighlight-regexp ".\\{79\\}\\(.*\\)")))
         (message "display-fill-column-indicator-mode: %s"
             display-fill-column-indicator-mode))
     (evil-declare-not-repeat 'toggle-show-80+-characters)
@@ -2579,11 +2581,12 @@
     (set-face-foreground 'line-number "#808080")
     (defun cycle-line-wrap ()
         (interactive)
-        (if truncate-lines
-            (setq truncate-lines nil)
-            (visual-line-mode 'toggle)
-            (when (not visual-line-mode)
-                (setq truncate-lines t)))
+        (when (eq last-command 'cycle-line-wrap)
+            (if truncate-lines
+                (setq truncate-lines nil)
+                (visual-line-mode 'toggle)
+                (when (not visual-line-mode)
+                    (setq truncate-lines t))))
         (message "visual-line-mode: %s truncate-lines: %s"
             visual-line-mode truncate-lines))
     (evil-declare-not-repeat 'cycle-line-wrap)
