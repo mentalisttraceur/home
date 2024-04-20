@@ -2575,7 +2575,7 @@
         (message "display-fill-column-indicator-mode: %s"
             display-fill-column-indicator-mode))
     (evil-declare-not-repeat 'toggle-show-80+-characters)
-    (define-key space-map "i" 'toggle-show-80+-characters)
+    (define-key space-map "|" 'toggle-show-80+-characters)
     (define-key space-map "I" (toggle inhibit-read-only))
     (define-key space-map "#" 'display-line-numbers-mode)
     (set-face-foreground 'line-number "#808080")
