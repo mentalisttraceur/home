@@ -2582,7 +2582,7 @@
         (if truncate-lines
             (setq truncate-lines nil)
             (visual-line-mode 'toggle)
-            (if (not visual-line-mode)
+            (when (not visual-line-mode)
                 (setq truncate-lines t)))
         (message "visual-line-mode: %s truncate-lines: %s"
             visual-line-mode truncate-lines))
