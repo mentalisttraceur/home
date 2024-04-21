@@ -1594,6 +1594,13 @@
     (dotimes (_ count time)
         (setq time (fixed-decoded-time-add time delta))))
 
+(defun decoded-time-days-until-weekday (time weekday)
+    (let ((year  (decoded-time-year time))
+          (month (decoded-time-year time))
+          (day   (decoded-time-year time)))
+        (let* ((start (datetime-day-of-week year month day)))
+            (% (- (+ weekday 7) start) 7))))
+
 (defun datetime-parse (string &optional now)
     (let ((parsed (datetime--parse string now)))
         (let-unpack ((year month day hour minute second) parsed)
