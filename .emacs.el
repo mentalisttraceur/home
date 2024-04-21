@@ -1541,6 +1541,12 @@
          (setq second (mod second 60))
          (datetime--minute+)))
 
+(defun datetime-day-of-week (year month day)
+    (datetime--validate-month+day year month day)
+    (when (< year 1)
+        (setq year (1- year)))
+    (calendar-day-of-week (list month day year)))
+
 (defun fixed-decoded-time-add (time delta)
     (let-unpack ((second  minute  hour  day  month  year ) time
                  (second+ minute+ hour+ day+ month+ year+) delta)
