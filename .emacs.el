@@ -1740,6 +1740,36 @@
         (list year  month  day  hour  minute  second
               year+ month+ day+ hour+ minute+ second+ day-of-week+)))
 
+(defun datetime--fill-largest-nil-slot-from-word (decoded-time word)
+    (when word
+        (let ((number (string-to-number word)))
+            (unless (decoded-time-year decoded-time)
+                (when (length< number-as-string 3)
+                    (+= number 2000)))
+            (datetime--fill-largest-nil-slot decoded-time number))))
+
+(defun datetime--fill-largest-nil-slot (decoded-time number)
+    (if (decoded-time-year decoded-time)
+        (if (decoded-time-month decoded-time)
+            (if (decoded-time-day decoded-time)
+                (if (decoded-time-hour decoded-time)
+                    (if (decoded-time-minute decoded-time)
+                        (if (decoded-time-second decoded-time)
+                            nil
+                            (datetime--validate-second number)
+                            (setf (decoded-time-second decoded-time) number))
+                        (datetime--validate-minute number)
+                        (setf (decoded-time-minute decoded-time) number))
+                    (datetime--validate-hour number)
+                    (setf (decoded-time-hour decoded-time) number))
+                (let ((year  (decoded-time-year  decoded-time))
+                      (month (decoded-time-month decoded-time)))
+                    (datetime--validate-month+day year month number)
+                    (setf (decoded-time-day decoded-time) number))
+                (datetime--validate-month number)
+                (setf (decoded-time-month decoded-time) number))
+            (setf (decoded-time-year decoded-time) number))))
+
 (defmacro datetime-parse--add-offset (slot+ word)
     `(progn
          (setq-if-nil ,slot+ 0)
