@@ -2416,9 +2416,9 @@
                  (defun ,function ()
                      (interactive)
                      ,(if skip-preview
-                         `(setq ,variable (not ,variable))
-                         `(when (eq last-command ',function)
-                              (setq ,variable (not ,variable))))
+                          `(setq ,variable (not ,variable))
+                          `(when (eq last-command ',function)
+                               (setq ,variable (not ,variable))))
                      (message ,format-string ,variable))
                  (evil-declare-not-repeat ',function))))
     (define-key space-map "." (toggle evil-repeat-move-cursor))
