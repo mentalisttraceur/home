@@ -1477,21 +1477,23 @@
         (aref table day)))
 
 (defmacro datetime--year+ ()
-    `(setq year (+ year year+)))
+    `(unless (= year+ 0)
+         (setq year (+ year year+))))
 
 (defmacro datetime--month+ ()
-    `(let ((days-in-month (datetime-days-in-month year month)))
-         (setq month (+ month month+))
-         (if (> month 0)
-             (setq year+ (/ (- month 1) 12))
-             (setq month (- month 12))
-             (setq year+ (/ month 12)))
-         (setq month (1+ (mod (1- month) 12)))
-         (datetime--year+)
-         (setq day (min day (datetime-days-in-month year month)))))
+    `(unless (= month+ 0)
+         (let ((days-in-month (datetime-days-in-month year month)))
+             (setq month (+ month month+))
+             (if (> month 0)
+                 (setq year+ (/ (- month 1) 12))
+                 (setq month (- month 12))
+                 (setq year+ (/ month 12)))
+             (setq month (1+ (mod (1- month) 12)))
+             (datetime--year+)
+             (setq day (min day (datetime-days-in-month year month))))))
 
 (defmacro datetime--day+ ()
-    `(progn
+    `(unless (= day+ 0)
          (setq day (datetime-ordinal-day year month day))
          (setq day (+ day day+))
          (if (> day 0)
@@ -1507,7 +1509,7 @@
          (setq day (- day (datetime-days-until-month year month)))))
 
 (defmacro datetime--hour+ ()
-    `(progn
+    `(unless (= hour+ 0)
          (datetime--validate-hour hour)
          (setq hour (+ hour hour+))
          (if (>= hour 0)
@@ -1518,7 +1520,7 @@
          (datetime--day+)))
 
 (defmacro datetime--minute+ ()
-    `(progn
+    `(unless (= minute+ 0)
          (datetime--validate-minute minute)
          (setq minute (+ minute minute+))
          (if (>= minute 0)
@@ -1529,7 +1531,7 @@
          (datetime--hour+)))
 
 (defmacro datetime--second+ ()
-    `(progn
+    `(unless (= second+ 0)
          (datetime--validate-second second)
          (setq second (+ second second+))
          (if (>= second 0)
