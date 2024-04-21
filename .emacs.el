@@ -190,6 +190,10 @@
     `(apply-split-nest let-uncons-1 ,uncons-list 3 ,body))
 
 
+(defmacro += (place value)
+    `(setf ,place (+ ,place ,value)))
+
+
 (defmacro until (test &rest body)
     `(while (not ,test)
          ,@body))
