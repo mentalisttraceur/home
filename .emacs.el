@@ -1563,7 +1563,7 @@
         (datetime--minute+)
         (datetime--second+)
         (list second minute hour day month year
-            (calendar-day-of-week (list month day year)))))
+            (datetime-day-of-week year month day))))
 
 (defun decoded-time-negate (delta)
     (list
