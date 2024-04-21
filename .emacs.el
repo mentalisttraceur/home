@@ -1563,7 +1563,10 @@
         (datetime--minute+)
         (datetime--second+)
         (list second minute hour day month year
-            (datetime-day-of-week year month day))))
+            (when (and year month day)
+                (condition-case nil
+                    (datetime-day-of-week year month day)
+                    (datetime-bad))))))
 
 (defun decoded-time-negate (delta)
     (list
