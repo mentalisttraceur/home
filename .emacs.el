@@ -1590,6 +1590,12 @@
     (dotimes (_ count time)
         (setq time (fixed-decoded-time-add time delta))))
 
+(defun datetime-parse (string &optional now)
+    (let ((parsed (datetime--parse string now)))
+        (let-unpack ((year month day hour minute second) parsed)
+            (format "%04d%02d%02dT%02d%02d%02d"
+                year month day hour minute second))))
+
 (defun datetime--parse (string &optional now)
     (let (year  month  day  hour  minute  second  day-of-week
           year+ month+ day+ hour+ minute+ second+ day-of-week+
@@ -1722,12 +1728,6 @@
         (setq-if-nil second 0)
         (list year  month  day  hour  minute  second
               year+ month+ day+ hour+ minute+ second+ day-of-week+)))
-
-(defun datetime-parse (string &optional now)
-    (let ((parsed (datetime--parse string now)))
-        (let-unpack ((year month day hour minute second) parsed)
-            (format "%04d%02d%02dT%02d%02d%02d"
-                year month day hour minute second))))
 
 (defmacro datetime-parse--add-offset (slot+ word)
     `(progn
