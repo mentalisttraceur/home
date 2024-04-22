@@ -1724,7 +1724,6 @@
             (datetime-parse--future-bias hour   day    now carry)
             (datetime-parse--future-bias day    month  now carry)
             (datetime-parse--future-bias month  year   now carry))
-        (setq integers (nreverse integers))
         (when (and day-of-week (not (equal year 0)))
             (unless day
                 (setq day (decoded-time-day now))
@@ -1735,6 +1734,7 @@
             (let ((start (calendar-day-of-week (list month day year))))
                 (setq day-of-week+ (% (- (+ day-of-week 7) start) 7))
                 (setq day (+ day day-of-week+))))
+        (setq integers (nreverse integers))
         (unless year
             (when-let (string (pop integers))
                 (setq year (string-to-number string))
