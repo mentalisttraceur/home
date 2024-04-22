@@ -3946,8 +3946,8 @@
         (?g (lambda ()
                 (let* ((key (read-key "g-"))
                        (action (alist-get key '(
-                        (?p . window-state-fast-paste-operator)
-                        (?P . window-state-fast-paste-move-operator)
+                        (?p . window-state-fast-paste-move-operator)
+                        (?P . window-state-fast-paste-operator)
                         (?q . window-state-quit)
                         (?\C-\[ . window-state-quit)))))
                     (if action
