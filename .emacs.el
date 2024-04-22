@@ -1730,7 +1730,7 @@
         (datetime-parse--consume-integer-if-needed minute integers)
         (datetime-parse--consume-integer-if-needed second integers)
         (when bad-words
-            (user-error "bad: %S" bad-words))
+            (user-error "Bad words: %S" bad-words))
         (setq-if-nil year   0)
         (setq-if-nil month  0)
         (setq-if-nil day    0)
