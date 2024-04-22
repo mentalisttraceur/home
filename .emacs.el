@@ -1612,8 +1612,7 @@
           year+ month+ day+ hour+ minute+ second+ day-of-week+
           (now (or now (decode-time (current-time))))
           (integers ())
-          (words (split-string string))
-          (bad-words ()))
+          (words (split-string string)))
         (dolist (word words)
             (cond
                 ((string-match-p "^[0-9]\\{3,\\}$" word)
@@ -1695,7 +1694,7 @@
                     (setq month (decoded-time-month now))
                     (setq day   (decoded-time-day   now)))
                 (t
-                    (push word bad-words))))
+                    (user-error "Bad word: %S" word))))
         (datetime-parse--use-offsets year   now)
         (datetime-parse--use-offsets month  now)
         (datetime-parse--use-offsets day    now)
@@ -1729,8 +1728,6 @@
         (datetime-parse--consume-integer-if-needed hour   integers)
         (datetime-parse--consume-integer-if-needed minute integers)
         (datetime-parse--consume-integer-if-needed second integers)
-        (when bad-words
-            (user-error "Bad words: %S" bad-words))
         (setq-if-nil year   0)
         (setq-if-nil month  0)
         (setq-if-nil day    0)
