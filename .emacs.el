@@ -1744,8 +1744,7 @@
     (when word
         (let ((number (string-to-number word)))
             (unless (decoded-time-year decoded-time)
-                (when (length< number-as-string 3)
-                    (+= number 2000)))
+                (+= number 2000))
             (datetime--fill-largest-nil-slot decoded-time number))))
 
 (defun datetime--fill-largest-nil-slot (decoded-time number)
