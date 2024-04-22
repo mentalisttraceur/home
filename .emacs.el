@@ -1391,19 +1391,23 @@
 
 (defun datetime--validate-second (second)
     (unless (<= 0 second 59)
-        (signal 'datetime-invalid-second (list second))))
+        (signal 'datetime-invalid-second (list second)))
+    second)
 
 (defun datetime--validate-minute (minute)
     (unless (<= 0 minute 59)
-        (signal 'datetime-invalid-minute (list minute))))
+        (signal 'datetime-invalid-minute (list minute)))
+    minute)
 
 (defun datetime--validate-hour (hour)
     (unless (<= 0 hour 23)
-        (signal 'datetime-invalid-hour (list hour))))
+        (signal 'datetime-invalid-hour (list hour)))
+    hour)
 
 (defun datetime--validate-month (month)
     (unless (<= 1 month 12)
-        (signal 'datetime-bad-month (list month))))
+        (signal 'datetime-bad-month (list month)))
+    month)
 
 (defun datetime-is-leap (year)
     (and (= (mod year 4) 0)
@@ -1421,9 +1425,14 @@
         (1+ (aref datetime--days-in-month month))
         (aref datetime--days-in-month month)))
 
-(defun datetime--validate-month+day (year month day)
+(defun datetime--validate-day (year month day)
     (unless (< 0 day (1+ (datetime-days-in-month year month)))
-        (signal 'datetime-bad-day (list day))))
+        (signal 'datetime-bad-day (list day)))
+    day)
+
+(defun datetime--validate-month+day (year month day)
+    (datetime--validate-day year month day)
+    nil)
 
 (defun datetime-days-in-year (year)
     (if (datetime-is-leap year)
@@ -1768,7 +1777,7 @@
                     (setf (decoded-time-hour decoded-time) number))
                 (let ((year  (decoded-time-year  decoded-time))
                       (month (decoded-time-month decoded-time)))
-                    (datetime--validate-month+day year month number)
+                    (datetime--validate-day year month number)
                     (setf (decoded-time-day decoded-time) number))
                 (datetime--validate-month number)
                 (setf (decoded-time-month decoded-time) number))
