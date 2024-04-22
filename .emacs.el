@@ -631,6 +631,14 @@
 (defmacro setq-if-nil (&rest symbol-value-pairs)
     `(apply-split setq-if-nil-1 ,symbol-value-pairs 2))
 
+(defmacro setf-if-nil-1 (place value)
+    `(if ,place
+         ,place
+         (setf ,place ,value)))
+
+(defmacro setf-if-nil (&rest place-value-pairs)
+    `(apply-split setf-if-nil-1 ,place-value-pairs 2))
+
 
 (defun string-to-number-or-nil (string)
     (when (length> string 0)
