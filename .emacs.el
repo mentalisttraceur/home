@@ -198,6 +198,16 @@
     `(while (not ,test)
          ,@body))
 
+(defun any (values)
+    (let ((result nil))
+        (dolist (value values result)
+            (setq result (or result value)))))
+
+(defun all (values)
+    (let ((result t))
+        (dolist (value values result)
+            (setq result (and result value)))))
+
 
 (defmacro save-point (&rest body)
     `(let ((--save-point-- (point)))
