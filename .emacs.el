@@ -198,16 +198,6 @@
     `(while (not ,test)
          ,@body))
 
-(defun any (values)
-    (let ((result nil))
-        (dolist (value values result)
-            (setq result (or result value)))))
-
-(defun all (values)
-    (let ((result t))
-        (dolist (value values result)
-            (setq result (and result value)))))
-
 
 (defmacro save-point (&rest body)
     `(let ((--save-point-- (point)))
@@ -793,6 +783,15 @@
                         (setcdr tail (list :config (cons 'use-package next))))
                     (setq tail next))))
         head))
+
+(use-package cl-seq
+    :config
+    (defun any (seq &rest cl-reduce-keyword-arguments)
+        (apply 'cl-reduce (lambda (a b) (or a b)) seq
+               :initial-value nil cl-reduce-keyword-arguments))
+    (defun all (seq &rest cl-reduce-keyword-arguments)
+        (apply 'cl-reduce (lambda (a b) (and a b)) seq
+               :initial-value t cl-reduce-keyword-arguments)))
 
 (use-package help
     :config
