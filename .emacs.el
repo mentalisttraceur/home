@@ -1636,9 +1636,9 @@
         (setq time (fixed-decoded-time-add time delta))))
 
 (defun decoded-time-days-until-weekday (time weekday)
-    (let ((year  (decoded-time-year time))
-          (month (decoded-time-year time))
-          (day   (decoded-time-year time)))
+    (let ((year  (decoded-time-year  time))
+          (month (decoded-time-month time))
+          (day   (decoded-time-day   time)))
         (let* ((start (datetime-day-of-week year month day)))
             (% (- (+ weekday 7) start) 7))))
 
