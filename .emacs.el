@@ -2087,35 +2087,13 @@
 (use-package orderless
     :config
     (add-to-list 'completion-styles 'orderless)
-    (defconst trailing-backslash "\\([\\][\\]\\)*[\\]$")
-    (defun just-backslashes--split (separator)
-        (lambda-let (separator) (string)
-            (let ((parts (string-split string separator))
-                  (final ()))
-                (while parts
-                    (let ((part (pop parts)))
-                        (while (and (string-match-p trailing-backslash part)
-                                    parts)
-                            (setq part (concat part separator))
-                            (setq part (concat part (pop parts))))
-                        (push part final)))
-                (nreverse final))))
-    (setq orderless-component-separator (lambda (string)
-        (mapcan (just-backslashes--split " ")
-            (funcall (just-backslashes--split "\n") string))))
-    (defun just-backslashes--parse (string)
-        (replace-regexp-in-string "[\\]\\(.\\)" "\\1"
-            (replace-regexp-in-string trailing-backslash "\\1" string)))
-    (defun just-backslashes (string)
-        (regexp-quote (just-backslashes--parse string)))
-    (setq orderless-matching-styles '(just-backslashes))
+    (setq orderless-matching-styles '(orderless-regexp))
     (setq orderless-style-dispatchers
           (list
               (lambda (string index count)
                   (when (string-match-p "[^\\]\\([\\][\\]\\)*!$" string)
-                      (setq string (just-backslashes--parse string))
                       (setq string (string-remove-suffix "!" string))
-                      (cons 'orderless-without-literal string))))))
+                      (cons 'orderless-not string))))))
 
 (use-package corfu
     :config
