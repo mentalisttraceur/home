@@ -2109,12 +2109,13 @@
     (defun just-backslashes (string)
         (regexp-quote (just-backslashes--parse string)))
     (setq orderless-matching-styles '(just-backslashes))
-    (add-to-list 'orderless-style-dispatchers
-        (lambda (string index count)
-            (when (string-match-p "[^\\]\\([\\][\\]\\)*!$" string)
-                (setq string (just-backslashes--parse string))
-                (setq string (string-remove-suffix "!" string))
-                (cons 'orderless-without-literal string)))))
+    (setq orderless-style-dispatchers
+          (list
+              (lambda (string index count)
+                  (when (string-match-p "[^\\]\\([\\][\\]\\)*!$" string)
+                      (setq string (just-backslashes--parse string))
+                      (setq string (string-remove-suffix "!" string))
+                      (cons 'orderless-without-literal string))))))
 
 (use-package corfu
     :config
