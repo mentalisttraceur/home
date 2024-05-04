@@ -194,6 +194,10 @@
     `(setf ,place (+ ,place ,value)))
 
 
+(defmacro -= (place value)
+    `(setf ,place (- ,place ,value)))
+
+
 (defmacro until (test &rest body)
     `(while (not ,test)
          ,@body))
