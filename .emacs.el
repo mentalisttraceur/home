@@ -2088,12 +2088,12 @@
     :config
     (add-to-list 'completion-styles 'orderless)
     (setq orderless-matching-styles '(orderless-regexp))
-    (setq orderless-style-dispatchers
-          (list
-              (lambda (string index count)
-                  (when (string-match-p "[^\\]\\([\\][\\]\\)*!$" string)
-                      (setq string (string-remove-suffix "!" string))
-                      (cons 'orderless-not string))))))
+    (setq orderless-style-dispatchers nil)
+    (add-to-list 'orderless-style-dispatchers
+        (lambda (string index count)
+            (when (string-match-p "[^\\]\\([\\][\\]\\)*!$" string)
+                (setq string (string-remove-suffix "!" string))
+                (cons 'orderless-not string)))))
 
 (use-package corfu
     :config
