@@ -1602,7 +1602,7 @@
         (setq-if-nil second+ 0)
         (datetime--year+)
         (datetime--month+)
-        (when (and (or year+ month+)
+        (when (and (not (= year+ month+ 0))
                    (= month 2)
                    (= day 29)
                    (not (datetime-is-leap year)))
