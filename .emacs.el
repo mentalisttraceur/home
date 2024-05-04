@@ -2095,6 +2095,17 @@
                 (setq string (string-remove-suffix "!" string))
                 (cons 'orderless-not string)))))
 
+(use-packages consult orderless
+    :config
+    (defconst min-consult-id consult--tofu-char)
+    (defconst max-consult-id (+ consult--tofu-char consult--tofu-range -1))
+    (defconst $-for-consult (format "[%c-%c]*$" min-consult-id max-consult-id))
+    (add-to-list 'orderless-style-dispatchers
+        (lambda (string index count)
+            (when (string-match-p "[^\\]\\([\\][\\]\\)*$$" string)
+                (setq string (concat (substring string 0 -1) $-for-consult))
+                (cons 'orderless-regexp string)))))
+
 (use-package corfu
     :config
     (global-corfu-mode 1)
