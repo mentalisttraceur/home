@@ -1414,17 +1414,17 @@
 
 (defun datetime--validate-second (second)
     (unless (<= 0 second 59)
-        (signal 'datetime-invalid-second (list second)))
+        (signal 'datetime-bad-second (list second)))
     second)
 
 (defun datetime--validate-minute (minute)
     (unless (<= 0 minute 59)
-        (signal 'datetime-invalid-minute (list minute)))
+        (signal 'datetime-bad-minute (list minute)))
     minute)
 
 (defun datetime--validate-hour (hour)
     (unless (<= 0 hour 23)
-        (signal 'datetime-invalid-hour (list hour)))
+        (signal 'datetime-bad-hour (list hour)))
     hour)
 
 (defun datetime--validate-month (month)
