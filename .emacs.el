@@ -1534,7 +1534,8 @@
                  (setq year+ (/ month 12)))
              (setq month (1+ (mod (1- month) 12)))
              (datetime--year+)
-             (setq day (min day (datetime-days-in-month year month))))))
+             (when day
+                 (setq day (min day (datetime-days-in-month year month)))))))
 
 (defmacro datetime--day+ ()
     `(unless (= day+ 0)
