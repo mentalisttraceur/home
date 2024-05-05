@@ -1665,7 +1665,7 @@
             (uncons parsed integers
                     (datetime-parse--1 word parsed integers now)))
         (setq parsed (datetime-parse--finalize parsed integers now))
-        (if (string-suffix-p " " string)
+        (if (or (length< words 2) (string-suffix-p " " string))
             (list parsed nil)
             (list parsed previous))))
 
