@@ -1665,7 +1665,9 @@
             (uncons parsed integers
                     (datetime-parse--1 word parsed integers now)))
         (setq parsed (datetime-parse--finalize parsed integers now))
-        (list parsed previous)))
+        (if (string-suffix-p " " string)
+            (list parsed nil)
+            (list parsed previous))))
 
 (defun datetime-parse--finalize (parsed integers now)
     (uncons parsed _ (datetime-parse--bind nil parsed integers))
