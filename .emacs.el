@@ -1672,6 +1672,8 @@
           (previous nil)
           (bindings (make-decoded-time))
           (integers ())
+          (integer-count 0)
+          (had-offsets nil)
           (words (split-string string))
           word)
         (setq word words)
@@ -1688,7 +1690,9 @@
         (if (string-suffix-p " " string)
             (setq string (concat (string-join words " ") " "))
             (setq string (string-join words " ")))
-        (if (or (length< words 2) (string-suffix-p " " string))
+        (if (or (and (< (- (length words) integer-count) 2)
+                     (not had-offsets))
+                (string-suffix-p " " string))
             (list parsed (list nil bindings string))
             (list parsed (list previous bindings string)))))
 
@@ -1697,6 +1701,7 @@
          ((string-match-p "^[0-9]\\{3,\\}$" (car word))
              (setf (decoded-time-year parsed) (string-to-number (car word))))
          ((string-match-p "^[0-9]+$" (car word))
+             (+= integer-count 1)
              (setq integers (append integers (list word))))
          ((string-match-p "^[0-9]\\{3,\\}y" (car word))
              (setf (decoded-time-year parsed) (string-to-number (car word))))
@@ -1738,6 +1743,7 @@
          ((string-match-p "^[-+][0-9]+y" (car word))
              (let* ((years (string-to-number (car word)))
                     (delta (make-decoded-time :year years)))
+                 (setq had-offsets t)
                  (setq parsed (datetime-parse--future-bias nil parsed now))
                  (setq parsed (fixed-decoded-time-add parsed delta))))
          ((string-match-p "^[-+][0-9]+mo" (car word))
@@ -1947,6 +1953,7 @@
            (index (cl-position slot slots))
            (next-slot (nth (1+ index) slots)))
         `(progn
+             (setq had-offsets t)
              (unpack (parsed integers bindings)
                      (datetime-parse--bind
                          ',next-slot parsed integers bindings))
