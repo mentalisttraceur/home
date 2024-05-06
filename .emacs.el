@@ -2969,20 +2969,22 @@
             (list "echo" (concat (buffer-name) " is not in a git repository"))
             nil
             name))
+    (defun git-pop-to-command (command)
+        (if-let (root (vc-root-dir))
+            (let ((default-directory root))
+                (pop-to-command-eshell command default-directory))
+            (pop-to-command-eshell--not-in-a-git-repository
+                (string-join (cons "eshell:" command) " "))))
     (defmacro git (&rest arguments)
         (let ((command (cons "git" (mapcar 'symbol-name arguments))))
             `(lambda (prefix-argument)
                  (interactive "P")
-                 (if-let (root (vc-root-dir))
-                     (let ((command (list ,@command)))
-                         (when prefix-argument
-                             (nconc command (list
-                                 (or buffer-file-name
-                                     (expand-file-name default-directory)))))
-                         (let ((default-directory root))
-                             (pop-to-command-eshell command default-directory)))
-                     (pop-to-command-eshell--not-in-a-git-repository
-                         ,(string-join (cons "eshell:" command) " "))))))
+                 (let ((command (list ,@command)))
+                     (when prefix-argument
+                         (nconc command (list
+                             (or buffer-file-name
+                                 (expand-file-name default-directory)))))
+                     (git-pop-to-command command)))))
     (define-prefix-command 'git-map)
     (define-key space-map "v" 'git-map)
     (define-key git-map "v" (git status))
@@ -3011,11 +3013,7 @@
     (defun git-amend (prefix-argument)
         (interactive "P")
         (let ((command (git-amend--commit-or-rebase prefix-argument)))
-            (if-let (root (vc-root-dir))
-                (let ((default-directory root))
-                    (pop-to-command-eshell command default-directory))
-                (pop-to-command-eshell--not-in-a-git-repository
-                    (string-join (cons "eshell:" command) " ")))))
+            (git-pop-to-command command)))
     (define-key git-map "C" 'git-amend)
     (defun git-reset--commit-ish (prefix-argument)
         (if prefix-argument
@@ -3029,11 +3027,7 @@
         (interactive "P")
         (let* ((commit-ish (git-reset--commit-ish prefix-argument))
                (command (list "git" "reset" commit-ish)))
-            (if-let (root (vc-root-dir))
-                (let ((default-directory root))
-                    (pop-to-command-eshell command default-directory))
-                (pop-to-command-eshell--not-in-a-git-repository
-                    (string-join (cons "eshell:" command) " ")))))
+            (git-pop-to-command command)))
     (define-key git-map "r" 'git-reset)
     (define-key git-map "b"
         (lambda ()
