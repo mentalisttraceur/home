@@ -1884,11 +1884,10 @@
     (datetime-parse--bind-1 month
         (datetime--validate-month month)
         (datetime-parse--bind-1 day
-            (progn
-                (setq parsed (datetime-parse--future-bias 'day parsed now))
-                (let ((year  (decoded-time-year  parsed))
-                      (month (decoded-time-month parsed)))
-                    (datetime--validate-day year month day)))
+            (let* ((bound (datetime-parse--future-bias 'day parsed now))
+                   (year  (decoded-time-year  bound))
+                   (month (decoded-time-month bound)))
+                (datetime--validate-day year month day))
             (datetime-parse--bind-1 hour
                 (datetime--validate-hour hour)
                 (datetime-parse--bind-1 minute
