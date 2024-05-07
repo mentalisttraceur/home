@@ -1649,6 +1649,8 @@
 
 (defvar datetime-parse-two-digit-year-base 2000)
 
+(defface datetime-read-preview-year-face
+    '((t :foreground "#80FFFF" :weight bold)) "")
 (defface datetime-read-preview-month-face
     '((t :foreground "#C040FF" :weight bold)) "")
 (defface datetime-read-preview-day-face
