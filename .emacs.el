@@ -1678,12 +1678,13 @@
           word)
         (setq word words)
         (while word
-            (unpack (previous _ _) (datetime-parse--bind nil parsed integers))
+            (unpack (previous _ _)
+                    (datetime-parse--bind nil parsed integers now))
             (setq previous (datetime-parse--future-bias nil previous now))
             (datetime-parse--1)
             (pop word))
         (unpack (parsed _ bindings)
-                (datetime-parse--bind nil parsed integers bindings))
+                (datetime-parse--bind nil parsed integers now bindings))
         (setq parsed (datetime-parse--future-bias nil parsed now))
         (setq parsed (datetime-parse--floor nil parsed))
         (setq parsed (fixed-decoded-time-add parsed nil))
@@ -1867,15 +1868,17 @@
                          (setf (,decoded-time-slot parsed) ,slot))))
              ,@body)))
 
-(defun datetime-parse--bind (slot parsed integers &optional bindings)
+(defun datetime-parse--bind (slot parsed integers now &optional bindings)
     (setq-if-nil bindings (make-decoded-time))
     (setq parsed (copy-sequence parsed))
     (datetime-parse--bind-1 month
         (datetime--validate-month month)
         (datetime-parse--bind-1 day
-            (let ((year  (decoded-time-year  parsed))
-                  (month (decoded-time-month parsed)))
-                (datetime--validate-day year month day))
+            (progn
+                (setq parsed (datetime-parse--future-bias 'day parsed now))
+                (let ((year  (decoded-time-year  parsed))
+                      (month (decoded-time-month parsed)))
+                    (datetime--validate-day year month day)))
             (datetime-parse--bind-1 hour
                 (datetime--validate-hour hour)
                 (datetime-parse--bind-1 minute
@@ -1956,7 +1959,7 @@
              (setq had-offsets t)
              (unpack (parsed integers bindings)
                      (datetime-parse--bind
-                         ',next-slot parsed integers bindings))
+                         ',next-slot parsed integers now bindings))
              (when (,decoded-time-slot bindings)
                  (if (eq (,decoded-time-slot bindings) t)
                      (setf (,decoded-time-slot bindings) nil)
