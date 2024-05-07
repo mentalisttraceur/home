@@ -1893,7 +1893,7 @@
     (setq parsed (copy-sequence parsed))
     (let ((delta nil))
         (unless (or (eq slot 'year)
-                (decoded-time-year parsed))
+                    (decoded-time-year parsed))
             (setf (decoded-time-year parsed)
                   (decoded-time-year now))
             (unless (or (eq slot 'month)
