@@ -198,6 +198,14 @@
     `(setf ,place (- ,place ,value)))
 
 
+(defmacro ^= (place value)
+    `(setf ,place (logxor ,place ,value)))
+
+
+(defmacro <<= (place value)
+    `(setf ,place (ash ,place ,value)))
+
+
 (defmacro until (test &rest body)
     `(while (not ,test)
          ,@body))
