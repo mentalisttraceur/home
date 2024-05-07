@@ -3134,10 +3134,10 @@
     (define-key git-map "T" (git push --tags --force))
     (define-key git-map "c" (git commit))
     (defun git-amend--commit-or-rebase (prefix-argument)
-        (if (and (integerp prefix-argument)
-                 (>= prefix-argument 1))
+        (if (and prefix-argument
+                 (not (equal prefix-argument 0)))
             (list "git" "rebase" "--interactive"
-                (concat "HEAD~" (number-to-string prefix-argument)))
+                (git--commit-ish prefix-argument "git rebase from: "))
             (list "git" "commit" "--amend")))
     (defun git-amend (prefix-argument)
         (interactive "P")
