@@ -1691,18 +1691,19 @@
 (defun datetime-parse--loop (string &optional now)
     (setq-if-nil now (decode-time (current-time)))
     (let ((parsed (make-decoded-time))
-          (previous nil)
           (bindings (make-decoded-time))
+          (offsets (list nil nil nil nil nil nil))
+          (previous-parsed nil)
+          (previous-bindings nil)
           (integers ())
           (integer nil)
           (integers-in-span 0)
           (integers-before-span 0)
-          (had-offsets nil)
           (words (split-string string))
           word)
         (setq word words)
         (while word
-            (unpack (previous _ _)
+            (unpack (previous-parsed _ previous-bindings)
                     (datetime-parse--bind nil parsed integers now))
             (setq integer nil)
             (datetime-parse--1)
@@ -1721,11 +1722,21 @@
             (setq string (concat (string-join words " ") " "))
             (setq string (string-join words " ")))
         (if (or (and (< (- (length words) integers-before-span) 2)
-                     (not had-offsets))
+                     (not (any offsets)))
                 (string-suffix-p " " string))
             (list parsed (list nil bindings string))
-            (setq previous (datetime-parse--future-bias nil previous now))
-            (list parsed (list previous bindings string)))))
+            (setq previous-parsed
+                  (datetime-parse--future-bias nil previous-parsed now))
+            (setq previous-parsed
+                  (variadic-mapcar
+                      (lambda (value binding offset)
+                          (if (and binding (not offset))
+                              nil
+                              value))
+                      previous-parsed
+                      previous-bindings
+                      offsets))
+            (list parsed (list previous-parsed bindings string)))))
 
 (defmacro datetime-parse--1 ()
     `(cond
@@ -1774,7 +1785,7 @@
          ((string-match-p "^[-+][0-9]+y" (car word))
              (let* ((years (string-to-number (car word)))
                     (delta (make-decoded-time :year years)))
-                 (setq had-offsets t)
+                 (setf (decoded-time-year offsets) t)
                  (setq parsed (datetime-parse--future-bias nil parsed now))
                  (setq parsed (fixed-decoded-time-add parsed delta))))
          ((string-match-p "^[-+][0-9]+mo" (car word))
@@ -1992,7 +2003,7 @@
            (index (cl-position slot slots))
            (next-slot (nth (1+ index) slots)))
         `(progn
-             (setq had-offsets t)
+             (setf (,decoded-time-slot offsets) t)
              (unpack (parsed integers bindings)
                      (datetime-parse--bind
                          ',next-slot parsed integers now bindings))
@@ -2002,8 +2013,10 @@
                      (setf (,decoded-time-slot bindings) t)))
              (setq parsed (datetime-parse--future-bias nil parsed now))
              (setq parsed (datetime-parse--floor ',next-slot parsed))
-             (setq previous (datetime-parse--floor ',next-slot previous))
-             (setq previous (fixed-decoded-time-add previous nil))
+             (setq previous-parsed
+                   (datetime-parse--floor ',next-slot previous-parsed))
+             (setq previous-parsed
+                   (fixed-decoded-time-add previous-parsed nil))
              (setq parsed (fixed-decoded-time-add parsed delta)))))
 
 (defun datetime-parse--to-day-of-week (parsed day-of-week now)
