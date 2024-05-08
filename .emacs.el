@@ -1691,18 +1691,27 @@
 (defun datetime-parse--loop (string &optional now)
     (setq-if-nil now (decode-time (current-time)))
     (let ((parsed (make-decoded-time))
+          (previous nil)
           (bindings (make-decoded-time))
-          (previous-parsed nil)
-          (previous-bindings nil)
           (integers ())
+          (integer nil)
+          (integers-in-span 0)
+          (integers-before-span 0)
           (had-offsets nil)
           (words (split-string string))
           word)
         (setq word words)
         (while word
-            (unpack (previous-parsed _ previous-bindings)
-                    (datetime-parse--bind nil parsed integers now bindings))
+            (unpack (previous _ _)
+                    (datetime-parse--bind nil parsed integers now))
+            (setq previous (datetime-parse--future-bias nil previous now))
+            (setq integer nil)
             (datetime-parse--1)
+            (if integer
+                (setq integers-in-span (1+ integers-in-span))
+                (setq integers-before-span
+                      (+ integers-before-span integers-in-span))
+                (setq integers-in-span 0))
             (pop word))
         (unpack (parsed _ bindings)
                 (datetime-parse--bind nil parsed integers now bindings))
@@ -1712,26 +1721,18 @@
         (if (string-suffix-p " " string)
             (setq string (concat (string-join words " ") " "))
             (setq string (string-join words " ")))
-        (if (or (and (length< words 2) (not had-offsets))
+        (if (or (and (< (- (length words) integers-before-span) 2)
+                     (not had-offsets))
                 (string-suffix-p " " string))
             (list parsed (list nil bindings string))
-            (let ((top (cl-position-if-not 'null previous-parsed)))
-                (setq previous-parsed
-                      (variadic-mapcar
-                          (lambda (a b) (and a b))
-                          (mapcar* 'equal bindings previous-bindings)
-                          previous-parsed))
-                (when (equal top (cl-position-if-not 'null previous-parsed))
-                    (setq previous-parsed
-                          (datetime-parse--future-bias
-                              nil previous-parsed now))))
-            (list parsed (list previous-parsed bindings string)))))
+            (list parsed (list previous bindings string)))))
 
 (defmacro datetime-parse--1 ()
     `(cond
          ((string-match-p "^[0-9]\\{3,\\}$" (car word))
              (setf (decoded-time-year parsed) (string-to-number (car word))))
          ((string-match-p "^[0-9]+$" (car word))
+             (setq integer t)
              (setq integers (append integers (list word))))
          ((string-match-p "^[0-9]\\{3,\\}y" (car word))
              (setf (decoded-time-year parsed) (string-to-number (car word))))
@@ -1897,9 +1898,9 @@
                          (setf (,decoded-time-slot parsed) ,slot))))
              ,@body)))
 
-(defun datetime-parse--bind (slot parsed integers now bindings)
+(defun datetime-parse--bind (slot parsed integers now &optional bindings)
+    (setq-if-nil bindings (make-decoded-time))
     (setq parsed (copy-sequence parsed))
-    (setq bindings (copy-sequence bindings))
     (datetime-parse--bind-1 month
         (datetime--validate-month month)
         (datetime-parse--bind-1 day
@@ -2001,9 +2002,8 @@
                      (setf (,decoded-time-slot bindings) t)))
              (setq parsed (datetime-parse--future-bias nil parsed now))
              (setq parsed (datetime-parse--floor ',next-slot parsed))
-             (setq previous-parsed
-                   (datetime-parse--floor ',next-slot previous-parsed))
-             (setq previous-parsed (fixed-decoded-time-add previous-parsed nil))
+             (setq previous (datetime-parse--floor ',next-slot previous))
+             (setq previous (fixed-decoded-time-add previous nil))
              (setq parsed (fixed-decoded-time-add parsed delta)))))
 
 (defun datetime-parse--to-day-of-week (parsed day-of-week now)
