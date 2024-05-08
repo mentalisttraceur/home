@@ -1704,7 +1704,6 @@
         (while word
             (unpack (previous _ _)
                     (datetime-parse--bind nil parsed integers now))
-            (setq previous (datetime-parse--future-bias nil previous now))
             (setq integer nil)
             (datetime-parse--1)
             (if integer
@@ -1725,6 +1724,7 @@
                      (not had-offsets))
                 (string-suffix-p " " string))
             (list parsed (list nil bindings string))
+            (setq previous (datetime-parse--future-bias nil previous now))
             (list parsed (list previous bindings string)))))
 
 (defmacro datetime-parse--1 ()
