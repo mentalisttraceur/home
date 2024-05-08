@@ -1705,6 +1705,8 @@
         (while word
             (unpack (previous-parsed _ previous-bindings)
                     (datetime-parse--bind nil parsed integers))
+            (setq previous-parsed
+                  (datetime-parse--future-bias nil previous-parsed now))
             (setq integer nil)
             (datetime-parse--1)
             (if integer
@@ -1725,8 +1727,6 @@
                      (not (any offsets)))
                 (string-suffix-p " " string))
             (list parsed (list nil bindings string))
-            (setq previous-parsed
-                  (datetime-parse--future-bias nil previous-parsed now))
             (setq previous-parsed
                   (variadic-mapcar
                       (lambda (value binding offset)
