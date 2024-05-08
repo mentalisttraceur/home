@@ -1704,7 +1704,7 @@
         (setq word words)
         (while word
             (unpack (previous-parsed _ previous-bindings)
-                    (datetime-parse--bind nil parsed integers now))
+                    (datetime-parse--bind nil parsed integers))
             (setq integer nil)
             (datetime-parse--1)
             (if integer
@@ -1714,7 +1714,7 @@
                 (setq integers-in-span 0))
             (pop word))
         (unpack (parsed _ bindings)
-                (datetime-parse--bind nil parsed integers now bindings))
+                (datetime-parse--bind nil parsed integers bindings))
         (setq parsed (datetime-parse--future-bias nil parsed now))
         (setq parsed (datetime-parse--floor nil parsed))
         (setq parsed (fixed-decoded-time-add parsed nil))
@@ -1894,7 +1894,7 @@
          (t
              (user-error "Bad word: %S" (car word)))))
 
-(defmacro datetime-parse--bind-1 (slot validate-form &rest body)
+(defmacro datetime-parse--bind-1 (slot &rest body)
     (let* ((name (symbol-name slot))
            (decoded-time-slot (intern (concat "decoded-time-" name)))
            (face (intern (concat "datetime-read-preview-" name "-face"))))
@@ -1904,27 +1904,18 @@
                      (let* ((word  (car cell))
                             (,slot (string-to-number word)))
                          (setcar cell (propertize word 'face ',face))
-                         ,validate-form
                          (setf (,decoded-time-slot bindings) ,slot)
                          (setf (,decoded-time-slot parsed) ,slot))))
              ,@body)))
 
-(defun datetime-parse--bind (slot parsed integers now &optional bindings)
+(defun datetime-parse--bind (slot parsed integers &optional bindings)
     (setq-if-nil bindings (make-decoded-time))
     (setq parsed (copy-sequence parsed))
     (datetime-parse--bind-1 month
-        (datetime--validate-month month)
         (datetime-parse--bind-1 day
-            (let* ((bound (datetime-parse--future-bias 'day parsed now))
-                   (year  (decoded-time-year  bound))
-                   (month (decoded-time-month bound)))
-                (datetime--validate-day year month day))
             (datetime-parse--bind-1 hour
-                (datetime--validate-hour hour)
                 (datetime-parse--bind-1 minute
-                    (datetime--validate-minute minute)
-                    (datetime-parse--bind-1 second
-                        (datetime--validate-second second))))))
+                    (datetime-parse--bind-1 second)))))
     (list parsed integers bindings))
 
 (defun datetime-parse--future-bias (slot parsed now)
@@ -2006,7 +1997,7 @@
              (setf (,decoded-time-slot offsets) t)
              (unpack (parsed integers bindings)
                      (datetime-parse--bind
-                         ',next-slot parsed integers now bindings))
+                         ',next-slot parsed integers bindings))
              (when (,decoded-time-slot bindings)
                  (if (eq (,decoded-time-slot bindings) t)
                      (setf (,decoded-time-slot bindings) nil)
