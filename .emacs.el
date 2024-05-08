@@ -815,6 +815,18 @@
         (apply 'cl-reduce (lambda (a b) (and a b)) seq
                cl-reduce-keyword-arguments)))
 
+(defun variadic-mapcar (function &rest lists)
+    (setq lists (nreverse lists))
+    (let ((results ()))
+        (while (any lists)
+            (let ((arguments ())
+                  (head lists))
+                (while head
+                    (push (pop (car head)) arguments)
+                    (pop head))
+                (push (apply function arguments) results)))
+        (nreverse results)))
+
 (use-package help
     :config
     (setq help-window-select t)
