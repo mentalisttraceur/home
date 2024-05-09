@@ -1376,6 +1376,10 @@
         t)
     (advice-add 'hexl-save-buffer :override 'fixed-hexl-save-buffer))
 
+(use-package man
+    :config
+    (setq Man-notify-method 'pushy))
+
 (use-package calendar
     :config
     (defvar calendar-months-before-current (if termux 0 1))
