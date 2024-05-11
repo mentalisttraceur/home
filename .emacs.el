@@ -4004,16 +4004,24 @@
         (windmove-left))
     (window-state-define-motion window-state-move-right
         (windmove-right))
+    (defun window-state--target+split ()
+        (when (eq window-state--action 'window-state-target-window-prefix)
+            (let ((window (selected-window)))
+                (set-window-parameter window 'window-state--target+split t))))
     (window-state-define-motion window-state-split-up
-        (evil-window-split))
+        (evil-window-split)
+        (window-state--target+split))
     (window-state-define-motion window-state-split-down
         (let ((evil-split-window-below t))
-            (evil-window-split)))
+            (evil-window-split))
+        (window-state--target+split))
     (window-state-define-motion window-state-split-left
-        (evil-window-vsplit))
+        (evil-window-vsplit)
+        (window-state--target+split))
     (window-state-define-motion window-state-split-right
         (let ((evil-vsplit-window-right t))
-            (evil-window-vsplit)))
+            (evil-window-vsplit))
+        (window-state--target+split))
     (defun window-state-toggle-auto-balance ()
         (setq evil-auto-balance-windows (not evil-auto-balance-windows))
         (message "evil-auto-balance-windows: %s" evil-auto-balance-windows)
@@ -4104,7 +4112,15 @@
         (display-buffer-override-next-command
             (lambda-let (window) (&rest _)
                 (cons window 'reuse))
-            nil
+            (lambda-let (origin-window window) (&rest _)
+                (when (window-parameter window 'window-state--target+split)
+                    (set-window-parameter window
+                        'window-state--target+split nil)
+                    (let ((buffer (window-buffer window)))
+                        (set-window-parameter window
+                            'quit-restore
+                            `(window window ,origin-window ,buffer)))
+                    (set-window-prev-buffers window nil)))
             "[target-window]")
         (message "Display next command buffer in target window..."))
     (window-state-define-operator window-state-bury
