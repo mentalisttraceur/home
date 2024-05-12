@@ -3233,6 +3233,13 @@
             (evil-local-set-key 'operator [escape] 'evil-force-normal-state)
             (evil-local-set-key 'operator "q"      'evil-force-normal-state)))
     (add-hook 'minibuffer-setup-hook 'misc-minibuffer-setup)
+    (defun wrap-evil-undo-step (function &rest arguments)
+        (evil-end-undo-step)
+        (evil-start-undo-step)
+        (apply function arguments)
+        (evil-end-undo-step)
+        (evil-start-undo-step))
+    (advice-add 'completion-at-point :around 'wrap-evil-undo-step)
     (define-key evil-ex-completion-map [up]
         (lambda ()
             (interactive)
