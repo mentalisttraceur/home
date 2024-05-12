@@ -2316,19 +2316,6 @@
                 (setq string (concat (substring string 0 -1) $-for-consult))
                 (cons 'orderless-regexp string)))))
 
-(use-package corfu
-    :config
-    (global-corfu-mode 1)
-    (setq corfu-scroll-margin 0)
-    (setq corfu-preview-current nil)
-    (defun corfu--preview-current-p ()
-        t))
-
-(use-package corfu-terminal
-    :config
-    (corfu-terminal-mode 1)
-    (setq corfu-terminal-disable-on-gui nil))
-
 (use-package eat
     :config
     (defun eat-point ()
@@ -3308,58 +3295,6 @@
                 (fixed-hexl-self-insert-command 1 character))))
     (evil-define-key 'normal hexl-mode-map "r" 'evil-hexl-replace)
     (define-key space-map "X" 'hexl-mode))
-
-(use-packages corfu evil
-    :config
-    (defun evil-corfu-escape ()
-        (lambda-let ((original-escape-action
-                         (or (lookup-key evil-normal-state-local-map [escape])
-                             (lookup-key evil-normal-state-map [escape]))))
-                    ()
-            (interactive)
-            (corfu-quit)
-            (evil-local-set-key 'normal [escape] original-escape-action)))
-    (defun evil-corfu--in-region (&rest _)
-        (evil-local-set-key 'normal [escape] (evil-corfu-escape)))
-    (advice-add 'corfu--in-region :before 'evil-corfu--in-region)
-    (define-key corfu-map [remap evil-previous-line] 'corfu-previous)
-    (define-key corfu-map [remap evil-next-line] 'corfu-next)
-    (defun evil-corfu-goto-nth (&optional n)
-        (interactive "P")
-        (corfu-first)
-        (when n
-            (corfu-next (1- n))))
-    (push 'evil-corfu-goto-nth corfu-continue-commands)
-    (define-key corfu-map [remap evil-goto-first-line] 'evil-corfu-goto-nth)
-    (defun evil-corfu-goto (&optional n)
-        (interactive "P")
-        (if n
-            (evil-corfu-goto-nth n)
-            (corfu-last)))
-    (push 'evil-corfu-goto corfu-continue-commands)
-    (define-key corfu-map [remap evil-goto-line] 'evil-corfu-goto)
-    (defun evil-corfu-scroll-up (&optional count)
-        (interactive "p")
-        (let ((corfu-count (/ corfu-count 2)))
-            (corfu-scroll-down count)))
-    (push 'evil-corfu-scroll-up corfu-continue-commands)
-    (defun evil-corfu-scroll-down (&optional count)
-        (interactive "p")
-        (let ((corfu-count (/ corfu-count 2)))
-            (corfu-scroll-up count)))
-    (push 'evil-corfu-scroll-down corfu-continue-commands)
-    (define-key corfu-map [remap evil-scroll-up] 'evil-corfu-scroll-up)
-    (define-key corfu-map [remap evil-scroll-down] 'evil-corfu-scroll-down)
-    (defun evil-corfu-top ()
-        (interactive)
-        (corfu--goto corfu--scroll))
-    (push 'evil-corfu-top corfu-continue-commands)
-    (define-key corfu-map [remap evil-window-top] 'evil-corfu-top)
-    (defun evil-corfu-bottom ()
-        (interactive)
-        (corfu--goto (+ corfu--scroll (1- corfu-count))))
-    (push 'evil-corfu-bottom corfu-continue-commands)
-    (define-key corfu-map [remap evil-window-bottom] 'evil-corfu-bottom))
 
 (use-packages evil undo-tree
     :config
