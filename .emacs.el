@@ -2185,6 +2185,7 @@
 
 (use-package consult
     :config
+    (setq completion-in-region-function 'consult-completion-in-region)
     (add-to-list 'consult-mode-histories
         '(eshell-mode
           histdir-buffer-local-history-list
