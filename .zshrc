@@ -19,8 +19,8 @@ bindkey '^A' beginning-of-line
 bindkey '^E' end-of-line
 bindkey "^K" kill-line
 
+export TZ=utc
 case ${TERMUX_VERSION+x} in x)
     PATH=$PREFIX/local/bin:$PATH
     export XDG_RUNTIME_DIR=$PREFIX/var/run
-    export TZ=utc
 esac
