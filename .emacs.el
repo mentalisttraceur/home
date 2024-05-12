@@ -3224,6 +3224,8 @@
                             'history-quit)
                         ((eq this-command 'consult-line)
                             'consult-line-quit)
+                        ((eq this-command 'consult-completion-in-region)
+                            'vertico-exit)
                         (t
                             'abort-minibuffers))))
             (evil-local-set-key 'normal   [escape] quit)
