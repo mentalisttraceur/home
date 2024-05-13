@@ -1032,12 +1032,12 @@
             ""
             (dlist-car position))))
 (defun histdir-input--cycle-older (position)
-    (let ((history (histdir--history)))
-        (if position
-            (let ((older (dlist-cdr position)))
-                (while (and older (not (dlist-car older)))
-                    (setq older (dlist-cdr older)))
-                older)
+    (if position
+        (let ((older (dlist-cdr position)))
+            (while (and older (not (dlist-car older)))
+                (setq older (dlist-cdr older)))
+            older)
+        (let ((history (histdir--history)))
             (cdr (histdir-history-table history)))))
 (defun histdir-input--older (position)
     (if-let (older (histdir-input--cycle-older position))
