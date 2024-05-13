@@ -4791,6 +4791,12 @@
                         (denoted-title-get path)
                         suffix
                         (denoted-tag-get path))))))
+    (defun task-next-repetition (count)
+        (interactive "p")
+        (task-schedule-repetition (dired-get-filename) count))
+    (defun task-previous-repetition (count)
+        (interactive "p")
+        (task-schedule-repetition (dired-get-filename) (- count)))
     (defun task-schedule-prompt (&optional default)
         (datetime-read
             (when default
@@ -4803,6 +4809,8 @@
                   (now (format-time-string denote-id-format (current-time))))
                 (task-schedule now)
                 (jump-to-position-with-scroll position))))
+    (define-key evil-motion-state-map "zj" 'task-next-repetition)
+    (define-key evil-motion-state-map "zk" 'task-previous-repetition)
     (define-key space-map "J"
         (lambda ()
             (interactive)
