@@ -4753,7 +4753,7 @@
         (let* ((parsed (task--parse-datetime datetime))
                (delta  (cdr repetition))
                (count  (car repetition))
-               (steps  (min steps count))
+               (steps  (min steps (or count steps)))
                (next   (decoded-time-iterate parsed delta steps)))
             (apply 'format "%6$04d%5$02d%4$02dT%3$02d%2$02d%1$02d" next)))
     (defun task--step-repetition (string parsed steps)
