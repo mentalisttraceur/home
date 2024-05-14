@@ -1801,7 +1801,7 @@
          ((string-match-p "^[0-9]+s" (car word))
              (setf (decoded-time-second bindings) nil)
              (setf (decoded-time-second parsed) (string-to-number (car word))))
-         ((string-match-p "^[0-9][0-9]:[0-9][0-9]:[0-9][0-9]$" (car word))
+         ((string-match-p "^[0-9][0-9]?:[0-9][0-9]:[0-9][0-9]$" (car word))
              (let-unpack ((hour minute second) (string-split (car word) ":"))
                  (setf (decoded-time-hour   bindings) nil)
                  (setf (decoded-time-minute bindings) nil)
