@@ -4815,7 +4815,7 @@
     (defun task-schedule-prompt (&optional default)
         (datetime-read
             (when default
-                (format-time-string "%Yy %mmo %dd %Hh %Mmi %Ss "
+                (format-time-string "%Y-%m-%d %H:%M:%S "
                     (date-to-time default)))))
     (define-key evil-motion-state-map "zj" 'task-next-repetition)
     (define-key evil-motion-state-map "zk" 'task-previous-repetition)
