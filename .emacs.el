@@ -4800,7 +4800,7 @@
     (defun task-schedule-prompt (&optional default)
         (datetime-read
             (when default
-                (format-time-string "%Y %m %d %H %M %S"
+                (format-time-string "%Yy %mmo %dd %Hh %Mmi %Ss "
                     (date-to-time default)))))
     (define-key space-map "j"
         (lambda ()
