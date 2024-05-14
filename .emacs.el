@@ -4722,10 +4722,13 @@
             (denote-update-dired-buffers)))
     (advice-add 'dired-do-delete :after 'task--delete-update)
     (advice-add 'dired-do-flagged-delete :after 'task--delete-update)
-    (defun task-create ()
-        (interactive)
-        (let (path)
-            (denote (task-prompt) (cons task-tag task-list--tags))
+    (defun task-create (prefix-argument)
+        (interactive "P")
+        (let (path
+              (datetime (when prefix-argument
+                            (datetime-read))))
+            (denote (task-prompt) (cons task-tag task-list--tags)
+                    nil nil datetime)
             (setq path buffer-file-name)
             (basic-save-buffer)
             (kill-buffer)
