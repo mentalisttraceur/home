@@ -4812,9 +4812,12 @@
                 (task-schedule now)
                 (jump-to-position-with-scroll position))))
     (define-key space-map "J"
-        (lambda ()
-            (interactive)
-            (task-schedule (task-schedule-prompt)))))
+        (lambda (prefix-argument)
+            (interactive "P")
+            (task-schedule
+                (task-schedule-prompt
+                    (when prefix-argument
+                        (denoted-datetime-get (dired-get-filename))))))))
 
 (use-packages calendar denote
     :config
