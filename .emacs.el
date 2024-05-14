@@ -4802,6 +4802,8 @@
             (when default
                 (format-time-string "%Yy %mmo %dd %Hh %Mmi %Ss "
                     (date-to-time default)))))
+    (define-key evil-motion-state-map "zj" 'task-next-repetition)
+    (define-key evil-motion-state-map "zk" 'task-previous-repetition)
     (define-key space-map "j"
         (lambda ()
             (interactive)
@@ -4809,8 +4811,6 @@
                   (now (format-time-string denote-id-format (current-time))))
                 (task-schedule now)
                 (jump-to-position-with-scroll position))))
-    (define-key evil-motion-state-map "zj" 'task-next-repetition)
-    (define-key evil-motion-state-map "zk" 'task-previous-repetition)
     (define-key space-map "J"
         (lambda ()
             (interactive)
