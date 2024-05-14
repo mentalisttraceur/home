@@ -4805,12 +4805,14 @@
     (define-key evil-motion-state-map "zj" 'task-next-repetition)
     (define-key evil-motion-state-map "zk" 'task-previous-repetition)
     (define-key space-map "j"
-        (lambda ()
-            (interactive)
-            (let ((position (point-position-with-scroll))
-                  (now (format-time-string denote-id-format (current-time))))
-                (task-schedule now)
-                (jump-to-position-with-scroll position))))
+        (lambda (prefix-argument)
+            (interactive "P")
+                (let ((position (point-position-with-scroll)))
+                    (if prefix-argument
+                        (task-next-repetition 1)
+                        (task-schedule (format-time-string
+                                           denote-id-format (current-time))))
+                    (jump-to-position-with-scroll position))))
     (define-key space-map "J"
         (lambda (prefix-argument)
             (interactive "P")
