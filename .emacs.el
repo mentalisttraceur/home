@@ -4371,12 +4371,6 @@
                ,point-to-match-beginning-form
                ,point-to-match-end-form
                (0 'denote-faces-title)))))
-    (defface denote-faces-year   '((t :inherit denote-faces-date)) "")
-    (defface denote-faces-month  '((t :inherit denote-faces-date)) "")
-    (defface denote-faces-day    '((t :inherit denote-faces-date)) "")
-    (defface denote-faces-hour   '((t :inherit denote-faces-time)) "")
-    (defface denote-faces-minute '((t :inherit denote-faces-time)) "")
-    (defface denote-faces-second '((t :inherit denote-faces-time)) "")
     (set-face-foreground 'denote-faces-month  "#FFA060")
     (set-face-foreground 'denote-faces-minute "#FFA060")
     (set-face-foreground 'denote-faces-extension "grey30")
