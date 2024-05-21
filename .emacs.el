@@ -2180,7 +2180,8 @@
                     (setq format-string (propertize format-string 'face face)))
                 (concat prefix (format format-string final-value))))))
 
-(defun datetime-read (&optional initial-input short)
+(defun datetime-read (&optional prompt initial-input short)
+    (setq-if-nil prompt "Date+time: ")
     (when initial-input
         (setq initial-input (datetime-collapse initial-input))
         (setq initial-input (datetime-expand initial-input t)))
@@ -2192,7 +2193,7 @@
         (with-hook (('post-command-hook
                         (lambda-let (short now cell) ()
                             (datetime-read--preview short now cell))))
-            (let ((datetime (read-string "Date+time: " initial-input)))
+            (let ((datetime (read-string prompt initial-input)))
                 (datetime-parse datetime short now)))))
 
 (defun datetime-expand (datetime &optional space-instead-of-t)
