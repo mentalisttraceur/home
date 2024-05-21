@@ -4855,7 +4855,8 @@
         (let (path
               (datetime (if prefix-argument
                             (datetime-read nil task-list--datetime)
-                            (datetime-floor task-list--datetime))))
+                            (when task-list--datetime
+                                (datetime-floor task-list--datetime)))))
             (denote (task-prompt) (cons task-tag task-list--tags)
                     nil nil datetime)
             (setq path buffer-file-name)
