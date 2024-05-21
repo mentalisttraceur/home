@@ -2138,28 +2138,7 @@
                 (let-unpack ((parsed info) (datetime-parse--loop
                                                input short now)
                              (_ _ _ day month year) parsed)
-                    (setq-if-nil day 1)
-                    (setq-if-nil month 1)
-                    (setq-if-nil year 1)
-                    (if (not datetime-read-popup-calendar)
-                        (progn
-                            (setcdr cell nil)
-                            (calendar-exit))
-                        (if-let ((_      (cdr cell))
-                                 (buffer (get-buffer "*Calendar*")))
-                            (switch-to-buffer buffer)
-                            (setcdr cell t)
-                            (calendar))
-                        (calendar-unmark)
-                        (when (< year 1)
-                            (setq year (1- year)))
-                        (unless (or (= month 0) (= day 0))
-                            (let ((date (list month day year)))
-                                (calendar-goto-date date)
-                                (calendar-mark-visible-date date
-                                    '(:foreground "red"))))
-                        (setq cursor-type nil)
-                        (select-window (minibuffer-window)))
+                    (datetime-read--preview-calendar year month day cell)
                     (save-point
                         (delete-minibuffer-contents)
                         (insert (nth 2 info)))
@@ -2173,6 +2152,38 @@
                             "["
                             (error-message-string error)
                             "]")))))))
+
+(defun datetime-read--preview-calendar (year month day cell)
+    (unwind-protect
+        (if (not datetime-read-popup-calendar)
+            (progn
+                (setcdr cell nil)
+                (calendar-exit))
+            (if-let ((_      (cdr cell))
+                     (buffer (get-buffer "*Calendar*")))
+                (switch-to-buffer buffer)
+                (setcdr cell t)
+                (calendar))
+            (calendar-unmark)
+            (when year
+                (let (date)
+                    (let* ((year  (if (< year 1)
+                                      (1- year)
+                                      year))
+                           (month (or month 1))
+                           (day   (or day 1)))
+                        (unless (datetime--valid-month month)
+                            (setq month 1))
+                        (unless (datetime--valid-day year month day)
+                            (setq day 1))
+                        (setq date (list month day year)))
+                    (calendar-goto-date date)
+                    (when (and month day
+                               (datetime--valid-month+day-p year month day))
+                        (calendar-mark-visible-date
+                            date '(:foreground "red")))))
+            (setq cursor-type nil))
+        (select-window (minibuffer-window))))
 
 (defun datetime-read--preview-format (parsed preview-info)
     (let-unpack ((prior bound _) preview-info
