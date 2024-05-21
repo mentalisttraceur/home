@@ -4687,7 +4687,7 @@
         (let ((input (datetime-read "File date+time: " default t)))
             (if (equal input "")
                 nil
-                (concat input (substring "00000000T000000" (length input))))))
+                (datetime-floor input))))
     (defun denoted-datetime-set (path datetime)
         (let ((title  (denoted-title-get path))
               (tags   (denoted-tag-get path))
