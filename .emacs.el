@@ -4680,10 +4680,7 @@
                (remaining (seq-difference tags deleted)))
             (denoted-tag-set path remaining)))
     (defun denoted-datetime-prompt (&optional default)
-        (when default
-            (setq default (datetime-expand default t)))
-        (let ((input (read-string "File date+time: " default)))
-            (setq input (datetime-collapse input))
+        (let ((input (datetime-read "File date+time: " default t)))
             (if (equal input "")
                 nil
                 (concat input (substring "00000000T000000" (length input))))))
