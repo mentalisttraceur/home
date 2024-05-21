@@ -1447,25 +1447,37 @@
 (define-error 'datetime-bad-minute "Bad minute" 'datetime-bad)
 (define-error 'datetime-bad-second "Bad second" 'datetime-bad)
 
+(defun datetime--valid-second-p (second)
+    (when (<= 0 second 59)
+        second))
+
 (defun datetime--validate-second (second)
-    (unless (<= 0 second 59)
-        (signal 'datetime-bad-second (list second)))
-    second)
+    (or (datetime--valid-second-p second)
+        (signal 'datetime-bad-second (list second))))
+
+(defun datetime--valid-minute-p (minute)
+    (when (<= 0 minute 59)
+        minute))
 
 (defun datetime--validate-minute (minute)
-    (unless (<= 0 minute 59)
-        (signal 'datetime-bad-minute (list minute)))
-    minute)
+    (or (datetime--valid-minute-p minute)
+        (signal 'datetime-bad-minute (list minute))))
+
+(defun datetime--valid-hour-p (hour)
+    (when (<= 0 hour 23)
+        hour))
 
 (defun datetime--validate-hour (hour)
-    (unless (<= 0 hour 23)
-        (signal 'datetime-bad-hour (list hour)))
-    hour)
+    (or (datetime--valid-hour-p hour)
+        (signal 'datetime-bad-hour (list hour))))
+
+(defun datetime--valid-month-p (month)
+    (when (<= 1 month 12)
+        month))
 
 (defun datetime--validate-month (month)
-    (unless (<= 1 month 12)
-        (signal 'datetime-bad-month (list month)))
-    month)
+    (or (datetime--valid-month-p month)
+        (signal 'datetime-bad-month (list month))))
 
 (defun datetime-is-leap (year)
     (and (= (mod year 4) 0)
@@ -1476,21 +1488,33 @@
     ;; 0 Ja Fe Mr Ap My Jn Jl Au Se Oc No De
     [  0 31 28 31 30 31 30 31 31 30 31 30 31])
 
-(defun datetime-days-in-month (year month)
-    (datetime--validate-month month)
+(defun datetime--days-in-month (year month)
     (if (and (= month 2)
              (datetime-is-leap year))
         (1+ (aref datetime--days-in-month month))
         (aref datetime--days-in-month month)))
 
+(defun datetime-days-in-month (year month)
+    (datetime--validate-month month)
+    (datetime--days-in-month year month))
+
+(defun datetime--valid-day-p (year month day)
+    (when (and (datetime--valid-month-p month)
+               (<= 1 day (datetime--days-in-month year month)))
+        day))
+
 (defun datetime--validate-day (year month day)
-    (unless (<= 1 day (datetime-days-in-month year month))
-        (signal 'datetime-bad-day (list day)))
-    day)
+    (or (datetime--valid-day-p year month day)
+        (signal 'datetime-bad-day (list day))))
+
+(defun datetime--valid-month+day-p (year month day)
+    (when (datetime--valid-day-p year month day)
+        t))
 
 (defun datetime--validate-month+day (year month day)
+    (datetime--validate-month month)
     (datetime--validate-day year month day)
-    nil)
+    t)
 
 (defun datetime-days-in-year (year)
     (if (datetime-is-leap year)
@@ -1570,7 +1594,7 @@
              (setq month (1+ (mod (1- month) 12)))
              (datetime--year+)
              (when day
-                 (setq day (min day (datetime-days-in-month year month)))))))
+                 (setq day (min day (datetime--days-in-month year month)))))))
 
 (defmacro datetime--day+ ()
     `(unless (= day+ 0)
