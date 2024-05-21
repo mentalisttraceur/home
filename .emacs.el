@@ -4261,39 +4261,12 @@
         (switch-to-buffer (last-buffer nil t)))
     (window-state-define-operator window-state-kill
         (kill-buffer))
-    (window-state-define-operator window-state-ex
-        (condition-case _error
-            (evil-ex)
-            (quit)))
-    (defvar window-state-last-search-target nil)
-    (window-state-define-operator window-state-vi-search-forward
-        (condition-case _error
-            (progn
-                (call-interactively 'evil-ex-search-forward)
-                (setq window-state-last-search-target window))
-            (quit)))
-    (window-state-define-operator window-state-vi-search-backward
-        (condition-case _error
-            (progn
-                (call-interactively 'evil-ex-search-backward)
-                (setq window-state-last-search-target window))
-            (quit)))
-    (defun window-state-vi-search-next (&optional window)
-        (setq-if-nil window window-state-last-search-target)
-        (with-selected-window window
-            (call-interactively 'evil-ex-search-next)))
-    (defun window-state-vi-search-previous (&optional window)
-        (setq-if-nil window window-state-last-search-target)
-        (with-selected-window window
-            (call-interactively 'evil-ex-search-previous)))
     (defun window-state-use-register ()
         (condition-case _error
             (setq window-state-this-register
                 (call-interactively 'evil-use-register))
             (quit))
         (setq window-state--execute-once t))
-    (window-state-define-operator window-state-space
-        (command-execute-in-keymap space-map " "))
     (window-state-define-operator window-state-send
         (condition-case _error
             (let* ((keys (read-key-sequence nil))
@@ -4334,13 +4307,7 @@
         (?B window-state-unbury-move-operator)
         (?r window-state-kill-move-operator)
         (?R window-state-kill)
-        (?: window-state-ex-operator)
-        (?/ window-state-vi-search-forward-operator)
-        (?? window-state-vi-search-backward-operator)
-        (?n window-state-vi-search-next)
-        (?N window-state-vi-search-previous)
         (?\" window-state-use-register)
-        (?  window-state-space-operator)
         (?s window-state-send-operator)
         (?g (lambda ()
                 (let* ((key (read-key "g-"))
