@@ -2217,6 +2217,17 @@
             (when (length> datetime 13)
                 (substring datetime 13))))
 
+(defun datetime-collapse (datetime)
+    (setq datetime (string-replace "-" "" datetime))
+    (setq datetime (string-replace ":" "" datetime))
+    (setq datetime (replace-regexp-in-string "[T \n]+" "" datetime))
+    (when (string-match-p "^[0-9]\\{9,\\}" datetime)
+        (setq datetime (concat (substring datetime 0 8)
+                               "T"
+                               (substring datetime 8))))
+    datetime)
+
+
 (use-package undo-tree
     :config
     (setq undo-tree-auto-save-history nil)
