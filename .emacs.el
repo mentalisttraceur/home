@@ -1484,7 +1484,7 @@
         (aref datetime--days-in-month month)))
 
 (defun datetime--validate-day (year month day)
-    (unless (< 0 day (1+ (datetime-days-in-month year month)))
+    (unless (<= 1 day (datetime-days-in-month year month))
         (signal 'datetime-bad-day (list day)))
     day)
 
