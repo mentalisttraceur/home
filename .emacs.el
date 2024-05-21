@@ -2184,7 +2184,7 @@
     (let ((cell (cons nil nil))
           (now  (decode-time (current-time))))
         (add-single-use-hook 'minibuffer-setup-hook
-            (lambda ()
+            (lambda-let (cell) ()
                 (setcar cell (make-overlay (point-max) (point-max)))))
         (with-hook (('post-command-hook
                         (lambda-let (short now cell) ()
