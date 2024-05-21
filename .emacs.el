@@ -1973,6 +1973,18 @@
                    (decoded-time-day   now))
              (let ((one-day (make-decoded-time :day 1)))
                  (setq parsed (fixed-decoded-time-add parsed one-day))))
+         ((string-match-p "^ye" (car word))
+             (setf (decoded-time-year  bindings) nil)
+             (setf (decoded-time-month bindings) nil)
+             (setf (decoded-time-day   bindings) nil)
+             (setf (decoded-time-year  parsed)
+                   (decoded-time-year  now))
+             (setf (decoded-time-month parsed)
+                   (decoded-time-month now))
+             (setf (decoded-time-day   parsed)
+                   (decoded-time-day   now))
+             (let ((one-day (make-decoded-time :day -1)))
+                 (setq parsed (fixed-decoded-time-add parsed one-day))))
          (t
              (user-error "Bad word: %S" (car word)))))
 
