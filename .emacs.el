@@ -2237,7 +2237,8 @@
     (setq-if-nil prompt "Date+time: ")
     (when initial-input
         (setq initial-input (datetime-collapse initial-input))
-        (setq initial-input (datetime-expand initial-input t)))
+        (setq initial-input (datetime-expand initial-input t))
+        (setq initial-input (concat initial-input " ")))
     (let ((cell (cons nil nil))
           (now  (decode-time (current-time))))
         (add-single-use-hook 'minibuffer-setup-hook
