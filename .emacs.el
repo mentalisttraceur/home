@@ -1701,16 +1701,17 @@
     (let-unpack ((parsed _) (datetime-parse--loop string short now))
         (let-unpack ((second minute hour day month year) parsed)
             (concat
-                (format "%04d" year)
-                (when month
+                (when year
+                    (format "%04d" year))
+                (when (and year month)
                     (format "%02d" month))
-                (when (and month day)
+                (when (and year month day)
                     (format "%02d" day))
-                (when (and month day hour)
+                (when (and year month day hour)
                     (format "T%02d" hour))
-                (when (and month day hour minute)
+                (when (and year month day hour minute)
                     (format "%02d" minute))
-                (when (and month day hour minute second)
+                (when (and year month day hour minute second)
                     (format "%02d" second))))))
 
 (defun datetime-parse--loop (string &optional short now)
@@ -1742,7 +1743,8 @@
             (pop word))
         (unpack (parsed _ bindings)
                 (datetime-parse--bind nil parsed integers bindings))
-        (setq parsed (datetime-parse--future-bias nil parsed now))
+        (unless (and short (not (any (take 6 parsed))))
+            (setq parsed (datetime-parse--future-bias nil parsed now)))
         (when short
             (unless (decoded-time-second parsed)
                 (setf (decoded-time-second parsed) t)
@@ -1753,7 +1755,9 @@
                         (unless (decoded-time-day parsed)
                             (setf (decoded-time-day parsed) t)
                             (unless (decoded-time-month parsed)
-                                (setf (decoded-time-month parsed) t)))))))
+                                (setf (decoded-time-month parsed) t)
+                                (unless (decoded-time-year parsed)
+                                    (setf (decoded-time-year parsed) t))))))))
         (setq parsed (datetime-parse--floor nil parsed))
         (when short
             (when (eq (decoded-time-second parsed) t)
@@ -1765,7 +1769,9 @@
             (when (eq (decoded-time-day parsed) t)
                 (setf (decoded-time-day parsed) nil))
             (when (eq (decoded-time-month parsed) t)
-                (setf (decoded-time-month parsed) nil)))
+                (setf (decoded-time-month parsed) nil))
+            (when (eq (decoded-time-year parsed) t)
+                (setf (decoded-time-year parsed) nil)))
         (setq parsed (fixed-decoded-time-add parsed nil))
         (if (string-suffix-p " " string)
             (setq string (concat (string-join words " ") " "))
@@ -2099,6 +2105,7 @@
                              (_ _ _ day month year) parsed)
                     (setq-if-nil day 1)
                     (setq-if-nil month 1)
+                    (setq-if-nil year 1)
                     (if (not datetime-read-popup-calendar)
                         (progn
                             (setcdr cell nil)
