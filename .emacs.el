@@ -4626,13 +4626,7 @@
         (when default
             (setq default (datetime-expand default t)))
         (let ((input (read-string "File date+time: " default)))
-            (setq input (string-replace "-" "" input))
-            (setq input (string-replace ":" "" input))
-            (setq input (replace-regexp-in-string "[ \n]+" "" input))
-            (when (string-match-p "^[0-9]\\{9,\\}" input)
-                (setq input (concat (substring input 0 8)
-                                    "T"
-                                    (substring input 8))))
+            (setq input (datetime-collapse input))
             (if (equal input "")
                 nil
                 (concat input (substring "00000000T000000" (length input))))))
