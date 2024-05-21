@@ -2364,6 +2364,35 @@
     (advice-add 'completing-read-multiple
         :before 'hack-completing-read-multiple))
 
+(use-packages window vertico
+    :config
+    (defvar switch-to-buffer-last-search--tentative nil)
+    (defvar switch-to-buffer-last-search nil)
+    (defun switch-to-buffer-resume ()
+        (interactive)
+        (when (eq this-command 'switch-to-buffer-resume)
+            (setq this-command 'switch-to-buffer))
+        (setq unread-command-events
+              (append (listify-key-sequence switch-to-buffer-last-search)
+                      unread-command-events))
+        (call-interactively 'switch-to-buffer))
+    (defun switch-to-buffer--quit ()
+        (when (eq current-minibuffer-command 'switch-to-buffer)
+            (if switch-to-buffer-last-search--tentative
+                (setq switch-to-buffer-last-search
+                      switch-to-buffer-last-search--tentative
+                      switch-to-buffer-last-search--tentative nil)
+                (let ((query (field-string-no-properties)))
+                    (when (length> query 0)
+                        (setq switch-to-buffer-last-search query))))))
+    (add-hook 'minibuffer-exit-hook 'switch-to-buffer--quit)
+    (defun switch-to-buffer--exit (&rest _)
+        (when (eq current-minibuffer-command 'switch-to-buffer)
+            (let ((query (field-string-no-properties)))
+                (when (length> query 0)
+                    (setq switch-to-buffer-last-search--tentative query)))))
+    (advice-add 'vertico-exit :before 'switch-to-buffer--exit))
+
 (use-package consult
     :config
     (setq completion-in-region-function 'consult-completion-in-region)
