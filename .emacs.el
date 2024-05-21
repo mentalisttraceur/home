@@ -2192,6 +2192,31 @@
             (let ((datetime (read-string "Date+time: " initial-input)))
                 (datetime-parse datetime short now)))))
 
+(defun datetime-expand (datetime &optional space-instead-of-t)
+    (concat (substring datetime 0 4)
+            (when (length> datetime 4)
+                "-")
+            (when (length> datetime 4)
+                (substring datetime 4 6))
+            (when (length> datetime 6)
+                "-")
+            (when (length> datetime 6)
+                (substring datetime 6 8))
+            (when (length> datetime 8)
+                (if space-instead-of-t
+                    " "
+                    "T"))
+            (when (length> datetime 8)
+                (substring datetime 9 11))
+            (when (length> datetime 11)
+                ":")
+            (when (length> datetime 11)
+                (substring datetime 11 13))
+            (when (length> datetime 13)
+                ":")
+            (when (length> datetime 13)
+                (substring datetime 13))))
+
 (use-package undo-tree
     :config
     (setq undo-tree-auto-save-history nil)
