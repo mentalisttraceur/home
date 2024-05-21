@@ -4613,18 +4613,7 @@
             (denoted-tag-set path remaining)))
     (defun denoted-datetime-prompt (&optional default)
         (when default
-            (setq default
-                (concat (substring default 0 4)
-                        "-"
-                        (substring default 4 6)
-                        "-"
-                        (substring default 6 8)
-                        " "
-                        (substring default 9 11)
-                        ":"
-                        (substring default 11 13)
-                        ":"
-                        (substring default 13))))
+            (setq default (datetime-expand default t)))
         (let ((input (read-string "File date+time: " default)))
             (setq input (string-replace "-" "" input))
             (setq input (string-replace ":" "" input))
