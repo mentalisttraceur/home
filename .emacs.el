@@ -4883,11 +4883,6 @@
     (defun task-previous-repetition (count)
         (interactive "p")
         (task-schedule-repetition (dired-get-filename) (- count)))
-    (defun task-schedule-prompt (&optional default)
-        (datetime-read
-            (when default
-                (format-time-string "%Y-%m-%d %H:%M:%S "
-                    (date-to-time default)))))
     (define-key evil-motion-state-map "zj" 'task-next-repetition)
     (define-key evil-motion-state-map "zk" 'task-previous-repetition)
     (define-key space-map "j"
@@ -4903,7 +4898,7 @@
         (lambda (prefix-argument)
             (interactive "P")
             (task-schedule
-                (task-schedule-prompt
+                (datetime-read nil
                     (when prefix-argument
                         (denoted-datetime-get (dired-get-filename))))))))
 
