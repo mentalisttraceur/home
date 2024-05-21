@@ -2181,6 +2181,9 @@
                 (concat prefix (format format-string final-value))))))
 
 (defun datetime-read (&optional initial-input short)
+    (when initial-input
+        (setq initial-input (datetime-collapse initial-input))
+        (setq initial-input (datetime-expand initial-input t)))
     (let ((cell (cons nil nil))
           (now  (decode-time (current-time))))
         (add-single-use-hook 'minibuffer-setup-hook
