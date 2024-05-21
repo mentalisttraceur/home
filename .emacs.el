@@ -1697,13 +1697,23 @@
 (defface datetime-read-preview-second-face
     '((t :foreground "#FF4040" :weight bold)) "")
 
-(defun datetime-parse (string &optional now)
-    (let-unpack ((parsed _) (datetime-parse--loop string now))
+(defun datetime-parse (string &optional short now)
+    (let-unpack ((parsed _) (datetime-parse--loop string short now))
         (let-unpack ((second minute hour day month year) parsed)
-            (format "%04d%02d%02dT%02d%02d%02d"
-                year month day hour minute second))))
+            (concat
+                (format "%04d" year)
+                (when month
+                    (format "%02d" month))
+                (when (and month day)
+                    (format "%02d" day))
+                (when (and month day hour)
+                    (format "T%02d" hour))
+                (when (and month day hour minute)
+                    (format "%02d" minute))
+                (when (and month day hour minute second)
+                    (format "%02d" second))))))
 
-(defun datetime-parse--loop (string &optional now)
+(defun datetime-parse--loop (string &optional short now)
     (setq-if-nil now (decode-time (current-time)))
     (let ((parsed (make-decoded-time))
           (bindings (make-decoded-time))
@@ -1733,7 +1743,29 @@
         (unpack (parsed _ bindings)
                 (datetime-parse--bind nil parsed integers bindings))
         (setq parsed (datetime-parse--future-bias nil parsed now))
+        (when short
+            (unless (decoded-time-second parsed)
+                (setf (decoded-time-second parsed) t)
+                (unless (decoded-time-minute parsed)
+                    (setf (decoded-time-minute parsed) t)
+                    (unless (decoded-time-hour parsed)
+                        (setf (decoded-time-hour parsed) t)
+                        (unless (decoded-time-day parsed)
+                            (setf (decoded-time-day parsed) t)
+                            (unless (decoded-time-month parsed)
+                                (setf (decoded-time-month parsed) t)))))))
         (setq parsed (datetime-parse--floor nil parsed))
+        (when short
+            (when (eq (decoded-time-second parsed) t)
+                (setf (decoded-time-second parsed) nil))
+            (when (eq (decoded-time-minute parsed) t)
+                (setf (decoded-time-minute parsed) nil))
+            (when (eq (decoded-time-hour parsed) t)
+                (setf (decoded-time-hour parsed) nil))
+            (when (eq (decoded-time-day parsed) t)
+                (setf (decoded-time-day parsed) nil))
+            (when (eq (decoded-time-month parsed) t)
+                (setf (decoded-time-month parsed) nil)))
         (setq parsed (fixed-decoded-time-add parsed nil))
         (if (string-suffix-p " " string)
             (setq string (concat (string-join words " ") " "))
@@ -2056,14 +2088,17 @@
 
 (defvar datetime-read-popup-calendar nil)
 
-(defun datetime-read--preview (now cell)
+(defun datetime-read--preview (short now cell)
     (when-let ((overlay (car cell))
                (_       (eq (current-buffer) (overlay-buffer overlay))))
         (move-overlay overlay (point-max) (point-max))
         (let ((input (substring-no-properties (minibuffer-contents))))
             (condition-case error
-                (let-unpack ((parsed info) (datetime-parse--loop input now)
+                (let-unpack ((parsed info) (datetime-parse--loop
+                                               input short now)
                              (_ _ _ day month year) parsed)
+                    (setq-if-nil day 1)
+                    (setq-if-nil month 1)
                     (if (not datetime-read-popup-calendar)
                         (progn
                             (setcdr cell nil)
@@ -2098,60 +2133,64 @@
                             "]")))))))
     
 (defun datetime-read--preview-format (parsed preview-info)
-    (let-unpack ((prior bound _) preview-info)
+    (let-unpack ((prior bound _) preview-info
+                 (second minute hour day month year) parsed)
         (concat
             (propertize " " 'cursor t)
             "["
-            (datetime-read--preview-format-1 'year  "4" parsed prior nil)
-            "-"
-            (datetime-read--preview-format-1 'month "2" parsed prior bound)
-            "-"
-            (datetime-read--preview-format-1 'day   "2" parsed prior bound)
-            (if-let (final-value (decoded-time-weekday parsed))
+            (datetime-read--preview-format-1 'year  parsed prior nil)
+            (datetime-read--preview-format-1 'month parsed prior bound)
+            (datetime-read--preview-format-1 'day   parsed prior bound)
+            (when-let (final-value (decoded-time-weekday parsed))
                 (let* ((names '(Sun Mon Tue Wed Thu Fri Sat))
                        (name  (nth final-value names)))
                     (if-let ((prior-value (decoded-time-weekday prior))
                              (_           (not (= prior-value final-value))))
-                        (format " (%s->%s) " (nth prior-value names) name)
-                        (format " (%s) " name)))
-                " ")
-            (datetime-read--preview-format-1 'hour   "2" parsed prior bound)
-            ":"
-            (datetime-read--preview-format-1 'minute "2" parsed prior bound)
-            ":"
-            (datetime-read--preview-format-1 'second "2" parsed prior bound)
+                        (format " (%s->%s)" (nth prior-value names) name)
+                        (format " (%s)" name))))
+            (datetime-read--preview-format-1 'hour   parsed prior bound)
+            (datetime-read--preview-format-1 'minute parsed prior bound)
+            (datetime-read--preview-format-1 'second parsed prior bound)
             "]")))
 
-(defun datetime-read--preview-format-1 (slot digits parsed prior bound)
-    (let* ((format-string (concat "%0" digits "d"))
+(defun datetime-read--preview-format-1 (slot parsed prior bound)
+    (let* ((format-string (if (eq slot 'year) "%04d" "%02d"))
            (name (symbol-name slot))
            (getter (intern (concat "decoded-time-" name)))
            (face (intern (concat "datetime-read-preview-" name "-face")))
            (final-value (funcall getter parsed))
            (prior-value (funcall getter prior))
-           (bound-value (funcall getter bound)))
-        (if (and prior-value (not (= prior-value final-value)))
-            (format (concat "{"
-                            (if bound-value
-                                (propertize format-string 'face face)
-                                format-string)
-                            "->"
-                            format-string
-                            "}")
-                    prior-value final-value)
-            (when (eq bound-value final-value)
-                (setq format-string (propertize format-string 'face face)))
-            (format format-string final-value))))
+           (bound-value (funcall getter bound))
+           (prefix      (cond ((memq slot '(second minute)) ":")
+                              ((eq   slot 'hour)            " ")
+                              ((memq slot '(day month))     "-")
+                              ((eq   slot 'year)            ""))))
+        (when final-value
+            (if (and prior-value (not (= prior-value final-value)))
+                (format (concat prefix
+                                "{"
+                                (if bound-value
+                                    (propertize format-string 'face face)
+                                    format-string)
+                                "->"
+                                format-string
+                                "}")
+                        prior-value final-value)
+                (when (eq bound-value final-value)
+                    (setq format-string (propertize format-string 'face face)))
+                (concat prefix (format format-string final-value))))))
 
-(defun datetime-read (&optional initial-input)
+(defun datetime-read (&optional initial-input short)
     (let ((cell (cons nil nil))
           (now  (decode-time (current-time))))
         (add-single-use-hook 'minibuffer-setup-hook
             (lambda ()
                 (setcar cell (make-overlay (point-max) (point-max)))))
-        (with-hook (('post-command-hook (apply-partially
-                                            'datetime-read--preview now cell)))
-            (datetime-parse (read-string "Date+time: " initial-input) now))))
+        (with-hook (('post-command-hook
+                        (lambda-let (short now cell) ()
+                            (datetime-read--preview short now cell))))
+            (let ((datetime (read-string "Date+time: " initial-input)))
+                (datetime-parse datetime short now)))))
 
 (use-package undo-tree
     :config
