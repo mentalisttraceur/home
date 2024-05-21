@@ -1652,7 +1652,7 @@
     (calendar-day-of-week (list month day year)))
 
 (defun fixed-decoded-time-add (time delta)
-    (let-unpack ((second  minute  hour  day  month  year ) time
+    (let-unpack ((second  minute  hour  day  month  year dst zone) time
                  (second+ minute+ hour+ day+ month+ year+) delta)
         (setq-if-nil year+   0)
         (setq-if-nil month+  0)
@@ -1675,7 +1675,8 @@
             (when (and year month day)
                 (condition-case nil
                     (datetime-day-of-week year month day)
-                    (datetime-bad))))))
+                    (datetime-bad)))
+            dst zone)))
 
 (defun decoded-time-negate (delta)
     (list
