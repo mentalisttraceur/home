@@ -2131,7 +2131,7 @@
                             "["
                             (error-message-string error)
                             "]")))))))
-    
+
 (defun datetime-read--preview-format (parsed preview-info)
     (let-unpack ((prior bound _) preview-info
                  (second minute hour day month year) parsed)
