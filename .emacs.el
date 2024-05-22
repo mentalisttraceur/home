@@ -2386,12 +2386,62 @@
                     (when (length> query 0)
                         (setq switch-to-buffer-last-search query))))))
     (add-hook 'minibuffer-exit-hook 'switch-to-buffer--quit)
+    (defvar switch-to-buffer-next--index 0)
     (defun switch-to-buffer--exit (&rest _)
         (when (eq current-minibuffer-command 'switch-to-buffer)
             (let ((query (field-string-no-properties)))
                 (when (length> query 0)
+                    (setq switch-to-buffer-next--index vertico--index)
                     (setq switch-to-buffer-last-search--tentative query)))))
-    (advice-add 'vertico-exit :before 'switch-to-buffer--exit))
+    (advice-add 'vertico-exit :before 'switch-to-buffer--exit)
+    (defun switch-to-buffer-next (count)
+        (interactive "p")
+        (unless switch-to-buffer-last-search
+            (user-error "No search to resume"))
+        (let ((vertico-count 0))
+            (defer-input
+                (define-key defer-input-map "\C-g" 'abort-minibuffers)
+                (define-key defer-input-map [fill]
+                    (lambda ()
+                        (interactive)
+                        (insert switch-to-buffer-last-search)
+                        (vertico--update)
+                        (when (< vertico--index 0)
+                            (throw 'exit
+                                (lambda-let ((query (minibuffer-contents))) ()
+                                    (user-error "Search failed: %S"
+                                        (substring-no-properties query)))))))
+                (define-key defer-input-map [next]
+                    (lambda ()
+                        (interactive)
+                        (call-interactively 'vertico-next)
+                        (when (< vertico--index 0)
+                            (call-interactively 'vertico-next))))
+                (define-key defer-input-map [previous]
+                    (lambda ()
+                        (interactive)
+                        (call-interactively 'vertico-previous)
+                        (when (< vertico--index 0)
+                            (call-interactively 'vertico-previous))))
+                (define-key defer-input-map [done]
+                    (lambda ()
+                        (interactive)
+                        (call-interactively 'vertico-exit)))
+                (let ((direction 'previous))
+                    (if (< count 0)
+                        (setq count (- count))
+                        (setq direction 'next))
+                    (push 'done unread-command-events)
+                    (dotimes (_ count)
+                        (push direction unread-command-events))
+                    (dotimes (_ switch-to-buffer-next--index)
+                        (push 'next unread-command-events)))
+                (push 'fill unread-command-events)
+                (with-nested-command-state
+                    (call-interactively 'switch-to-buffer)))))
+    (defun switch-to-buffer-previous (count)
+        (interactive "p")
+        (switch-to-buffer-next (- count))))
 
 (use-package consult
     :config
