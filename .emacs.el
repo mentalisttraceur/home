@@ -2908,7 +2908,12 @@
                      (message ,format-string ,variable))
                  (evil-declare-not-repeat ',function))))
     (define-key space-map "." (toggle evil-repeat-move-cursor))
-    (define-key space-map "b" 'switch-to-buffer)
+    (define-key space-map "b"
+        (lambda (prefix-argument)
+            (interactive "P")
+            (if prefix-argument
+                (become-command 'switch-to-buffer-resume)
+                (become-command 'switch-to-buffer))))
     (define-key space-map "B" 'ibuffer)
     (defun smoother-kill-buffer (prefix-argument)
         (interactive "P")
