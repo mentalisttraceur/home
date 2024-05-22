@@ -4316,7 +4316,8 @@
             (jump-to-marker-with-scroll marker)))
     (window-state-define-operator window-state-search
         (condition-case _error
-            (become-command 'switch-to-buffer)
+            (with-advice (('read-buffer-to-switch :override 'read-buffer))
+                (become-command 'switch-to-buffer))
             (quit)))
     (window-state-define-operator window-state-open
         (condition-case _error
