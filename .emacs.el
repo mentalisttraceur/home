@@ -438,6 +438,12 @@
             (setcdr (cdr headward-link) (cdr tailward-link))))
     nil)
 
+(defun dlist-last (dlist)
+    (let ((next))
+        (while (setq next (dlist-cdr dlist))
+            (setq dlist next))
+        dlist))
+
 
 (defun make-ordered-hash-table (&rest arguments)
     (list (apply 'make-hash-table arguments)))
