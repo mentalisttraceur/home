@@ -4314,9 +4314,9 @@
         (let ((marker (with-selected-window origin-window
                           (point-marker-with-scroll))))
             (jump-to-marker-with-scroll marker)))
-    (window-state-define-operator window-state-change
+    (window-state-define-operator window-state-search
         (condition-case _error
-            (call-interactively 'switch-to-buffer)
+            (become-command 'switch-to-buffer)
             (quit)))
     (window-state-define-operator window-state-open
         (condition-case _error
@@ -4378,8 +4378,11 @@
         (?P window-state-paste)
         (?x window-state-swap-move-operator)
         (?X window-state-swap-operator)
-        (?c window-state-change-move-operator)
-        (?C window-state-change)
+        (?c window-state-search-move-operator)
+        (?C window-state-search)
+        (?/ window-state-search)
+        (?n switch-to-buffer-next)
+        (?N switch-to-buffer-previous)
         (?o window-state-open-move-operator)
         (?O window-state-open)
         (?w window-state-target-window-prefix-operator)
