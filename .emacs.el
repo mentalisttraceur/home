@@ -4951,7 +4951,7 @@
                     (setq day (fixed-decoded-time-add day one-day))))
             (let ((date (format-time-string "%Y%m%d" (encode-time day))))
                 (task-datetime-search date))))
-    (define-key space-map "A" 'task-agenda)
+    (define-key space-map "a" 'task-agenda)
     (defun task--parse-datetime (datetime)
         (string-match date-t-time-regex datetime)
         (let ((years   (string-to-number-or-nil (match-string 1 datetime)))
@@ -5039,10 +5039,6 @@
                 (datetime-read nil
                     (when prefix-argument
                         (denoted-datetime-get (dired-get-filename))))))))
-
-(use-packages calendar denote
-    :config
-    (define-key space-map "a" 'calendar))
 
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
