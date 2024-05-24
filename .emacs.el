@@ -1052,7 +1052,11 @@
             (while (and older (not (dlist-car older)))
                 (setq older (dlist-cdr older)))
             older)
-        histdir-buffer-local-history--head))
+        (let ((latest-local  histdir-buffer-local-history--head)
+              (latest-synced (dlist-cdr histdir-buffer-local-history--head)))
+            (if (equal (dlist-car latest-local) (dlist-car latest-synced))
+                latest-synced
+                latest-local))))
 (defun histdir-input--older (position)
     (if-let (older (histdir-input--cycle-older position))
         older
