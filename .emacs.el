@@ -2155,7 +2155,6 @@
 (defun datetime-read--preview (short now cell)
     (when-let ((overlay (car cell))
                (_       (eq (current-buffer) (overlay-buffer overlay))))
-        (move-overlay overlay (point-max) (point-max))
         (let ((input (substring-no-properties (minibuffer-contents))))
             (condition-case error
                 (let-unpack ((parsed info) (datetime-parse--loop
@@ -2165,16 +2164,17 @@
                     (save-point
                         (delete-minibuffer-contents)
                         (insert (nth 2 info)))
-                    (move-overlay overlay (point-max) (point-max))
-                    (overlay-put overlay 'before-string
+                    (datetime-read--preview-show overlay
                         (datetime-read--preview-format parsed info)))
                 (error
-                    (overlay-put overlay 'before-string
-                        (concat
-                            (propertize " " 'cursor t)
-                            "["
-                            (error-message-string error)
-                            "]")))))))
+                    (datetime-read--preview-show overlay
+                        (error-message-string error)))))))
+
+(defun datetime-read--preview-show (overlay string)
+    (move-overlay overlay (point-max) (point-max))
+    (overlay-put overlay 'before-string
+        (when (length> string 0)
+            (concat (propertize " " 'cursor t) "[" string "]"))))
 
 (defun datetime-read--preview-calendar (year month day cell)
     (unwind-protect
@@ -2209,11 +2209,8 @@
         (select-window (minibuffer-window))))
 
 (defun datetime-read--preview-format (parsed preview-info)
-    (let-unpack ((prior bound _) preview-info
-                 (second minute hour day month year) parsed)
+    (let-unpack ((prior bound _) preview-info)
         (concat
-            (propertize " " 'cursor t)
-            "["
             (datetime-read--preview-format-1 'year  parsed prior nil)
             (datetime-read--preview-format-1 'month parsed prior bound)
             (datetime-read--preview-format-1 'day   parsed prior bound)
@@ -2226,8 +2223,7 @@
                         (format " (%s)" name))))
             (datetime-read--preview-format-1 'hour   parsed prior bound)
             (datetime-read--preview-format-1 'minute parsed prior bound)
-            (datetime-read--preview-format-1 'second parsed prior bound)
-            "]")))
+            (datetime-read--preview-format-1 'second parsed prior bound))))
 
 (defun datetime-read--preview-format-1 (slot parsed prior bound)
     (let* ((format-string (if (eq slot 'year) "%04d" "%02d"))
