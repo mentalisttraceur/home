@@ -4871,14 +4871,15 @@
     (defun task--filter-dired ()
         (dired-mark-files-regexp (concat "_" task-tag))
         (dired-toggle-marks)
-        (dired-do-kill-lines)
-        (save-excursion
-            (goto-char 1)
-            (let ((inhibit-read-only t))
-                (delete-line)))
-        (if-let ((marker-at-1    (set-marker (make-marker) 1))
-                 (directory-at-1 (rassoc marker-at-1 dired-subdir-alist)))
-            (setcdr directory-at-1 0)))
+        (dired-do-kill-lines))
+    (defun task--narrow-dired ()
+        (widen)
+        (narrow-to-region
+            (save-excursion
+                (goto-char 1)
+                (beginning-of-line 2)
+                (point))
+            (point-max)))
     (defun task--buffer (title regex)
         (reuse-independent-dired title denote-directory)
         (dired-hide-details-mode 1)
@@ -4894,7 +4895,8 @@
             (when filter-regex
                 (dired-mark-files-regexp filter-regex)
                 (dired-toggle-marks)
-                (dired-do-kill-lines))))
+                (dired-do-kill-lines))
+            (task--narrow-dired)))
     (defun task-list ()
         (interactive)
         (task--buffer "*Tasks*" nil))
