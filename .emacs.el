@@ -98,6 +98,7 @@
 
 
 (setq read-minibuffer-restore-windows nil)
+(setq resize-mini-windows t)
 
 
 (defmacro lambda-let (varlist args &rest body)
