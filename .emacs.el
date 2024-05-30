@@ -2521,6 +2521,7 @@
         (let ((consult-after-jump-hook nil))
             (add-single-use-hook 'post-command-hook
                 (lambda ()
+                    (vertico--update)
                     (when (< vertico--index 0)
                         (push 'fail unread-command-events))))
             (add-single-use-hook 'consult-after-jump-hook
