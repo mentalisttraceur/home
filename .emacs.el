@@ -2976,7 +2976,14 @@
     (defun smoother-kill-buffer (prefix-argument)
         (interactive "P")
         (if prefix-argument
-            (kill-buffer (read-buffer-to-switch "Kill buffer"))
+            (let ((names (multi-vertico 'read-buffer "Kill buffers: "))
+                  (count 0))
+                (dolist (name names)
+                    (when (kill-buffer name)
+                        (+= count 1)))
+                (if (equal count 1)
+                    (message "Killed 1 buffer" count)
+                    (message "Killed %d buffers" count)))
             (when (confirm-p (format "Kill %s?" (buffer-name)))
                 (add-hook
                     'kill-buffer-hook
@@ -2987,6 +2994,10 @@
                     nil t)
                 (kill-buffer (current-buffer)))))
     (define-key space-map "k" 'smoother-kill-buffer)
+    (defun kill-other-buffer ()
+        (interactive)
+        (kill-buffer (read-buffer-to-switch "Kill buffer")))
+    (define-key space-map "K" 'kill-other-buffer)
     (define-key space-map "f" 'find-file)
     (define-key space-map "F" 'find-alternate-file)
     (define-key space-map "d" 'dired)
