@@ -2350,6 +2350,13 @@
     :config
     (vertico-mode 1)
     (setq vertico-cycle t)
+    (defvar multi-vertico--results nil)
+    (defun multi-vertico--exit ()
+        (setq multi-vertico--results vertico--candidates))
+    (defun multi-vertico (function &rest arguments)
+        (with-hook (('minibuffer-exit-hook 'multi-vertico--exit))
+            (apply function arguments))
+        multi-vertico--results)
     (setq minibuffer-prompt-properties
         (append '(cursor-intangible t) minibuffer-prompt-properties))
     (add-hook 'minibuffer-setup-hook 'cursor-intangible-mode))
