@@ -554,14 +554,13 @@
             (use-global-map saved-global-map))))
 
 
-(defun command-execute-in-keymap (keymap &optional prefix &rest arguments)
+(defun command-execute-in-keymap (keymap &optional prefix)
     (condition-case _error
         (with-hook (('prefix-command-echo-keystrokes-functions
                         (lambda-let (prefix) ()
                             (when (length> prefix 0)
                                 (key-description prefix)))))
-            (let* ((keys (apply 'read-key-sequence-in-keymap
-                             keymap nil arguments))
+            (let* ((keys (read-key-sequence-in-keymap keymap nil))
                    (binding (lookup-key keymap keys t)))
                 (run-post-command-hook)
                 (run-pre-command-hook)
