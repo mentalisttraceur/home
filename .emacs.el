@@ -2581,22 +2581,22 @@
                     (funcall matcher string)))))
     (advice-add 'orderless-not :around 'fixed-orderless-not)
     (setq orderless-style-dispatchers nil)
-    (add-to-list 'orderless-style-dispatchers
-        (lambda (string index count)
-            (when (string-match-p "[^\\]\\([\\][\\]\\)*!$" string)
-                (setq string (string-remove-suffix "!" string))
-                (cons 'orderless-not string)))))
+    (defun !-suffix-dispatcher (string index count)
+        (when (string-match-p "[^\\]\\([\\][\\]\\)*!$" string)
+            (setq string (string-remove-suffix "!" string))
+            (cons 'orderless-not string)))
+    (add-to-list 'orderless-style-dispatchers '!-suffix-dispatcher))
 
 (use-packages consult orderless
     :config
     (defconst min-consult-id consult--tofu-char)
     (defconst max-consult-id (+ consult--tofu-char consult--tofu-range -1))
     (defconst $-for-consult (format "[%c-%c]*$" min-consult-id max-consult-id))
-    (add-to-list 'orderless-style-dispatchers
-        (lambda (string index count)
-            (when (string-match-p "[^\\]\\([\\][\\]\\)*$$" string)
-                (setq string (concat (substring string 0 -1) $-for-consult))
-                (cons 'orderless-regexp string)))))
+    (defun $-suffix-dispatcher (string index count)
+        (when (string-match-p "[^\\]\\([\\][\\]\\)*$$" string)
+            (setq string (concat (substring string 0 -1) $-for-consult))
+            (cons 'orderless-regexp string)))
+    (add-to-list 'orderless-style-dispatchers '$-suffix-dispatcher))
 
 (use-package eat
     :config
