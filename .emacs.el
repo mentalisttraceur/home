@@ -2573,6 +2573,13 @@
     :config
     (add-to-list 'completion-styles 'orderless)
     (setq orderless-matching-styles '(orderless-regexp))
+    (defun fixed-orderless-not (orderless-not predicate regexp)
+        (let ((matcher     (funcall orderless-not predicate regexp))
+              (ignore-case (orderless--ignore-case-p (list regexp))))
+            (lambda-let (matcher ignore-case) (string)
+                (let ((case-fold-search ignore-case))
+                    (funcall matcher string)))))
+    (advice-add 'orderless-not :around 'fixed-orderless-not)
     (setq orderless-style-dispatchers nil)
     (add-to-list 'orderless-style-dispatchers
         (lambda (string index count)
