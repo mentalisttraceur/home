@@ -3458,13 +3458,15 @@
                 (pop-to-command-eshell--not-in-a-git-repository "Annotate"))))
     (define-universal-argument-space-keys git-map " v")
     (define-key git-map [escape] 'ignore)
-    (define-key space-map "zy"
+    (define-prefix-command 'space-misc-map)
+    (define-key space-map "z" 'space-misc-map)
+    (define-key space-misc-map "y"
         (lambda ()
             (interactive)
             (let ((default-directory "~/Downloads"))
                 (pop-to-command-eshell
                     '("sh" "-c" "yt-dlp -f bestaudio \"`p`\"") nil "yt-dlp"))))
-    (define-key space-map "zm"
+    (define-key space-misc-map "m"
         (lambda ()
             (interactive)
             (let ((default-directory "~"))
@@ -5103,8 +5105,8 @@
     (interactive)
     (tumblr--ensure-file
         (tumblr "delete" buffer-file-name)))
-(define-key space-map "zw" 'tumblr-publish)
-(define-key space-map "zd" 'tumblr-delete)
+(define-key space-misc-map "w" 'tumblr-publish)
+(define-key space-misc-map "d" 'tumblr-delete)
 
 
 (setq gc-cons-threshold init-gc-cons-threshold
