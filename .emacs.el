@@ -554,7 +554,7 @@
             (use-global-map saved-global-map))))
 
 
-(defun command-execute-in-keymap (keymap &optional prefix)
+(defun command-execute-in-keymap (keymap &optional prefix run-hooks)
     (condition-case _error
         (with-hook (('prefix-command-echo-keystrokes-functions
                         (lambda-let (prefix) ()
@@ -562,8 +562,9 @@
                                 (key-description prefix)))))
             (let* ((keys (read-key-sequence-in-keymap keymap nil))
                    (binding (lookup-key keymap keys t)))
-                (run-post-command-hook)
-                (run-pre-command-hook)
+                (when run-hooks
+                    (run-post-command-hook)
+                    (run-pre-command-hook))
                 (setq last-command-event (aref keys (1- (length keys))))
                 (if binding
                     (command-execute binding)
@@ -2923,15 +2924,15 @@
                      (if prefix-argument
                          (universal-argument-more prefix-argument)
                          (universal-argument))
-                     (command-execute-in-keymap ,map ,prefix))
+                     (command-execute-in-keymap ,map ,prefix t))
                  (defun ,digit (prefix-argument)
                      (interactive "P")
                      (digit-argument prefix-argument)
-                     (command-execute-in-keymap ,map ,prefix))
+                     (command-execute-in-keymap ,map ,prefix t))
                  (defun ,negative (prefix-argument)
                      (interactive "P")
                      (negative-argument prefix-argument)
-                     (command-execute-in-keymap ,map ,prefix))
+                     (command-execute-in-keymap ,map ,prefix t))
                  (define-key ,map " " ',universal)
                  (dolist (key '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
                      (define-key ,map key ',digit))
