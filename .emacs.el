@@ -5117,6 +5117,73 @@
 (define-key space-misc-map "w" 'tumblr-publish)
 (define-key space-misc-map "d" 'tumblr-delete)
 
+(defconst russian-vi-letter-pairs
+    '(("й" "q")
+      ("ц" "w")
+      ("у" "e")
+      ("к" "r")
+      ("е" "t")
+      ("н" "y")
+      ("г" "u")
+      ("ш" "i")
+      ("щ" "o")
+      ("з" "p")
+      ("ф" "a")
+      ("ы" "s")
+      ("в" "d")
+      ("а" "f")
+      ("п" "g")
+      ("р" "h")
+      ("о" "j")
+      ("л" "k")
+      ("д" "l")
+      ("я" "z")
+      ("ч" "x")
+      ("с" "c")
+      ("м" "v")
+      ("и" "b")
+      ("т" "n")
+      ("ь" "m")))
+(defconst russian-vi-symbol-pairs
+    '(("ё" "`")
+      ("Ё" "~")
+      ("№" "#")
+      ("х" "[")
+      ("Х" "{")
+      ("ъ" "]")
+      ("Ъ" "}")
+      ("ж" ";")
+      ("Ж" ":")
+      ("э" "'")
+      ("Э" "\"")
+      ("б" ",")
+      ("Б" "<")
+      ("ю" ".")
+      ("Ю" ">")))
+(defun russian-vi-bind--1 (state keymap russian-key english-key)
+    (evil-define-key state map russian (lookup-evil-key state map english)))
+(defun russian-vi-bind (map &optional state)
+    (dolist (pair russian-vi-symbol-pairs)
+        (let-unpack ((russian english) pair)
+            (russian-vi-bind--1 state map russian english)))
+    (dolist (pair russian-vi-letter-pairs)
+        (let-unpack ((russian english) pair)
+            (russian-vi-bind--1 state map russian english)
+            (setq russian (upcase russian))
+            (setq english (upcase english))
+            (russian-vi-bind--1 state map russian english))))
+
+(use-packages help ace-window consult evil undo-tree
+    :config
+    (dolist (map (list evil-motion-state-map evil-normal-state-map
+                       evil-visual-state-map evil-operator-state-map
+                       space-map git-map space-search-map space-misc-map
+                       window-state-map window-state-g-map
+                       undo-tree-visualizer-mode-map
+                       help-map))
+        (russian-vi-bind map))
+    (russian-vi-bind undo-tree-visualizer-mode-map 'replace))
+
 
 (setq gc-cons-threshold init-gc-cons-threshold
       file-name-handler-alist init-file-name-handler-alist)
