@@ -2898,6 +2898,10 @@
         (lambda (evil-quit &rest arguments)
             (with-advice (('delete-window :override 'kill-current-buffer))
                 (apply evil-quit arguments))))
+    (defun lookup-evil-key (state keymap key &optional accept-default)
+        (when state
+            (setq keymap (evil-get-auxiliary-keymap keymap state)))
+        (lookup-key keymap key accept-default))
     (define-key evil-motion-state-map "gG"
         (lambda ()
             (interactive)
