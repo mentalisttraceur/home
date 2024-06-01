@@ -3185,9 +3185,11 @@
         'evil-ex-search-or-consult-line-next)
     (define-key evil-motion-state-map "N"
         'evil-ex-search-or-consult-line-previous)
-    (define-key space-map "sl" 'consult-ripgrep)
-    (define-key space-map "sf" 'consult-fd)
-    (define-key space-map "st"
+    (define-prefix-command 'space-search-map)
+    (define-key space-map "s" space-search-map)
+    (define-key space-search-map "l" 'consult-ripgrep)
+    (define-key space-search-map "f" 'consult-fd)
+    (define-key space-search-map "t"
         (lambda ()
             (interactive)
             (consult-fd "~/storage/shared" "\\.trashed -- -H")))
@@ -4867,7 +4869,7 @@
             (interactive)
             (note-list)
             (dired-goto-last-file)))
-    (define-key space-map "sm"
+    (define-key space-search-map "m"
         (lambda ()
             (interactive)
             (note-list)
@@ -4957,14 +4959,14 @@
                (title (concat "*Tasks (" (string-join tags ",") ")*")))
             (task--buffer title regex)
             (setq-local task-list--tags tags)))
-    (define-key space-map "sh" 'task-tag-search)
+    (define-key space-search-map "h" 'task-tag-search)
     (defun task-datetime-search (datetime)
         (interactive (list (datetime-read "Task date+time: " nil t)))
         (let ((regex (concat "^" datetime))
               (title (format "*Tasks (%s)*" (datetime-expand datetime t))))
             (task--buffer title regex)
             (setq-local task-list--datetime datetime)))
-    (define-key space-map "sa" 'task-datetime-search)
+    (define-key space-search-map "a" 'task-datetime-search)
     (defun task-agenda (prefix-argument)
         (interactive "P")
         (let ((day (decode-time (current-time))))
