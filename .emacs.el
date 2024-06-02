@@ -5172,7 +5172,7 @@
         (evil-define-key state keymap russian-key binding)
         (when (keymapp binding)
             (when (symbolp binding)
-                (setq binding (symbol-value binding)))
+                (setq binding (symbol-function binding)))
             (russian-vi-bind binding state))))
 (defun russian-vi-bind (map &optional state)
     (dolist (pair russian-vi-symbol-pairs)
@@ -5181,9 +5181,12 @@
     (dolist (pair russian-vi-letter-pairs)
         (let-unpack ((russian english) pair)
             (russian-vi-bind--1 state map russian english)
-            (setq russian (upcase russian))
-            (setq english (upcase english))
-            (russian-vi-bind--1 state map russian english))))
+            (let ((russian (upcase russian))
+                  (english (upcase english)))
+                (russian-vi-bind--1 state map russian english))
+            (let ((russian (kbd (concat "C-" russian)))
+                  (english (kbd (concat "C-" english))))
+                (russian-vi-bind--1 state map russian english)))))
 (defun russian-vi-letter-map--1 (string pair)
     (let-unpack ((russian english) pair)
         (string-replace english russian string)))
@@ -5206,7 +5209,7 @@
                        space-map
                        window-state-map
                        undo-tree-visualizer-mode-map
-                       calendar-mode-map help-map))
+                       calendar-mode-map global-map help-map))
         (russian-vi-bind map))
     (russian-vi-bind undo-tree-visualizer-mode-map 'replace))
 
