@@ -3208,8 +3208,8 @@
     (add-hook 'pop-to-command-setup-hook
         (lambda ()
             (evil-initialize-state)
-            (evil-local-set-key 'normal "q" 'quit-window)
-            (evil-local-set-key 'normal [escape] 'quit-window)))
+            (dolist (key '([escape] "q" "й"))
+                (evil-local-set-key 'normal key 'quit-window))))
     (defun pop-to-command-eshell--not-a-file (name)
         (pop-to-command-eshell
             (list "echo" (concat (buffer-name) " is not visiting a file"))
@@ -3520,10 +3520,10 @@
                 (evil-previous-line)
                 (beginning-of-buffer (vertico-previous)))))
     (defun misc-minibuffer-setup ()
-        (evil-local-set-key 'normal "j"    'evil-vertico-next-line)
-        (evil-local-set-key 'normal [down] 'evil-vertico-next-line)
-        (evil-local-set-key 'normal "k"    'evil-vertico-previous-line)
-        (evil-local-set-key 'normal [up]   'evil-vertico-previous-line)
+        (dolist (key '([down] "j" "о"))
+            (evil-local-set-key 'normal key 'evil-vertico-next-line))
+        (dolist (key '([up] "k" "л"))
+            (evil-local-set-key 'normal key 'evil-vertico-previous-line))
         (let ((quit (cond
                         ((memq this-command history-commands)
                             'history-quit)
@@ -3533,10 +3533,9 @@
                             'vertico-exit)
                         (t
                             'abort-minibuffers))))
-            (evil-local-set-key 'normal   [escape] quit)
-            (evil-local-set-key 'normal   "q"      quit)
-            (evil-local-set-key 'operator [escape] 'evil-force-normal-state)
-            (evil-local-set-key 'operator "q"      'evil-force-normal-state)))
+            (dolist (key '([escape] "q" "й"))
+                (evil-local-set-key 'normal   key quit)
+                (evil-local-set-key 'operator key quit))))
     (add-hook 'minibuffer-setup-hook 'misc-minibuffer-setup)
     (defun wrap-evil-undo-step (function &rest arguments)
         (evil-end-undo-step)
@@ -3563,10 +3562,13 @@
                 (lambda ()
                     (interactive)
                     (isearch-done)))))
-    (add-hook 'Info-mode-hook (lambda ()
-        (evil-local-set-key 'motion "H" 'Info-history-back)
-        (evil-local-set-key 'motion "L" 'Info-history-forward)
-        (evil-local-set-key 'motion " " 'space-map)))
+    (add-hook 'Info-mode-hook
+        (lambda ()
+            (dolist (key '("H" "Р"))
+                (evil-local-set-key 'motion key 'Info-history-back))
+            (dolist (key '("L" "Д"))
+                (evil-local-set-key 'motion key 'Info-history-forward))
+            (evil-local-set-key 'motion " " 'space-map)))
     (evil-declare-not-repeat 'ignore)
     (add-to-list 'evil-motion-state-modes 'shortdoc-mode)
     (with-current-buffer (messages-buffer)
@@ -3588,11 +3590,16 @@
     (add-hook 'eat-eshell-exec-hook
         (lambda ()
             (evil-local-set-key 'insert "\C-v" 'eat-self-input)
-            (evil-local-set-key 'insert "\C-q" 'eat-quoted-input)))
+            (evil-local-set-key 'insert (kbd "C-м")
+                (lambda (count)
+                    (interactive "p")
+                    (eat-self-input count ?\C-v)))
+            (dolist (key `("\C-q" ,(kbd "C-й")))
+                (evil-local-set-key 'insert key 'eat-quoted-input))))
     (add-hook 'eat-eshell-exit-hook
         (lambda ()
-            (evil-local-set-key 'insert "\C-v" nil)
-            (evil-local-set-key 'insert "\C-q" nil))))
+            (dolist (key `("\C-v" ,(kbd "C-м") "\C-q" ,(kbd "C-й")))
+                (evil-local-set-key 'insert key nil)))))
 
 (use-packages hexl evil
     :config
@@ -5192,14 +5199,14 @@
                 (unless (or (equal mapped command)
                             (member mapped evil-ex-commands))
                     (evil-ex-define-cmd mapped definition))))))
-(use-packages help ace-window consult evil undo-tree
+(use-packages calendar help ace-window consult evil undo-tree
     :config
     (dolist (map (list evil-motion-state-map evil-normal-state-map
                        evil-visual-state-map evil-operator-state-map
                        space-map
                        window-state-map
                        undo-tree-visualizer-mode-map
-                       help-map))
+                       calendar-mode-map help-map))
         (russian-vi-bind map))
     (russian-vi-bind undo-tree-visualizer-mode-map 'replace))
 
