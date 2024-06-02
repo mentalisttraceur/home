@@ -5162,7 +5162,11 @@
       ("Ю" ">")))
 (defun russian-vi-bind--1 (state keymap russian-key english-key)
     (when-let (binding (lookup-evil-key state map english))
-        (evil-define-key state map russian binding)))
+        (evil-define-key state map russian binding)
+        (when (keymapp binding)
+            (when (symbolp binding)
+                (setq binding (symbol-value binding)))
+            (russian-vi-bind binding state))))
 (defun russian-vi-bind (map &optional state)
     (dolist (pair russian-vi-symbol-pairs)
         (let-unpack ((russian english) pair)
@@ -5192,8 +5196,8 @@
     :config
     (dolist (map (list evil-motion-state-map evil-normal-state-map
                        evil-visual-state-map evil-operator-state-map
-                       space-map git-map space-search-map space-misc-map
-                       window-state-map window-state-g-map
+                       space-map
+                       window-state-map
                        undo-tree-visualizer-mode-map
                        help-map))
         (russian-vi-bind map))
