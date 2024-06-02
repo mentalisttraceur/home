@@ -5172,7 +5172,21 @@
             (setq russian (upcase russian))
             (setq english (upcase english))
             (russian-vi-bind--1 state map russian english))))
+(defun russian-vi-letter-map--1 (string pair)
+    (let-unpack ((russian english) pair)
+        (string-replace english russian string)))
+(defun russian-vi-letter-map (english-string)
+    (seq-reduce 'russian-vi-letter-map--1
+        russian-vi-letter-pairs english-string))
 
+(use-package evil
+    :config
+    (dolist (ex-command evil-ex-commands)
+        (let-uncons (command definition ex-command)
+            (let ((mapped (russian-vi-letter-map command)))
+                (unless (or (equal mapped command)
+                            (member mapped evil-ex-commands))
+                    (evil-ex-define-cmd mapped definition))))))
 (use-packages help ace-window consult evil undo-tree
     :config
     (dolist (map (list evil-motion-state-map evil-normal-state-map
