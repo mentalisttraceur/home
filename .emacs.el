@@ -5169,11 +5169,7 @@
       ("Ю" ">")))
 (defun russian-vi-bind--1 (state keymap russian-key english-key)
     (when-let (binding (lookup-evil-key state keymap english-key))
-        (evil-define-key state keymap russian-key binding)
-        (when (keymapp binding)
-            (when (symbolp binding)
-                (setq binding (symbol-function binding)))
-            (russian-vi-bind binding state))))
+        (evil-define-key state keymap russian-key binding)))
 (defun russian-vi-bind (map &optional state)
     (dolist (pair russian-vi-symbol-pairs)
         (let-unpack ((russian english) pair)
@@ -5186,7 +5182,14 @@
                 (russian-vi-bind--1 state map russian english))
             (let ((russian (kbd (concat "C-" russian)))
                   (english (kbd (concat "C-" english))))
-                (russian-vi-bind--1 state map russian english)))))
+                (russian-vi-bind--1 state map russian english))))
+    (map-keymap
+        (lambda (_event binding)
+            (when (keymapp binding)
+                (when (symbolp binding)
+                    (setq binding (symbol-function binding)))
+                (russian-vi-bind binding state)))
+        map))
 (defun russian-vi-letter-map--1 (string pair)
     (let-unpack ((russian english) pair)
         (string-replace english russian string)))
@@ -5206,12 +5209,10 @@
     :config
     (dolist (map (list evil-motion-state-map evil-normal-state-map
                        evil-visual-state-map evil-operator-state-map
-                       space-map
                        window-state-map
                        undo-tree-visualizer-mode-map
-                       calendar-mode-map global-map help-map))
-        (russian-vi-bind map))
-    (russian-vi-bind undo-tree-visualizer-mode-map 'replace))
+                       calendar-mode-map global-map))
+        (russian-vi-bind map)))
 
 
 (setq gc-cons-threshold init-gc-cons-threshold
