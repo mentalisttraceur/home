@@ -5185,9 +5185,9 @@
                 (russian-vi-bind--1 map russian english))))
     (map-keymap
         (lambda (_event binding)
+            (when (symbolp binding)
+                (setq binding (symbol-function binding)))
             (when (keymapp binding)
-                (when (symbolp binding)
-                    (setq binding (symbol-function binding)))
                 (russian-vi-bind binding)))
         map))
 (defun russian-vi-letter-map--1 (string pair)
