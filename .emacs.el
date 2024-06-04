@@ -2992,6 +2992,8 @@
         (if prefix-argument
             (let ((names (multi-vertico 'read-buffer "Kill buffers: "))
                   (count 0))
+                (when (member multi-vertico-input '("" " "))
+                    (setq names (list multi-vertico-selected)))
                 (dolist (name names)
                     (when (kill-buffer name)
                         (+= count 1)))
