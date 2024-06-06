@@ -732,6 +732,8 @@
 (setq use-short-answers t)
 (define-key y-or-n-p-map "\C-m" 'act)
 (define-key y-or-n-p-map [return] 'act)
+(define-key y-or-n-p-map "н" "y")
+(define-key y-or-n-p-map "т" "n")
 (advice-add 'y-or-n-p :around 'funcall-with-nested-command-state)
 (defun read-multiple-choice-name (choice)
     (let ((raw   (cdr choice))
