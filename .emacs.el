@@ -5082,6 +5082,9 @@
                 (datetime-read nil
                     (when prefix-argument
                         (denoted-datetime-get (dired-get-filename))))))))
+(use-packages dired denote
+    :config
+    (define-key dired-mode-map "R" 'denote-dired-mode))
 
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
