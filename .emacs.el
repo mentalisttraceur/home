@@ -4619,6 +4619,7 @@
                (0 'denote-faces-title)))))
     (set-face-foreground 'denote-faces-month  "#FFA060")
     (set-face-foreground 'denote-faces-minute "#FFA060")
+    (set-face-foreground 'denote-faces-keywords "#C040FF")
     (set-face-foreground 'denote-faces-extension "grey30")
     (defface task-faces-repeat   '((t :inherit default)) "")
     (defface task-faces-duration '((t :inherit default)) "")
