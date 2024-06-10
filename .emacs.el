@@ -488,6 +488,16 @@
 (defun repeat-string (string count)
     (string-join (make-list count string)))
 
+(defun string-common-prefix (string1 string2)
+    (let ((comparison (compare-strings string1 0 nil string2 0 nil))
+          index)
+        (if (eq comparison t)
+            string1
+            (if (< comparison 0)
+               (setq index (- -1 comparison))
+               (setq index (- comparison 1)))
+            (substring string1 0 index))))
+
 
 (defun point-position-with-scroll ()
     (list
