@@ -39,6 +39,8 @@
 (setq gc-cons-threshold (* 1024 1024 1024)
       file-name-handler-alist nil)
 
+(set-face-background 'highlight "#003800")
+
 (when termux
     (define-key minibuffer-inactive-mode-map [mouse-1] nil)
     (define-key mode-line-buffer-identification-keymap
