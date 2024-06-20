@@ -3039,7 +3039,7 @@
                 (delete-file buffer-file-name)
                 (if (y-or-n-p (format "Kill %s?" (buffer-name)))
                     (with-buffer-modified-p nil
-                        (kill-buffer))
+                        (smoother-kill-buffer))
                     (set-buffer-modified-p t)))
             (user-error "%s is not visiting a file" (buffer-name))))
     (define-key space-map "D" 'delete-buffer-file)
