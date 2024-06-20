@@ -3001,7 +3001,7 @@
                 (become-command 'switch-to-buffer-resume)
                 (become-command 'switch-to-buffer))))
     (define-key space-map "B" 'ibuffer)
-    (defun smoother-kill-buffer (prefix-argument)
+    (defun smoother-kill-buffer (&optional prefix-argument)
         (interactive "P")
         (if prefix-argument
             (let ((names (multi-vertico 'read-buffer "Kill buffers: "))
