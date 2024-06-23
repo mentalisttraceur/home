@@ -1248,6 +1248,13 @@
                         nil))
                 (goto-char start-of-search)
                 nil)))
+    (defun revert-dired-buffers (directory)
+        (setq directory (expand-file-name (file-name-as-directory directory)))
+        (dolist (buffer (buffer-list))
+            (with-current-buffer buffer
+                (when (derived-mode-p 'dired-mode)
+                    (when (equal directory (expand-file-name dired-directory))
+                        (revert-buffer))))))
     (defun independent-dired (directory &rest arguments)
         (let* ((directory (expand-file-name directory))
                (directory (file-name-as-directory directory))
