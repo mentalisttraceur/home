@@ -3032,17 +3032,6 @@
     (define-key space-map "F" 'find-alternate-file)
     (define-key space-map "d" 'dired)
     (add-to-list 'evil-motion-state-modes 'dired-mode)
-    (defun delete-buffer-file ()
-        (interactive)
-        (if buffer-file-name
-            (when (y-or-n-p (format "Delete %s?" buffer-file-name))
-                (delete-file buffer-file-name)
-                (if (y-or-n-p (format "Kill %s?" (buffer-name)))
-                    (with-buffer-modified-p nil
-                        (smoother-kill-buffer))
-                    (set-buffer-modified-p t)))
-            (user-error "%s is not visiting a file" (buffer-name))))
-    (define-key space-map "D" 'delete-buffer-file)
     (define-key space-map "y" 'execute-extended-command)
     (define-key space-map "," 'eval-expression)
     (define-key space-map "h" help-map)
@@ -4878,6 +4867,21 @@
         (interactive "P")
         (denoted-try denoted-name-edit))
     (define-key evil-motion-state-map "gC" 'name-change)
+    (defun smoother-delete-file--1 (&optional filename)
+        (when (confirm-p (format "Delete %s?" filename))
+            (delete-file filename)
+            (when-let (buffer (find-buffer-visiting filename))
+                (with-current-buffer buffer
+                    (condition-case _error
+                        (with-buffer-modified-p nil
+                            (smoother-kill-buffer))
+                        (quit
+                            (set-buffer-modified-p t))))))
+        nil)
+    (defun smoother-delete-file ()
+        (interactive)
+        (denoted-try smoother-delete-file--1))
+    (define-key space-map "D" 'smoother-delete-file)
     (evil-define-command note (prefix-argument &optional register)
         (interactive "P<x>")
         (denote)
@@ -5097,6 +5101,7 @@
                         (denoted-datetime-get (dired-get-filename))))))))
 (use-packages dired denote
     :config
+    (define-key dired-mode-map "D" 'smoother-delete-file)
     (define-key dired-mode-map "R" 'denote-dired-mode))
 
 
