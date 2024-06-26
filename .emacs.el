@@ -2926,6 +2926,10 @@
         (evil-save-state
             (apply evil-repeat arguments)))
     (advice-add 'evil-repeat :around 'fixed-evil-repeat)
+    (defun fixed-evil-execute-repeat-info-with-count (&rest arguments)
+        (pop kill-buffer-hook))
+    (advice-add 'evil-execute-repeat-info-with-count
+        :before 'fixed-evil-execute-repeat-info-with-count)
     (defun lookup-evil-key (state keymap key &optional accept-default)
         (when state
             (setq keymap (evil-get-auxiliary-keymap keymap state)))
