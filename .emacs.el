@@ -3597,6 +3597,10 @@
     (evil-define-key 'motion calendar-mode-map "L" 'calendar-scroll-left)
     (define-key space-map "p" (toggle datetime-read-popup-calendar t)))
 
+(use-packages dired evil
+    :config
+    (evil-define-key 'motion dired-mode-map "." 'evil-repeat))
+
 (use-packages display-fill-column-indicator evil
     :config
     (evil-declare-not-repeat 'toggle-show-80+-characters)
