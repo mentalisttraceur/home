@@ -4771,6 +4771,16 @@
                         "."
                         (file-name-nondirectory new-path))))
             (denoted--rename path new-path directory title tags)))
+    (defconst denoted-try--default-fallback
+        '((user-error "%s is not visiting a file or directory" (buffer-name))))
+    (defmacro denoted-try (function &rest fallback-body)
+        (setq-if-nil fallback-body denoted-try--default-fallback)
+        `(if-let (path (buffer-file-name))
+             (,function path)
+             (if (derived-mode-p 'dired-mode)
+                 (when-let (path (,function (dired-get-filename)))
+                     (dired-goto-file path))
+                 ,@fallback-body)))
     (defun denoted-title-set (path title)
         (let ((tags     (denoted-tag-get path))
               (suffix   (denoted-suffix-get path))
@@ -4839,16 +4849,6 @@
         (let* ((name (file-name-nondirectory path))
                (new  (denoted-name-prompt name)))
             (denoted-name-set path new)))
-    (defconst denoted-try--default-fallback
-        '((user-error "%s is not visiting a file or directory" (buffer-name))))
-    (defmacro denoted-try (function &rest fallback-body)
-        (setq-if-nil fallback-body denoted-try--default-fallback)
-        `(if-let (path (buffer-file-name))
-             (,function path)
-             (if (derived-mode-p 'dired-mode)
-                 (when-let (path (,function (dired-get-filename)))
-                     (dired-goto-file path))
-                 ,@fallback-body)))
     (defun history-or-tag-execute-or-add (prefix-argument)
         (interactive "P")
         (denoted-try denoted-tag-add
