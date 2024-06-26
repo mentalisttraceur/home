@@ -2922,6 +2922,10 @@
         (lambda (evil-quit &rest arguments)
             (with-advice (('delete-window :override 'kill-current-buffer))
                 (apply evil-quit arguments))))
+    (defun fixed-evil-repeat (evil-repeat &rest arguments)
+        (evil-save-state
+            (apply evil-repeat arguments)))
+    (advice-add 'evil-repeat :around 'fixed-evil-repeat)
     (defun lookup-evil-key (state keymap key &optional accept-default)
         (when state
             (setq keymap (evil-get-auxiliary-keymap keymap state)))
