@@ -3068,14 +3068,12 @@
         (let* ((history-quit nil)
                (command (fixed-consult-history prefix-argument))
                (run (key-binding "\C-m" t)))
-            (evil-repeat-start)
-            (add-to-list 'evil-repeat-info
-                `((lambda ()
-                      (end-of-buffer)
-                      (replace-command ,command)
-                      (unless ,history-quit
-                          (,run)))))
-            (evil-repeat-stop)
+            (add-evil-repeat
+                (lambda-let (history-quit command run) ()
+                    (end-of-buffer)
+                    (replace-command command)
+                    (unless history-quit
+                        (funcall run))))
             (unless history-quit
                 (funcall run))))
     (defun history-remove (prefix-argument)
