@@ -433,7 +433,8 @@
     newcdr)
 
 (defun dlist-unlink (link)
-    (let-uncons (headward-link tailward-link (car link))
+    (let ((headward-link (caar link))
+          (tailward-link (cdar link)))
         (when tailward-link
             (setcar (car tailward-link) headward-link))
         (when headward-link
