@@ -160,39 +160,6 @@
         (cadr forms)))
 
 
-(defmacro unpack (names list)
-    (let* ((setq-form (list 'setq))
-           (last-cons setq-form)
-           (unpack-1 '(prog1 (car --unpack--)
-                             (setq --unpack-- (cdr --unpack--)))))
-        (dolist (name names)
-            (setcdr last-cons (list name unpack-1))
-            (setq last-cons (cddr last-cons)))
-        `(let ((--unpack-- ,list)) ,setq-form nil)))
-
-(defmacro let-unpack-1 (names list &rest body)
-    `(let ((--let-unpack-1-- ,list) ,@names)
-         (unpack ,names --let-unpack-1--)
-         ,@body))
-
-(defmacro let-unpack (unpack-list &rest body)
-    `(apply-split-nest let-unpack-1 ,unpack-list 2 ,body))
-
-(defmacro uncons (car-name cdr-name cell)
-    `(let ((--uncons-- ,cell))
-         (setq ,car-name (car --uncons--)
-               ,cdr-name (cdr --uncons--))
-         nil))
-
-(defmacro let-uncons-1 (car-name cdr-name cell &rest body)
-    `(let ((--let-uncons-1-- ,cell) ,car-name ,cdr-name)
-         (uncons ,car-name ,cdr-name --let-uncons-1--)
-         ,@body))
-
-(defmacro let-uncons (uncons-list &rest body)
-    `(apply-split-nest let-uncons-1 ,uncons-list 3 ,body))
-
-
 (defmacro += (place value)
     `(setf ,place (+ ,place ,value)))
 
@@ -269,7 +236,7 @@
 
 (defun advice-remove-all (symbol)
     (dolist (advice (advice-list symbol))
-        (let-unpack ((_where function) advice)
+        (pcase-let ((`(,_where ,function) advice))
             (advice-remove symbol function))))
 
 (defmacro with-advice-1 (advice-add-arguments &rest body)
@@ -508,7 +475,7 @@
         (window-hscroll)))
 
 (defun jump-to-position-with-scroll (position-with-scroll)
-    (let-unpack ((position start vscroll hscroll) position-with-scroll)
+    (pcase-let ((`(,position ,start ,vscroll ,hscroll) position-with-scroll))
         (goto-char position)
         (let ((window (selected-window)))
             (set-window-start window start t)
@@ -523,7 +490,7 @@
         (window-hscroll)))
 
 (defun jump-to-marker-with-scroll (marker-with-scroll)
-    (let-unpack ((marker start vscroll hscroll) marker-with-scroll)
+    (pcase-let ((`(,marker ,start ,vscroll ,hscroll) marker-with-scroll))
         (if-let (buffer (marker-buffer marker))
             (switch-to-buffer buffer)
             (user-error "Buffer no longer exists"))
@@ -818,7 +785,7 @@
           (tail packages-:config-body))
         (unless (eq (car tail) :config)
             (while (and tail (not (eq (cadr tail) :config)))
-                (let-uncons (package next tail)
+                (pcase-let ((`(,package . ,next) tail))
                     (when next
                         (setcdr tail (list :config (cons 'use-package next))))
                     (setq tail next))))
@@ -996,21 +963,21 @@
             (dolist (file files)
                 (thread-yield)
                 (when-let (entry (histdir--read-call (concat "call/" file)))
-                    (let-uncons (hash string entry)
+                    (pcase-let ((`(,hash . ,string) entry))
                         (histdir-history--add-oldest history hash string)))))))
 (defun histdir--see-add (history watch-event)
-    (let-unpack ((_descriptor action file) watch-event
-                 (hash string) ())
+    (pcase-let ((`(_descriptor ,action ,file) watch-event)
+                 hash string)
         (when (eq action 'renamed)
             (setq file (nth 3 watch-event)))
         (when (memq action '(created changed renamed))
             (with-temp-buffer
-                (uncons hash string (histdir--read-call file)))
+                (pcase-setq (`(,hash . ,string) (histdir--read-call file))))
             (when (and string (> (length string) 0))
                 (histdir-history--add-newest history hash string)))))
 (defun histdir--see-remove (history watch-event)
-    (let-unpack ((_descriptor action file) watch-event
-                 (hash string) ())
+    (pcase-let ((`(_descriptor ,action ,file) watch-event)
+                 hash string)
         (when (eq action 'deleted)
             (let ((hash (intern (file-name-base file))))
                 (histdir-history--remove history hash)))))
@@ -1280,7 +1247,7 @@
 
 (defun git-repo-root ()
     (let ((result (funcall-process "git" "rev-parse" "--absolute-git-dir")))
-        (let-unpack ((status output) result)
+        (pcase-let ((`(,status ,output) result))
             (if (equal status 0)
                 (abbreviate-file-name (file-name-directory output))
                 (unless (string-prefix-p "fatal: not a git repository" output)
@@ -1685,8 +1652,8 @@
     (calendar-day-of-week (list month day year)))
 
 (defun fixed-decoded-time-add (time delta)
-    (let-unpack ((second  minute  hour  day  month  year dst zone) time
-                 (second+ minute+ hour+ day+ month+ year+) delta)
+    (pcase-let ((`(,second ,minute ,hour ,day ,month ,year ,dst ,zone) time)
+                (`(,second+ ,minute+ ,hour+ ,day+ ,month+ ,year+) delta))
         (setq-if-nil year+   0)
         (setq-if-nil month+  0)
         (setq-if-nil day+    0)
@@ -1756,21 +1723,21 @@
     '((t :foreground "#FF4040" :weight bold)) "")
 
 (defun datetime-parse (string &optional short now)
-    (let-unpack ((parsed _) (datetime-parse--loop string short now))
-        (let-unpack ((second minute hour day month year) parsed)
-            (concat
-                (when year
-                    (format "%04d" year))
-                (when (and year month)
-                    (format "%02d" month))
-                (when (and year month day)
-                    (format "%02d" day))
-                (when (and year month day hour)
-                    (format "T%02d" hour))
-                (when (and year month day hour minute)
-                    (format "%02d" minute))
-                (when (and year month day hour minute second)
-                    (format "%02d" second))))))
+    (pcase-let* ((`(,parsed _) (datetime-parse--loop string short now))
+                 (`(,second ,minute ,hour ,day ,month ,year) parsed))
+        (concat
+            (when year
+                (format "%04d" year))
+            (when (and year month)
+                (format "%02d" month))
+            (when (and year month day)
+                (format "%02d" day))
+            (when (and year month day hour)
+                (format "T%02d" hour))
+            (when (and year month day hour minute)
+                (format "%02d" minute))
+            (when (and year month day hour minute second)
+                (format "%02d" second)))))
 
 (defun datetime-parse--loop (string &optional short now)
     (setq-if-nil now (decode-time (current-time)))
@@ -1787,8 +1754,8 @@
           word)
         (setq word words)
         (while word
-            (unpack (previous-parsed _ previous-bindings)
-                    (datetime-parse--bind nil parsed integers))
+            (pcase-setq `(,previous_parsed _ ,previous-binding)
+                        (datetime-parse--bind nil parsed integers))
             (setq previous-parsed
                   (datetime-parse--future-bias nil previous-parsed now))
             (setq integer nil)
@@ -1799,8 +1766,8 @@
                       (+ integers-before-span integers-in-span))
                 (setq integers-in-span 0))
             (pop word))
-        (unpack (parsed _ bindings)
-                (datetime-parse--bind nil parsed integers bindings))
+        (pcase-setq `(,parsed _ ,bindings)
+                    (datetime-parse--bind nil parsed integers bindings))
         (unless (and short (not (any (take 6 parsed))))
             (setq parsed (datetime-parse--future-bias nil parsed now)))
         (when short
@@ -1851,14 +1818,14 @@
              (setf (decoded-time-day bindings) nil)
              (setf (decoded-time-day parsed) (string-to-number (car word))))
          ((string-match-p "^[0-9]\\{3,\\}-[0-9][0-9]-[0-9][0-9]$" (car word))
-             (let-unpack ((year month day) (string-split (car word) "-"))
+             (pcase-let ((`(,year ,month ,day) (string-split (car word) "-")))
                  (setf (decoded-time-month bindings) nil)
                  (setf (decoded-time-day   bindings) nil)
                  (setf (decoded-time-year  parsed) (string-to-number year))
                  (setf (decoded-time-month parsed) (string-to-number month))
                  (setf (decoded-time-day   parsed) (string-to-number day))))
          ((string-match-p "^[0-9]\\{3,\\}-[0-9][0-9]$" (car word))
-             (let-unpack ((year month day) (string-split (car word) "-"))
+             (pcase-let ((`(,year ,month ,day) (string-split (car word) "-")))
                  (setf (decoded-time-month bindings) nil)
                  (setf (decoded-time-year  parsed) (string-to-number year))
                  (setf (decoded-time-month parsed) (string-to-number month))))
@@ -1884,7 +1851,8 @@
              (setf (decoded-time-second bindings) nil)
              (setf (decoded-time-second parsed) (string-to-number (car word))))
          ((string-match-p "^[0-9][0-9]?:[0-9][0-9]:[0-9][0-9]$" (car word))
-             (let-unpack ((hour minute second) (string-split (car word) ":"))
+             (pcase-let ((`(,hour ,minute ,second)
+                             (string-split (car word) ":")))
                  (setf (decoded-time-hour   bindings) nil)
                  (setf (decoded-time-minute bindings) nil)
                  (setf (decoded-time-second bindings) nil)
@@ -1892,7 +1860,8 @@
                  (setf (decoded-time-minute parsed) (string-to-number minute))
                  (setf (decoded-time-second parsed) (string-to-number second))))
          ((string-match-p "^[0-9][0-9]?:[0-9][0-9]$" (car word))
-             (let-unpack ((hour minute second) (string-split (car word) ":"))
+             (pcase-let ((`(,hour ,minute ,second)
+                             (string-split (car word) ":")))
                  (setf (decoded-time-hour   bindings) nil)
                  (setf (decoded-time-minute bindings) nil)
                  (setf (decoded-time-hour   parsed) (string-to-number hour))
@@ -2122,9 +2091,9 @@
            (next-slot (nth (1+ index) slots)))
         `(progn
              (setf (,decoded-time-slot offsets) t)
-             (unpack (parsed integers bindings)
-                     (datetime-parse--bind
-                         ',next-slot parsed integers bindings))
+             (pcase-setq `(,parsed ,integers ,bindings)
+                         (datetime-parse--bind
+                             ',next-slot parsed integers bindings))
              (when (,decoded-time-slot bindings)
                  (if (eq (,decoded-time-slot bindings) t)
                      (setf (,decoded-time-slot bindings) nil)
@@ -2180,9 +2149,9 @@
                (_       (eq (current-buffer) (overlay-buffer overlay))))
         (let ((input (substring-no-properties (minibuffer-contents))))
             (condition-case error
-                (let-unpack ((parsed info) (datetime-parse--loop
-                                               input short now)
-                             (_ _ _ day month year) parsed)
+                (pcase-let* ((`(,parsed ,info)
+                                 (datetime-parse--loop input short now))
+                             (`(_ _ _ ,day ,month ,year) parsed))
                     (datetime-read--preview-calendar year month day cell)
                     (save-point
                         (delete-minibuffer-contents)
@@ -2232,7 +2201,7 @@
         (select-window (minibuffer-window))))
 
 (defun datetime-read--preview-format (parsed preview-info)
-    (let-unpack ((prior bound _) preview-info)
+    (pcase-let ((`(,prior ,bound _) preview-info))
         (concat
             (datetime-read--preview-format-1 'year  parsed prior nil)
             (datetime-read--preview-format-1 'month parsed prior bound)
@@ -2516,7 +2485,8 @@
                    (preview (apply-partially 'hack-consult-preview
                                  (consult--insertion-preview input input)
                                  (cons nil nil))))
-                (let-unpack ((history index bol) (consult--current-history))
+                (pcase-let ((`(,history ,index ,bol)
+                                (consult--current-history)))
                     (delete-command input)
                     (with-temp-buffer
                         (insert-before-markers command)
@@ -3815,7 +3785,7 @@
             (set-buffer buffer)
             (histdir-repl-mode))
         (pop-to-buffer-same-window buffer)
-        (unpack (default-directory histdir) buffer-locals)
+        (pcase-setq `(,default-directory ,histdir) buffer-locals)
         (unless (get-buffer-process (current-buffer))
             (eat-exec buffer name program nil arguments))
         (evil-normal-state)
@@ -3922,7 +3892,7 @@
     (interactive "p")
     (if (and (= count 1) (= (point) (eat-point)))
         (histdir-repl-backspace-char-in-input 1)
-        (let-unpack ((start point) (histdir-repl-enter-input 0))
+        (pcase-let ((`(,start ,point) (histdir-repl-enter-input 0)))
             (setq count (min count (- point start)))
             (histdir-repl-backspace-char-in-input count))))
 (defun histdir-repl-enter+replace-input (count character)
@@ -3955,13 +3925,14 @@
 (defvar-local histdir-repl--evil-replace-edges nil)
 (defun histdir-repl-evil-replace-state ()
     (interactive)
-    (let-unpack ((start point end) (histdir-repl-enter-input 0))
+    (pcase-let ((`(,start ,point ,end) (histdir-repl-enter-input 0)))
         (setq histdir-repl--evil-replace-edges (list start point end end)))
     (evil-replace-state))
 (defun histdir-repl-self-input+replace ()
     (interactive)
-    (let-unpack ((_start-of-input start-of-replace _end-of-replace end-of-input)
-                     histdir-repl--evil-replace-edges)
+    (pcase-let ((`(_start-of-input ,start-of-replace
+                   _end-of-replace ,end-of-input)
+                    histdir-repl--evil-replace-edges))
         (let ((point-before-replace (point)))
             (call-interactively 'eat-self-input)
             (setcar (cdr histdir-repl--evil-replace-edges)
@@ -3972,8 +3943,9 @@
                     (1+ end-of-input))))))
 (defun histdir-repl-evil-replace-backspace ()
     (interactive)
-    (let-unpack ((start-of-input start-of-replace end-of-replace end-of-input)
-                     histdir-repl--evil-replace-edges)
+    (pcase-let ((`(,start-of-input ,start-of-replace
+                   ,end-of-replace ,end-of-input)
+                    histdir-repl--evil-replace-edges))
         (when (< start-of-input (point))
             (if (< start-of-replace (point))
                 (if (<= (point) end-of-replace)
@@ -3992,8 +3964,9 @@
                     (1- start-of-replace))))))
 (defun histdir-repl-evil-replace-delete ()
     (interactive)
-    (let-unpack ((start-of-input start-of-replace end-of-replace end-of-input)
-                     histdir-repl--evil-replace-edges)
+    (pcase-let ((`(,start-of-input ,start-of-replace
+                   ,end-of-replace ,end-of-input)
+                    histdir-repl--evil-replace-edges))
         (call-interactively 'eat-self-input)
         (setq histdir-repl--evil-replace-edges (list
             start-of-input
@@ -4232,7 +4205,7 @@
         (setq window-state-this-register evil-this-register)
         (while window-state--execute-once
             (setq window-state--execute-once window-state--execute-more)
-            (let-unpack ((hint tint dim tag help-string) window-state)
+            (pcase-let ((`(,hint ,tint ,dim ,tag ,help-string) window-state))
                 (with-face-attribute (
                         'aw-leading-char-face :foreground hint
                         'aw-background-face   :foreground tint
@@ -5157,8 +5130,8 @@
 (defun tumblr-prompt-for-blog ()
     (completing-read "Tumblr blog: " tumblr-blogs nil 'confirm))
 (defun tumblr (&rest arguments)
-    (let-unpack ((status output) (apply-process tumblr--python
-                                     tumblr--script arguments))
+    (pcase-let ((`(,status ,output)
+                    (apply-process tumblr--python tumblr--script arguments)))
          (if (equal status 0)
              output
              (error "tumblr error %s" output))))
@@ -5235,10 +5208,10 @@
         (define-key keymap russian-key binding)))
 (defun russian-vi-bind (map)
     (dolist (pair russian-vi-symbol-pairs)
-        (let-unpack ((russian english) pair)
+        (pcase-let ((`(,russian ,english) pair))
             (russian-vi-bind--1 map russian english)))
     (dolist (pair russian-vi-letter-pairs)
-        (let-unpack ((russian english) pair)
+        (pcase-let ((`(,russian ,english) pair))
             (russian-vi-bind--1 map russian english)
             (let ((russian (upcase russian))
                   (english (upcase english)))
@@ -5254,7 +5227,7 @@
                 (russian-vi-bind binding)))
         map))
 (defun russian-vi-letter-map--1 (string pair)
-    (let-unpack ((russian english) pair)
+    (pcase-let ((`(,russian ,english) pair))
         (string-replace english russian string)))
 (defun russian-vi-letter-map (english-string)
     (seq-reduce 'russian-vi-letter-map--1
@@ -5263,7 +5236,7 @@
 (use-package evil
     :config
     (dolist (ex-command evil-ex-commands)
-        (let-uncons (command definition ex-command)
+        (pcase-let ((`(,command . ,definition) ex-command))
             (let ((mapped (russian-vi-letter-map command)))
                 (unless (or (equal mapped command)
                             (member mapped evil-ex-commands))
