@@ -2232,30 +2232,36 @@
         (select-window (minibuffer-window))))
 
 (defun datetime-read--preview-format (parsed preview-info)
-    (let-unpack ((prior bound _) preview-info)
+    (let-unpack ((previous-parsed bindings _string) preview-info)
         (concat
-            (datetime-read--preview-format-1 'year  parsed prior nil)
-            (datetime-read--preview-format-1 'month parsed prior bound)
-            (datetime-read--preview-format-1 'day   parsed prior bound)
+            (datetime-read--preview-format-1
+                'year  parsed previous-parsed nil)
+            (datetime-read--preview-format-1
+                'month parsed previous-parsed bindings)
+            (datetime-read--preview-format-1
+                'day   parsed previous-parsed bindings)
             (when-let (final-value (decoded-time-weekday parsed))
                 (let* ((names '(Sun Mon Tue Wed Thu Fri Sat))
-                       (name  (nth final-value names)))
-                    (if-let ((prior-value (decoded-time-weekday prior))
-                             (_           (not (= prior-value final-value))))
+                       (name  (nth final-value names))
+                       (prior-value (decoded-time-weekday previous-parsed)))
+                    (if (and prior-value (not (= prior-value final-value)))
                         (format " (%s->%s)" (nth prior-value names) name)
                         (format " (%s)" name))))
-            (datetime-read--preview-format-1 'hour   parsed prior bound)
-            (datetime-read--preview-format-1 'minute parsed prior bound)
-            (datetime-read--preview-format-1 'second parsed prior bound))))
+            (datetime-read--preview-format-1
+                'hour   parsed previous-parsed bindings)
+            (datetime-read--preview-format-1
+                'minute parsed previous-parsed bindings)
+            (datetime-read--preview-format-1
+                'second parsed previous-parsed bindings))))
 
-(defun datetime-read--preview-format-1 (slot parsed prior bound)
+(defun datetime-read--preview-format-1 (slot parsed previous-parsed bindings)
     (let* ((format-string (if (eq slot 'year) "%04d" "%02d"))
            (name (symbol-name slot))
            (getter (intern (concat "decoded-time-" name)))
            (face (intern (concat "datetime-read-preview-" name "-face")))
            (final-value (funcall getter parsed))
-           (prior-value (funcall getter prior))
-           (bound-value (funcall getter bound))
+           (prior-value (funcall getter previous-parsed))
+           (bound-value (funcall getter bindings))
            (prefix      (cond ((memq slot '(second minute)) ":")
                               ((eq   slot 'hour)            " ")
                               ((memq slot '(day month))     "-")
