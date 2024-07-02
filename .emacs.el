@@ -4095,14 +4095,14 @@
     :suppress-operator t
     (interactive "*P<x>")
     (let* ((string (evil-paste-to-string count register))
-           (string (string-replace "\n" "" string)))
+           (string (string-remove-suffix "\n" string)))
         (histdir-repl-enter-input 1)
         (buffer-process-send-string string)))
 (evil-define-command histdir-repl-evil-paste-before (count &optional register)
     :suppress-operator t
     (interactive "*P<x>")
     (let* ((string (evil-paste-to-string count register))
-           (string (string-replace "\n" "" string)))
+           (string (string-remove-suffix "\n" string)))
         (histdir-repl-enter-input 0)
         (buffer-process-send-string string)
         (histdir-repl-backward-char-in-input (length string))))
@@ -4111,7 +4111,7 @@
     :suppress-operator t
     (interactive "*P<x>")
     (let* ((string (evil-paste-to-string count register))
-           (string (string-replace "\n" "" string))
+           (string (string-remove-suffix "\n" string))
            (length (length string)))
         (histdir-repl-enter+delete-input length)
         (buffer-process-send-string string)))
@@ -4120,7 +4120,7 @@
     :suppress-operator t
     (interactive "*P<x>")
     (let* ((string (evil-paste-to-string count register))
-           (string (string-replace "\n" "" string))
+           (string (string-remove-suffix "\n" string))
            (length (length string)))
         (histdir-repl-enter+delete-input length)
         (buffer-process-send-string string)
