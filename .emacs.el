@@ -3419,7 +3419,7 @@
             nil
             name))
     (defun git-pop-to-command (command)
-        (if-let (root (vc-root-dir))
+        (if-let (root (git-repo-root))
             (let ((default-directory root))
                 (pop-to-command-eshell command default-directory))
             (pop-to-command-eshell--not-in-a-git-repository
