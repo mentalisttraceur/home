@@ -4660,7 +4660,6 @@
     (defface task-faces-duration '((t :inherit default)) "")
     (set-face-foreground 'task-faces-repeat   "#FF0000")
     (set-face-foreground 'task-faces-duration "#00FF00")
-    (setq denote-title-regexp "--\\([^.]*?\\)\\(==.*\\|__.*\\|\\..*\\)*$")
     (defun denoted--add-nil-id (path)
         (let ((name (file-name-nondirectory path)))
             (concat
