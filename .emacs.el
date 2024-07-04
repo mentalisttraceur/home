@@ -4542,7 +4542,6 @@
     :config
     (setq denote-file-type 'markdown-yaml)
     (setq denote-known-keywords '())
-    (setq denote-sort-keywords nil)
     (setq denote-history-completion-in-prompts nil)
     (setq denote-rename-confirmations '(modify-file-name add-front-matter))
     (defun denote-file-note-type (path)
