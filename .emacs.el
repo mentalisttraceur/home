@@ -5022,14 +5022,12 @@
     (defvar-local task-list--datetime nil)
     (defun task-create (prefix-argument)
         (interactive "P")
-        (let (path
-              (datetime (if prefix-argument
-                            (datetime-read nil task-list--datetime)
-                            (when task-list--datetime
-                                (datetime-floor task-list--datetime)))))
-            (denote (task-prompt) (cons task-tag task-list--tags)
-                    nil nil datetime)
-            (setq path buffer-file-name)
+        (let* ((datetime (if prefix-argument
+                             (datetime-read nil task-list--datetime)
+                             (when task-list--datetime
+                                 (datetime-floor task-list--datetime))))
+               (path     (denote (task-prompt) (cons task-tag task-list--tags)
+                                 nil nil datetime)))
             (basic-save-buffer)
             (kill-buffer)
             (unless (string-prefix-p "*Tasks" (buffer-name))
