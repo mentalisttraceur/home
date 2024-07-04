@@ -4544,6 +4544,7 @@
     (setq denote-known-keywords '())
     (setq denote-sort-keywords nil)
     (setq denote-history-completion-in-prompts nil)
+    (setq denote-rename-confirmations '(modify-file-name add-front-matter))
     (defun denote-file-note-type (path)
         (when-let ((extension (denote-get-file-extension-sans-encryption path))
                    (types (denote--file-types-with-extension extension)))
@@ -4736,16 +4737,15 @@
                (had-unsaved-changes (when was-already-open
                                         (refresh-modified-state buffer)
                                         (buffer-modified-p buffer))))
-            (with-advice (('y-or-n-p :override 'always))
-                (denote-rewrite-front-matter path title tags type))
+            (denote-rewrite-front-matter path title tags type)
             (unless had-unsaved-changes
                 (with-current-buffer buffer
                     (save-buffer)))
             (unless was-already-open
                 (kill-buffer buffer))))
     (defun denoted--rename (path new-path directory title tags)
-        (if (not (or denote-rename-no-confirm
-                     (denoted-rename-file-prompt path new-path)))
+        (if (and (memq 'modify-file-name denote-rename-confirmations)
+                 (not (denoted-rename-file-prompt path new-path)))
             path
             (with-advice (('rename-file :around 'hack-rename-file))
                 (denote-rename-file-and-buffer path new-path))
@@ -5102,7 +5102,7 @@
                     (format "R%sP%s" count period))
                 (format "RP%s" period))))
     (defun task-schedule (datetime)
-        (let ((denote-rename-no-confirm t))
+        (let ((denote-rename-confirmations nil))
             (dired-goto-file
                 (denoted-datetime-set (dired-get-filename) datetime))))
     (defun task-schedule-repetition (path steps)
@@ -5119,7 +5119,7 @@
                                 (task--step-repetition part repetition steps))
                             (throw 'break nil)))))
             (setq suffix (string-join parts "="))
-            (let ((denote-rename-no-confirm t))
+            (let ((denote-rename-confirmations nil))
                 (dired-goto-file
                     (denoted-rename-file
                         path
