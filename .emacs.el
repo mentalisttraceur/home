@@ -4589,7 +4589,7 @@
         '(progn
              (goto-char (match-end 0))
              (point)))
-    (setq denote-faces-file-name-keywords
+    (setq denote-faces-file-name-keywords-for-dired
         `((dired-filename-search-forward
            (,date-t-time-regex
                ,point-to-match-beginning-form
