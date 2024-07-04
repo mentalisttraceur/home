@@ -3022,6 +3022,11 @@
             (if prefix-argument
                 (become-command 'switch-to-buffer-resume)
                 (become-command 'switch-to-buffer))))
+    (defun smoother-buffer-rename (unique)
+        (interactive "P")
+        (let* ((old-name (buffer-name))
+               (new-name (read-string "Buffer name: " old-name)))
+            (rename-buffer new-name unique)))
     (define-key space-map "B" 'ibuffer)
     (defun smoother-kill-buffer (&optional prefix-argument)
         (interactive "P")
