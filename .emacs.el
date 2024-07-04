@@ -3027,7 +3027,7 @@
         (let* ((old-name (buffer-name))
                (new-name (read-string "Buffer name: " old-name)))
             (rename-buffer new-name unique)))
-    (define-key space-map "B" 'ibuffer)
+    (define-key space-map "B" 'smoother-buffer-rename)
     (defun smoother-kill-buffer (&optional prefix-argument)
         (interactive "P")
         (if prefix-argument
