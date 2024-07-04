@@ -824,6 +824,22 @@
                     (setq tail next))))
         head))
 
+(use-package generator
+    :config
+    (defun fixed-cps-generate-evaluator (generator)
+        `(cons 'iterator ,generator))
+    (advice-add 'cps-generate-evaluator
+        :filter-return 'fixed-cps-generate-evaluator)
+    (defun iter-p (object)
+        (eq (car-safe object) 'iterator))
+    (defun fixed-iter-method (arguments)
+        (let ((iterator (car arguments)))
+            (when (iter-p iterator)
+                (setcar arguments (cdr iterator)))
+            arguments))
+    (advice-add 'iter-next :filter-args 'fixed-iter-method)
+    (advice-add 'iter-close :filter-args 'fixed-iter-method))
+
 (use-package cl-seq
     :config
     (defun any (seq &rest cl-reduce-keyword-arguments)
