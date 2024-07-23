@@ -2744,6 +2744,7 @@
     :init
     (setq evil-undo-system 'undo-tree)
     (setq evil-want-C-u-scroll t)
+    (setq evil-respect-visual-line-mode t)
     :config
     (evil-mode 1)
     (evil-declare-not-repeat 'scroll-up-line)
