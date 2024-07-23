@@ -5218,8 +5218,16 @@
     (interactive)
     (tumblr--ensure-file
         (tumblr "delete" buffer-file-name)))
+(defun tumblr-pull ()
+    (interactive)
+    (let-unpack ((status output) (funcall-process "p"))
+        (if (equal status 0)
+            (let ((default-directory "~/Documents/notes"))
+                (find-file (tumblr "pull" output)))
+            (error "paste error %s" output))))
 (define-key space-misc-map "w" 'tumblr-publish)
 (define-key space-misc-map "d" 'tumblr-delete)
+(define-key space-misc-map "u" 'tumblr-pull)
 
 (defconst russian-vi-letter-pairs
     '(("й" "q")
