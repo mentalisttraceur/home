@@ -5320,7 +5320,12 @@
                        window-state-map histdir-repl-mode-map
                        undo-tree-visualizer-mode-map
                        calendar-mode-map global-map))
-        (russian-vi-bind map)))
+        (russian-vi-bind map))
+    (dolist (cell evil-minor-mode-keymaps-alist)
+        (let ((inner-alist (cdr cell)))
+            (dolist (cell inner-alist)
+                (let ((map (cdr cell)))
+                    (russian-vi-bind map))))))
 
 
 (setq gc-cons-threshold init-gc-cons-threshold
