@@ -5226,9 +5226,20 @@
             (let ((default-directory "~/Documents/notes"))
                 (find-file (tumblr "pull" output)))
             (error "paste error %s" output))))
+(defun tumblr-open ()
+    (interactive)
+    (unless buffer-file-name
+        (user-error "%s is not visiting a file" (buffer-name)))
+    (let* ((blog (tumblr "get" "blog" buffer-file-name))
+           (post (tumblr "get" "post" buffer-file-name))
+           (link (format "https://%s.tumblr.com/post/%s" blog post)))
+        (when (or (equal blog "") (equal post ""))
+            (user-error "%s is not a Tumblr post" (buffer-name)))
+        (funcall browse-url-browser-function link)))
 (define-key space-misc-map "w" 'tumblr-publish)
 (define-key space-misc-map "d" 'tumblr-delete)
 (define-key space-misc-map "u" 'tumblr-pull)
+(define-key space-misc-map "o" 'tumblr-open)
 
 (defconst russian-vi-letter-pairs
     '(("й" "q")
