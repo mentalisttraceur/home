@@ -3211,12 +3211,11 @@
     (set-face-foreground 'line-number "#808080")
     (defun cycle-line-wrap ()
         (interactive)
-        (when (eq last-command 'cycle-line-wrap)
-            (if truncate-lines
-                (setq truncate-lines nil)
-                (visual-line-mode 'toggle)
-                (when (not visual-line-mode)
-                    (setq truncate-lines t))))
+        (if truncate-lines
+            (setq truncate-lines nil)
+            (visual-line-mode 'toggle)
+            (when (not visual-line-mode)
+                (setq truncate-lines t)))
         (message "visual-line-mode: %s truncate-lines: %s"
             visual-line-mode truncate-lines))
     (evil-declare-not-repeat 'cycle-line-wrap)
