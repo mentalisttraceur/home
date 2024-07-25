@@ -5186,6 +5186,7 @@
 (defvar tumblr-blogs '(
     "mentalisttraceur"
     "mentalisttraceur-humor"
+    "mentalisttraceur-long"
     "mentalisttraceur-process"
     "mentalisttraceur-reactions"
     "mentalisttraceur-software"))
