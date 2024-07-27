@@ -5223,7 +5223,7 @@
     (interactive)
     (let-unpack ((status output) (funcall-process "p"))
         (if (equal status 0)
-            (let ((default-directory "~/Documents/notes"))
+            (let ((default-directory denote-directory))
                 (find-file (tumblr "pull" output)))
             (error "paste error %s" output))))
 (defun tumblr-link (path)
