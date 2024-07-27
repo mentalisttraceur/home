@@ -1272,6 +1272,13 @@
                 (when (derived-mode-p 'dired-mode)
                     (when (equal directory (expand-file-name dired-directory))
                         (revert-buffer))))))
+    (defun find-dired-visiting (directory)
+        (let* ((directory     (expand-file-name directory))
+               (directory     (file-name-as-directory directory))
+               (dired-buffer  (cdr (assoc directory dired-buffers))))
+            (if (buffer-live-p dired-buffer)
+                dired-buffer
+                nil)))
     (defun independent-dired (directory &rest arguments)
         (let* ((directory (expand-file-name directory))
                (directory (file-name-as-directory directory))
