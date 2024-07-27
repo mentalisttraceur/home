@@ -5251,10 +5251,13 @@
         (format "https://%s.tumblr.com/post/%s" blog post)))
 (evil-define-command tumblr-open (prefix-argument register)
     (interactive "P<x>")
-    (let ((link (denoted-try 'tumblr-link)))
-        (if prefix-argument
-            (evil-yank-string link register)
-            (funcall browse-url-browser-function link))))
+    (denoted-try
+        (lambda-let (prefix-argument register) (path)
+            (let ((link (tumblr-link path)))
+                (if prefix-argument
+                    (evil-yank-string link register)
+                    (funcall browse-url-browser-function link)))
+            nil)))
 (define-key space-misc-map "w" 'tumblr-publish)
 (define-key space-misc-map "d" 'tumblr-delete)
 (define-key space-misc-map "u" 'tumblr-pull)
