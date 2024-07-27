@@ -5253,7 +5253,7 @@
     (interactive "P<x>")
     (let ((link (denoted-try 'tumblr-link)))
         (if prefix-argument
-            (evil-yank-string (denoted-try 'tumblr-link) register)
+            (evil-yank-string link register)
             (funcall browse-url-browser-function link))))
 (define-key space-misc-map "w" 'tumblr-publish)
 (define-key space-misc-map "d" 'tumblr-delete)
