@@ -9,6 +9,9 @@ do
     esac
     printf 'Please enter "y" or "n"\n'
 done
+case $reply in '')
+    printf '\033[1A%s [n/Y] n\n' "$1"
+esac
 case $reply in ''|n|N|н|Н)
     exit 1
 esac
