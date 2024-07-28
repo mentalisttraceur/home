@@ -3452,15 +3452,20 @@
             (list "echo" (concat (buffer-name) " is not in a git repository"))
             nil
             name))
-    (defun git-pop-to-command (command)
+    (defvar-local git--visited-path nil)
+    (defun git-pop-to-command (command &optional visited-path)
         (if-let (root (git-repo-root))
             (let ((default-directory root))
+                (add-single-use-hook 'pop-to-command-setup-hook
+                    (lambda-let (visited-path) ()
+                        (setq-local git--visited-path visited-path)))
                 (pop-to-command-eshell command default-directory))
             (pop-to-command-eshell--not-in-a-git-repository
                 (string-join (cons "eshell:" command) " "))))
     (defun git--target-path (use-visited)
         (if use-visited
-            (or buffer-file-name
+            (or git--visited-path
+                buffer-file-name
                 (expand-file-name default-directory))
             nil))
     (defmacro git (&rest arguments)
@@ -3471,7 +3476,7 @@
                        (path    (git--target-path prefix-argument)))
                      (when path
                          (nconc command (list path)))
-                     (git-pop-to-command command)))))
+                     (git-pop-to-command command path)))))
     (defun git--commit-ish (prefix-argument prompt)
         (if prefix-argument
             (if (integerp prefix-argument)
@@ -3497,7 +3502,7 @@
             (if prefix-argument
                 (nconc command (list "--force" path))
                 (nconc command (list path)))
-            (git-pop-to-command command)))
+            (git-pop-to-command command path)))
     (define-key git-map "A" 'git-add-new)
     (define-key git-map "q" (git checkout -p))
     (define-key git-map "w" (git reset -p))
