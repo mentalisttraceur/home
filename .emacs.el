@@ -3489,7 +3489,7 @@
     (defun git-add-new ()
         (interactive)
         (let ((path (or buffer-file-name default-directory)))
-            (git-pop-to-command `("git" "add" ,buffer-file-name))))
+            (git-pop-to-command `("git" "add" ,path))))
     (define-key git-map "A" 'git-add-new)
     (define-key git-map "q" (git checkout -p))
     (define-key git-map "w" (git reset -p))
