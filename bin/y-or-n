@@ -1,0 +1,15 @@
+#!/bin/sh -
+
+while :
+do    
+    printf '%s [y/N] ' "$1"
+    IFS= read -r reply
+    case $reply in ''|y|Y|n|N|д|Д|н|Н)
+         break
+    esac
+    printf 'Please enter "y" or "n"\n'
+done
+case $reply in ''|n|N|н|Н)
+    exit 1
+esac
+exit 0
