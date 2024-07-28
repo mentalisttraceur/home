@@ -1,5 +1,35 @@
 #!/bin/sh -
+
+repo_is_clean()
+(
+    cd "$1" 2>/dev/null || return 0
+    clean=true
+    if ! git diff --quiet
+    then
+        printf '%s has unstaged changes\n' "$1"
+        clean=false
+    fi
+    if ! git diff --staged --quiet
+    then
+        printf '%s has staged changes\n' "$1"
+        clean=false
+    fi
+    if test -f .git/refs/stash
+    then
+        printf '%s has stashed changes\n' "$1"
+        clean=false
+    fi
+    case $clean in false)
+        return 1
+    esac
+    return 0
+)
+
 for argument
 do
-    rm -r "$argument"/.git </dev/null && rm -r "$argument"
+    if repo_is_clean "$argument" \
+    || y-or-n "Delete anyway?"
+    then
+        rm -r "$argument"/.git </dev/null && rm -r "$argument"
+    fi
 done
