@@ -3488,12 +3488,12 @@
     (define-key git-map "a" (git add -p))
     (defun git-add-new (prefix-argument)
         (interactive "P")
-        (let* ((path    (or buffer-file-name default-directory))
-               (command (list path)))
-            (when prefix-argument
-                (push "--force" command))
-            (push "add" command)
-            (push "git" command)
+        (let ((path    (or buffer-file-name
+                           (expand-file-name default-directory)))
+              (command (list "git add")))
+            (if prefix-argument
+                (nconc command (list "--force" path))
+                (nconc command (list path)))
             (git-pop-to-command command)))
     (define-key git-map "A" 'git-add-new)
     (define-key git-map "q" (git checkout -p))
