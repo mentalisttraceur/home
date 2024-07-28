@@ -19,6 +19,10 @@ repo_is_clean()
         printf '%s has stashed changes\n' "$1"
         clean=false
     fi
+    case `git ls-files --other --exclude-standard | head -n1` in ?*)
+        printf '%s has untracked files\n' "$1"
+        clean=false
+    esac
     case $clean in false)
         return 1
     esac
