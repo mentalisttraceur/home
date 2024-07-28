@@ -3458,15 +3458,19 @@
                 (pop-to-command-eshell command default-directory))
             (pop-to-command-eshell--not-in-a-git-repository
                 (string-join (cons "eshell:" command) " "))))
+    (defun git--target-path (use-visited)
+        (if use-visited
+            (or buffer-file-name
+                (expand-file-name default-directory))
+            nil))
     (defmacro git (&rest arguments)
         (let ((command (cons "git" (mapcar 'symbol-name arguments))))
             `(lambda (prefix-argument)
                  (interactive "P")
-                 (let ((command (list ,@command)))
-                     (when prefix-argument
-                         (nconc command (list
-                             (or buffer-file-name
-                                 (expand-file-name default-directory)))))
+                 (let ((command (list ,@command))
+                       (path    (git--target-path prefix-argument)))
+                     (when path
+                         (nconc command (list path)))
                      (git-pop-to-command command)))))
     (defun git--commit-ish (prefix-argument prompt)
         (if prefix-argument
@@ -3488,8 +3492,7 @@
     (define-key git-map "a" (git add -p))
     (defun git-add-new (prefix-argument)
         (interactive "P")
-        (let ((path    (or buffer-file-name
-                           (expand-file-name default-directory)))
+        (let ((path    (git--target-path t))
               (command (list "git add")))
             (if prefix-argument
                 (nconc command (list "--force" path))
