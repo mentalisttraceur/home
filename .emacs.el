@@ -5269,7 +5269,7 @@
             (let ((link (tumblr-link path)))
                 (if prefix-argument
                     (evil-yank-string link register)
-                    (funcall browse-url-browser-function link)))
+                    (browse-url link)))
             nil)))
 (define-key space-misc-map "w" 'tumblr-publish)
 (define-key space-misc-map "d" 'tumblr-delete)
