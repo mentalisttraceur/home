@@ -5011,8 +5011,8 @@
     (define-key space-map "M"
         (lambda ()
             (interactive)
-            (note-list)
-            (dired-goto-last-file)))
+            (unless (cadr (note-list))
+                (dired-goto-last-file))))
     (defun note-list-search ()
         (interactive)
         (let-unpack ((buffer was-already-open was-already-focused) (note-list))
