@@ -475,13 +475,20 @@
 
 
 (defun bihash (&rest arguments)
-    (let* ((table1 (apply 'make-hash-table arguments))
-           (table2 (apply 'make-hash-table arguments))
-           (forward (vector table1 table2 nil))
-           (inverse (vector table2 table1 nil)))
-        (aset forward 2 inverse)
-        (aset inverse 2 forward)
-        forward))
+    (let* ((table             (apply 'make-hash-table arguments))
+           (weakness          (plist-get arguments :weakness))
+           (inverse-weakness  (cond
+                                  ((eq weakness 'key)
+                                      'value)
+                                  ((eq weakness 'value)
+                                      'key)
+                                  (t
+                                      weakness)))
+           (inverse-arguments (plist-put arguments :weakness inverse-weakness))
+           (inverse-table     (apply 'make-hash-table inverse-arguments))
+           (inverse-bihash    (vector inverse-table table nil))
+           (bihash            (vector table inverse-table inverse-bihash)))
+        (aset inverse-bihash 2 bihash)))
 
 (defun bihash-inverse (bihash)
     (aref bihash 2))
