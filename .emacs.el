@@ -474,6 +474,36 @@
     value)
 
 
+(defun bihash (&rest arguments)
+    (let* ((table1 (apply 'make-hash-table arguments))
+           (table2 (apply 'make-hash-table arguments))
+           (forward (vector table1 table2 nil))
+           (inverse (vector table2 table1 nil)))
+        (aset forward 2 inverse)
+        (aset inverse 2 forward)
+        forward))
+
+(defun bihash-inverse (bihash)
+    (aref bihash 2))
+
+(defun bihash-get (bihash key &optional default)
+    (gethash key (aref bihash 0) default))
+
+(defun bihash-pop (bihash key)
+    (let ((forward-table (aref bihash 0))
+          (inverse-table (aref bihash 1)))
+        (when-let (value (gethash key forward-table))
+            (remhash key forward-table)
+            (remhash value inverse-table)
+            value)))
+
+(defun bihash-put (bihash key value)
+    (bihash-pop bihash key)
+    (bihash-pop (bihash-inverse bihash) value)
+    (puthash value key (aref bihash 1))
+    (puthash key value (aref bihash 0)))
+
+
 (defun delete-forward-in-line (start count)
     (delete-region start (save-excursion
         (goto-char start)
