@@ -428,19 +428,19 @@
 (defun dlist-setcdr (dlist newcdr)
     (setcdr (car dlist) newcdr)
     (setcdr (cdr dlist) (cdr newcdr))
-    (when newcdr
-        (setcar (car newcdr) dlist))
     newcdr)
+
+(defun dlist-link (link1 link2)
+    (when link1
+        (dlist-setcdr link1 link2))
+    (when link2
+        (setcar (car link2) link1))
+    nil)
 
 (defun dlist-unlink (link)
     (let ((headward-link (caar link))
           (tailward-link (cdar link)))
-        (when tailward-link
-            (setcar (car tailward-link) headward-link))
-        (when headward-link
-            (setcdr (car headward-link) tailward-link)
-            (setcdr (cdr headward-link) (cdr tailward-link))))
-    nil)
+        (dlist-link headward-link tailward-link)))
 
 (defun dlist-last (dlist)
     (let ((next))
