@@ -1032,20 +1032,20 @@
     (aset history 3 descriptors))
 (defvar-local histdir-buffer-local-history-list nil)
 (defvar-local histdir-buffer-local-history--head nil)
+(defun histdir--update-buffer-local-history-pointers-1 (shared)
+    (unless (cadr histdir-buffer-local-history--head)
+        (setq histdir-buffer-local-history--head (dlist (cadr shared))))
+    (setcdr (car histdir-buffer-local-history--head) shared)
+    (setcdr (cdr histdir-buffer-local-history--head) (cdr shared))
+    (setq histdir-buffer-local-history-list
+          (cdr histdir-buffer-local-history--head)))
 (defun histdir--update-buffer-local-history-pointers (history)
     (let ((shared  (cdr (histdir-history-table history)))
           (buffers (histdir-history-buffers history)))
         (dolist (buffer buffers)
             (if (buffer-live-p buffer)
                 (with-current-buffer buffer
-                    (unless (cadr histdir-buffer-local-history--head)
-                        (setq histdir-buffer-local-history--head
-                              (dlist (cadr shared))))
-                    (setcdr (car histdir-buffer-local-history--head) shared)
-                    (setcdr (cdr histdir-buffer-local-history--head)
-                            (cdr shared))
-                    (setq histdir-buffer-local-history-list
-                          (cdr histdir-buffer-local-history--head)))
+                    (histdir--update-buffer-local-history-pointers-1 shared))
                 (setq buffers (delq buffer buffers))))
         (aset history 2 buffers)))
 (defun histdir-history--add-newest (history key string)
