@@ -572,7 +572,7 @@
                 (setq next (dlist-cdr next)))
             (let ((new (dlist-cons value next)))
                 (if previous
-                    (dlist-setcdr previous new)
+                    (dlist-link previous new)
                     (setcdr (cdr table) new))
                 (bihash-put (car table) key new))))
     value)
@@ -1035,8 +1035,7 @@
 (defun histdir--update-buffer-local-history-pointers-1 (shared)
     (unless (cadr histdir-buffer-local-history--head)
         (setq histdir-buffer-local-history--head (dlist (cadr shared))))
-    (setcdr (car histdir-buffer-local-history--head) shared)
-    (setcdr (cdr histdir-buffer-local-history--head) (cdr shared))
+    (dlist-setcdr histdir-buffer-local-history--head shared)
     (setq histdir-buffer-local-history-list
           (cdr histdir-buffer-local-history--head)))
 (defun histdir--update-buffer-local-history-pointers (history)
@@ -1065,7 +1064,7 @@
         (unless newer-duplicate
             (let ((new-last (dlist-cons string nil)))
                 (if-let (last (histdir-history--last history))
-                    (dlist-setcdr last new-last)
+                    (dlist-link last new-last)
                     (setcdr table new-last))
                 (puthash key new-last unordered-table)
                 (histdir-history--set-last history new-last))
@@ -2565,7 +2564,7 @@
             (let* ((new        (copy-sequence vertico--candidates))
                    (new-sorted (sort (copy-sequence new) 'string-lessp)))
                 (setq new (apply 'dlist new))
-                (dlist-setcdr (dlist-last new) new)
+                (dlist-link (dlist-last new) new)
                 (setq switch-to-buffer-next--candidates
                       (dlist-nthcdr vertico--index new))
                 (setq switch-to-buffer-next--sorted-candidates new-sorted))))
