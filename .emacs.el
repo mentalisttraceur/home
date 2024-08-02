@@ -475,19 +475,46 @@
 
 
 (defun bihash (&rest arguments)
-    (let* ((table             (apply 'make-hash-table arguments))
-           (weakness          (plist-get arguments :weakness))
-           (inverse-weakness  (cond
-                                  ((eq weakness 'key)
-                                      'value)
-                                  ((eq weakness 'value)
-                                      'key)
-                                  (t
-                                      weakness)))
-           (inverse-arguments (plist-put arguments :weakness inverse-weakness))
-           (inverse-table     (apply 'make-hash-table inverse-arguments))
-           (inverse-bihash    (vector inverse-table table nil))
-           (bihash            (vector table inverse-table inverse-bihash)))
+    (let ((tail arguments)
+          (key-test nil)
+          (value-test nil)
+          table
+          inverse-table
+          bihash
+          inverse-bihash)
+        (setq arguments nil)
+        (while (and (consp tail) (consp (cdr tail)))
+            (cond
+                ((and (not key-test) (eq (car tail) :key-test))
+                    (setq key-test (cadr tail)))
+                ((and (not value-test) (eq (car tail) :value-test))
+                    (setq value-test (cadr tail)))
+                (t
+                    (push (car tail) arguments)
+                    (push (cadr tail) arguments)))
+            (setq tail (cddr tail)))
+        (unless key-test
+            (setq key-test 'eql))
+        (unless value-test
+            (setq value-test 'eql))
+        (setq arguments (nreverse arguments))
+        (setq arguments (nconc arguments tail))
+        (push key-test arguments)
+        (push :test arguments)
+        (setq table (apply 'make-hash-table arguments))
+        (setq weakness (plist-get arguments :weakness))
+        (setq weakness (cond
+                           ((eq weakness 'key)
+                               'value)
+                           ((eq weakness 'value)
+                               'key)
+                           (t
+                               weakness)))
+        (plist-put arguments :weakness weakness)
+        (setcar (cdr arguments) value-test)
+        (setq inverse-table (apply 'make-hash-table arguments))
+        (setq inverse-bihash (vector inverse-table table nil))
+        (setq bihash (vector table inverse-table inverse-bihash))
         (aset inverse-bihash 2 bihash)))
 
 (defun bihash-inverse (bihash)
