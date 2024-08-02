@@ -1128,10 +1128,9 @@
             (when (and string (> (length string) 0))
                 (histdir-history--add-newest history hash string)))))
 (defun histdir--see-remove (history watch-event)
-    (let-unpack ((_descriptor action file) watch-event
-                 (hash string) ())
+    (let-unpack ((_descriptor action file) watch-event)
         (when (eq action 'deleted)
-            (let ((hash (intern (file-name-base file))))
+            (let ((hash (intern (file-name-nondirectory file))))
                 (histdir-history--remove history hash)))))
 (defun histdir--watch (path history)
     (let ((directory (concat path "/v1")))
