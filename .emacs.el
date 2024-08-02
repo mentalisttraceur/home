@@ -537,6 +537,9 @@
     (puthash value key (aref bihash 1))
     (puthash key value (aref bihash 0)))
 
+(defun bihash-count (bihash)
+    (hash-table-count (aref bihash 0)))
+
 
 (defun make-sorted-hash-table (predicate &rest arguments)
     (if-let (test-cell (plist-member arguments :test))
