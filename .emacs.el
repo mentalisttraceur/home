@@ -538,6 +538,46 @@
     (puthash key value (aref bihash 0)))
 
 
+(defun make-sorted-hash-table (predicate &rest arguments)
+    (if-let (test-cell (plist-member arguments :test))
+        (setcar test-cell :key-test)
+        (push 'eql arguments)
+        (push :key-test arguments))
+    (push 'eq arguments)
+    (push :value-test arguments)
+    (list (apply 'bihash arguments) predicate))
+
+(defun sorted-hash-table-get (table key &optional default)
+    (if-let (entry (bihash-get (car table) key))
+        (dlist-car entry)
+        default))
+
+(defun sorted-hash-table-pop (table key)
+    (let ((bihash (car table)))
+        (when-let (entry (bihash-pop bihash key))
+            (when (eq entry (cddr table))
+                (setcdr (cdr table) (dlist-cdr entry)))
+            (dlist-unlink entry)
+            (dlist-car entry))))
+
+(defun sorted-hash-table-put (table key value)
+    (if-let (entry (bihash-get (car table) key))
+        (dlist-setcar entry value)
+        (let ((keys      (bihash-inverse (car table)))
+              (predicate (cadr table))
+              (next      (cddr table))
+              (previous  nil))
+            (while (and next (funcall predicate (bihash-get keys next) key))
+                (setq previous next)
+                (setq next (dlist-cdr next)))
+            (let ((new (dlist-cons value next)))
+                (if previous
+                    (dlist-setcdr previous new)
+                    (setcdr (cdr table) new))
+                (bihash-put (car table) key new))))
+    value)
+
+
 (defun delete-forward-in-line (start count)
     (delete-region start (save-excursion
         (goto-char start)
