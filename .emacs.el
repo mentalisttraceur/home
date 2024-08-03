@@ -5081,7 +5081,7 @@
             (evil-paste-after 1 register)
             (set-buffer-modified-p nil)
             (evil-insert-state)))
-    (define-key space-map "m" 'note)
+    (define-key space-map "n" 'note)
     (defun note--filter-dired ()
         (dired-mark-if (member (dired-get-filename t t) '("." "..")) nil)
         (dired-do-kill-lines))
@@ -5098,7 +5098,7 @@
             (revert-buffer)
             (note--filter-dired)
             (list buffer was-already-open was-already-focused)))
-    (define-key space-map "M"
+    (define-key space-map "N"
         (lambda ()
             (interactive)
             (unless (cadr (note-list))
@@ -5121,7 +5121,7 @@
                     (dired-find-file)
                     (unless was-already-open
                         (kill-buffer buffer))))))
-    (define-key space-search-map "m" 'note-list-search)
+    (define-key space-search-map "n" 'note-list-search)
     (defconst task-tag "qq")
     (setq denote-excluded-keywords-regexp "qq.*")
     (defun task-prompt ()
