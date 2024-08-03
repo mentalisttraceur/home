@@ -5106,11 +5106,10 @@
     (defun note-list-search ()
         (interactive)
         (let-unpack ((buffer was-already-open was-already-focused) (note-list))
-            (dired-goto-first-file)
             (run-with-idle-timer 0 nil
                 (lambda-let (buffer was-already-open was-already-focused) ()
                     (condition-case error
-                        (consult-line)
+                        (consult-line nil t)
                         (quit
                             (unless was-already-focused
                                 (quit-window (not was-already-open)))
