@@ -5300,6 +5300,51 @@
     (define-key dired-mode-map "R" 'denote-dired-mode))
 
 
+(defconst music-directory "~/Music")
+(defun pick-music ()
+    (let ((vertico-sort-function 'vertico-sort-alpha)
+          (files (directory-files music-directory nil "^[^.]" t)))
+        (concat
+            (file-name-as-directory music-directory)
+            (completing-read "Music: " files))))
+
+(defconst mpv--socket (expand-file-name "~/.mpv-socket"))
+(defconst mpv--command
+    (list "mpv" (concat "--input-ipc-server=" mpv--socket) "--idle" "--loop"))
+(defun mpv ()
+    (interactive)
+    (if-let ((buffer  (get-buffer "*mpv*"))
+             (process (get-buffer-process buffer)))
+        (pop-to-buffer buffer)
+        (add-single-use-hook 'pop-to-command-setup-hook
+            (lambda ()
+                (erase-buffer)
+                (dolist (key '("p" "<" ">"))
+                    (evil-local-set-key 'normal key 'eat-self-input))
+                (add-hook 'kill-buffer-hook
+                    (apply-partially 'delete-file mpv--socket)
+                    nil t)))
+        (add-single-use-hook 'eshell-exec-hook
+            (lambda (process)
+                (evil-normal-state)
+                (set-process-query-on-exit-flag process nil)))
+        (pop-to-command-eshell mpv--command nil "mpv"
+            (apply-partially 'delete-file mpv--socket))))
+(define-key space-map "m" 'mpv)
+(defun mpv-ipc (command)
+    (let* ((message `("command" ,command))
+           (message (json-encode-plist message))
+           (message (concat message "\n")))
+        (call-process-region message nil "socat" nil 0 nil
+            "-" (concat "UNIX-CONNECT:" mpv--socket ",forever,interval=0.1"))))
+(defun mpv-play (path)
+    (interactive (list (pick-music)))
+    (setq path (expand-file-name path))
+    (mpv)
+    (mpv-ipc `("loadfile" ,path "append-play")))
+(define-key space-search-map "m" 'mpv-play)
+
+
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
 (defconst tumblr--script (expand-file-name "~/.tumblr/tumblr.py"))
 (defvar tumblr-blogs '(
