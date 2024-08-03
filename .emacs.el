@@ -724,6 +724,11 @@
     (file-attribute-size (file-attributes filename)))
 
 
+(defun wait-for-file (path check-interval)
+    (until (file-exists-p path)
+        (sleep-for check-interval)))
+
+
 (defun field-string-no-properties (&optional position)
     (substring-no-properties (field-string position)))
 (defun replace-field (new-contents &optional position)
