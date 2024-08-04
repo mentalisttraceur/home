@@ -5345,6 +5345,16 @@
     (mpv)
     (mpv-ipc `("loadfile" ,path "append-play")))
 (define-key space-search-map "m" 'mpv-play)
+(defun mpv-remove (prefix-argument)
+    (interactive "P")
+    (if prefix-argument
+        (if (integerp prefix-argument)
+            (mpv-ipc `("playlist-remove" ,(1- prefix-argument)))
+            (mpv-ipc '("playlist-clear"))
+            (when (> (prefix-numeric-value prefix-argument) 4)
+                (mpv-ipc '("playlist-remove" "current"))))
+        (mpv-ipc '("playlist-remove" "current"))))
+(define-key space-map "M" 'mpv-remove)
 
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
