@@ -72,14 +72,6 @@
         (local-set-key [\C-tab] 'other-window)))
 
 
-(defun quit-previous-window ()
-    (interactive)
-    (if (> (count-windows) 1)
-        (save-selected-window
-            (quit-window nil (get-mru-window nil nil t)))
-        (error "Attempt to quit sole window")))
-
-
 (electric-indent-mode -1)
 (setq-default c-basic-offset 4)
 (setq lisp-body-indent 4)
@@ -2888,7 +2880,6 @@
     (define-key evil-normal-state-map "q" nil)
     (define-key evil-visual-state-map "q" 'evil-exit-visual-state)
     (define-key evil-operator-state-map "q" 'evil-force-normal-state)
-    (define-key evil-motion-state-map "Q" 'quit-previous-window)
     (defvar override-evil-mode-line-tag nil)
     (defmacro with-override-evil-mode-line-tag (tag help-string &rest body)
         `(unwind-protect
