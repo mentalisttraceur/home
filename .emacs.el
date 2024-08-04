@@ -5310,7 +5310,9 @@
 
 (defconst mpv--socket (expand-file-name "~/.mpv-socket"))
 (defconst mpv--command
-    (list "mpv" (concat "--input-ipc-server=" mpv--socket) "--idle" "--loop"))
+    (list "mpv"
+          (concat "--input-ipc-server=" mpv--socket)
+          "--idle" "--loop-playlist"))
 (defun mpv ()
     (interactive)
     (if-let ((buffer  (get-buffer "*mpv*"))
