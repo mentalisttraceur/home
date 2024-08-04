@@ -4555,6 +4555,9 @@
         (switch-to-buffer (last-buffer nil t)))
     (window-state-define-operator window-state-kill
         (kill-buffer))
+    (window-state-define-operator window-state-kill+delete
+        (kill-buffer)
+        (evil-window-delete))
     (defun window-state-use-register ()
         (condition-case _error
             (setq window-state-this-register
