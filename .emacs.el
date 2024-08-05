@@ -4557,7 +4557,8 @@
         (kill-buffer))
     (window-state-define-operator window-state-kill+delete
         (kill-buffer)
-        (evil-window-delete))
+        (when (or (window-parent) (minibufferp))
+            (evil-window-delete)))
     (defun window-state-use-register ()
         (condition-case _error
             (setq window-state-this-register
