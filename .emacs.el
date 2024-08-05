@@ -3357,6 +3357,7 @@
         'evil-ex-search-or-consult-line-previous)
     (define-prefix-command 'space-search-map)
     (define-key space-map "s" 'space-search-map)
+    (define-universal-argument-space-keys space-search-map " s")
     (define-key space-search-map "l" 'consult-ripgrep)
     (define-key space-search-map "f" 'consult-fd)
     (define-key space-search-map "t"
