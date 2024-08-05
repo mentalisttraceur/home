@@ -4427,7 +4427,7 @@
     (window-state-define-motion window-state-move-right
         (windmove-right))
     (defun window-state--target+split ()
-        (when (eq window-state--action 'window-state-target-window-prefix)
+        (when (eq window-state--action 'window-state-target-prefix)
             (let ((window (selected-window)))
                 (set-window-parameter window 'window-state--target+split t))))
     (window-state-define-motion window-state-split-up
@@ -4533,7 +4533,7 @@
         (condition-case _error
             (call-interactively 'find-file)
             (quit)))
-    (window-state-define-operator window-state-target-window-prefix
+    (window-state-define-operator window-state-target-prefix
         (setq prefix-arg current-prefix-arg)
         (display-buffer-override-next-command
             (lambda-let (window) (&rest _)
@@ -4600,9 +4600,8 @@
     (define-key window-state-map "N" 'switch-to-buffer-previous)
     (define-key window-state-map "o" 'window-state-open-move-operator)
     (define-key window-state-map "O" 'window-state-open)
-    (define-key window-state-map "t"
-        'window-state-target-window-prefix-operator)
-    (define-key window-state-map "T" 'window-state-target-window-prefix)
+    (define-key window-state-map "t" 'window-state-target-prefix-operator)
+    (define-key window-state-map "T" 'window-state-target-prefix)
     (define-key window-state-map "f" 'window-state-unbury)
     (define-key window-state-map "F" 'window-state-unbury-operator)
     (define-key window-state-map "b" 'window-state-bury)
