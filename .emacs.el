@@ -3108,7 +3108,8 @@
                  (define-key ,map " " ',universal)
                  (dolist (key '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
                      (define-key ,map key ',digit))
-                 (define-key ,map "-" ',negative))))
+                 (define-key ,map "-" ',negative)
+                 '(,universal ,digit ,negative))))
     (define-universal-argument-space-keys space-map " ")
     (defun fixed-last-s-expression (function &rest arguments)
         (save-excursion
