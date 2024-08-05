@@ -5337,12 +5337,22 @@
         (pop-to-command-eshell mpv--command nil "mpv"
             (apply-partially 'delete-file mpv--socket))))
 (define-key space-map "m" 'mpv)
+(defconst mpv--socket-socat
+    (concat "UNIX-CONNECT:" mpv--socket ",forever,interval=0.1"))
 (defun mpv-ipc (command)
     (let* ((message `("command" ,command))
            (message (json-encode-plist message))
-           (message (concat message "\n")))
-        (call-process-region message nil "socat" nil 0 nil
-            "-" (concat "UNIX-CONNECT:" mpv--socket ",forever,interval=0.1"))))
+           (message (concat message "\n"))
+           (result  (funcall-process
+                        "socat" "-" mpv--socket-socat :stdin message)))
+        (let-unpack ((status output) result)
+            (unless (equal status 0)
+                (error "socat error %s" output))
+            (setq result (json-parse-string output)))
+        (let ((ipc-error (gethash "error" result)))
+            (unless (equal ipc-error "success")
+                (error "mpv IPC error %s" ipc-error)))
+        (gethash "data" result)))
 (defun mpv-play (path)
     (interactive (list (pick-music)))
     (setq path (expand-file-name path))
