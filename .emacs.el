@@ -4600,9 +4600,9 @@
     (define-key window-state-map "N" 'switch-to-buffer-previous)
     (define-key window-state-map "o" 'window-state-open-move-operator)
     (define-key window-state-map "O" 'window-state-open)
-    (define-key window-state-map "w"
+    (define-key window-state-map "t"
         'window-state-target-window-prefix-operator)
-    (define-key window-state-map "W" 'window-state-target-window-prefix)
+    (define-key window-state-map "T" 'window-state-target-window-prefix)
     (define-key window-state-map "f" 'window-state-unbury)
     (define-key window-state-map "F" 'window-state-unbury-operator)
     (define-key window-state-map "b" 'window-state-bury)
