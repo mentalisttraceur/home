@@ -751,6 +751,10 @@
             (replace-field new-command position))))
 
 
+(defun call-process-string (string program &optional buffer display &rest args)
+    (apply 'call-process-region string nil program nil buffer display args))
+
+
 (defun funcall-process (program &rest arguments)
     (with-temp-buffer
         (let* ((result (apply 'call-process program nil t nil arguments))
