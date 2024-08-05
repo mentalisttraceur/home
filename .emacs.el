@@ -756,10 +756,16 @@
 
 
 (defun funcall-process (program &rest arguments)
-    (with-temp-buffer
-        (let* ((result (apply 'call-process program nil t nil arguments))
-               (output (string-remove-suffix "\n" (buffer-string))))
-            (list result output))))
+    (let ((stdin))
+        (when-let (stdin-cell (memq :stdin arguments))
+            (setq stdin (cadr stdin-cell))
+            (setcdr stdin-cell (cddr stdin-cell))
+            (setq arguments (delq :stdin arguments)))
+        (with-temp-buffer
+            (let* ((result (apply 'call-process-string
+                               stdin program t nil arguments))
+                   (output (string-remove-suffix "\n" (buffer-string))))
+                (list result output)))))
 
 (defmacro apply-process (&rest command)
     `(apply 'funcall-process ,@command))
