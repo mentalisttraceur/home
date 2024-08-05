@@ -4555,7 +4555,7 @@
         (switch-to-buffer (last-buffer nil t)))
     (window-state-define-operator window-state-kill
         (kill-buffer))
-    (window-state-define-operator window-state-kill+delete
+    (window-state-define-operator window-state-close
         (kill-buffer)
         (when (or (window-parent) (minibufferp))
             (evil-window-delete)))
@@ -4591,8 +4591,8 @@
     (define-key window-state-map "D" 'window-state-delete)
     (define-key window-state-map "p" 'window-state-paste-move-operator)
     (define-key window-state-map "P" 'window-state-paste)
-    (define-key window-state-map "x" 'window-state-kill+delete-operator)
-    (define-key window-state-map "X" 'window-state-kill+delete)
+    (define-key window-state-map "x" 'window-state-close-operator)
+    (define-key window-state-map "X" 'window-state-close)
     (define-key window-state-map "c" 'window-state-search-move-operator)
     (define-key window-state-map "C" 'window-state-search)
     (define-key window-state-map "/" 'window-state-search)
