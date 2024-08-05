@@ -1403,7 +1403,7 @@
                     (let ((inhibit-message t))
                         (message
                             "git rev-parse in %S exit=%S output=%S"
-                            default-directory result output)))
+                            default-directory status output)))
                 nil))))
 
 (use-package vc
