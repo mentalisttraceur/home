@@ -621,6 +621,32 @@
                  ,@body)
              (jump-to-position-with-scroll --save-point--))))
 
+(defun point-line-and-column-with-scroll ()
+    (list
+        (line-number-at-pos)
+        (current-column)
+        (window-start)
+        (window-vscroll nil t)
+        (window-hscroll)))
+
+(defun jump-to-line-and-column-with-scroll (line-and-column-with-scroll)
+    (let-unpack ((line column start vscroll hscroll)
+                     line-and-column-with-scroll)
+        (goto-char (point-min))
+        (forward-line (1- line))
+        (move-to-column column)
+        (let ((window (selected-window)))
+            (set-window-start window start t)
+            (set-window-vscroll window vscroll t)
+            (set-window-hscroll window hscroll))))
+
+(defmacro save-point-line-and-column-with-scroll (&rest body)
+    `(let ((--save-point-- (point-line-and-column-with-scroll)))
+         (unwind-protect
+             (progn
+                 ,@body)
+             (jump-to-line-and-column-with-scroll --save-point--))))
+
 (defun point-marker-with-scroll ()
     (list
         (point-marker)
