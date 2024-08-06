@@ -614,6 +614,13 @@
             (set-window-vscroll window vscroll t)
             (set-window-hscroll window hscroll))))
 
+(defmacro save-point-position-with-scroll (&rest body)
+    `(let ((--save-point-- (point-position-with-scroll)))
+         (unwind-protect
+             (progn
+                 ,@body)
+             (jump-to-position-with-scroll --save-point--))))
+
 (defun point-marker-with-scroll ()
     (list
         (point-marker)
@@ -631,6 +638,13 @@
             (set-window-start window start t)
             (set-window-vscroll window vscroll t)
             (set-window-hscroll window hscroll))))
+
+(defmacro save-point-marker-with-scroll (&rest body)
+    `(let ((--save-point-- (point-marker-with-scroll)))
+         (unwind-protect
+             (progn
+                 ,@body)
+             (jump-to-marker-with-scroll --save-point--))))
 
 
 (defun run-pre-command-hook ()
