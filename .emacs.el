@@ -5358,27 +5358,7 @@
 (defconst mpv--command
     (list "mpv"
           (concat "--input-ipc-server=" mpv--socket)
-          "--idle" "--loop-playlist"))
-(defun mpv ()
-    (interactive)
-    (if-let ((buffer  (get-buffer "*mpv*"))
-             (process (get-buffer-process buffer)))
-        (pop-to-buffer buffer)
-        (add-single-use-hook 'pop-to-command-setup-hook
-            (lambda ()
-                (erase-buffer)
-                (dolist (key '("p" "<" ">"))
-                    (evil-local-set-key 'normal key 'eat-self-input))
-                (add-hook 'kill-buffer-hook
-                    (apply-partially 'delete-file mpv--socket)
-                    nil t)))
-        (add-single-use-hook 'eshell-exec-hook
-            (lambda (process)
-                (evil-normal-state)
-                (set-process-query-on-exit-flag process nil)))
-        (pop-to-command-eshell mpv--command nil "mpv"
-            (apply-partially 'delete-file mpv--socket))))
-(define-key space-map "m" 'mpv)
+          "--idle" "--loop-playlist" "--terminal=no"))
 (defconst mpv--socket-socat
     (concat "UNIX-CONNECT:" mpv--socket ",forever,interval=0.1"))
 (defun mpv-ipc (command)
@@ -5402,6 +5382,35 @@
         (when (string-match-p "[^0-9]" string)
             (error "not integer: %s" string))
         (string-to-number string)))
+(defun mpv--refresh (buffer)
+    (when (get-buffer-window buffer 'visible)
+        (with-current-buffer buffer
+            (save-point-line-and-column-with-scroll
+                (erase-buffer)
+                (insert
+                    (mpv-expand "${playlist}${time-pos} / ${duration}\n"))))))
+(define-derived-mode mpv-mode nil "mpv")
+(defun mpv ()
+    (interactive)
+    (if-let ((buffer  (get-buffer "*mpv*"))
+             (process (get-buffer-process buffer)))
+        (pop-to-buffer buffer)
+        (setq buffer (get-buffer-create "*mpv*"))
+        (set-buffer buffer)
+        (mpv-mode)
+        (setq process (make-process :name "mpv" :command mpv--command))
+        (set-process-query-on-exit-flag process nil)
+        (set-process-buffer process buffer)
+        (let ((timer (run-with-timer 0 0.1 'mpv--refresh buffer)))
+            (add-hook 'kill-buffer-hook
+                (lambda-let (timer mpv--socket) ()
+                    (cancel-timer timer)
+                    (delete-file mpv--socket))
+                nil t))
+        (pop-to-buffer buffer)))
+(add-to-list 'evil-motion-state-modes 'mpv-mode)
+(define-key mpv-mode-map "q" 'quit-window)
+(define-key space-map "m" 'mpv)
 (defun mpv-play (path prefix-argument)
     (interactive (list (pick-music) current-prefix-arg))
     (setq path (expand-file-name path))
