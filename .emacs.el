@@ -5408,9 +5408,7 @@
                     (delete-file mpv--socket))
                 nil t))
         (pop-to-buffer buffer)))
-(add-to-list 'evil-motion-state-modes 'mpv-mode)
 (define-key mpv-mode-map "q" 'quit-window)
-(define-key space-map "m" 'mpv)
 (defun mpv-play (path prefix-argument)
     (interactive (list (pick-music) current-prefix-arg))
     (setq path (expand-file-name path))
@@ -5426,7 +5424,6 @@
                 (mpv-ipc `("loadfile" ,path "replace"))
                 (mpv-ipc `("loadfile" ,path "insert-next-play"))))
         (mpv-ipc `("loadfile" ,path "append-play"))))
-(define-key space-search-map "m" 'mpv-play)
 (defun mpv-remove (prefix-argument)
     (interactive "P")
     (if prefix-argument
@@ -5443,6 +5440,9 @@
             (when (> (prefix-numeric-value prefix-argument) 4)
                 (mpv-ipc '("playlist-remove" "current"))))
         (mpv-ipc '("playlist-remove" "current"))))
+(add-to-list 'evil-motion-state-modes 'mpv-mode)
+(define-key space-map "m" 'mpv)
+(define-key space-search-map "m" 'mpv-play)
 (define-key space-map "M" 'mpv-remove)
 
 
