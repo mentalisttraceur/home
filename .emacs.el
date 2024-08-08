@@ -2564,6 +2564,16 @@
 
 (use-packages crm vertico
     :config
+    (defvar-local hide-chosen-crm-completions--backup nil)
+    (defun hide-chosen-crm-completions ()
+        (if hide-chosen-crm-completions--backup
+            (setq crm-completion-table hide-chosen-crm-completions--backup)
+            (setq hide-chosen-crm-completions--backup crm-completion-table))
+        (let* ((input (minibuffer-contents-no-properties))
+               (already-chosen (butlast (split-string input crm-separator))))
+            (dolist (item already-chosen)
+                (setq crm-completion-table
+                      (remove item crm-completion-table)))))
     (defun hack-completing-read-multiple (&rest _)
         (add-single-use-hook 'minibuffer-setup-hook
             (lambda ()
