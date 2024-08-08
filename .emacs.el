@@ -5347,6 +5347,46 @@
     (define-key dired-mode-map "R" 'denote-dired-mode))
 
 
+(defconst mpv-ipc--server-option "--input-ipc-server=")
+(defun mpv-ipc-socket-path-from-arguments (mpv-arguments)
+    (let ((socket nil))
+        (dolist (argument mpv-arguments socket)
+            (when (string-prefix-p mpv-ipc--server-option argument)
+                (setq socket (string-remove-prefix
+                                 mpv-ipc--server-option argument))))))
+(defun mpv-ipc-socket-path-from-process (mpv-process)
+    (let* ((command   (process-command mpv-process))
+           (arguments (cdr command)))
+        (mpv-ipc-socket-path-from-arguments arguments)))
+(defun mpv-ipc-socket (path)
+    (let* ((buffer-name (concat " *mpv-ipc: " path "*"))
+           (buffer (generate-new-buffer buffer-name t)))
+        (make-network-process
+            :name path
+            :family 'local
+            :service (expand-file-name path)
+            :buffer buffer
+            :sentinel (lambda-let (buffer) (socket _event-string)
+                          (unless (process-live-p socket)
+                              (kill-buffer buffer))))))
+(defun mpv-ipc (socket command)
+    (let* ((message `("command" ,command))
+           (message (json-encode-plist message))
+           (message (concat message "\n"))
+           (output  (process-buffer socket))
+           (reply   nil))
+        (process-send-string socket message)
+        (with-current-buffer output
+            (while (not (search-backward "\n" nil t))
+                (accept-process-output socket))
+            (goto-char 1)
+            (setq reply (json-parse-buffer))
+            (delete-region 1 (1+ (point))))
+        (let ((ipc-error (gethash "error" reply)))
+            (unless (equal ipc-error "success")
+                (error "mpv-ipc error: %s" ipc-error)))
+        (gethash "data" reply)))
+
 (defconst music-directory "~/Music")
 (defun pick-music ()
     (let ((vertico-sort-function 'vertico-sort-alpha)
