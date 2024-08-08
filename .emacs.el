@@ -5372,17 +5372,29 @@
     (let* ((command   (process-command mpv-process))
            (arguments (cdr command)))
         (mpv-ipc-socket-path-from-arguments arguments)))
+(define-error 'mpv-ipc-error "mpv-ipc error")
+(define-error 'mpv-ipc-connect-error "mpv-ipc error connecting" 'mpv-ipc-error)
+(define-error 'mpv-ipc-socket-missing "mpv-ipc socket missing"
+    '(mpv-ipc-connect-error file-missing))
+(define-error 'mpv-ipc-connection-refused "mpv-ipc connection refused"
+    '(mpv-ipc-connect-error file-error))
 (defun mpv-ipc-connect (path)
-    (let* ((buffer-name (concat " *mpv-ipc: " path "*"))
+    (let* ((expanded-path (expand-file-name path))
+           (buffer-name (concat " *mpv-ipc: " path "*"))
            (buffer (generate-new-buffer buffer-name t)))
-        (make-network-process
-            :name path
-            :family 'local
-            :service (expand-file-name path)
-            :buffer buffer
-            :sentinel (lambda-let (buffer) (socket _event-string)
-                          (unless (process-live-p socket)
-                              (kill-buffer buffer))))))
+        (condition-case _error
+            (make-network-process
+                :name path
+                :family 'local
+                :service expanded-path
+                :buffer buffer
+                :sentinel (lambda-let (buffer) (socket _event-string)
+                              (unless (process-live-p socket)
+                                  (kill-buffer buffer))))
+            (file-missing
+                (signal 'mpv-ipc-socket-missing (list path)))
+            (file-error
+                (signal 'mpv-ipc-connection-refused (list path))))))
 (defun mpv-ipc (socket command)
     (let* ((message `("command" ,command))
            (message (json-encode-plist message))
