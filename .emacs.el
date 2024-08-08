@@ -5372,7 +5372,7 @@
     (let* ((command   (process-command mpv-process))
            (arguments (cdr command)))
         (mpv-ipc-socket-path-from-arguments arguments)))
-(defun mpv-ipc-socket (path)
+(defun mpv-ipc-connect (path)
     (let* ((buffer-name (concat " *mpv-ipc: " path "*"))
            (buffer (generate-new-buffer buffer-name t)))
         (make-network-process
