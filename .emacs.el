@@ -2564,14 +2564,14 @@
 
 (use-packages crm vertico
     :config
-    (defun vertico-crm-comma ()
-        (interactive)
-        (vertico-insert)
-        (insert ","))
     (defun hack-completing-read-multiple (&rest _)
         (add-single-use-hook 'minibuffer-setup-hook
             (lambda ()
-                (local-set-key "," 'vertico-crm-comma)
+                (local-set-key ","
+                    (lambda ()
+                        (interactive)
+                        (vertico-insert)
+                        (insert ",")))
                 (local-set-key "\M-,"
                     (lambda ()
                         (interactive)
