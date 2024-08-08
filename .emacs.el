@@ -316,12 +316,12 @@
     `(apply-split-nest without-advice-1 ,advice-list 1 ,body))
 
 (defmacro without-advice-all-1 (symbol &rest body)
-    `(let ((advice-list (advice-list ,symbol)))
+    `(let ((--without-advice-all-1-- (advice-list ,symbol)))
          (unwind-protect
              (progn
                  (advice-remove-all ,symbol)
                  ,@body)
-             (dolist (advice advice-list)
+             (dolist (advice --without-advice-all-1--)
                  (apply 'advice-add ,symbol advice)))))
 
 (defmacro without-advice-all (symbol-list &rest body)
