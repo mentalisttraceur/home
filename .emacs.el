@@ -5383,14 +5383,19 @@
            (buffer-name (concat " *mpv-ipc: " path "*"))
            (buffer (generate-new-buffer buffer-name t)))
         (condition-case _error
-            (make-network-process
-                :name path
-                :family 'local
-                :service expanded-path
-                :buffer buffer
-                :sentinel (lambda-let (buffer) (socket _event-string)
-                              (unless (process-live-p socket)
-                                  (kill-buffer buffer))))
+            (condition-case error
+                (make-network-process
+                    :name path
+                    :family 'local
+                    :service expanded-path
+                    :buffer buffer
+                    :sentinel (lambda-let (buffer) (socket _event-string)
+                                  (unless (process-live-p socket)
+                                      (kill-buffer buffer))))
+                (error
+                    (ignore-errors
+                        (kill-buffer buffer))
+                    (signal (car error) (cdr error))))
             (file-missing
                 (signal 'mpv-ipc-socket-missing (list path)))
             (file-error
