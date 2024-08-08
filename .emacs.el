@@ -206,6 +206,25 @@
          ,@body))
 
 
+(defmacro wait-while (test check-interval)
+    `(let ((--wait-while-- ,check-interval)
+           (--wait-while--result--))
+         (while (and (setq --wait-while--result-- ,test) --wait-while--)
+             (if-let (seconds (cond
+                                  ((functionp --wait-while--)
+                                      (funcall --wait-while--))
+                                  ((listp --wait-while--)
+                                      (pop --wait-while--))
+                                  (t
+                                      --wait-while--)))
+                 (sleep-for seconds)
+                 (setq --wait-while-- nil)))
+           --wait-while--result--))
+
+(defmacro wait-until (test check-interval)
+    `(wait-while (not ,test) ,check-interval))
+
+
 (defmacro save-point (&rest body)
     `(let ((--save-point-- (point)))
          (unwind-protect
