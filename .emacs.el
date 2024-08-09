@@ -5391,6 +5391,8 @@
 (define-error 'mpv-ipc-connect-error "mpv-ipc error connecting" 'mpv-ipc-error)
 (define-error 'mpv-ipc-socket-missing "mpv-ipc socket missing"
     '(mpv-ipc-connect-error file-missing))
+(define-error 'mpv-ipc-permission-denied "mpv-ipc permission denied"
+    '(mpv-ipc-connect-error permission-denied))
 (define-error 'mpv-ipc-connection-refused "mpv-ipc connection refused"
     '(mpv-ipc-connect-error file-error))
 (defun mpv-ipc-connect (path)
@@ -5413,6 +5415,8 @@
                     (signal (car error) (cdr error))))
             (file-missing
                 (signal 'mpv-ipc-socket-missing (list path)))
+            (permission-denied
+                (signal 'mpv-ipc-permission-denied (list path)))
             (file-error
                 (signal 'mpv-ipc-connection-refused (list path))))))
 (defun mpv-ipc (socket command)
