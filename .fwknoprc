@@ -1,7 +1,0 @@
-[default]
-NO_SAVE_ARGS     Y
-SPA_SERVER_PORT  9
-ACCESS           tcp/22
-
-[h]
-USE_HMAC         Y
