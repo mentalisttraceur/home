@@ -1002,7 +1002,10 @@
                 (setcar arguments (cdr iterator)))
             arguments))
     (advice-add 'iter-next :filter-args 'fixed-iter-method)
-    (advice-add 'iter-close :filter-args 'fixed-iter-method))
+    (advice-add 'iter-close :filter-args 'fixed-iter-method)
+    (defun try-iter-next (iterator &optional yield-result)
+        (ignore-error 'iter-end-of-sequence
+            (iter-next iterator yield-result))))
 
 (use-package cl-seq
     :config
