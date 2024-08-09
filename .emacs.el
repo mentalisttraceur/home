@@ -3826,6 +3826,7 @@
             (evil-local-set-key 'motion " " 'space-map)))
     (evil-declare-not-repeat 'ignore)
     (add-to-list 'evil-motion-state-modes 'shortdoc-mode)
+    (add-to-list 'evil-motion-state-modes 'messages-buffer-mode)
     (with-current-buffer (messages-buffer)
         (evil-motion-state)))
 
