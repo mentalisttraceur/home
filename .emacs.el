@@ -2577,6 +2577,8 @@
     (defun hack-completing-read-multiple (&rest _)
         (add-single-use-hook 'minibuffer-setup-hook
             (lambda ()
+                (add-hook 'post-command-hook
+                    'hide-chosen-crm-completions nil t)
                 (local-set-key ","
                     (lambda ()
                         (interactive)
