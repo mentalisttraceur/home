@@ -223,7 +223,11 @@
            --wait-while--result--))
 
 (defmacro wait-until (test check-interval)
-    `(wait-while (not ,test) ,check-interval))
+    `(let ((--wait-until-- nil))
+         (wait-while
+            (not (setq --wait-until-- ,test))
+            ,check-interval)
+         --wait-until--))
 
 
 (defmacro save-point (&rest body)
