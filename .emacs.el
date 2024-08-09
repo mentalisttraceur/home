@@ -207,18 +207,19 @@
 
 
 (defmacro wait-while (test check-interval)
-    `(let ((--wait-while-- ,check-interval)
+    `(let ((--wait-while--interval-- ,check-interval)
+           (--wait-while--seconds--)
            (--wait-while--result--))
-         (while (and (setq --wait-while--result-- ,test) --wait-while--)
-             (if-let (seconds (cond
-                                  ((functionp --wait-while--)
-                                      (funcall --wait-while--))
-                                  ((listp --wait-while--)
-                                      (pop --wait-while--))
-                                  (t
-                                      --wait-while--)))
-                 (sleep-for seconds)
-                 (setq --wait-while-- nil)))
+         (while (and (setq --wait-while--result-- ,test)
+                     (setq --wait-while--seconds--
+                           (cond
+                               ((functionp --wait-while--interval--)
+                                   (funcall --wait-while--interval--))
+                               ((listp --wait-while--interval--)
+                                   (pop --wait-while--interval--))
+                               (t
+                                   --wait-while--interval--))))
+             (sleep-for --wait-while--seconds--))
            --wait-while--result--))
 
 (defmacro wait-until (test check-interval)
