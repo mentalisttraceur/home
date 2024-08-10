@@ -3151,6 +3151,8 @@
         (evil-ex-nohighlight))
     (add-to-list 'evil-ex-commands '("nosearch" . evil-ex-nosearch))
     (add-to-list 'evil-ex-commands '("nos" . "nosearch"))
+    (when termux
+        (define-key evil-motion-state-map [down-mouse-1] nil))
     (define-prefix-command 'space-map)
     (define-key evil-motion-state-map " " 'space-map)
     (dolist (map (list evil-motion-state-map evil-insert-state-map
