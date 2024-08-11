@@ -5591,7 +5591,7 @@
 (define-key music-map "j" 'music-next)
 (define-key music-map "k" 'music-previous)
 (define-key music-map "p" 'music-pause)
-(define-key music-map "d" 'music-remove)
+(define-key music-map "x" 'music-remove)
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
 (defconst tumblr--script (expand-file-name "~/.tumblr/tumblr.py"))
