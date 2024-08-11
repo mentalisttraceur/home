@@ -5454,6 +5454,16 @@
         (when (string-match-p "[^0-9]" string)
             (error "not integer: %s" string))
         (string-to-number string)))
+(defun mpv-ipc-cycle (socket property &optional values backwards)
+    (if values
+        (if backwards
+            (mpv-ipc socket `("cycle-values" "!reverse" ,property ,@values))
+            (mpv-ipc socket `("cycle-values" ,property ,@values)))
+        (if backwards
+            (mpv-ipc socket `("cycle" ,property "down"))
+            (mpv-ipc socket `("cycle" ,property))))
+    (let ((format (concat "${" property "}")))
+        (mpv-ipc socket `("expand-text" ,format))))
 
 
 (defconst music-directory "~/Music")
