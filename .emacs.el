@@ -5583,10 +5583,15 @@
         (dotimes (_ count)
             (mpv-ipc music--socket '("playlist-prev")))))
 (add-to-list 'evil-motion-state-modes 'music-mode)
-(define-key space-map "m" 'music)
 (define-key space-search-map "m" 'music-play)
-(define-key space-map "M" 'music-remove)
-
+(define-prefix-command 'music-map)
+(define-key space-map "m" music-map)
+(define-universal-argument-space-keys music-map " m")
+(define-key music-map "m" 'music)
+(define-key music-map "j" 'music-next)
+(define-key music-map "k" 'music-previous)
+(define-key music-map "p" 'music-pause)
+(define-key music-map "d" 'music-remove)
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
 (defconst tumblr--script (expand-file-name "~/.tumblr/tumblr.py"))
