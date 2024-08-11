@@ -5565,6 +5565,11 @@
                 (music-playlist-remove 'all)
                 (music-playlist-remove 'all-except-current)))
         (music-playlist-remove 'current)))
+(defun music-pause (prefix-argument)
+    (interactive "P")
+    (if prefix-argument
+        (mpv-ipc music--socket '("set" "pause" "yes"))
+        (mpv-ipc music--socket '("cycle" "pause"))))
 (add-to-list 'evil-motion-state-modes 'music-mode)
 (define-key space-map "m" 'music)
 (define-key space-search-map "m" 'music-play)
