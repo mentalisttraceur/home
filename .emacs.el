@@ -5519,6 +5519,11 @@
                         (mpv-ipc-expand socket
                             "${playlist}${time-pos} / ${duration}\n")))))))
 (define-key music-mode-map "q" 'quit-window)
+(defun music-eval ()
+    (interactive)
+    (let* ((input   (read-string "mpv IPC: "))
+           (command (split-string input)))
+        (princ (mpv-ipc music--socket command))))
 (defun music-playlist-position ()
     (mpv-ipc-expand-integer music--socket "${playlist-position}"))
 (defun music-playlist-count ()
@@ -5602,6 +5607,7 @@
 (define-key music-map "k" 'music-previous)
 (define-key music-map "p" 'music-pause)
 (define-key music-map "x" 'music-remove)
+(define-key music-map "e" 'music-eval)
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
 (defconst tumblr--script (expand-file-name "~/.tumblr/tumblr.py"))
