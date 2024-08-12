@@ -5487,6 +5487,7 @@
         (pop-to-buffer buffer)
         (setq buffer (get-buffer-create "*Music*"))
         (set-buffer buffer)
+        (setq buffer-read-only t)
         (music-mode)
         (setq process (make-process
                           :name "music"
@@ -5513,9 +5514,10 @@
     (when (get-buffer-window buffer 'visible)
         (with-current-buffer buffer
             (save-point-line-and-column-with-scroll
-                (erase-buffer)
-                (let ((inhibit-quit nil))
-                    (music--insert-playlist socket))))))
+                (let ((inhibit-read-only t))
+                    (erase-buffer)
+                    (let ((inhibit-quit nil))
+                        (music--insert-playlist socket)))))))
 (defun music--insert-playlist (socket)
     (let ((count (mpv-ipc-expand-integer socket "${playlist-count}")))
         (dotimes (index count)
