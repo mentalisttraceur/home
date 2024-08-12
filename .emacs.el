@@ -5502,6 +5502,8 @@
                (socket2 (mpv-ipc-connect socket-path)))
             (mpv-ipc socket1 '("disable_event" "all"))
             (mpv-ipc socket2 '("disable_event" "all"))
+            (set-process-query-on-exit-flag socket1 nil)
+            (set-process-query-on-exit-flag socket2 nil)
             (setq music--socket socket1)
             (let ((timer (run-with-timer 0 0.1 'music--refresh socket2 buffer)))
                 (add-hook 'kill-buffer-hook
