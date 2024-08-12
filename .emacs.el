@@ -5524,7 +5524,7 @@
             (let* ((path (mpv-ipc-expand socket
                              (format "${playlist/%d/filename}" index)))
                    (file (file-name-nondirectory path))
-                   (line (concat file "\n")))
+                   (line (format "%d. %s\n" (1+ index) file)))
                 (insert (propertize line 'mpv-index index 'mpv-path path)))))
     (insert (mpv-ipc-expand socket "${time-pos} / ${duration}\n")))
 (define-key music-mode-map "q" 'quit-window)
