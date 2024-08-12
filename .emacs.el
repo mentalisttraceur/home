@@ -5541,8 +5541,12 @@
                     (setq line (propertize line 'face face)))
                 (insert line)
                 (when (= index current)
-                    (insert (mpv-ipc-expand socket
-                                "    ${time-pos} / ${duration}\n")))))))
+                    (insert
+                        (propertize
+                            (mpv-ipc-expand socket
+                                "    ${time-pos} / ${duration}\n")
+                            'mpv-index index
+                            'mpv-path path)))))))
 (define-key music-mode-map "q" 'quit-window)
 (defun music-eval ()
     (interactive)
