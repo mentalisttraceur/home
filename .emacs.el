@@ -5513,7 +5513,8 @@
 (defun music--refresh (socket buffer)
     (when (get-buffer-window buffer 'visible)
         (with-current-buffer buffer
-            (unless (evil-visual-state-p)
+            (unless (or (evil-visual-state-p)
+                        (evil-operator-state-p))
                 (save-point-line-and-column-with-scroll
                     (let ((inhibit-read-only t))
                         (erase-buffer)
