@@ -5513,11 +5513,12 @@
 (defun music--refresh (socket buffer)
     (when (get-buffer-window buffer 'visible)
         (with-current-buffer buffer
-            (save-point-line-and-column-with-scroll
-                (let ((inhibit-read-only t))
-                    (erase-buffer)
-                    (let ((inhibit-quit nil))
-                        (music--insert-playlist socket)))))))
+            (unless (evil-visual-state-p)
+                (save-point-line-and-column-with-scroll
+                    (let ((inhibit-read-only t))
+                        (erase-buffer)
+                        (let ((inhibit-quit nil))
+                            (music--insert-playlist socket))))))))
 (defun music--insert-playlist (socket)
     (let ((count (mpv-ipc-expand-integer socket "${playlist-count}")))
         (dotimes (index count)
