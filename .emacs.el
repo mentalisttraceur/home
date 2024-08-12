@@ -5624,6 +5624,13 @@
         (music-next (- count))
         (dotimes (_ count)
             (mpv-ipc music--socket '("playlist-prev")))))
+(defun music-play (target)
+    (interactive (list
+                     (if current-prefix-arg
+                         (1- (prefix-numeric-value current-prefix-arg))
+                         (get-text-property (point) 'mpv-index))))
+    (mpv-ipc music--socket (list "playlist-play-index" target)))
+(define-key music-mode-map "\C-m" 'music-play)
 (add-to-list 'evil-motion-state-modes 'music-mode)
 (define-key space-search-map "m" 'music-open)
 (define-prefix-command 'music-map)
