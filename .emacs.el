@@ -5451,7 +5451,7 @@
     (mpv-ipc socket `("expand-text" ,format)))
 (defun mpv-ipc-expand-integer (socket format)
     (let ((string (mpv-ipc-expand socket format)))
-        (when (string-match-p "[^0-9]" string)
+        (unless (string-match-p "\\`-?[0-9]+\\'" string)
             (error "not integer: %s" string))
         (string-to-number string)))
 (defun mpv-ipc-cycle (socket property &optional values backwards)
