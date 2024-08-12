@@ -5519,15 +5519,30 @@
                         (erase-buffer)
                         (let ((inhibit-quit nil))
                             (music--insert-playlist socket))))))))
+(defface music-current-entry-face '((t :foreground "#80FFFF")) "")
+(defface music-current-playing-entry-face
+    '((t :inherit music-current-entry-face :weight bold :foreground "#FF4040"))
+    "")
 (defun music--insert-playlist (socket)
-    (let ((count (mpv-ipc-expand-integer socket "${playlist-count}")))
+    (let ((count   (mpv-ipc-expand-integer socket "${playlist-count}"))
+          (current (mpv-ipc-expand-integer socket "${playlist-pos}"))
+          (face    (if (equal (mpv-ipc-expand socket "${pause}") "yes")
+                       'music-current-entry-face
+                       'music-current-playing-entry-face)))
         (dotimes (index count)
             (let* ((path (mpv-ipc-expand socket
                              (format "${playlist/%d/filename}" index)))
                    (file (file-name-nondirectory path))
-                   (line (format "%d. %s\n" (1+ index) file)))
-                (insert (propertize line 'mpv-index index 'mpv-path path)))))
-    (insert (mpv-ipc-expand socket "${time-pos} / ${duration}\n")))
+                   (line (propertize
+                             (format "%d. %s\n" (1+ index) file)
+                             'mpv-index index
+                             'mpv-path path)))
+                (when (= index current)
+                    (setq line (propertize line 'face face)))
+                (insert line)
+                (when (= index current)
+                    (insert (mpv-ipc-expand socket
+                                "    ${time-pos} / ${duration}\n")))))))
 (define-key music-mode-map "q" 'quit-window)
 (defun music-eval ()
     (interactive)
