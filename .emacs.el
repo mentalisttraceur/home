@@ -5515,9 +5515,16 @@
             (save-point-line-and-column-with-scroll
                 (erase-buffer)
                 (let ((inhibit-quit nil))
-                    (insert
-                        (mpv-ipc-expand socket
-                            "${playlist}${time-pos} / ${duration}\n")))))))
+                    (music--insert-playlist socket))))))
+(defun music--insert-playlist (socket)
+    (let ((count (mpv-ipc-expand-integer socket "${playlist-count}")))
+        (dotimes (index count)
+            (let* ((path (mpv-ipc-expand socket
+                             (format "${playlist/%d/filename}" index)))
+                   (file (file-name-nondirectory path))
+                   (line (concat file "\n")))
+                (insert (propertize line 'mpv-index index 'mpv-path path)))))
+    (insert (mpv-ipc-expand socket "${time-pos} / ${duration}\n")))
 (define-key music-mode-map "q" 'quit-window)
 (defun music-eval ()
     (interactive)
