@@ -2946,6 +2946,15 @@
         (setq prefix-arg current-prefix-arg)
         return-value)
     (advice-add 'evil-use-register :filter-return 'fixed-evil-use-register)
+    (defun evil-motion-post-command ()
+        (with-advice (('evil-normal-state-p :override 'evil-motion-state-p))
+            (evil-normal-post-command)))
+    (add-hook 'evil-motion-state-entry-hook
+        (lambda ()
+            (add-hook 'post-command-hook 'evil-motion-post-command nil t)))
+    (add-hook 'evil-motion-state-exit-hook
+        (lambda ()
+            (remove-hook 'post-command-hook 'evil-motion-post-command t)))
     (defun evil-yank-string (string &optional register yank-handler)
         (with-temp-buffer
             (insert string)
