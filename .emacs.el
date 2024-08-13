@@ -5164,6 +5164,7 @@
     (advice-add 'delete-file :after 'delete-file-revert-dired-buffers)
     (evil-define-command note (prefix-argument &optional register)
         (interactive "P<x>")
+        (setq evil-this-register nil)
         (denote)
         (if (or prefix-argument register)
             (evil-paste-after 1 register)
