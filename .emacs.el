@@ -780,6 +780,22 @@
     (file-attribute-size (file-attributes filename)))
 
 
+(defun text-property-values (start end property &optional object)
+    (unless start
+        (if (stringp object)
+            (setq start 0)
+            (setq start 1)))
+    (let ((values ()))
+        (while (and start (or (not end) (< start end)))
+            (let ((value (get-text-property
+                             start property object)))
+                (when value
+                    (push value values)))
+            (setq start (next-single-property-change
+                            start property object end)))
+        (nreverse values)))
+
+
 (defun field-string-no-properties (&optional position)
     (substring-no-properties (field-string position)))
 (defun replace-field (new-contents &optional position)
