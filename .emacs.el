@@ -5599,6 +5599,7 @@
 (defun music-playlist-count ()
     (mpv-ipc-expand-integer music--socket "${playlist-count}"))
 (defun music-playlist-add (path target &optional play)
+    (setq path (expand-file-name path))
     (let ((action)
           (command))
         (cond
@@ -5651,7 +5652,6 @@
 (evil-define-key 'motion music-mode-map "P" 'music-paste-before)
 (defun music-open (path prefix-argument)
     (interactive (list (car (music-select)) current-prefix-arg))
-    (setq path (expand-file-name path))
     (music)
     (if prefix-argument
         (if (integerp prefix-argument)
