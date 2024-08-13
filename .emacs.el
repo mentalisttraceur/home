@@ -5604,6 +5604,17 @@
         (mpv-ipc music--socket (list "playlist-clear")))
     (unless (eq target 'all-except-current)
         (mpv-ipc music--socket (list "playlist-remove" target))))
+(evil-define-operator music-delete (start end type register yank-handler)
+    :move-point nil
+    :type line
+    (interactive "<R><x><y>")
+    (let ((evil-was-yanked-without-register nil))
+        (evil-yank start end type register yank-handler))
+    (let* ((text    (evil-paste-to-string 1 register))
+           (indexes (text-property-values nil nil 'mpv-index text)))
+        (dolist (index (nreverse indexes))
+            (music-playlist-remove index))))
+(evil-define-key 'motion music-mode-map "d" 'music-delete)
 (defun music-open (path prefix-argument)
     (interactive (list (car (music-select)) current-prefix-arg))
     (setq path (expand-file-name path))
