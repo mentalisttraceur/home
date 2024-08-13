@@ -1464,6 +1464,21 @@
                 (rename-buffer name))
             buffer)))
 
+(add-to-list 'text-property-default-nonsticky
+    (cons 'full-path t))
+(defun full-path-property--dired ()
+    (save-excursion
+        (goto-char (point-min))
+        (let ((inhibit-read-only t))
+            (while (< (point) (point-max))
+                (when-let (path (dired-file-name-at-point))
+                    (put-text-property
+                        (line-beginning-position)
+                        (line-end-position)
+                        'full-path path))
+                (forward-line 1)))))
+(add-hook 'dired-after-readin-hook 'full-path-property--dired)
+
 (when termux
     (use-package image-mode
         :config
