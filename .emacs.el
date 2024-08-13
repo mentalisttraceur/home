@@ -5529,6 +5529,7 @@
         (setq buffer (get-buffer-create "*Music*"))
         (set-buffer buffer)
         (setq buffer-read-only t)
+        (setq default-directory music-directory)
         (music-mode)
         (setq process (make-process
                           :name "music"
