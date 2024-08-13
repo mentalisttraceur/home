@@ -5568,7 +5568,7 @@
     '((t :inherit music-current-entry-face :weight bold :foreground "#FF4040"))
     "")
 (defun music--propertize (line index path)
-    (propertize line 'mpv-index index 'mpv-path path))
+    (propertize line 'mpv-index index 'full-path path))
 (defun music--insert-playlist (socket)
     (let ((count   (mpv-ipc-expand-integer socket "${playlist-count}"))
           (current (mpv-ipc-expand-integer socket "${playlist-pos}"))
@@ -5632,7 +5632,7 @@
 (evil-define-key 'motion music-mode-map "d" 'music-delete)
 (evil-define-command music--paste (count register offset)
     (let* ((text  (evil-paste-to-string 1 register))
-           (paths (text-property-values nil nil 'mpv-path text))
+           (paths (text-property-values nil nil 'full-path text))
            (index (get-text-property (point) 'mpv-index)))
         (if index
             (setq index (+ index offset))
