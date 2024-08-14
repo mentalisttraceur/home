@@ -5870,7 +5870,7 @@
     :config
     (dolist (map (list evil-motion-state-map evil-normal-state-map
                        evil-visual-state-map evil-operator-state-map
-                       window-state-map histdir-repl-mode-map
+                       window-state-map histdir-repl-mode-map music-mode-map
                        undo-tree-visualizer-mode-map
                        calendar-mode-map global-map))
         (russian-vi-bind map))
