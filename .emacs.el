@@ -5520,6 +5520,8 @@
     '("mpv" "--input-ipc-server=~/.music-socket"
          "--idle" "--loop-playlist" "--terminal=no"))
 (define-derived-mode music-mode nil "music")
+(defmacro music-define-key (key def &rest bindings)
+    `(evil-define-key 'motion music-mode-map ,key ,def ,@bindings))
 (defvar music--socket nil)
 (defun music ()
     (interactive)
@@ -5631,7 +5633,7 @@
            (indexes (text-property-values nil nil 'mpv-index text)))
         (dolist (index (nreverse indexes))
             (music-playlist-remove index))))
-(evil-define-key 'motion music-mode-map "d" 'music-delete)
+(music-define-key "d" 'music-delete)
 (evil-define-command music--paste (count register offset)
     (let* ((text  (evil-paste-to-string 1 register))
            (paths (text-property-values nil nil 'full-path text))
@@ -5645,12 +5647,12 @@
     (interactive "P<x>")
     :suppress-operator t
     (music--paste count register 1))
-(evil-define-key 'motion music-mode-map "p" 'music-paste-after)
+(music-define-key "p" 'music-paste-after)
 (evil-define-command music-paste-before (count register)
     (interactive "P<x>")
     :suppress-operator t
     (music--paste count register 0))
-(evil-define-key 'motion music-mode-map "P" 'music-paste-before)
+(music-define-key "P" 'music-paste-before)
 (defun music-open (path prefix-argument)
     (interactive (list (car (music-select)) current-prefix-arg))
     (music)
