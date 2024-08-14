@@ -2621,6 +2621,9 @@
             (lambda ()
                 (add-hook 'post-command-hook
                     'hide-chosen-crm-completions nil t)
+                (let ((map (make-sparse-keymap)))
+                    (set-keymap-parent map (current-local-map))
+                    (use-local-map map))
                 (local-set-key ","
                     (lambda ()
                         (interactive)
