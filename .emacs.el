@@ -1555,16 +1555,23 @@
 
 (use-package crm
     :config
+    (defun hide-chosen-crm-completions--filter (completions)
+        (let* ((input (minibuffer-contents-no-properties))
+               (already-chosen (butlast (split-string input crm-separator))))
+            (seq-filter
+                (lambda-let (already-chosen) (item)
+                    (not (member item already-chosen)))
+                completions)))
     (defvar-local hide-chosen-crm-completions--backup nil)
     (defun hide-chosen-crm-completions ()
         (if hide-chosen-crm-completions--backup
-            (setq crm-completion-table hide-chosen-crm-completions--backup)
-            (setq hide-chosen-crm-completions--backup crm-completion-table))
-        (let* ((input (minibuffer-contents-no-properties))
-               (already-chosen (butlast (split-string input crm-separator))))
-            (dolist (item already-chosen)
-                (setq crm-completion-table
-                      (remove item crm-completion-table))))))
+            (setq crm-completion-table
+                  (if (functionp hide-chosen-crm-completions--backup)
+                      (compose 'hide-chosen-crm-completions--filter
+                               hide-chosen-crm-completions--backup)
+                      (hide-chosen-crm-completions--filter
+                          hide-chosen-crm-completions--backup)))
+            (setq hide-chosen-crm-completions--backup crm-completion-table))))
 
 (use-package package
     :config
