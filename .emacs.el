@@ -920,6 +920,15 @@
     (with-advice (('confirm-nonexistent-file-or-buffer :override 'always))
         (read-buffer-to-switch prompt)))
 
+(defun read-buffer-multiple
+        (prompt &optional except default require-match predicate)
+    (completing-read-multiple
+        prompt
+        (if except
+            (internal-complete-buffer-except except)
+            'internal-complete-buffer)
+        predicate require-match nil nil default))
+
 
 (defun write-file-no-visit (filename)
     (without-restriction
