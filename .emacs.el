@@ -119,10 +119,22 @@
 
 (defmacro compose (&rest functions)
     (setq functions (nreverse functions))
-    (let ((form `(apply ,(car functions) arguments)))
+    (let ((counter 1)
+          (symbol (make-symbol "f1"))
+          (bindings ())
+          (form ()))
+        (push `(cons ',symbol ,(car functions)) bindings)
+        (setq form `(apply ,symbol arguments))
         (while (setq functions (cdr functions))
-            (setq form `(funcall ,(car functions) ,form)))
-        `(lambda (&rest arguments) ,form)))
+            (setq counter (1+ counter))
+            (setq symbol (make-symbol (format "f%d" counter)))
+            (push `(cons ',symbol ,(car functions)) bindings)
+            (setq form `(funcall ,symbol ,form)))
+        (setq bindings (cons 'list bindings))
+        `(eval
+             '(lambda (&rest arguments)
+                  ,form)
+             ,bindings)))
 
 
 (defmacro apply-split (callable arguments count)
