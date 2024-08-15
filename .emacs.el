@@ -5564,7 +5564,8 @@
 (defun music-select ()
     (let ((vertico-sort-function 'vertico-sort-alpha)
           (files (directory-files music-directory nil "^[^.]" t)))
-        (let ((chosen (completing-read-multiple "Music: " files))
+        (let ((chosen (save-point-line-and-column-with-scroll
+                          (completing-read-multiple "Music: " files)))
               (directory (file-name-as-directory music-directory)))
         (mapcar (apply-partially 'concat directory) chosen))))
 (defconst music--command
