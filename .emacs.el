@@ -5561,12 +5561,10 @@
 
 
 (defconst music-directory "~/Music")
-(defun music-select (&optional all-matches)
+(defun music-select ()
     (let ((vertico-sort-function 'vertico-sort-alpha)
           (files (directory-files music-directory nil "^[^.]" t)))
-        (let ((chosen (if all-matches
-                          (car (multi-vertico 'completing-read "Music: " files))
-                          (completing-read-multiple "Music: " files)))
+        (let ((chosen (completing-read-multiple "Music: " files))
               (directory (file-name-as-directory music-directory)))
         (mapcar (apply-partially 'concat directory) chosen))))
 (defconst music--command
