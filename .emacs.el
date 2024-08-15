@@ -2645,15 +2645,25 @@
 
 (use-packages crm vertico
     :config
+    (setq crm-separator (propertize "\x36E1CA"
+                            'display (propertize "," 'face 'escape-glyph)))
     (defun insert-vertico-candidates-for-crm ()
         (interactive)
         (goto-char (point-max))
-        (search-backward "," (minibuffer-prompt-end) 'x)
+        (search-backward crm-separator (minibuffer-prompt-end) 'x)
         (delete-region (point) (point-max))
         (unless (= (point) (minibuffer-prompt-end))
-            (insert ","))
-        (insert (string-join vertico--candidates ","))
-        (insert ","))
+            (insert crm-separator))
+        (insert (string-join vertico--candidates crm-separator))
+        (insert crm-separator))
+    (defun insert-vertico-candidate-for-crm ()
+        (interactive)
+        (vertico-insert)
+        (goto-char (minibuffer-prompt-end))
+        (while (search-forward "\x36E1CA" nil 'x)
+            (delete-char -1)
+            (insert crm-separator))
+        (insert crm-separator))
     (defun hack-completing-read-multiple (&rest _)
         (add-single-use-hook 'minibuffer-setup-hook
             (lambda ()
@@ -2663,19 +2673,15 @@
                     (set-keymap-parent map (current-local-map))
                     (use-local-map map))
                 (local-set-key "\t" 'insert-vertico-candidates-for-crm)
-                (local-set-key ","
-                    (lambda ()
-                        (interactive)
-                        (vertico-insert)
-                        (insert ",")))
+                (local-set-key "," 'insert-vertico-candidate-for-crm)
                 (local-set-key "\M-,"
                     (lambda ()
                         (interactive)
-                        (insert ",")))
+                        (insert crm-separator)))
                 (local-set-key "\C-m"
                     (lambda ()
                         (interactive)
-                        (when (equal ?, (char-before (point)))
+                        (when (equal #x36E1CA (char-before (point)))
                             (delete-char -1)
                             (vertico--update))
                         (vertico-exit))))))
