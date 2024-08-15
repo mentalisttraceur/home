@@ -5649,7 +5649,7 @@
            (command (split-string input)))
         (princ (mpv-ipc music--socket command))))
 (defun music-playlist-position ()
-    (mpv-ipc-expand-integer music--socket "${playlist-position}"))
+    (mpv-ipc-expand-integer music--socket "${playlist-pos}"))
 (defun music-playlist-count ()
     (mpv-ipc-expand-integer music--socket "${playlist-count}"))
 (defun music-playlist-add (path target &optional play)
