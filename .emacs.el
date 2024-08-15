@@ -2617,6 +2617,14 @@
 
 (use-packages crm vertico
     :config
+    (defun insert-vertico-candidates-for-crm ()
+        (goto-char (point-max))
+        (search-backward "," (minibuffer-prompt-end) 'x)
+        (delete-region (point) (point-max))
+        (unless (= (point) (minibuffer-prompt-end))
+            (insert ","))
+        (insert (string-join vertico--candidates ","))
+        (insert ","))
     (defun hack-completing-read-multiple (&rest _)
         (add-single-use-hook 'minibuffer-setup-hook
             (lambda ()
