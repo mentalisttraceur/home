@@ -2637,6 +2637,7 @@
 (use-packages crm vertico
     :config
     (defun insert-vertico-candidates-for-crm ()
+        (interactive)
         (goto-char (point-max))
         (search-backward "," (minibuffer-prompt-end) 'x)
         (delete-region (point) (point-max))
@@ -2652,6 +2653,7 @@
                 (let ((map (make-sparse-keymap)))
                     (set-keymap-parent map (current-local-map))
                     (use-local-map map))
+                (local-set-key "\t" 'insert-vertico-candidates-for-crm)
                 (local-set-key ","
                     (lambda ()
                         (interactive)
@@ -2660,7 +2662,14 @@
                 (local-set-key "\M-,"
                     (lambda ()
                         (interactive)
-                        (insert ","))))))
+                        (insert ",")))
+                (local-set-key "\C-m"
+                    (lambda ()
+                        (interactive)
+                        (when (equal ?, (char-before (point)))
+                            (delete-char -1)
+                            (vertico--update))
+                        (vertico-exit))))))
     (advice-add 'completing-read-multiple
         :before 'hack-completing-read-multiple))
 
