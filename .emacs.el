@@ -3929,7 +3929,7 @@
     :config
     (evil-define-key 'motion calendar-mode-map "H" 'calendar-scroll-right)
     (evil-define-key 'motion calendar-mode-map "L" 'calendar-scroll-left)
-    (define-key space-map "p" (toggle datetime-read-popup-calendar t)))
+    (toggle datetime-read-popup-calendar t))
 
 (use-packages dired evil
     :config
@@ -5831,6 +5831,7 @@
 (define-key music-map "e" 'music-eval)
 (define-key space-map ">" 'music-next)
 (define-key space-map "<" 'music-previous)
+(define-key space-map "p" 'music-pause)
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
 (defconst tumblr--script (expand-file-name "~/.tumblr/tumblr.py"))
