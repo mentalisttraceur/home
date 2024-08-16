@@ -3833,6 +3833,9 @@
             (let ((default-directory "~"))
                 (pop-to-command-eshell
                     '("termux-media-scan" "/storage/emulated/0")))))
+    (define-key space-misc-map "+" 'text-scale-increase)
+    (define-key space-misc-map "=" 'text-scale-increase)
+    (define-key space-misc-map "-" 'text-scale-decrease)
     (evil-define-key 'motion doc-view-mode-map "j"
         'doc-view-next-line-or-next-page)
     (evil-define-key 'motion doc-view-mode-map "k"
