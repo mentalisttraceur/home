@@ -5709,6 +5709,8 @@
     (let* ((text  (evil-paste-to-string 1 register))
            (paths (text-property-values nil nil 'full-path text))
            (index (music--index-for-point offset)))
+        (unless paths
+            (setq paths (string-split text "\n" t)))
         (music--open count paths index)))
 (evil-define-command music-paste-after (count register)
     :suppress-operator t
