@@ -5805,12 +5805,14 @@
         (music-previous (- count))
         (dotimes (_ count)
             (mpv-ipc music--socket '("playlist-next")))))
+(music-define-key "L" 'music-next)
 (defun music-previous (count)
     (interactive "p")
     (if (< count 0)
         (music-next (- count))
         (dotimes (_ count)
             (mpv-ipc music--socket '("playlist-prev")))))
+(music-define-key "H" 'music-previous)
 (defun music-play (target)
     (interactive (list
                      (if current-prefix-arg
