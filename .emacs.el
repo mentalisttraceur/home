@@ -5732,6 +5732,13 @@
     (interactive "p")
     (music--open count (music-select) 0))
 (music-define-key "I" 'music-insert-at-beginning)
+(evil-define-operator music-change (start end type register yank-handler)
+    :move-point nil
+    :type line
+    (interactive "<R><x><y>")
+    (music-delete start end type register yank-handler)
+    (music-open-before 1))
+(music-define-key "c" 'music-change)
 (defun music-open (path prefix-argument)
     (interactive (list (car (music-select)) current-prefix-arg))
     (music)
