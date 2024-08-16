@@ -5686,6 +5686,18 @@
         (dolist (index (nreverse indexes))
             (music-playlist-remove index))))
 (music-define-key "d" 'music-delete)
+(evil-define-operator music-delete-line (register yank-handler)
+    :move-point nil
+    :motion nil
+    (interactive "<x><y>")
+    (let ((start (line-beginning-position))
+          (end   (line-end-position))
+          (evil-was-yanked-without-register nil))
+        (evil-yank start end 'line register yank-handler))
+    (let* ((text (evil-paste-to-string 1 register))
+           (index (car (text-property-values nil nil 'mpv-index text))))
+        (music-playlist-remove index)))
+(music-define-key "D" 'music-delete-line)
 (defun music--index-for-point (offset)
     (if-let (index (get-text-property (point) 'mpv-index))
         (+ index offset)
@@ -5739,6 +5751,13 @@
     (music-delete start end type register yank-handler)
     (music-open-before 1))
 (music-define-key "c" 'music-change)
+(evil-define-operator music-change-line (register yank-handler)
+    :move-point nil
+    :motion nil
+    (interactive "<x><y>")
+    (music-delete-line register yank-handler)
+    (music-open-before 1))
+(music-define-key "C" 'music-change-line)
 (defun music-open (path prefix-argument)
     (interactive (list (car (music-select)) current-prefix-arg))
     (music)
