@@ -5671,10 +5671,14 @@
             (setq command (list "loadfile" path action target)))
         (mpv-ipc music--socket command)))
 (defun music-playlist-remove (target)
-    (when (memq target '(all all-except-current))
-        (mpv-ipc music--socket (list "playlist-clear")))
-    (unless (eq target 'all-except-current)
-        (mpv-ipc music--socket (list "playlist-remove" target))))
+    (cond
+        ((eq target 'all)
+            (mpv-ipc music--socket (list "playlist-clear"))
+            (mpv-ipc music--socket (list "playlist-remove" "current")))
+        ((eq target 'all-except-current)
+            (mpv-ipc music--socket (list "playlist-clear")))
+        (t
+            (mpv-ipc music--socket (list "playlist-remove" target)))))
 (evil-define-operator music-delete (start end type register yank-handler)
     :move-point nil
     :type line
