@@ -5714,7 +5714,7 @@
     (dotimes (_ count)
         (dolist (path paths)
             (music-playlist-add path target))))
-(evil-define-command music--paste (count register offset)
+(defun music--paste (count register offset)
     (let* ((text  (evil-paste-to-string 1 register))
            (paths (text-property-values nil nil 'full-path text))
            (index (music--index-for-point offset)))
