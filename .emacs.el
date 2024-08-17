@@ -5721,12 +5721,12 @@
         (music--open count paths index)))
 (evil-define-command music-paste-after (count register)
     :suppress-operator t
-    (interactive "P<x>")
+    (interactive "p<x>")
     (music--paste count register 1))
 (music-define-key "p" 'music-paste-after)
 (evil-define-command music-paste-before (count register)
     :suppress-operator t
-    (interactive "P<x>")
+    (interactive "p<x>")
     (music--paste count register 0))
 (music-define-key "P" 'music-paste-before)
 (defun music-open-after (count)
