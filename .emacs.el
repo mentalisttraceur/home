@@ -5692,7 +5692,7 @@
                 (insert line)
                 (when (= index current)
                     (let ((time-line (mpv-ipc-expand socket
-                                        "    ${time-pos} / ${duration}\n")))
+                                         "    ${time-pos} / ${duration}\n")))
                         (insert (music--propertize time-line index path))))))))
 (define-key music-mode-map "q" 'quit-window)
 (defun music-eval ()
