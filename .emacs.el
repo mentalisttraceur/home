@@ -5551,6 +5551,9 @@
         (unless (string-match-p "\\`-?[0-9]+\\'" string)
             (error "not integer: %s" string))
         (string-to-number string)))
+(defun mpv-ipc-get (socket property)
+    (let ((format (concat "${" property "}")))
+        (mpv-ipc socket `("expand-text" ,format))))
 (defun mpv-ipc-cycle (socket property &optional values backwards)
     (if values
         (if backwards
