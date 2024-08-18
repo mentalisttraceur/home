@@ -5609,6 +5609,11 @@
 (defun mpv-ipc-add (socket property amount)
     (mpv-ipc music--socket `("add" ,property ,amount))
     (mpv-ipc-get socket property))
+(defun mpv-ipc-set (socket property value)
+    (when (numberp value)
+        (setq value (number-to-string value)))
+    (mpv-ipc music--socket `("set" ,property ,value))
+    (mpv-ipc-get socket property))
 
 
 (defconst music-directory "~/Music")
