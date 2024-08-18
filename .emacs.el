@@ -5896,6 +5896,20 @@
     (interactive "p")
     (music-volume-up (- count)))
 (music-define-key "-" 'music-volume-down)
+(defun music--loop (property count)
+    (if count
+        (mpv-ipc-set music--socket property count)
+        (mpv-ipc-cycle music--socket property '("no" "inf"))))
+(evil-define-command music-loop (&optional count)
+    :suppress-operator t
+    (interactive "<c>")
+    (message "mpv loop current: %s" (music--loop "loop" count)))
+(evil-define-command music-loop-all (&optional count)
+    :suppress-operator t
+    (interactive "<c>")
+    (message "mpv loop playlist: %s" (music--loop "loop-playlist" count)))
+(music-define-key "&" 'music-loop)
+(music-define-key "g&" 'music-loop-all)
 (defun music-play (target)
     (interactive (list
                      (if current-prefix-arg
