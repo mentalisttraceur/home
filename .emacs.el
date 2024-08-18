@@ -5562,8 +5562,7 @@
         (if backwards
             (mpv-ipc socket `("cycle" ,property "down"))
             (mpv-ipc socket `("cycle" ,property))))
-    (let ((format (concat "${" property "}")))
-        (mpv-ipc socket `("expand-text" ,format))))
+    (mpv-ipc-get socket property))
 
 
 (defconst music-directory "~/Music")
