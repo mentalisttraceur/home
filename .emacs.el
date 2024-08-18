@@ -5879,6 +5879,14 @@
     (interactive "p")
     (music-next (- count)))
 (music-define-key "H" 'music-previous)
+(evil-define-command music-volume (&optional volume)
+    :suppress-operator t
+    (interactive "<c>")
+    (if volume
+        (setq volume (mpv-ipc-set music--socket "volume" volume))
+        (setq volume (mpv-ipc-get music--socket "volume")))
+    (message "mpv volume: %s" volume))
+(music-define-key "=" 'music-volume)
 (defun music-volume-up (count)
     (interactive "p")
     (let ((volume (mpv-ipc-add music--socket "volume" count)))
