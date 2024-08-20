@@ -5794,6 +5794,13 @@
             (mpv-ipc music--socket (list "playlist-clear")))
         (t
             (mpv-ipc music--socket (list "playlist-remove" target)))))
+(defun music-normal-state ()
+    (interactive)
+    (evil-normal-state)
+    (let ((index (music-playlist-position)))
+        (when (>= index 0)
+            (goto-char (point-max))
+            (text-property-search-backward 'mpv-index index 'equal))))
 (evil-define-operator music-delete (start end type register yank-handler)
     :move-point nil
     :type line
@@ -5988,7 +5995,7 @@
 (music-define-key 'normal "A" 'evil-motion-state)
 (music-define-key 'normal "I" 'evil-motion-state)
 (music-define-key 'normal [escape] 'quit-window)
-(music-define-key 'motion [escape] 'evil-normal-state)
+(music-define-key 'motion [escape] 'music-normal-state)
 (add-to-list 'evil-normal-state-modes 'music-mode)
 
 (define-key space-search-map "m" 'music-open)
