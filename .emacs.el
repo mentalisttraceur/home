@@ -418,6 +418,16 @@
             (set-visited-file-modtime))))
 
 
+(defvar temporary-goal-column-preserving-commands
+    '(next-line previous-line))
+(defun hack-line-move-1 (line-move-1 &rest arguments)
+    (if (memq last-command temporary-goal-column-preserving-commands)
+        (let ((last-command 'next-line))
+            (apply line-move-1 arguments))
+        (apply line-move-1 arguments)))
+(advice-add 'line-move-1 :around 'hack-line-move-1)
+
+
 (defun plist-put-default (plist property default-value &optional predicate)
     (if (plist-member plist property predicate)
         plist
