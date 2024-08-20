@@ -3233,6 +3233,7 @@
         (lambda (evil-quit &rest arguments)
             (with-advice (('delete-window :override 'kill-current-buffer))
                 (apply evil-quit arguments))))
+    (add-to-list 'temporary-goal-column-preserving-commands 'evil-repeat)
     (defun fixed-evil-repeat (evil-repeat &rest arguments)
         (evil-save-state
             (apply evil-repeat arguments)))
@@ -3351,6 +3352,7 @@
     (setq evil-highlight-closing-paren-at-point-states '(not))
     (setq evil-show-paren-range 1)
     (define-key space-map "e" 'eval-last-sexp)
+    (add-to-list 'temporary-goal-column-preserving-commands 'eval-last-sexp)
     (define-key space-map "E" 'eval-print-last-sexp)
     (defmacro toggle (variable &optional skip-preview)
         (let* ((name          (symbol-name variable))
