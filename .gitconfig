@@ -5,6 +5,8 @@
     defaultBranch = main
 [pull]
     rebase = true
+[advice]
+    detachedHead = false
 [core]
     pager = \
         unused=`command -v delta` \
