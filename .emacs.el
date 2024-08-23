@@ -1518,18 +1518,38 @@
             (browse-url-xdg-open (buffer-file-name)))
         (advice-add 'image-mode :override 'hack-image-mode)))
 
-(defun git-repo-root ()
-    (let ((result (funcall-process "git" "rev-parse" "--absolute-git-dir")))
-        (let-unpack ((status output) result)
+(defun git--read-link (path)
+    (condition-case _error
+        (with-temp-buffer
+            (insert-file-contents path)
+            (goto-char (point-max))
+            (when (equal (char-before) ?\n)
+                (delete-char -1))
+            (buffer-string))
+        (file-missing)))
+(defun git--not-in-repository-error-p (error-output)
+    (string-prefix-p "fatal: not a git repository" error-output))
+(defun git--not-in-worktree-error-p (error-output)
+    (equal error-output "fatal: this operation must be run in a work tree"))
+(defconst git--worktree-root '("git" "rev-parse" "--show-toplevel"))
+(defconst git--git-dir '("git" "rev-parse" "--absolute-git-dir"))
+(defun git-worktree-root ()
+    (seq-let (status output) (apply-process git--worktree-root)
+        (if (equal status 0)
+            (abbreviate-file-name output)
+            (when (git--not-in-worktree-error-p output)
+                (seq-setq (status output) (apply-process git--git-dir)))
             (if (equal status 0)
-                (abbreviate-file-name (file-name-directory output))
-                (unless (string-prefix-p "fatal: not a git repository" output)
-                    (let ((inhibit-message t))
-                        (message
-                            "git rev-parse in %S exit=%S output=%S"
-                            default-directory status output)))
-                nil))))
-
+                (let* ((backlink (concat output "/gitdir"))
+                       (worktree-.git-file (git--read-link backlink)))
+                    (abbreviate-file-name
+                        (file-name-directory
+                            (if worktree-.git-file
+                                worktree-.git-file
+                                output))))
+                (if (git--not-in-repository-error-p output)
+                    nil
+                    (error "git rev-parse error: (%S) %s" status output))))))
 (use-package vc
     :config
     (defun fixed-vc-deduce-backend (vc-deduce-backend &rest arguments)
@@ -1543,7 +1563,7 @@
             (unless (file-directory-p file)
                 (setq file (file-name-directory file)))
             (let ((default-directory file))
-                (git-repo-root))))
+                (git-worktree-root))))
     (advice-add 'vc-git-root :override 'fixed-vc-git-root)
     (add-hook 'vc-annotate-mode-hook
         (lambda ()
@@ -2785,7 +2805,7 @@
           nil
           eshell-bol))
     (setq consult-find-args "find .")
-    (setq consult-project-function (lambda (_may-prompt) (git-repo-root)))
+    (setq consult-project-function (lambda (_may-prompt) (git-worktree-root)))
     (defun fixed-consult--insertion-preview (preview)
         (when preview
             (lambda-let ((window (selected-window)) preview) (&rest arguments)
@@ -3775,7 +3795,7 @@
             name))
     (defvar-local git--visited-path nil)
     (defun git-pop-to-command (command &optional visited-path)
-        (if-let (root (git-repo-root))
+        (if-let (root (git-worktree-root))
             (let ((default-directory root))
                 (add-single-use-hook 'pop-to-command-setup-hook
                     (lambda-let (visited-path) ()
