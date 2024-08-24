@@ -952,12 +952,17 @@
 
 (defun read-buffer-multiple
         (prompt &optional except default require-match predicate)
-    (completing-read-multiple
-        prompt
-        (if except
-            (internal-complete-buffer-except except)
-            'internal-complete-buffer)
-        predicate require-match nil nil default))
+    (let* ((history ())
+           (choices (completing-read-multiple
+                        prompt
+                        (if except
+                            (internal-complete-buffer-except except)
+                            'internal-complete-buffer)
+                        predicate require-match nil 'history default)))
+        (prog1
+            choices
+            (while choices
+                (push (pop choices) buffer-name-history)))))
 
 
 (defun write-file-no-visit (filename)
