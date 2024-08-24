@@ -40,6 +40,25 @@
 (setq gc-cons-threshold (* 1024 1024 1024)
       file-name-handler-alist nil)
 
+
+(when wsl
+    (defun replace-invalid-unicode-1 (character)
+        (if (> character #x10FFFF)
+            #xFFFD
+            character))
+    (defun replace-invalid-unicode (string)
+        (apply 'string (mapcar 'replace-invalid-unicode-1 string)))
+    (defun hack-xselect--encode-string (arguments)
+        (let ((type (car arguments))
+              (string (cadr arguments)))
+            (when (and type string)
+                (setq string (replace-invalid-unicode string))
+                (setcar (cdr arguments) string)))
+        arguments)
+    (advice-add 'xselect--encode-string
+        :filter-args 'hack-xselect--encode-string))
+
+
 (set-face-background 'highlight "#003800")
 
 (when termux
