@@ -3,4 +3,8 @@ if unused=`command -v termux-clipboard-set`
 then
     exec termux-clipboard-set
 fi
+if unused=`command -v win32yank.exe`
+then
+    exec win32yank.exe -i
+fi
 exec xclip -in -selection clipboard
