@@ -934,6 +934,11 @@
         (regexp-opt-group strings paren lax)))
 
 
+(defun minibuffer-current-buffer ()
+    (if-let (window (minibuffer-selected-window))
+        (window-buffer window)
+        (current-buffer)))
+
 (defun next-window-other-buffer (&optional window minibuffer all-frames)
     (let* ((window (next-window window minibuffer all-frames))
            (buffer (window-buffer window)))
