@@ -5345,15 +5345,14 @@
         (denoted-try 'denoted-name-edit))
     (define-key evil-motion-state-map "gC" 'name-change)
     (defun smoother-delete-file--1 (&optional filename)
-        (when (confirm-p (format "Delete %s?" filename))
+        (when (confirm-p (format "Delete %s?" (abbreviate-file-name filename)))
             (delete-file filename)
             (when-let (buffer (find-buffer-visiting filename))
                 (with-current-buffer buffer
-                    (condition-case _error
+                    (set-buffer-modified-p t)
+                    (when (confirm-p (format "Kill %s?" (buffer-name)))
                         (with-buffer-modified-p nil
-                            (smoother-kill-buffer))
-                        (quit
-                            (set-buffer-modified-p t))))))
+                            (smoother-kill-buffer))))))
         nil)
     (defun smoother-delete-file ()
         (interactive)
