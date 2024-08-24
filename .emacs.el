@@ -5,6 +5,7 @@
 
 
 (defconst termux (getenv "TERMUX_VERSION"))
+(defconst wsl (getenv "WSL_DISTRO_NAME"))
 
 
 (menu-bar-mode -1)
