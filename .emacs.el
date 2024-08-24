@@ -2731,10 +2731,12 @@
                 (local-set-key "\C-m"
                     (lambda ()
                         (interactive)
-                        (when (equal #x36E1CA (char-before (point)))
-                            (delete-char -1)
-                            (vertico--update))
-                        (vertico-exit))))))
+                        (if (equal #x36E1CA (char-before (point)))
+                            (progn
+                                (delete-char -1)
+                                (vertico--update)
+                                (vertico-exit-input))
+                            (vertico-exit)))))))
     (advice-add 'completing-read-multiple
         :before 'hack-completing-read-multiple))
 
