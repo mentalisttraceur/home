@@ -952,6 +952,8 @@
 
 (defun read-buffer-multiple
         (prompt &optional except default require-match predicate)
+    (when (bufferp default)
+        (setq default (buffer-name default)))
     (let* ((history ())
            (choices (completing-read-multiple
                         prompt
