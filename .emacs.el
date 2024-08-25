@@ -3457,7 +3457,7 @@
                 (when (smoother-kill-buffer buffer)
                     (+= count 1)))
             (if (equal count 1)
-                (message "Killed 1 buffer" count)
+                (message "Killed 1 buffer")
                 (message "Killed %d buffers" count))))
     (define-key space-map "k" 'smoother-kill-buffers)
     (define-key space-map "f" 'find-file)
