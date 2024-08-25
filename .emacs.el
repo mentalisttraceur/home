@@ -1075,15 +1075,15 @@
 (use-package generator
     :config
     (defun fixed-cps-generate-evaluator (generator)
-        `(cons 'iterator ,generator))
+        `(record 'iter ,generator))
     (advice-add 'cps-generate-evaluator
         :filter-return 'fixed-cps-generate-evaluator)
     (defun iter-p (object)
-        (eq (car-safe object) 'iterator))
+        (eq (type-of object) 'iter))
     (defun fixed-iter-method (arguments)
         (let ((iterator (car arguments)))
             (when (iter-p iterator)
-                (setcar arguments (cdr iterator)))
+                (setcar arguments (aref iterator 1)))
             arguments))
     (advice-add 'iter-next :filter-args 'fixed-iter-method)
     (advice-add 'iter-close :filter-args 'fixed-iter-method)
