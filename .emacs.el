@@ -92,6 +92,15 @@
         (local-set-key [\C-tab] 'other-window)))
 
 
+(defun fixed-mouse-set-point (&rest _)
+    (setq temporary-goal-column
+          (if (equal (char-after) ?\n)
+              most-positive-fixnum
+              (current-column))))
+
+(advice-add 'mouse-set-point :after 'fixed-mouse-set-point)
+
+
 (electric-indent-mode -1)
 (setq-default c-basic-offset 4)
 (setq lisp-body-indent 4)
