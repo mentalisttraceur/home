@@ -551,7 +551,7 @@
     value)
 
 
-(defun bihash (&rest arguments)
+(defun make-bihash (&rest arguments)
     (let ((tail arguments)
           (key-test nil)
           (value-test nil)
@@ -687,7 +687,7 @@
         (push :key-test arguments))
     (push 'eq arguments)
     (push :value-test arguments)
-    (list (apply 'bihash arguments) predicate))
+    (list (apply 'make-bihash arguments) predicate))
 
 (defun sorted-hash-table-get (table key &optional default)
     (if-let (entry (bihash-get (car table) key))
