@@ -6164,6 +6164,7 @@
 (define-key space-map "m" 'music)
 (define-key space-map ">" 'music-next)
 (define-key space-map "<" 'music-previous)
+(define-key space-map "&" 'music-loop)
 (define-key space-map "p" 'music-pause-toggle)
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
