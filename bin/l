@@ -1,2 +1,2 @@
 #!/bin/sh -
-exec exa --all --long --git "$@"
+exec eza --all --long --git "$@"
