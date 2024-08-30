@@ -172,7 +172,7 @@
             (setq symbol (make-symbol (format "f%d" counter)))
             (push `(cons ',symbol ,(car functions)) bindings)
             (setq form `(funcall ,symbol ,form)))
-        (setq bindings (cons 'list bindings))
+        (push 'list bindings)
         `(eval
              '(lambda (&rest arguments)
                   ,form)
