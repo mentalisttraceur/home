@@ -17,7 +17,7 @@
         (tool-bar-mode -1)
         (scroll-bar-mode -1)
         (select-frame frame)
-        (set-frame-font "DejaVu Sans Mono-13")
+        (set-frame-font "DejaVu Sans Mono-11.5")
         (set-background-color "#141414")
         (set-foreground-color "#A0A0A0")
         (set-cursor-color "#FFFFFF")
