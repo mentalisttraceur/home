@@ -24,3 +24,9 @@ case ${TERMUX_VERSION+x} in x)
     PATH=$PREFIX/local/bin:$PATH
     export XDG_RUNTIME_DIR=$PREFIX/var/run
 esac
+
+case ${WSL_DISTRO_NAME+x} in x)
+    windows_ip=`ip route show default | cut -d' ' -f3`
+    export DISPLAY=$windows_ip:0.0
+    export PULSE_SERVER=tcp:$windows_ip
+esac
