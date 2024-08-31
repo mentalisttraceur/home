@@ -1,0 +1,3 @@
+windows_ip=`ip route show default | cut -d' ' -f3`
+export DISPLAY=$windows_ip:0.0
+export PULSE_SERVER=tcp:$windows_ip
