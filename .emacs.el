@@ -5766,7 +5766,7 @@
             (delete-region 1 (1+ (point))))
         (let ((ipc-error (gethash "error" reply)))
             (unless (equal ipc-error "success")
-                (error "mpv-ipc error: %s" ipc-error)))
+                (signal 'mpv-ipc-error (list ipc-error))))
         (gethash "data" reply)))
 (defun mpv-ipc-expand (socket format)
     (mpv-ipc socket `("expand-text" ,format)))
