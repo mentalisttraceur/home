@@ -5764,7 +5764,8 @@
            (output  (process-buffer socket))
            (reply   nil))
         (process-send-string socket message)
-        (setq reply (mpv-ipc--consume socket))
+        (while (gethash "event"
+                   (setq reply (mpv-ipc--consume socket))))
         (let ((ipc-error (gethash "error" reply)))
             (unless (equal ipc-error "success")
                 (signal 'mpv-ipc-error (list ipc-error))))
