@@ -5270,10 +5270,6 @@
                     'face 'denote-faces-prompt-old-name)
                 (propertize (file-name-nondirectory new-path)
                     'face 'denote-faces-prompt-new-name))))
-    (defun hack-rename-file (rename-file &rest arguments)
-        (condition-case _error
-            (apply rename-file arguments)
-            (file-missing)))
     (defun denoted-rewrite-front-matter (path title tags type)
         (let* ((buffers (buffer-list))
                (buffer  (find-file-noselect path))
@@ -5291,8 +5287,7 @@
         (if (and (memq 'modify-file-name denote-rename-confirmations)
                  (not (denoted-rename-file-prompt path new-path)))
             path
-            (with-advice (('rename-file :around 'hack-rename-file))
-                (denote-rename-file-and-buffer path new-path))
+            (denote-rename-file-and-buffer path new-path)
             (let ((denote-directory directory))
                 (denote-update-dired-buffers))
             (when-let (type (denote-file-note-type new-path))
