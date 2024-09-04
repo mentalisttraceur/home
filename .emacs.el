@@ -5576,8 +5576,10 @@
                              (datetime-read nil task-list--datetime)
                              (when task-list--datetime
                                  (datetime-floor task-list--datetime))))
-               (path     (denote (task-prompt) (cons task-tag task-list--tags)
-                                 nil nil datetime)))
+               (denote-file-name-slug-functions
+                   '((title . denoted-title-slug)))
+               (path (denote (task-prompt) (cons task-tag task-list--tags)
+                         nil nil datetime)))
             (basic-save-buffer)
             (kill-buffer)
             (unless (string-prefix-p "*Tasks" (buffer-name))
