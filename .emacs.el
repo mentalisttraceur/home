@@ -5897,7 +5897,17 @@
 (defconst music--seek-bar
     "%04dm---- 10sss---- 20sss---- 30sss---- 40sss---- 50sss----")
 (defun music--playing-line (socket)
-    (mpv-ipc-expand socket "    ${time-pos} / ${duration}\n"))
+    (let ((loop (mpv-ipc-expand socket "${loop}")))
+        (cond
+            ((equal loop "no")
+                (setq loop " "))
+            ((equal loop "inf")
+                (setq loop "∞"))
+            ((> (length loop) 1)
+                (setq loop "+")))
+        (format "  %s %s"
+            loop
+            (mpv-ipc-expand socket "${time-pos} / ${duration}\n"))))
 (defun music--get-seconds (socket format)
      (let* ((raw (mpv-ipc-expand socket format))
             (parts (split-string raw "\\.")))
