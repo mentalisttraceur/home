@@ -5574,6 +5574,7 @@
                (denote-file-name-slug-functions
                    '((title . denoted-title-slug)))
                (denote-kill-buffers t)
+               (inhibit-redisplay t)
                (path (denote (task-prompt) (cons task-tag task-list--tags)
                          nil nil datetime)))
             (unless (string-prefix-p "*Tasks" (buffer-name))
