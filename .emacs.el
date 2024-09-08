@@ -5573,10 +5573,9 @@
                                  (datetime-floor task-list--datetime))))
                (denote-file-name-slug-functions
                    '((title . denoted-title-slug)))
+               (denote-kill-buffers t)
                (path (denote (task-prompt) (cons task-tag task-list--tags)
                          nil nil datetime)))
-            (basic-save-buffer)
-            (kill-buffer)
             (unless (string-prefix-p "*Tasks" (buffer-name))
                 (task-list))
             (dired-goto-file path)))
