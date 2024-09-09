@@ -5550,15 +5550,16 @@
         (dired-goto-first-file))
     (defun task--buffer-revert (filter-regex)
         (lambda-let (filter-regex) (&rest arguments)
-            (apply 'dired-revert arguments)
-            (save-point
-                (note--filter-dired)
-                (task--filter-dired)
-                (when filter-regex
-                    (dired-mark-files-regexp filter-regex)
-                    (dired-toggle-marks)
-                    (dired-do-kill-lines))
-                (task--narrow-dired))))
+            (let ((inhibit-redisplay t))
+                (apply 'dired-revert arguments)
+                (save-point
+                    (note--filter-dired)
+                    (task--filter-dired)
+                    (when filter-regex
+                        (dired-mark-files-regexp filter-regex)
+                        (dired-toggle-marks)
+                        (dired-do-kill-lines))
+                    (task--narrow-dired)))))
     (defun task-list ()
         (interactive)
         (task--buffer "*Tasks*" nil))
