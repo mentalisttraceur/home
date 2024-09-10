@@ -3659,8 +3659,6 @@
         (setq history-quit t)
         (vertico-exit))
     (evil-declare-not-repeat 'history-quit)
-    (defconst history-commands
-        '(history-execute history-remove history-change))
     (define-key space-map "t" 'eshell)
     (add-to-list 'evil-normal-state-modes 'eshell-mode)
     (defvar-local evil-eshell-state-for-next-input 'normal)
@@ -4102,7 +4100,7 @@
         (dolist (key '([up] "k" "л"))
             (evil-local-set-key 'normal key 'evil-vertico-previous-line))
         (let ((quit (cond
-                        ((memq this-command history-commands)
+                        ((memq this-command '(history-execute history-change))
                             'history-quit)
                         ((eq this-command 'consult-line)
                             'consult-line-quit)
