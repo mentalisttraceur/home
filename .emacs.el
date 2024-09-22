@@ -6008,7 +6008,7 @@
     (if-let (index (get-text-property (point) 'mpv-index))
         (+ index offset)
         (music-playlist-count)))
-(evil-define-command music--paths-for-paste (register)
+(defun music--paths-for-paste (register)
     (let ((text (evil-paste-to-string 1 register)))
         (if-let (paths (text-property-values nil nil 'full-path text))
             paths
