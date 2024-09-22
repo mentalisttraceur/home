@@ -6014,10 +6014,7 @@
         (+ index offset)
         (music-playlist-count)))
 (defun music--paths-for-paste (register)
-    (let ((text (evil-paste-to-string 1 register)))
-        (if-let (paths (text-property-values nil nil 'full-path text))
-            paths
-            (string-split text "\n" t))))
+    (full-path-property-split nil nil (evil-paste-to-string 1 register)))
 (defun music--open (count paths target)
     (setq paths (nreverse paths))
     (dotimes (_ count)
