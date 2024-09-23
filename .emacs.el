@@ -2761,6 +2761,8 @@
 (defun datetime-floor (datetime)
     (concat datetime (substring "00010101T000000" (length datetime))))
 
+(provide 'datetime)
+
 
 (use-package undo-tree
     :config
