@@ -323,7 +323,7 @@
                  (delete-directory ,name t)))))
 
 
-(defun advice-where (symbol function)
+(defun advice-how (symbol function)
     (when-let (advice (advice-member-p function symbol))
         (aref (aref advice 2) 2)))
 
@@ -331,19 +331,19 @@
     (let ((advice-list ()))
         (advice-mapc
             (lambda-let (symbol) (function properties)
-                (let ((where (advice-where symbol function))
+                (let ((how (advice-how symbol function))
                       (advice ()))
                     (when properties
                         (push properties advice))
                     (push function advice)
-                    (push where advice)
+                    (push how advice)
                     (push advice advice-list)))
             symbol)
         advice-list))
 
 (defun advice-remove-all (symbol)
     (dolist (advice (advice-list symbol))
-        (let-unpack ((_where function) advice)
+        (let-unpack ((_how function) advice)
             (advice-remove symbol function))))
 
 (defmacro with-advice-1 (advice-add-arguments &rest body)
@@ -365,13 +365,13 @@
 
 (defmacro without-advice-1 (advice-remove-arguments &rest body)
     `(let ((--without-advice-1-- (list ,@advice-remove-arguments)))
-         (if-let (where (apply 'advice-where --without-advice-1--))
+         (if-let (how (apply 'advice-how --without-advice-1--))
              (unwind-protect
                  (progn
                      (apply 'advice-remove --without-advice-1--)
                      ,@body)
                  (setcdr --without-advice-1--
-                         (cons where (cdr --without-advice-1--)))
+                         (cons how (cdr --without-advice-1--)))
                  (apply 'advice-add --without-advice-1--))
              ,@body)))
 
