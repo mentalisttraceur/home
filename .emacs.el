@@ -1653,6 +1653,7 @@
                         'full-path path))
                 (forward-line 1)))))
 (add-hook 'dired-after-readin-hook 'full-path-property--dired)
+(provide 'full-path-property)
 
 (when termux
     (use-package image-mode
