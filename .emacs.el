@@ -1636,6 +1636,11 @@
 
 (add-to-list 'text-property-default-nonsticky
     (cons 'full-path t))
+(defun full-path-property-split (start end object &optional separators trim)
+    (setq-if-nil separators "\n+")
+    (if-let (paths (text-property-values start end 'full-path object))
+        paths
+        (string-split string separators t trim)))
 (defun full-path-property--dired ()
     (save-excursion
         (goto-char (point-min))
@@ -1648,11 +1653,6 @@
                         'full-path path))
                 (forward-line 1)))))
 (add-hook 'dired-after-readin-hook 'full-path-property--dired)
-(defun full-path-property-split (start end object &optional separators trim)
-    (setq-if-nil separators "\n+")
-    (if-let (paths (text-property-values start end 'full-path object))
-        paths
-        (string-split string separators t trim)))
 
 (when termux
     (use-package image-mode
