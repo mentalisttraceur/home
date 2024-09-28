@@ -1,5 +1,8 @@
 #!/bin/sh -
 export TZ=utc
+case $2 in --help)
+    set -- "$1" -h
+esac
 case $GIT_CEILING_DIRECTORIES in '')
     GIT_CEILING_DIRECTORIES=~ exec /usr/bin/git "$@"
 esac
