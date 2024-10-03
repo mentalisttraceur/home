@@ -1,0 +1,56 @@
+#!/bin/sh -
+for path
+do
+    path=${path%/}
+    directory=${path%/*}
+    case $directory in '')
+        directory=.
+    esac
+    file=${path##*/}
+    name=${file%%.*}
+    extensions=${file#*.}
+    digits8=[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+    digits6=[0-9][0-9][0-9][0-9][0-9][0-9]
+    digits9=[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+    digits3=[0-9][0-9][0-9]
+    digits4=[0-9][0-9][0-9][0-9]
+    digits2=[0-9][0-9]
+    case $name in
+    ${digits8}_$digits6)
+        date=${name%_*}
+        time=${name#*_}
+    ;;
+    IMG_${digits8}_$digits6)
+        name=${name#IMG_}
+        date=${name%_*}
+        time=${name#*_}
+    ;;
+    PXL_${digits8}_$digits9)
+        name=${name#PXL_}
+        date=${name%_*}
+        time=${name#*_}
+        time=${time%$digits3}
+    ;;
+    signal-$digits4-$digits2-$digits2-$digits2-$digits2-$digits2-$digits3)
+        name=${name#signal-}
+        year=${name%%-*}
+        name=${name#*-}
+        month=${name%%-*}
+        name=${name#*-}
+        day=${name%%-*}
+        name=${name#*-}
+        hour=${name%%-*}
+        name=${name#*-}
+        minute=${name%%-*}
+        name=${name#*-}
+        second=${name%%-*}
+        date=$year$month$day
+        time=$hour$minute$second
+    ;;
+    *)
+        continue
+    esac
+    normalized="$directory/${date}T$time.$extensions"
+    printf "%s\n" "$normalized"
+    mv "$path" "$normalized"
+done
