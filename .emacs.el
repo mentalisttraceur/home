@@ -4052,6 +4052,7 @@
     (define-key git-map [escape] 'ignore)
     (define-prefix-command 'space-misc-map)
     (define-key space-map "z" 'space-misc-map)
+    (define-universal-argument-space-keys space-misc-map " z")
     (define-key space-misc-map "y"
         (lambda ()
             (interactive)
