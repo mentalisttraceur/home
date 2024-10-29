@@ -4700,7 +4700,7 @@
            (program-name (file-name-base program))
            (repl         (histdir-repl-name program-name))
            (histdir      (concat "~/.history/" repl)))
-        (histdir-repl command histdir)))
+        (histdir-repl command histdir (cons "PAGER=cat" process-environment))))
 (put 'eshell/r 'eshell-no-numeric-conversions t)
 (defun eshell/ro (&rest command)
     (other-window-prefix)
