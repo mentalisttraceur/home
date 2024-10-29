@@ -4364,7 +4364,9 @@
       histdir-repl-get-input
       histdir-repl-delete-input
       histdir-repl-replace-input))
-(defun histdir-repl (command histdir)
+(defun histdir-repl (command histdir &optional environment)
+    (unless environment
+        (setq environment process-environment))
     (let* ((program       (car command))
            (arguments     (cdr command))
            (buffer-locals (list default-directory histdir))
@@ -4377,7 +4379,8 @@
         (pop-to-buffer-same-window buffer)
         (unpack (default-directory histdir) buffer-locals)
         (unless (get-buffer-process (current-buffer))
-            (eat-exec buffer name program nil arguments))
+            (let ((process-environment environment))
+                (eat-exec buffer name program nil arguments)))
         (evil-normal-state)
         (histdir-watch+read)
         buffer))
