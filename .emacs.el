@@ -1383,7 +1383,7 @@
 (defconst histdir--histories (make-hash-table :test 'equal))
 (defun histdir--history ()
     (gethash (expand-file-name histdir) histdir--histories))
-(defun histdir-watch+read ()
+(defun histdir-watch+read (histdir)
     (require 'filenotify)
     (let* ((path       (expand-file-name histdir))
            (history    (gethash path histdir--histories))
@@ -1486,7 +1486,7 @@
     (advice-add 'eshell-read-history
         :override
         (lambda (&rest _)
-            (histdir-watch+read)))
+            (histdir-watch+read histdir)))
     (advice-add 'eshell-add-input-to-history
         :override
         (lambda (input)
@@ -4382,7 +4382,7 @@
             (let ((process-environment environment))
                 (eat-exec buffer name program nil arguments)))
         (evil-normal-state)
-        (histdir-watch+read)
+        (histdir-watch+read histdir)
         buffer))
 (defun histdir-repl-beginning-of-input ()
     (interactive)
