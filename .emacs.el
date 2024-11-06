@@ -5087,6 +5087,12 @@
 
 (use-package markdown-mode
     :config
+    (defun make-backtick-fence-regex (length &optional end-of-line)
+        (string-replace "~" "`"
+            (markdown-make-tilde-fence-regex length end-of-line)))
+    (setcar
+        (nth 1 (nth 2 markdown-fenced-block-pairs))
+        'make-backtick-fence-regex)
     (define-key markdown-mode-map [backtab] nil))
 
 (use-packages evil markdown-mode
