@@ -542,6 +542,13 @@
             (setq dlist next))
         dlist))
 
+(defun dlist-p (object)
+    (and (listp object)
+         (listp (car object))
+         (listp (caar object))
+         (listp (cdar object))
+         (listp (cdr object))))
+
 
 (defun make-ordered-hash-table (&rest arguments)
     (list (apply 'make-hash-table arguments)))
