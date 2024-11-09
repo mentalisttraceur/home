@@ -551,28 +551,31 @@
 
 
 (defun make-ordered-hash-table (&rest arguments)
-    (list (apply 'make-hash-table arguments)))
+    (record 'ordered-hash-table (apply 'make-hash-table arguments) nil))
 
 (defun ordered-hash-table-get (table key &optional default)
-    (if-let (entry (gethash key (car table)))
+    (if-let (entry (gethash key (aref table 1)))
         (dlist-car entry)
         default))
 
 (defun ordered-hash-table-pop (table key)
-    (let ((hash-table (car table)))
+    (let ((hash-table (aref table 1)))
         (when-let (entry (gethash key hash-table))
             (remhash key hash-table)
-            (when (eq entry (cdr table))
-                (setcdr table (dlist-cdr entry)))
+            (when (eq entry (aref table 2))
+                (aset table 2 (dlist-cdr entry)))
             (dlist-unlink entry)
             (dlist-car entry))))
 
 (defun ordered-hash-table-put (table key value)
     (ordered-hash-table-pop table key)
-    (let ((entry (dlist-cons value (cdr table))))
-        (puthash key entry (car table))
-        (setcdr table entry))
+    (let ((entry (dlist-cons value (aref table 2))))
+        (puthash key entry (aref table 1))
+        (aset table 2 entry))
     value)
+
+(defun ordered-hash-table-list (table)
+    (cdr (aref table 2)))
 
 
 (defun make-bihash (&rest arguments)
