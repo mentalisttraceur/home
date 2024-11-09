@@ -614,19 +614,25 @@
         (plist-put arguments :weakness weakness)
         (setcar (cdr arguments) value-test)
         (setq inverse-table (apply 'make-hash-table arguments))
-        (setq inverse-bihash (vector inverse-table table nil))
-        (setq bihash (vector table inverse-table inverse-bihash))
+        (setq inverse-bihash (record 'bihash inverse-table nil))
+        (setq bihash (record 'bihash table inverse-bihash))
         (aset inverse-bihash 2 bihash)))
+
+(defun bihash-p (object)
+    (eq (type-of object) 'bihash))
+
+(defun bihash--table (bihash)
+    (aref bihash 1))
 
 (defun bihash-inverse (bihash)
     (aref bihash 2))
 
 (defun bihash-get (bihash key &optional default)
-    (gethash key (aref bihash 0) default))
+    (gethash key (bihash--table bihash) default))
 
 (defun bihash-pop (bihash key)
-    (let ((forward-table (aref bihash 0))
-          (inverse-table (aref bihash 1)))
+    (let ((forward-table (bihash--table bihash))
+          (inverse-table (bihash--table (bihash-inverse bihash))))
         (when-let (value (gethash key forward-table))
             (remhash key forward-table)
             (remhash value inverse-table)
@@ -635,11 +641,11 @@
 (defun bihash-put (bihash key value)
     (bihash-pop bihash key)
     (bihash-pop (bihash-inverse bihash) value)
-    (puthash value key (aref bihash 1))
-    (puthash key value (aref bihash 0)))
+    (puthash value key (bihash--table (bihash-inverse bihash)))
+    (puthash key value (bihash--table bihash)))
 
 (defun bihash-count (bihash)
-    (hash-table-count (aref bihash 0)))
+    (hash-table-count (bihash--table bihash)))
 
 
 (defun make-binary-tree-array (length initial-value)
