@@ -537,10 +537,9 @@
         (dlist-link headward-link tailward-link)))
 
 (defun dlist-last (dlist)
-    (let ((next))
-        (while (setq next (dlist-cdr dlist))
-            (setq dlist next))
-        dlist))
+    (while-let ((next (dlist-cdr dlist)))
+        (setq dlist next))
+    dlist)
 
 (defun dlist-p (object)
     (and (listp object)
