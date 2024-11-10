@@ -3361,6 +3361,13 @@
         (let ((evil-move-cursor-back t))
             (apply evil-paste-after arguments)))
     (advice-add 'evil-paste-after :around 'fixed-evil-paste-after)
+    (defun fixed-evil-looking-at-start-comment
+            (evil-looking-at-start-comment &rest arguments)
+        (when (= (point) (point-max))
+            (backward-char))
+        (apply evil-looking-at-start-comment arguments))
+    (advice-add 'evil-looking-at-start-comment
+        :around 'fixed-evil-looking-at-start-comment)
     (setq evil-shift-round nil)
     (define-key evil-replace-state-map [escape] 'evil-insert-state)
     (define-key evil-motion-state-map "\C-m" nil)
