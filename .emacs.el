@@ -536,6 +536,11 @@
           (tailward-link (cdar link)))
         (dlist-link headward-link tailward-link)))
 
+(defun dlist-first (dlist)
+    (while-let ((previous (caar dlist)))
+        (setq dlist previous))
+    dlist)
+
 (defun dlist-last (dlist)
     (while-let ((next (dlist-cdr dlist)))
         (setq dlist next))
