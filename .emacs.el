@@ -506,32 +506,29 @@
 (defun dlist-car (dlist)
     (cadr dlist))
 
-(defun dlist-cdr (dlist &optional reverse)
-    (if reverse
-        (caar dlist)
-        (cdar dlist)))
+(defun dlist-cdr (dlist)
+    (cdar dlist))
 
-(defun dlist-nthcdr (n dlist &optional reverse)
+(defun dlist-nthcdr (n dlist)
     (dotimes (_ n dlist)
-        (setq dlist (dlist-cdr dlist reverse))))
+        (setq dlist (dlist-cdr dlist))))
 
-(defun dlist-nth (n dlist &optional reverse)
-    (dlist-car (dlist-nthcdr n dlist reverse)))
+(defun dlist-nth (n dlist)
+    (dlist-car (dlist-nthcdr n dlist)))
 
 (defun dlist-setcar (dlist newcar)
     (setcar (cdr dlist) newcar))
 
-(defun dlist-setcdr (dlist newcdr &optional reverse)
-    (if reverse
-        (setcar (car dlist) newcdr)
-        (setcdr (cdr dlist) (cdr newcdr))
-        (setcdr (car dlist) newcdr)))
+(defun dlist-setcdr (dlist newcdr)
+    (setcdr (car dlist) newcdr)
+    (setcdr (cdr dlist) (cdr newcdr))
+    newcdr)
 
 (defun dlist-link (link1 link2)
     (when link1
         (dlist-setcdr link1 link2))
     (when link2
-        (dlist-setcdr link2 link1 t))
+        (setcar (car link2) link1))
     nil)
 
 (defun dlist-unlink (link)
