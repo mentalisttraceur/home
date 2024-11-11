@@ -3609,8 +3609,7 @@
             (setq buffer (current-buffer)))
         (when (get-buffer-window buffer t)
             (set-buffer buffer)
-            (add-hook
-                'kill-buffer-hook
+            (add-hook 'kill-buffer-hook
                 (lambda ()
                     (let ((buffer (current-buffer)))
                         (quit-window)
