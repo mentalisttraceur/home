@@ -3856,12 +3856,14 @@
         (unwind-protect
             (refresh-modified-state buffer)
             (delete-directory directory t)))
-    (defun diff-buffer--from (action)
+    (defun diff-buffer--pick (prompt)
         (if-let (window (next-window-other-buffer nil 'never))
             (window-buffer window)
-            (read-other-buffer (concat action " from buffer: "))))
+            (read-other-buffer prompt)))
     (defun diff-buffer (buffer-1 buffer-2)
-        (interactive (list (diff-buffer--from "Diff") (current-buffer)))
+        (interactive (list
+                         (diff-buffer--pick "Diff from buffer: ")
+                         (current-buffer)))
         (setq buffer-1 (get-buffer buffer-1))
         (setq buffer-2 (get-buffer buffer-2))
         (with-temporary-directory directory
@@ -3918,8 +3920,6 @@
                     (copy-file file buffer-file-name t))
                 (refresh-modified-state buffer)))
             (delete-directory directory t))
-    (define-key space-map "w" 'partial-save)
-    (define-key space-map "W" 'save-buffer)
     (defun partial-revert ()
         (interactive)
         (if (not buffer-file-name)
@@ -3949,8 +3949,15 @@
                     (abbreviate-file-name (file-truename buffer-file-name)))
                 (refresh-modified-state buffer))
             (delete-directory directory t)))
+    (defvar partial-copy-from-current-to-target nil)
     (defun partial-copy (buffer-1 buffer-2)
-        (interactive (list (diff-buffer--from "Copy") (current-buffer)))
+        (interactive (if partial-copy-from-current-to-target
+                         (list
+                             (current-buffer)
+                             (diff-buffer--pick "Copy to buffer: "))
+                         (list
+                             (diff-buffer--pick "Copy from buffer: ")
+                             (current-buffer))))
         (setq buffer-1 (get-buffer buffer-1))
         (setq buffer-2 (get-buffer buffer-2))
         (if (not (or (derived-mode-p 'text-mode 'prog-mode)
@@ -3990,6 +3997,14 @@
                         (abbreviate-file-name (file-truename buffer-file-name)))
                     (refresh-modified-state buffer-2)))
             (delete-directory directory t)))
+    (define-key space-map "w"
+        (lambda (prefix-argument)
+            (interactive "P")
+            (if prefix-argument
+                (let ((partial-copy-from-current-to-target t))
+                    (become-command 'partial-copy))
+                (become-command 'partial-save))))
+    (define-key space-map "W" 'save-buffer)
     (define-key space-map "r"
         (lambda (prefix-argument)
             (interactive "P")
