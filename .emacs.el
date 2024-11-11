@@ -2815,7 +2815,7 @@
     (setq undo-tree-auto-save-history nil)
     (add-to-list 'undo-tree-incompatible-major-modes
         'undo-tree-visualizer-mode)
-    (add-to-list 'undo-tree-visualizer-mode-hook
+    (add-hook 'undo-tree-visualizer-mode-hook
         (lambda ()
             (set-window-dedicated-p (selected-window) nil)
             (setq mode-name "Undo")))
