@@ -529,9 +529,8 @@
     (setcar (cdr dlist) newcar))
 
 (defun dlist-setcdr (dlist newcdr)
-    (setcdr (car dlist) newcdr)
     (setcdr (cdr dlist) (cdr newcdr))
-    newcdr)
+    (setcdr (car dlist) newcdr))
 
 (defun dlist-setcpr (dlist newcpr)
     (setcar (car dlist) newcpr))
