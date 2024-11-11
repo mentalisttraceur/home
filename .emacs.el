@@ -162,25 +162,29 @@
     (setq functions (nreverse functions))
     (let* ((counter 1)
            (bindings ())
-           (form `(apply ,(compose--1) arguments)))
+           (function (pop functions))
+           (function (if (eq (car-safe function) 'quote)
+                         function
+                         (compose--gensym)))
+           (form `(apply ,function arguments)))
         (while functions
             (setq counter (1+ counter))
-            (setq form `(funcall ,(compose--1) ,form)))
+            (setq function (pop functions))
+            (if (eq (car-safe function) 'quote)
+                (setq form `(,(cadr function) ,form))
+                (setq form `(funcall ,(compose--gensym) ,form))))
         (push 'list bindings)
         `(eval
              '(lambda (&rest arguments)
                   ,form)
              ,bindings)))
-(defmacro compose--1 ()
-    `(let ((function (pop functions)))
-         (if (eq (car-safe function) 'quote)
-             function
-             (let* ((gensym-counter counter)
-                    (symbol (if (symbolp function)
-                               function
-                               (gensym "f"))))
-                 (push `(cons ',symbol ,function) bindings)
-                 symbol))))
+(defmacro compose--gensym ()
+    `(let* ((gensym-counter counter)
+            (symbol (if (symbolp function)
+                        function
+                        (gensym "f"))))
+         (push `(cons ',symbol ,function) bindings)
+         symbol))
 
 
 (defmacro apply-split (callable arguments count)
