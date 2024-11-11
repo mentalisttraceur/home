@@ -3607,14 +3607,14 @@
     (defun smoother-kill-buffer (&optional buffer)
         (unless buffer
             (setq buffer (current-buffer)))
-        (when (get-buffer-window buffer t)
-            (set-buffer buffer)
-            (add-hook 'kill-buffer-hook
-                (lambda ()
-                    (let ((buffer (current-buffer)))
-                        (quit-window)
-                        (set-buffer buffer)))
-                nil t))
+        (set-buffer buffer)
+        (add-hook 'kill-buffer-hook
+            (lambda ()
+                (let ((buffer (current-buffer)))
+                    (dolist (window (get-buffer-window-list buffer nil t))
+                        (quit-window nil window)
+                        (set-buffer buffer))))
+                nil t)
         (kill-buffer buffer))
     (defun smoother-kill-buffers (buffers)
         (interactive (list
