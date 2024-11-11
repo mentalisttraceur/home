@@ -1895,6 +1895,14 @@
     :config
     (setq Man-notify-method 'pushy))
 
+(use-package debug
+    :config
+    (defun fixed-debugger-quit ()
+        (if (> (recursion-depth) 0)
+            (abort-recursive-edit)
+            (quit-window)))
+    (advice-add 'debugger-quit :override 'fixed-debugger-quit))
+
 (use-package calendar
     :config
     (defvar calendar-months-before-current (if termux 0 1))
