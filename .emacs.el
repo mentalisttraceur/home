@@ -1897,11 +1897,13 @@
 
 (use-package debug
     :config
+    (define-key debugger-mode-map "q" 'quit-window)
     (defun fixed-debugger-quit ()
-        (if (> (recursion-depth) 0)
-            (abort-recursive-edit)
-            (quit-window)))
-    (advice-add 'debugger-quit :override 'fixed-debugger-quit))
+        (when (> (recursion-depth) 0)
+            (abort-recursive-edit)))
+    (defun fixed-debugger-setup ()
+        (add-hook 'quit-window-hook 'fixed-debugger-quit nil t))
+    (add-hook 'debugger-mode-hook 'fixed-debugger-setup))
 
 (use-package calendar
     :config
