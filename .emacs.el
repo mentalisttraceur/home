@@ -509,9 +509,16 @@
 (defun dlist-cdr (dlist)
     (cdar dlist))
 
+(defun dlist-cpr (dlist)
+    (caar dlist))
+
 (defun dlist-nthcdr (n dlist)
     (dotimes (_ n dlist)
         (setq dlist (dlist-cdr dlist))))
+
+(defun dlist-nthcpr (n dlist)
+    (dotimes (_ n dlist)
+        (setq dlist (dlist-cpr dlist))))
 
 (defun dlist-nth (n dlist)
     (dlist-car (dlist-nthcdr n dlist)))
@@ -524,11 +531,14 @@
     (setcdr (cdr dlist) (cdr newcdr))
     newcdr)
 
+(defun dlist-setcpr (dlist newcpr)
+    (setcar (car dlist) newcpr))
+
 (defun dlist-link (link1 link2)
     (when link1
         (dlist-setcdr link1 link2))
     (when link2
-        (setcar (car link2) link1))
+        (dlist-setcpr link2 link1))
     nil)
 
 (defun dlist-unlink (link)
@@ -537,7 +547,7 @@
         (dlist-link headward-link tailward-link)))
 
 (defun dlist-first (dlist)
-    (while-let ((previous (caar dlist)))
+    (while-let ((previous (dlist-cpr dlist)))
         (setq dlist previous))
     dlist)
 
@@ -559,7 +569,7 @@
         new-link))
 
 (defun dlist-insert-before (link value)
-    (dlist-insert (caar link) value link))
+    (dlist-insert (dlist-cpr link) value link))
 
 (defun dlist-insert-after (link value)
     (dlist-insert link value (dlist-cdr link)))
