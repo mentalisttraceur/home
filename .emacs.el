@@ -1926,7 +1926,7 @@
                 (recursive-abort depth))))
     (defun fixed-debugger-quit ()
         (if (> (recursion-depth) fixed-debug--initial-depth)
-            (abort-recursive-edit)
+            (debug-top-level)
             (quit-window)))
     (advice-add 'debugger-quit :override 'fixed-debugger-quit))
 
