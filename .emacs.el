@@ -1208,6 +1208,21 @@
              (nconc defer-input--events unread-command-events))))
 
 
+(defun recursive-exit (&optional count function)
+    (unless function
+        (setq function 'exit-recursive-edit))
+    (let ((depth (recursion-depth)))
+        (unless count
+            (setq count depth))
+        (setq count (1- (min depth count)))
+        (when (> count 0)
+            (throw 'exit (apply-partially 'recursive-exit count function)))
+        (funcall function)))
+
+(defun recursive-abort (&optional count)
+    (recursive-exit count 'abort-recursive-edit))
+
+
 (defun hack-save-buffers-kill-emacs (save-buffers-kill-emacs &rest arguments)
     (with-advice (('save-some-buffers :override 'ignore))
         (apply save-buffers-kill-emacs arguments)))
