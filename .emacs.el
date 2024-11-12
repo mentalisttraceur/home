@@ -1916,10 +1916,15 @@
     (defun fixed-debug--setup ()
         (setq fixed-debug--initial-depth (recursion-depth))
         (pop kill-buffer-hook)
-        (add-hook 'kill-buffer-hook 'fixed-debug--kill nil t))
+        (add-hook 'kill-buffer-query-functions 'fixed-debug--kill nil t))
     (add-hook 'debugger-mode-hook 'fixed-debug--setup)
     (defun fixed-debug--kill ()
-        (add-single-use-hook 'post-command-hook 'debug-top-level))
+        (if (<= (recursion-depth) fixed-debug--initial-depth)
+            t
+            (add-single-use-hook 'post-command-hook
+                (apply-partially 'kill-buffer (current-buffer)))
+            (add-single-use-hook 'post-command-hook 'debug-top-level)
+            nil))
     (defun debug-top-level ()
         (let ((depth (- (recursion-depth) fixed-debug--initial-depth)))
             (when (> depth 0)
