@@ -1,9 +1,7 @@
 #!/bin/sh -
 cleanup()
 {
-    case ${directory+x} in x)
-        rm -rf "$directory"
-    esac
+    rm -rf "$directory"
 }
 output=${3-"$1"}
 directory=`mktemp -d` &&
