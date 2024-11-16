@@ -568,16 +568,16 @@
          (listp (cdar object))
          (listp (cdr object))))
 
-(defun dlist-insert (link1 value link2)
-    (let ((new-link (dlist-cons value link2)))
+(defun dlist-insert (link1 item link2)
+    (let ((new-link (dlist-cons item link2)))
         (dlist-link link1 new-link)
         new-link))
 
-(defun dlist-insert-before (link value)
-    (dlist-insert (dlist-cpr link) value link))
+(defun dlist-insert-before (link item)
+    (dlist-insert (dlist-cpr link) item link))
 
-(defun dlist-insert-after (link value)
-    (dlist-insert link value (dlist-cdr link)))
+(defun dlist-insert-after (link item)
+    (dlist-insert link item (dlist-cdr link)))
 
 
 (defun make-ordered-hash-table (&rest arguments)
