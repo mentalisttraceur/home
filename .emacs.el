@@ -3724,7 +3724,7 @@
         (let ((count 0))
             (dolist (buffer buffers)
                 (when (smoother-kill-buffer buffer)
-                    (+= count 1)))
+                    (setq count (1+ count))))
             (if (equal count 1)
                 (message "Killed 1 buffer")
                 (message "Killed %d buffers" count))))
