@@ -271,6 +271,10 @@
         (lambda-let (operator operands) (getter setter)
             (funcall setter `(,operator ,getter ,@operands)))))
 
+(defmacro define-augmented-assignment (name operator)
+    `(defmacro ,name (place &rest operands)
+         (apply 'list 'augmented-assignment ',operator place operands)))
+
 
 (defmacro += (place &rest values)
     `(augmented-assignment + ,place ,@values))
