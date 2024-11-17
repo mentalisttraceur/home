@@ -266,6 +266,12 @@
     `(apply-split-nest let-uncons-1 ,uncons-list 3 ,body))
 
 
+(defmacro augmented-assignment (operator place &rest operands)
+    (gv-get place
+        (lambda-let (operator operands) (getter setter)
+            (funcall setter `(,operator ,getter ,@operands)))))
+
+
 (defmacro += (place value)
     `(setf ,place (+ ,place ,value)))
 
