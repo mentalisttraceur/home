@@ -187,6 +187,25 @@
          symbol))
 
 
+(defvar multiple-values--rest nil)
+
+(defun values (&rest objects)
+    (setq multiple-values--rest nil)
+    (prog1
+        (pop objects)
+        (setq multiple-values--rest objects)))
+
+(defmacro multiple-values-bind (names form &rest body)
+    (let ((name (pop names))
+          (rest (make-symbol "rest")))
+        `(let (,name ,rest)
+             (let ((multiple-values--rest nil))
+                 (setq ,name ,form)
+                 (setq ,rest multiple-values--rest))
+             (seq-let ,names ,rest
+                 ,@body))))
+
+
 (defmacro apply-split (callable arguments count)
     (setq arguments (copy-sequence arguments))
     (setq count (1- count))
