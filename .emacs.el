@@ -272,20 +272,20 @@
             (funcall setter `(,operator ,getter ,@operands)))))
 
 
-(defmacro += (place value)
-    `(setf ,place (+ ,place ,value)))
+(defmacro += (place &rest values)
+    `(augmented-assignment + ,place ,@values))
 
 
-(defmacro -= (place value)
-    `(setf ,place (- ,place ,value)))
+(defmacro -= (place &rest values)
+    `(augmented-assignment - ,place ,@values))
 
 
-(defmacro ^= (place value)
-    `(setf ,place (logxor ,place ,value)))
+(defmacro ^= (place &rest values)
+    `(augmented-assignment logxor ,place ,@values))
 
 
 (defmacro <<= (place value)
-    `(setf ,place (ash ,place ,value)))
+    `(augmented-assignment ash ,place ,value))
 
 
 (defmacro until (test &rest body)
