@@ -288,8 +288,8 @@
     `(augmented-assignment logxor ,place ,@values))
 
 
-(defmacro <<= (place value)
-    `(augmented-assignment ash ,place ,value))
+(defmacro <<= (place count)
+    `(augmented-assignment ash ,place ,count))
 
 
 (defmacro until (test &rest body)
