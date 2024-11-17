@@ -275,18 +275,9 @@
     `(defmacro ,name (place &rest operands)
          (apply 'list 'augmented-assignment ',operator place operands)))
 
-
-(defmacro += (place &rest values)
-    `(augmented-assignment + ,place ,@values))
-
-
-(defmacro -= (place &rest values)
-    `(augmented-assignment - ,place ,@values))
-
-
-(defmacro ^= (place &rest values)
-    `(augmented-assignment logxor ,place ,@values))
-
+(define-augmented-assignment += +)
+(define-augmented-assignment -= -)
+(define-augmented-assignment ^= logxor)
 
 (defmacro <<= (place count)
     `(augmented-assignment ash ,place ,count))
