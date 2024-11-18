@@ -540,12 +540,16 @@
     (caar dlist))
 
 (defun dlist-nthcdr (n dlist)
-    (dotimes (_ n dlist)
-        (setq dlist (dlist-cdr dlist))))
+    (while (and dlist (> n 0))
+        (setq dlist (dlist-cdr dlist))
+        (setq n (1- n)))
+    dlist)
 
 (defun dlist-nthcpr (n dlist)
-    (dotimes (_ n dlist)
-        (setq dlist (dlist-cpr dlist))))
+    (while (and dlist (> n 0))
+        (setq dlist (dlist-cpr dlist))
+        (setq n (1- n)))
+    dlist)
 
 (defun dlist-nth (n dlist)
     (if (< n 0)
