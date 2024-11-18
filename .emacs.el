@@ -553,7 +553,7 @@
 
 (defun dlist-nth (n dlist)
     (if (< n 0)
-        (dlist-car (dlist-nthcpr n dlist))
+        (dlist-car (dlist-nthcpr (- n) dlist))
         (dlist-car (dlist-nthcdr n dlist))))
 
 (defun dlist-setcar (dlist newcar)
