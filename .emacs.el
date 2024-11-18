@@ -527,6 +527,9 @@
         (dolist (item (nreverse items) dlist)
             (setq dlist (dlist-cons item dlist)))))
 
+(defun dlist-list (dlist)
+    (cdr dlist))
+
 (defun dlist-car (dlist)
     (cadr dlist))
 
