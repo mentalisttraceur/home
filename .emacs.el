@@ -628,7 +628,7 @@
     value)
 
 (defun ordered-hash-table-list (table)
-    (cdr (aref table 2)))
+    (dlist-list (aref table 2)))
 
 
 (defun make-bihash (&rest arguments)
