@@ -1980,7 +1980,7 @@
     (advice-add 'debugger-setup-buffer :before 'fixed-debugger-setup-buffer)
     (defun fixed-debugger-quit ()
         (when (fixed-debug--in-debugger-p)
-            (fixed-debug--error-if-at-wrong-depth)
+            (fixed-debug--exit-checklist)
             (abort-recursive-edit))
         (quit-window))
     (advice-add 'debugger-quit :override 'fixed-debugger-quit)
@@ -1988,18 +1988,19 @@
         (fixed-debug--collect-garbage)
         (when-let ((depth (car fixed-debug--parent-depths)))
             (> (recursion-depth) depth)))
-    (defun fixed-debug--error-if-at-wrong-depth (&rest _)
+    (defun fixed-debug--exit-checklist (&rest _)
         (fixed-debug--collect-garbage)
         (if-let ((parent-depth (car fixed-debug--parent-depths)))
             (let ((debugger-depth (1+ parent-depth)))
                 (when (> (recursion-depth) debugger-depth)
                     (user-error "Not in most nested command loop")))
-            (user-error "No debug session in progress")))
+            (user-error "No debug session in progress"))
+            (pop fixed-debug--parent-depths))
     (dolist (function '(debugger-jump
                         debugger-return-value
                         debugger-continue
                         debugger-step-through))
-        (advice-add function :before 'fixed-debug--error-if-at-wrong-depth)))
+        (advice-add function :before 'fixed-debug--exit-checklist)))
 
 (use-package calendar
     :config
