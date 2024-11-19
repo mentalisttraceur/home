@@ -1499,6 +1499,15 @@
     (let ((default-directory "~"))
         (call-process-region entry nil "histdir" nil 0 nil
             "remove" (expand-file-name histdir))))
+(defun histdir-change (old-entry new-entry)
+    (let* ((default-directory "~")
+           (editor (concat
+                       "EDITOR=printf '%s' "
+                       (shell-quote-argument new-entry)
+                       " >"))
+           (process-environment (cons editor process-environment)))
+        (call-process-region old-entry nil "histdir" nil 0 nil
+            "edit" (expand-file-name histdir))))
 (defvar-local histdir-buffer-local-history--position nil)
 (defun histdir-input-add (input &optional deduplicate)
     (setq histdir-buffer-local-history--position nil)
