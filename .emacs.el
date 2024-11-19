@@ -3818,9 +3818,7 @@
                (history (car (consult--current-history))))
             (unless history-quit
                 (if histdir
-                    (progn
-                        (histdir-remove old-entry)
-                        (histdir-add new-entry t))
+                    (histdir-change old-entry new-entry)
                     (when (ring-p history)
                         (while-let ((index (ring-member history old-entry)))
                             (ring-remove history index))
