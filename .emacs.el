@@ -1503,11 +1503,29 @@
                 (histdir-history--set-watch history descriptor)))
         (when first-read
             (make-thread (apply-partially 'histdir--read path history)))))
+(defun histdir--hash (entry)
+    (secure-hash 'sha256 (concat entry "\n")))
 (defun histdir-add (entry &optional deduplicate)
-    (let ((default-directory "~"))
-        (setq deduplicate (if deduplicate "--deduplicate" "--"))
-        (call-process-region entry nil "histdir" nil 0 nil
-            "add" deduplicate (expand-file-name histdir))))
+    (let ((hash     (histdir--hash entry))
+          (datetime (format-time-string "%Y%m%dT%H%M%S,%NZ" nil t))
+          (path     (expand-file-name histdir)))
+        (let ((string-directory (concat path "/v1/string/"))
+              (call-directory   (concat path "/v1/call/")))
+            (make-directory string-directory t)
+            (make-directory call-directory t)
+            (let ((string-file (concat string-directory hash))
+                  (call-file   (concat call-directory datetime)))
+                (with-temp-file string-file
+                    (insert entry "\n"))
+                (with-temp-file call-file
+                    (insert hash "\n")))
+            (when deduplicate
+                (let* ((history (gethash path histdir--histories))
+                       (duplicates (histdir-history-duplicates history))
+                       (other-datetimes (gethash entry duplicates)))
+                    (dolist (other-datetime (remove datetime other-datetimes))
+                        (let ((file (concat call-directory other-datetime)))
+                            (delete-file file))))))))
 (defun histdir-remove (entry)
     (let ((default-directory "~"))
         (call-process-region entry nil "histdir" nil 0 nil
