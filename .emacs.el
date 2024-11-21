@@ -3858,7 +3858,7 @@
                 (replace-command entry)
                 (evil-end-undo-step)
                 (if histdir
-                    (histdir-remove entry)
+                    (histdir-input-remove entry)
                     (when (ring-p history)
                         (while-let ((index (ring-member history entry)))
                             (ring-remove history index))))
