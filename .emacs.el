@@ -1574,6 +1574,10 @@
     (when (equal entry (dlist-car histdir-buffer-local-history--head))
         (dlist-setcar histdir-buffer-local-history--head nil))
     (histdir-remove entry))
+(defun histdir-input-change (old-entry new-entry)
+    (when (equal old-entry (dlist-car histdir-buffer-local-history--head))
+        (dlist-setcar histdir-buffer-local-history--head new-entry))
+    (histdir-change old-entry new-entry))
 (defun histdir-input--select (position)
     (setq histdir-buffer-local-history--position position)
     (replace-command
