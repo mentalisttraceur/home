@@ -1570,6 +1570,10 @@
     (unless (equal (string-trim input) "")
         (dlist-setcar histdir-buffer-local-history--head input)
         (histdir-add input deduplicate)))
+(defun histdir-input-remove (entry)
+    (when (equal entry (dlist-car histdir-buffer-local-history--head))
+        (dlist-setcar histdir-buffer-local-history--head nil))
+    (histdir-remove entry))
 (defun histdir-input--select (position)
     (setq histdir-buffer-local-history--position position)
     (replace-command
