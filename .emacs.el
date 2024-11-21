@@ -1540,14 +1540,23 @@
             (let ((call-file (concat call-directory   datetime)))
                 (delete-file call-file)))))
 (defun histdir-change (old-entry new-entry)
-    (let* ((default-directory "~")
-           (editor (concat
-                       "EDITOR=printf '%s' "
-                       (shell-quote-argument new-entry)
-                       " >"))
-           (process-environment (cons editor process-environment)))
-        (call-process-region old-entry nil "histdir" nil 0 nil
-            "edit" (expand-file-name histdir))))
+    (let* ((new-hash (histdir--hash new-entry))
+           (old-hash (histdir--hash old-entry))
+           (path (expand-file-name histdir))
+           (string-directory (concat path "/v1/string/"))
+           (call-directory   (concat path "/v1/call/"))
+           (history          (gethash path histdir--histories))
+           (duplicates (histdir-history-duplicates history))
+           (datetimes (gethash old-entry duplicates))
+           (new-string-file (concat string-directory new-hash))
+           (old-string-file (concat string-directory old-hash)))
+        (with-temp-file new-string-file
+            (insert new-entry "\n"))
+        (dolist (datetime datetimes)
+            (let ((call-file (concat call-directory   datetime)))
+                (with-temp-file call-file
+                    (insert new-hash "\n"))))
+        (delete-file old-string-file)))
 (defvar-local histdir-buffer-local-history--position nil)
 (defun histdir-input-add (input &optional deduplicate)
     (setq histdir-buffer-local-history--position nil)
