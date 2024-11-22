@@ -834,6 +834,9 @@
             (bihash-put (aref table 2) key new-link))
         value))
 
+(defun sorted-hash-table-count (table)
+    (bihash-count (aref table 2)))
+
 
 (defun delete-forward-in-line (start count)
     (delete-region start (save-excursion
