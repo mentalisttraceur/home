@@ -3034,17 +3034,6 @@
     :config
     (vertico-mode 1)
     (setq vertico-cycle t)
-    (defun multi-vertico (function &rest arguments)
-        (let ((state (cons nil nil)))
-            (add-single-use-hook 'minibuffer-setup-hook
-                (lambda-let (state) ()
-                    (add-hook 'minibuffer-exit-hook
-                        (lambda-let (state) ()
-                            (setcar state vertico--candidates)
-                            (setcdr state (car vertico--input)))
-                        nil t)))
-            (let ((choice (apply function arguments)))
-                (values (car state) (cdr state) choice))))
     (setq minibuffer-prompt-properties
         (append '(cursor-intangible t) minibuffer-prompt-properties))
     (add-hook 'minibuffer-setup-hook 'cursor-intangible-mode))
