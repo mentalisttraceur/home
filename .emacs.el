@@ -3036,7 +3036,18 @@
     (setq vertico-cycle t)
     (setq minibuffer-prompt-properties
         (append '(cursor-intangible t) minibuffer-prompt-properties))
-    (add-hook 'minibuffer-setup-hook 'cursor-intangible-mode))
+    (add-hook 'minibuffer-setup-hook 'cursor-intangible-mode)
+    (defvar-local next-vertico-index nil)
+    (defvar-local next-vertico-scroll nil)
+    (defun hack-vertico--recompute (state)
+        (when next-vertico-index
+            (setf (alist-get 'vertico--index state) next-vertico-index)
+            (setq next-vertico-index nil))
+        (when next-vertico-scroll
+            (setf (alist-get 'vertico--scroll state) next-vertico-scroll)
+            (setq next-vertico-scroll nil))
+        state)
+    (advice-add 'vertico--recompute :filter-return 'hack-vertico--recompute))
 
 (use-packages crm vertico
     :config
