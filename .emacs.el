@@ -3044,7 +3044,7 @@
                             (setcdr state (car vertico--input)))
                         nil t)))
             (let ((choice (apply function arguments)))
-                (list (car state) (cdr state) choice))))
+                (values (car state) (cdr state) choice))))
     (setq minibuffer-prompt-properties
         (append '(cursor-intangible t) minibuffer-prompt-properties))
     (add-hook 'minibuffer-setup-hook 'cursor-intangible-mode))
