@@ -3076,7 +3076,12 @@
             (while (search-forward "\x36E1CA" nil 'x)
                 (delete-char -1)
                 (insert crm-separator))
-            (insert crm-separator input)))
+            (insert crm-separator input)
+            (unless (> count 1)
+                (delete-region
+                    (save-excursion
+                        (1+ (search-backward "\x36E1CA" nil t)))
+                    (point)))))
     (defun hack-completing-read-multiple (&rest _)
         (add-single-use-hook 'minibuffer-setup-hook
             (lambda ()
