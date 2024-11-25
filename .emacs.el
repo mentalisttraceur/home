@@ -4263,7 +4263,7 @@
     (define-key git-map "A" 'git-add-new)
     (define-key git-map "q" (git checkout -p))
     (define-key git-map "w" (git reset -p))
-    (define-key git-map "e" (git stash -p))
+    (define-key git-map "e" (git stash push -p))
     (define-key git-map "u" (git pull))
     (defun git-p (prefix-argument &optional force)
         (interactive "P")
