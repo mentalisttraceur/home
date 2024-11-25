@@ -4264,6 +4264,13 @@
     (define-key git-map "q" (git checkout -p))
     (define-key git-map "w" (git reset -p))
     (define-key git-map "e" (git stash push -p))
+    (defun git-stash-pop (prefix-argument)
+        (interactive "P")
+        (let ((command (list "git" "stash" "pop")))
+            (when prefix-argument
+                (nconc command (list (format "stash@{%d}" prefix-argument))))
+            (git-pop-to-command command)))
+    (define-key git-map "f" 'git-stash-pop)
     (define-key git-map "u" (git pull))
     (defun git-p (prefix-argument &optional force)
         (interactive "P")
