@@ -1454,6 +1454,11 @@
                 (file-name-parent-directory (file-name-directory file))
                 "string/"
                 hash)))))
+(defconst histdir--datetime-regex "^[0-9]\\{8\\}T[0-9]\\{6\\},[0-9]\\{9\\}Z$")
+(defun histdir--datetime-from-path (path)
+    (let ((file (file-name-nondirectory path)))
+        (when (string-match-p histdir--datetime-regex file)
+            file)))
 (defun histdir--read (path history)
     (let ((default-directory (concat path "/v1"))
           (files nil))
