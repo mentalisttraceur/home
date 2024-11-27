@@ -1429,7 +1429,7 @@
             (remhash hash calls))))
 (defun histdir-history--add (history datetime string)
     (let ((table (histdir-history-table history)))
-        (when-let (replaced-string (dlist-car (bihash-get (aref table 2) datetime)))
+        (when-let (replaced-string (sorted-hash-table-get table datetime))
             (unless (equal replaced-string string)
                 (histdir-history--remove-call history replaced-string datetime)))
         (sorted-hash-table-put table datetime string)
