@@ -1411,6 +1411,8 @@
                     (histdir--update-buffer-local-history-pointers-1 shared))
                 (setq buffers (delq buffer buffers))))
         (histdir-history--set-buffers history buffers)))
+(defun histdir--hash (entry)
+    (secure-hash 'sha256 (concat entry "\n")))
 (defun histdir-history--add-call (history string datetime)
     (let* ((calls (histdir-history-calls history))
            (hash (histdir--hash string))
@@ -1521,8 +1523,6 @@
                 (histdir-history--set-watch history descriptor)))
         (when first-read
             (make-thread (apply-partially 'histdir--read path history)))))
-(defun histdir--hash (entry)
-    (secure-hash 'sha256 (concat entry "\n")))
 (defun histdir-add (entry &optional deduplicate)
     (let ((hash     (histdir--hash entry))
           (datetime (format-time-string "%Y%m%dT%H%M%S,%NZ" nil t))
