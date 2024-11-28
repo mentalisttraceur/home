@@ -2951,7 +2951,10 @@
                               ((memq slot '(day month))     "-")
                               ((eq   slot 'year)            ""))))
         (when final-value
-            (if (and prior-value (not (= prior-value final-value)))
+            (if (or (and prior-value
+                         (not (= prior-value final-value)))
+                    (and (numberp bound-value)
+                         (not (eq bound-value final-value))))
                 (format (concat prefix
                                 "{"
                                 (if (eq bound-value t)
@@ -2962,7 +2965,7 @@
                                     (propertize format-string 'face face)
                                     format-string)
                                 "}")
-                        prior-value final-value)
+                        (or prior-value bound-value) final-value)
                 (when (eq bound-value final-value)
                     (setq format-string (propertize format-string 'face face)))
                 (concat prefix (format format-string final-value))))))
