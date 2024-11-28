@@ -4302,7 +4302,7 @@
             (when prefix-argument
                 (nconc command (list (format "stash@{%d}" prefix-argument))))
             (git-pop-to-command command)))
-    (define-key git-map "f" 'git-pop)
+    (define-key git-map "r" 'git-pop)
     (define-key git-map "u" (git pull))
     (defun git-p (prefix-argument &optional force)
         (interactive "P")
@@ -4340,7 +4340,7 @@
         (let* ((commit-ish (git--commit-ish prefix-argument "git reset to: "))
                (command (list "git" "reset" commit-ish)))
             (git-pop-to-command command)))
-    (define-key git-map "r" 'git-reset)
+    (define-key git-map "j" 'git-reset)
     (define-key git-map "b"
         (lambda ()
             (interactive)
