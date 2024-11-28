@@ -2467,21 +2467,22 @@
           (integer nil)
           (integers-in-span 0)
           (integers-before-span 0)
-          (words (split-string string))
+          (words (split-string string " "))
           word)
         (setq word words)
         (while word
-            (unpack (previous-parsed _ previous-bindings)
-                    (datetime-parse--bind nil parsed integers))
-            (setq previous-parsed
-                  (datetime-parse--future-bias nil previous-parsed now))
-            (setq integer nil)
-            (datetime-parse--1)
-            (if integer
-                (setq integers-in-span (1+ integers-in-span))
-                (setq integers-before-span
-                      (+ integers-before-span integers-in-span))
-                (setq integers-in-span 0))
+            (when (length> (car word) 0)
+                (unpack (previous-parsed _ previous-bindings)
+                        (datetime-parse--bind nil parsed integers))
+                (setq previous-parsed
+                      (datetime-parse--future-bias nil previous-parsed now))
+                (setq integer nil)
+                (datetime-parse--1)
+                (if integer
+                    (setq integers-in-span (1+ integers-in-span))
+                    (setq integers-before-span
+                          (+ integers-before-span integers-in-span))
+                    (setq integers-in-span 0)))
             (pop word))
         (unpack (parsed _ bindings)
                 (datetime-parse--bind nil parsed integers bindings))
@@ -2493,10 +2494,8 @@
         (when short
             (datetime-parse--unplug parsed))
         (setq parsed (fixed-decoded-time-add parsed nil))
-        (if (string-suffix-p " " string)
-            (setq string (concat (string-join words " ") " "))
-            (setq string (string-join words " ")))
-        (if (or (and (< (- (length words) integers-before-span) 2)
+        (setq string (string-join words " "))
+        (if (or (and (< (- (length (remove "" words)) integers-before-span) 2)
                      (not (any offsets)))
                 (string-suffix-p " " string))
             (list parsed (list nil bindings string))
