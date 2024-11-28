@@ -2932,11 +2932,13 @@
             (if (and prior-value (not (= prior-value final-value)))
                 (format (concat prefix
                                 "{"
-                                (if bound-value
+                                (if (eq bound-value t)
                                     (propertize format-string 'face face)
                                     format-string)
                                 "->"
-                                format-string
+                                (if (eq bound-value final-value)
+                                    (propertize format-string 'face face)
+                                    format-string)
                                 "}")
                         prior-value final-value)
                 (when (eq bound-value final-value)
