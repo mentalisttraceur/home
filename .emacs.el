@@ -1676,6 +1676,17 @@
                 'front-sticky '(read-only)
                 'rear-nonsticky t)))
     (setq eshell-banner-message "")
+    (defvar latest-eshell nil)
+    (defun latest-eshell (&optional prefix-argument)
+        (interactive "P")
+        (setq latest-eshell (seq-filter 'buffer-live-p latest-eshell))
+        (let ((buffer (if prefix-argument
+                          (eshell prefix-argument)
+                          (if latest-eshell
+                              (pop-to-buffer (pop latest-eshell))
+                              (eshell 1)))))
+            (setq latest-eshell (cons buffer (delete buffer latest-eshell)))
+            buffer))
     (setq eshell-history-size 0)
     (advice-add 'eshell-hist-initialize
         :before
@@ -3947,7 +3958,7 @@
         (setq history-quit t)
         (vertico-exit))
     (evil-declare-not-repeat 'history-quit)
-    (define-key space-map "t" 'eshell)
+    (define-key space-map "t" 'latest-eshell)
     (add-to-list 'evil-normal-state-modes 'eshell-mode)
     (defvar-local evil-eshell-state-for-next-input 'normal)
     (advice-add 'eshell-send-input
@@ -6701,4 +6712,4 @@
       file-name-handler-alist init-file-name-handler-alist)
 
 
-(setq initial-buffer-choice 'eshell)
+(setq initial-buffer-choice 'latest-eshell)
