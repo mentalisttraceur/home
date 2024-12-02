@@ -5448,7 +5448,10 @@
     (setq denote-history-completion-in-prompts nil)
     (setq denote-rename-confirmations '(modify-file-name add-front-matter))
     (defun denote-file-note-type (path)
-        (when-let ((extension (denote-get-file-extension-sans-encryption path))
+        (when-let ((_ (or (not (file-exists-p path))
+                          (and (file-regular-p path)
+                               (not (file-symlink-p path)))))
+                   (extension (denote-get-file-extension-sans-encryption path))
                    (types (denote--file-types-with-extension extension)))
             (car (seq-find
                      (lambda-let (path) (type)
