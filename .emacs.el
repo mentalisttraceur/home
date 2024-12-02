@@ -5644,9 +5644,15 @@
         (if (and (memq 'modify-file-name denote-rename-confirmations)
                  (not (denoted-rename-file-prompt path new-path)))
             path
-            (denote-rename-file-and-buffer path new-path)
-            (let ((denote-directory directory))
-                (denote-update-dired-buffers))
+            (when (not (equal path new-path))
+                (condition-case _error
+                    (dired-rename-file path new-path 0)
+                    (:success
+                        (dired-relist-file new-path))
+                    (file-missing
+                        (when-let (buffer (get-file-buffer path))
+                            (with-current-buffer buffer
+	                        (set-visited-file-name new-path nil t))))))
             (when-let (type (denote-file-note-type new-path))
                 (denoted-rewrite-front-matter new-path title tags type))
             new-path))
@@ -5675,7 +5681,8 @@
         (setq-if-nil title "")
         (setq-if-nil suffix "")
         (setq tags (denoted-tag-slug tags))
-        (let* ((directory (file-name-directory (expand-file-name path)))
+        (setq path (expand-file-name path))
+        (let* ((directory (file-name-directory path))
                (extension (denoted-extension-get path))
                (new-name  (denoted-format-file-name
                               datetime
