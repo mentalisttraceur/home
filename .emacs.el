@@ -1845,7 +1845,7 @@
 
 (add-to-list 'text-property-default-nonsticky
     (cons 'full-path t))
-(defun full-path-property-split (start end object &optional separators trim)
+(defun full-path-property-split (start end &optional object separators trim)
     (setq-if-nil separators "\n+")
     (if-let (paths (text-property-values start end 'full-path object))
         paths
