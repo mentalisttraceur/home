@@ -4480,7 +4480,21 @@
 
 (use-packages dired evil
     :config
-    (evil-define-key 'motion dired-mode-map "." 'evil-repeat))
+    (evil-define-key 'motion dired-mode-map "." 'evil-repeat)
+    (evil-define-operator evil-dired-delete
+            (start end type register yank-handler)
+        :move-point nil
+        :type line
+        (interactive "<R><x><y>")
+        (let ((text (buffer-substring start end))
+              (evil-was-yanked-without-register nil))
+            (evil-yank-string
+                (propertize text 'paste-is-move t)
+                register
+                'evil-yank-line-handler))
+        (goto-char start)
+        (dired-kill-line (count-lines start end t)))
+    (evil-define-key 'motion dired-mode-map "d" 'evil-dired-delete))
 
 (use-packages display-fill-column-indicator evil
     :config
