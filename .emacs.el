@@ -4481,50 +4481,20 @@
 (use-packages dired evil
     :config
     (evil-define-key 'motion dired-mode-map "." 'evil-repeat)
-    (defun evil-dired-delete--line (path)
-        (let ((line (concat path "\n")))
-            (propertize line 'full-path (propertize path 'paste-is-move t))))
     (evil-define-operator evil-dired-delete
             (start end type register yank-handler)
         :move-point nil
         :type line
         (interactive "<R><x><y>")
-        (let* ((paths (full-path-property-split start end))
-               (lines (mapcar 'evil-dired-delete--line paths))
-               (evil-was-yanked-without-register nil))
+        (let ((text (buffer-substring start end))
+              (evil-was-yanked-without-register nil))
             (evil-yank-string
-                (string-join lines)
+                (propertize text 'paste-is-move t)
                 register
                 'evil-yank-line-handler))
         (goto-char start)
         (dired-kill-line (count-lines start end t)))
-    (evil-define-key 'motion dired-mode-map "d" 'evil-dired-delete)
-    (defun evil-dired--paste (register)
-        (let* ((lines (evil-paste-to-string 1 register))
-               (paths (full-path-property-split nil nil lines)))
-            (while paths
-                (let* ((path (pop paths))
-                       (file (file-name-nondirectory path))
-                       (new-path (concat dired-directory file)))
-                    (unless (equal new-path path)
-                        (if (get-text-property 0 'paste-is-move path)
-                            (rename-file path new-path t)
-                            (copy-file path new-path t)))
-                    (dired-add-entry (expand-file-name new-path))
-                    (when paths
-                        (dired-next-line 1))))
-            (length paths)))
-    (evil-define-command evil-dired-paste-after (register)
-        :suppress-operator t
-        (interactive "<x>")
-        (dired-next-line 1)
-        (evil-dired--paste register))
-    (evil-define-key 'motion dired-mode-map "p" 'evil-dired-paste-after)
-    (evil-define-command evil-dired-paste-before (register)
-        :suppress-operator t
-        (interactive "<x>")
-        (evil-dired--paste register))
-    (evil-define-key 'motion dired-mode-map "P" 'evil-dired-paste-before))
+    (evil-define-key 'motion dired-mode-map "d" 'evil-dired-delete))
 
 (use-packages display-fill-column-indicator evil
     :config
