@@ -5835,7 +5835,7 @@
         (interactive)
         (denoted-try 'smoother-delete-file--1))
     (define-key space-map "D" 'smoother-delete-file)
-    (defun after-save-revert-dired-buffers (&rest _)
+    (defun after-save-revert-dired-buffers ()
         (revert-dired-buffers default-directory))
     (add-hook 'after-save-hook 'after-save-revert-dired-buffers)
     (defun delete-file-revert-dired-buffers (filename &rest _)
