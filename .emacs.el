@@ -5839,10 +5839,7 @@
         (revert-dired-buffers default-directory))
     (add-hook 'after-save-hook 'after-save-revert-dired-buffers)
     (defun delete-file-revert-dired-buffers (filename &rest _)
-        (setq filename (expand-file-name filename))
-        (add-single-use-hook 'post-command-hook
-            (lambda-let ((directory (file-name-directory filename))) ()
-                (revert-dired-buffers directory))))
+        (dired-remove-file (expand-file-name filename)))
     (advice-add 'delete-file :after 'delete-file-revert-dired-buffers)
     (evil-define-command note (prefix-argument &optional register)
         (interactive "P<x>")
