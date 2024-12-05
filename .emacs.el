@@ -1830,10 +1830,7 @@
                 dired-buffer
                 nil)))
     (defun independent-dired (directory &rest arguments)
-        (let* ((directory (expand-file-name directory))
-               (directory (file-name-as-directory directory))
-               (existing (assoc directory dired-buffers))
-               (dired-buffers (remq existing dired-buffers)))
+        (let ((dired-buffers nil))
             (apply 'dired directory arguments)))
     (defun reuse-independent-dired (name directory &rest arguments)
         (let ((buffer (get-buffer name)))
