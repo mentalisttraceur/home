@@ -5687,8 +5687,6 @@
             (when (not (equal path new-path))
                 (condition-case _error
                     (dired-rename-file path new-path 0)
-                    (:success
-                        (dired-relist-file new-path))
                     (file-missing
                         (when-let (buffer (get-file-buffer path))
                             (with-current-buffer buffer
