@@ -5852,7 +5852,7 @@
         (dired-do-kill-lines))
     (defun note-list ()
         (interactive)
-        (let* ((buffer (find-dired-visiting denote-directory))
+        (let* ((buffer (dired-find-buffer-nocreate denote-directory))
                (was-already-open (if buffer t nil))
                (was-already-focused (eq (current-buffer) buffer)))
             (if buffer
