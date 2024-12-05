@@ -4483,18 +4483,52 @@
     (evil-define-key 'motion dired-mode-map "." 'evil-repeat)
     (evil-define-operator evil-dired-delete
             (start end type register yank-handler)
-        :move-point nil
         :type line
         (interactive "<R><x><y>")
-        (let ((text (buffer-substring start end))
-              (evil-was-yanked-without-register nil))
-            (evil-yank-string
-                (propertize text 'paste-is-move t)
-                register
-                'evil-yank-line-handler))
-        (goto-char start)
+        (let ((evil-was-yanked-without-register nil))
+            (evil-yank start end type register yank-handler))
         (dired-kill-line (count-lines start end t)))
-    (evil-define-key 'motion dired-mode-map "d" 'evil-dired-delete))
+    (evil-define-key 'motion dired-mode-map "d" 'evil-dired-delete)
+    (defun evil-dired--paste (register &optional move replace)
+        (let* ((text  (evil-paste-to-string 1 register))
+               (paths (full-path-property-split nil nil text)))
+            (while paths
+                (let* ((path (pop paths))
+                       (new-path (if replace
+                                     (dired-get-filename)
+                                     (concat dired-directory
+                                             (file-name-nondirectory path)))))
+                    (unless (equal new-path path)
+                        (if move
+                            (dired-rename-file path new-path t)
+                            (copy-file path new-path t)))
+                    (dired-add-entry (expand-file-name new-path))
+                    (when paths
+                        (dired-next-line 1))))
+            (length paths)))
+    (evil-define-command evil-dired-paste-after (count register)
+        :suppress-operator t
+        (interactive "P<x>")
+        (dired-next-line 1)
+        (evil-dired--paste register (not count)))
+    (evil-define-key 'motion dired-mode-map "p" 'evil-dired-paste-after)
+    (evil-define-command evil-dired-paste-before (count register)
+        :suppress-operator t
+        (interactive "P<x>")
+        (evil-dired--paste register (not count)))
+    (evil-define-key 'motion dired-mode-map "P" 'evil-dired-paste-before)
+    (evil-define-command evil-dired-replacing-paste-after (count register)
+        :suppress-operator t
+        (interactive "P<x>")
+        (evil-dired--paste register (not count) t))
+    (evil-define-key 'motion dired-mode-map
+        "gp" 'evil-dired-replacing-paste-after)
+    (evil-define-command evil-dired-replacing-paste-before (count register)
+        :suppress-operator t
+        (interactive "P<x>")
+        (evil-dired--paste register (not count) t))
+    (evil-define-key 'motion dired-mode-map
+        "gP" 'evil-dired-replacing-paste-before))
 
 (use-packages display-fill-column-indicator evil
     :config
