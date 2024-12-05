@@ -1836,6 +1836,14 @@
                     (dired-add-entry
                         (directory-file-name new-path)
                         marker-character)))))
+    (defun fixed-dired-rename-file
+            (dired-rename-file path new-path &rest arguments)
+        (with-advice (('dired-remove-file
+                          :override
+                          (lambda-let (new-path) (path)
+                              (update-dired-file path new-path))))
+            (apply dired-rename-file path new-path arguments)))
+    (advice-add 'dired-rename-file :around 'fixed-dired-rename-file)
     (defun revert-dired-buffers (directory)
         (setq directory (expand-file-name (file-name-as-directory directory)))
         (dolist (buffer (buffer-list))
