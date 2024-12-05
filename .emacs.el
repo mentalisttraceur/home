@@ -4353,7 +4353,7 @@
         (let* ((commit-ish (git--commit-ish prefix-argument "git reset to: "))
                (command (list "git" "reset" commit-ish)))
             (git-pop-to-command command)))
-    (define-key git-map "j" 'git-reset)
+    (define-key git-map "h" 'git-reset)
     (define-key git-map "b"
         (lambda ()
             (interactive)
