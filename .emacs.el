@@ -1815,6 +1815,27 @@
                         nil))
                 (goto-char start-of-search)
                 nil)))
+    (defun update-dired-file (path &optional old-path)
+        (dired-fun-in-all-buffers
+            (file-name-directory path)
+            (file-name-nondirectory path)
+            'update-dired-entry path old-path))
+    (defun update-dired-entry (path &optional new-path)
+        (unless new-path
+            (setq new-path path))
+        (save-excursion
+            (when (dired-goto-file path)
+                (beginning-of-line)
+                (let ((marker-character (following-char)))
+                    (when (eq marker-character ? )
+                        (setq marker-character nil))
+                    (let ((buffer-read-only nil))
+	                (delete-region
+                            (point)
+                            (line-beginning-position 2)))
+                    (dired-add-entry
+                        (directory-file-name new-path)
+                        marker-character)))))
     (defun revert-dired-buffers (directory)
         (setq directory (expand-file-name (file-name-as-directory directory)))
         (dolist (buffer (buffer-list))
