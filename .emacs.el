@@ -1333,6 +1333,11 @@
 (use-package help
     :config
     (setq help-window-select t)
+    (setq find-function-C-source-directory
+        (expand-file-name
+            (format "%s/emacs-%s/src/"
+                user-emacs-directory
+                emacs-version)))
     (define-key help-map "t" 'describe-face)
     (define-key help-map "g" nil)
     (define-key help-map "r" nil)
