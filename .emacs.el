@@ -1686,10 +1686,12 @@
         (interactive "P")
         (setq latest-eshell (seq-filter 'buffer-live-p latest-eshell))
         (let ((buffer (if prefix-argument
-                          (eshell prefix-argument)
+                          (if (equal prefix-argument 1)
+                              (eshell)
+                              (eshell prefix-argument))
                           (if latest-eshell
                               (pop-to-buffer (pop latest-eshell))
-                              (eshell 1)))))
+                              (eshell)))))
             (setq latest-eshell (cons buffer (delete buffer latest-eshell)))
             buffer))
     (setq eshell-history-size 0)
