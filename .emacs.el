@@ -3551,6 +3551,16 @@
     (add-hook 'evil-motion-state-exit-hook
         (lambda ()
             (remove-hook 'post-command-hook 'evil-motion-post-command t)))
+    (defvar-local evil-yank-incomplete-line-linewise t)
+    (defun fixed-evil-yank-lines (evil-yank-lines start end &rest arguments)
+        (if evil-yank-incomplete-line-linewise
+            (apply evil-yank-lines start end arguments)
+            (let ((string (filter-buffer-substring start end)))
+                (if (or (string-match-p "\n" string)
+                        (equal (char-before start) ?\n))
+                    (apply evil-yank-lines start end arguments)
+                    (apply 'evil-yank-characters start end arguments)))))
+    (advice-add 'evil-yank-lines :around 'fixed-evil-yank-lines)
     (defun evil-yank-string (string &optional register yank-handler)
         (with-temp-buffer
             (insert string)
@@ -4015,6 +4025,7 @@
         (setq evil-eshell-state-for-next-input evil-state))
     (add-hook 'eshell-mode-hook
         (lambda ()
+            (setq evil-yank-incomplete-line-linewise nil)
             (evil-local-set-key 'normal [escape] 'eshell-interrupt-process)
             (evil-local-set-key 'insert [escape]
                 'evil-eshell-force-normal-state)
@@ -4461,6 +4472,7 @@
                 (evil-previous-line)
                 (beginning-of-buffer (vertico-previous)))))
     (defun misc-minibuffer-setup ()
+        (setq evil-yank-incomplete-line-linewise nil)
         (dolist (key '([down] "j" "о"))
             (evil-local-set-key 'normal key 'evil-vertico-next-line))
         (dolist (key '([up] "k" "л"))
