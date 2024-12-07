@@ -4112,7 +4112,6 @@
         (lambda ()
             (interactive)
             (consult-fd "~/storage/shared" "\\.trashed -- -H")))
-    (define-key space-map "x" 'tramp-cleanup-connection)
     (add-hook 'pop-to-command-setup-hook
         (lambda ()
             (evil-initialize-state)
