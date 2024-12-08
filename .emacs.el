@@ -4023,14 +4023,13 @@
         (interactive)
         (evil-force-normal-state)
         (setq evil-eshell-state-for-next-input evil-state))
-    (add-hook 'eshell-mode-hook
-        (lambda ()
-            (setq evil-yank-incomplete-line-linewise nil)
-            (evil-local-set-key 'normal [escape] 'eshell-interrupt-process)
-            (evil-local-set-key 'insert [escape]
-                'evil-eshell-force-normal-state)
-            (evil-local-set-key 'operator [escape] 'evil-force-normal-state)
-            (evil-local-set-key 'insert "\C-d" 'eshell-send-eof-to-process)))
+    (defun evil-eshell-setup ()
+        (setq evil-yank-incomplete-line-linewise nil)
+        (evil-local-set-key 'normal [escape] 'eshell-interrupt-process)
+        (evil-local-set-key 'insert [escape] 'evil-eshell-force-normal-state)
+        (evil-local-set-key 'operator [escape] 'evil-force-normal-state)
+        (evil-local-set-key 'insert "\C-d" 'eshell-send-eof-to-process))
+    (add-hook 'eshell-mode-hook 'evil-eshell-setup)
     (add-hook 'eshell-pre-command-hook
         (lambda ()
             (setq evil-eshell-state-for-next-input evil-state)
