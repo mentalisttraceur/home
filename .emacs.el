@@ -5216,9 +5216,10 @@
              (interactive)
              (window-state--do-action
                  (condition-case error
-                     (save-selected-window
-                         ,@body
-                         (selected-window))
+                     (let ((norecord-override 'always))
+                         (save-selected-window
+                             ,@body
+                             (selected-window)))
                      (error
                          (message "%s" (error-message-string error))
                          (selected-window))))))
@@ -5261,7 +5262,6 @@
                      (let ((origin-window (selected-window)))
                          (setq-if-nil window origin-window)
                          ,@body
-                         (run-hooks 'buffer-list-update-hook)
                          (window-state--normal)))
                  (defun ,operator-name ()
                      (interactive)
@@ -5278,11 +5278,16 @@
         (let ((move-name (intern (concat (symbol-name name) "-move"))))
             `(append
                  (window-state--define-operator ,name
-                     (with-selected-window window
-                         ,@body))
+                     (let ((norecord-override nil))
+                         (with-selected-window window
+                             (unwind-protect
+                                 (progn
+                                     ,@body)
+                                 (setq norecord-override 'ignore)))))
                  (window-state--define-operator ,move-name
-                     (select-window window t)
-                     ,@body))))
+                     (with-selected-window window
+                         ,@body)
+                     (select-window window)))))
     (defconst window-state--register-ring (make-ring 9))
     (setcar (cdr window-state--register-ring) 9)
     (defconst window-state--register-bank (make-hash-table :size 27))
