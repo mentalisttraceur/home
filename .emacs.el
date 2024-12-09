@@ -5374,6 +5374,7 @@
             (quit))
         (setq window-state--execute-once t))
     (window-state-define-operator window-state-send
+        (select-window window)
         (let* ((keys (read-key-sequence nil))
                (binding (key-binding keys t)))
             (setq last-command-event (aref keys (1- (length keys))))
