@@ -5092,12 +5092,17 @@
 (setq redisplay-skip-initial-frame nil)
 
 (defvar norecord-override)
-(defun norecord-override (select-function window-or-frame &optional norecord)
+(defun norecord-override--1 (function window-or-frame &optional norecord)
     (when (boundp 'norecord-override)
         (setq norecord norecord-override))
-    (funcall select-function window-or-frame norecord))
-(advice-add 'select-window :around 'norecord-override)
-(advice-add 'select-frame :around 'norecord-override)
+    (funcall function window-or-frame norecord))
+(advice-add 'select-window :around 'norecord-override--1)
+(advice-add 'select-frame :around 'norecord-override--1)
+(defun norecord-override--2 (function frame window &optional norecord)
+    (when (boundp 'norecord-override)
+        (setq norecord norecord-override))
+    (funcall function frame window norecord))
+(advice-add 'set-frame-selected-window :around 'norecord-override--2)
 
 (use-package ace-window
     :config
