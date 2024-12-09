@@ -5397,7 +5397,7 @@
     (define-key window-state-map "d" 'window-state-delete-operator)
     (define-key window-state-map "D" 'window-state-delete)
     (define-key window-state-map "p" 'window-state-paste-move-operator)
-    (define-key window-state-map "P" 'window-state-paste)
+    (define-key window-state-map "P" 'window-state-paste-operator)
     (define-key window-state-map "x" 'window-state-close-operator)
     (define-key window-state-map "X" 'window-state-close)
     (define-key window-state-map "c" 'window-state-search-move-operator)
