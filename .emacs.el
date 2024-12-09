@@ -5369,6 +5369,7 @@
         (when (or (window-parent) (minibufferp))
             (evil-window-delete)))
     (defun window-state-use-register ()
+        (interactive)
         (condition-case _error
             (setq window-state-this-register
                 (call-interactively 'evil-use-register))
