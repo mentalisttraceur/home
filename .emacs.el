@@ -5091,16 +5091,18 @@
 (add-hook 'buffer-list-update-hook 'face-remap-selected-window)
 (setq redisplay-skip-initial-frame nil)
 
-(defvar norecord-override)
+(defvar norecord-override nil)
 (defun norecord-override--1 (function window-or-frame &optional norecord)
-    (when (boundp 'norecord-override)
-        (setq norecord norecord-override))
+    (when norecord-override
+        (setq norecord (funcall norecord-override
+                           function window-or-frame norecord)))
     (funcall function window-or-frame norecord))
 (advice-add 'select-window :around 'norecord-override--1)
 (advice-add 'select-frame :around 'norecord-override--1)
 (defun norecord-override--2 (function frame window &optional norecord)
-    (when (boundp 'norecord-override)
-        (setq norecord norecord-override))
+    (when norecord-override
+        (setq norecord (funcall norecord-override
+                           function frame window norecord)))
     (funcall function frame window norecord))
 (advice-add 'set-frame-selected-window :around 'norecord-override--2)
 
