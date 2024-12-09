@@ -5091,6 +5091,14 @@
 (add-hook 'buffer-list-update-hook 'face-remap-selected-window)
 (setq redisplay-skip-initial-frame nil)
 
+(defvar norecord-override)
+(defun norecord-override (select-function window-or-frame &optional norecord)
+    (when (boundp 'norecord-override)
+        (setq norecord norecord-override))
+    (funcall select-function window-or-frame norecord))
+(advice-add 'select-window :around 'norecord-override)
+(advice-add 'select-frame :around 'norecord-override)
+
 (use-package ace-window
     :config
     (setq aw-dispatch-when-more-than 1)
