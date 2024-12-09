@@ -5261,8 +5261,10 @@
                      (interactive)
                      (let ((origin-window (selected-window)))
                          (setq-if-nil window origin-window)
-                         ,@body
-                         (window-state--normal)))
+                         (unwind-protect
+                             (progn
+                                 ,@body)
+                             (window-state--normal))))
                  (defun ,operator-name ()
                      (interactive)
                      (cond
@@ -5334,14 +5336,10 @@
                           (point-marker-with-scroll))))
             (jump-to-marker-with-scroll marker)))
     (window-state-define-operator window-state-search
-        (condition-case _error
-            (with-advice (('read-buffer-to-switch :override 'read-buffer))
-                (become-command 'switch-to-buffer))
-            (quit)))
+        (with-advice (('read-buffer-to-switch :override 'read-buffer))
+            (become-command 'switch-to-buffer)))
     (window-state-define-operator window-state-open
-        (condition-case _error
-            (call-interactively 'find-file)
-            (quit)))
+        (call-interactively 'find-file))
     (window-state-define-operator window-state-target-prefix
         (setq prefix-arg current-prefix-arg)
         (display-buffer-override-next-command
@@ -5376,14 +5374,12 @@
             (quit))
         (setq window-state--execute-once t))
     (window-state-define-operator window-state-send
-        (condition-case _error
-            (let* ((keys (read-key-sequence nil))
-                   (binding (key-binding keys t)))
-                (setq last-command-event (aref keys (1- (length keys))))
-                (if binding
-                    (call-interactively binding)
-                    (undefined)))
-            (quit)))
+        (let* ((keys (read-key-sequence nil))
+               (binding (key-binding keys t)))
+            (setq last-command-event (aref keys (1- (length keys))))
+            (if binding
+                (call-interactively binding)
+                (undefined))))
     (define-prefix-command 'window-state-map)
     (define-key window-state-map "h" 'window-state-move-left)
     (define-key window-state-map "j" 'window-state-move-down)
