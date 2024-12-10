@@ -1239,6 +1239,18 @@
             nil)))
 
 
+(defun read-event-from-minibuffer
+        (&optional prompt inherit-input-method &rest _)
+    (unless prompt
+        (setq prompt (or (current-message) "")))
+    (let ((map (make-sparse-keymap)))
+        (define-key map [t] 'exit-minibuffer)
+        (with-nested-command-state
+            (read-from-minibuffer
+                prompt nil map nil t nil inherit-input-method))
+        last-command-event))
+
+
 (defmacro defer-input (&rest body)
     `(let ((defer-input-map (make-sparse-keymap))
            (defer-input--events (list 'unused)))
