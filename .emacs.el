@@ -654,10 +654,8 @@
                     (push (car tail) arguments)
                     (push (cadr tail) arguments)))
             (setq tail (cddr tail)))
-        (unless key-test
-            (setq key-test 'eql))
-        (unless value-test
-            (setq value-test 'eql))
+        (setq-if-nil key-test 'eql)
+        (setq-if-nil value-test 'eql)
         (setq arguments (nreverse arguments))
         (setq arguments (nconc arguments tail))
         (push key-test arguments)
@@ -1241,8 +1239,7 @@
 
 (defun read-event-from-minibuffer
         (&optional prompt inherit-input-method &rest _)
-    (unless prompt
-        (setq prompt (or (current-message) "")))
+    (setq-if-nil prompt (or (current-message) ""))
     (let ((map (make-sparse-keymap)))
         (define-key map [t] 'exit-minibuffer)
         (with-nested-command-state
@@ -1267,11 +1264,9 @@
 
 
 (defun recursive-exit (&optional count function)
-    (unless function
-        (setq function 'exit-recursive-edit))
+    (setq-if-nil function 'exit-recursive-edit)
     (let ((depth (recursion-depth)))
-        (unless count
-            (setq count depth))
+        (setq-if-nil count depth)
         (setq count (1- (min depth count)))
         (when (> count 0)
             (throw 'exit (apply-partially 'recursive-exit count function)))
@@ -1840,8 +1835,7 @@
             (file-name-nondirectory path)
             'update-dired-entry path old-path))
     (defun update-dired-entry (path &optional new-path)
-        (unless new-path
-            (setq new-path path))
+        (setq-if-nil new-path path)
         (save-excursion
             (when (dired-goto-file path)
                 (beginning-of-line)
@@ -2076,14 +2070,12 @@
                         (hexl-insert-char byte 1))
                     (forward-char)))))
     (defun hexl-nibble-insert (nibble &optional count)
-        (unless count
-            (setq count 1))
+        (setq-if-nil count 1)
         (dotimes (_ count)
             (hexl-nibble-insert-1 nibble)))
     (defun fixed-hexl-self-insert-command (count &optional character)
         (interactive "p")
-        (unless character
-            (setq character last-command-event))
+        (setq-if-nil character last-command-event)
         (if (>= (current-column) (hexl-ascii-start-column))
             (hexl-insert-multibyte-char character count)
             (hexl-nibble-insert character count)))
