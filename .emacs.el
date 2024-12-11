@@ -4567,7 +4567,7 @@
         (let* ((paths (full-path-property-split start end))
                (nicer (mapcar 'user-friendly-path paths))
                (quoted (mapcar 'eshell-quote-argument nicer)))
-            (latest-eshell)
+            (eshell t)
             (when (in-eshell-scrollback-p)
                 (end-of-buffer))
             (save-excursion
