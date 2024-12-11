@@ -1689,18 +1689,23 @@
                 'rear-nonsticky t)))
     (setq eshell-banner-message "")
     (defvar latest-eshell nil)
-    (defun latest-eshell (&optional prefix-argument)
-        (interactive "P")
-        (setq latest-eshell (seq-filter 'buffer-live-p latest-eshell))
-        (let ((buffer (if prefix-argument
-                          (if (equal prefix-argument 1)
-                              (eshell)
-                              (eshell prefix-argument))
-                          (if latest-eshell
-                              (pop-to-buffer (pop latest-eshell))
-                              (eshell)))))
+    (defun latest-eshell--add (eshell &rest arguments)
+        (let ((buffer (apply eshell arguments)))
+            (add-hook 'kill-buffer-hook 'latest-eshell--remove nil t)
             (setq latest-eshell (cons buffer (delete buffer latest-eshell)))
             buffer))
+    (defun latest-eshell--remove ()
+        (setq latest-eshell (delete (current-buffer) latest-eshell)))
+    (advice-add 'eshell :around 'latest-eshell--add)
+    (defun latest-eshell (&optional prefix-argument)
+        (interactive "P")
+        (if prefix-argument
+            (if (equal prefix-argument 1)
+                (eshell)
+                (eshell prefix-argument))
+            (if latest-eshell
+                (pop-to-buffer (car latest-eshell))
+                (eshell))))
     (setq eshell-history-size 0)
     (advice-add 'eshell-hist-initialize
         :before
@@ -6823,4 +6828,4 @@
       file-name-handler-alist init-file-name-handler-alist)
 
 
-(setq initial-buffer-choice 'latest-eshell)
+(setq initial-buffer-choice 'eshell)
