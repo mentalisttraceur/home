@@ -4549,12 +4549,19 @@
     :config
     (evil-define-key 'motion dired-mode-map "." 'evil-repeat))
 
+(defun user-friendly-path (path)
+    (let ((from-home (concat "~/" (file-relative-name path "~/"))))
+        (if (> (length from-home) (length path))
+            path
+            from-home)))
+
 (use-packages dired eshell evil
     :config
     (evil-define-operator evildir-eshell (start end)
         (interactive "<r>")
         (let* ((paths (full-path-property-split start end))
-               (quoted (mapcar 'eshell-quote-argument paths)))
+               (nicer (mapcar 'user-friendly-path paths))
+               (quoted (mapcar 'eshell-quote-argument nicer)))
             (latest-eshell)
             (when (in-eshell-scrollback-p)
                 (end-of-buffer))
