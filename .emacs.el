@@ -164,7 +164,7 @@
            (bindings ())
            (function (pop functions))
            (function (if (memq (car-safe function) '(quote function))
-                         function
+                         (list 'function (cadr function))
                          (compose--gensym)))
            (form `(apply ,function arguments)))
         (while functions
