@@ -163,14 +163,14 @@
     (let* ((counter 1)
            (bindings ())
            (function (pop functions))
-           (function (if (eq (car-safe function) 'quote)
+           (function (if (memq (car-safe function) '(quote function))
                          function
                          (compose--gensym)))
            (form `(apply ,function arguments)))
         (while functions
             (setq counter (1+ counter))
             (setq function (pop functions))
-            (if (eq (car-safe function) 'quote)
+            (if (memq (car-safe function) '(quote function))
                 (setq form `(,(cadr function) ,form))
                 (setq form `(funcall ,(compose--gensym) ,form))))
         (push 'list bindings)
