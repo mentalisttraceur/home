@@ -4549,6 +4549,20 @@
     :config
     (evil-define-key 'motion dired-mode-map "." 'evil-repeat))
 
+(use-packages dired eshell evil
+    :config
+    (evil-define-operator evildir-eshell (start end)
+        (interactive "<r>")
+        (let* ((paths (full-path-property-split start end))
+               (quoted (mapcar 'eshell-quote-argument paths)))
+            (latest-eshell)
+            (when (in-eshell-scrollback-p)
+                (end-of-buffer))
+            (save-excursion
+                (insert " " (string-join quoted " "))))
+        (evil-insert-state))
+    (evil-define-key 'motion 'dired-mode-map "x" 'evildir-eshell))
+
 (use-packages display-fill-column-indicator evil
     :config
     (evil-declare-not-repeat 'toggle-show-80+-characters)
