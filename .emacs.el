@@ -3280,13 +3280,17 @@
 
 (use-package consult
     :config
-    (setq completion-in-region-function 'consult-completion-in-region)
-    (defun hack-consult-completion-in-region
-            (consult-completion-in-region &rest arguments)
-        (let ((completion-reference-buffer (current-buffer)))
-            (apply consult-completion-in-region arguments)))
-    (advice-add 'consult-completion-in-region
-        :around 'hack-consult-completion-in-region)
+    (defun fixed-consult-completion-in-region
+            (start end table &optional predicate)
+        (let* ((string     (buffer-substring-no-properties start end))
+               (point      (- (point) start))
+               (candidates (completion-all-completions
+                               string table predicate point)))
+            (if (length= candidates 1)
+                (completion--in-region start end table predicate)
+                (let ((completion-reference-buffer (current-buffer)))
+                    (consult-completion-in-region start end table predicate)))))
+    (setq completion-in-region-function 'fixed-consult-completion-in-region)
     (add-to-list 'consult-mode-histories
         '(eshell-mode
           histdir-buffer-local-history-list
