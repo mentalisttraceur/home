@@ -4630,7 +4630,7 @@
             (save-excursion
                 (insert " " (string-join quoted " "))))
         (evil-insert-state))
-    (evil-define-key 'motion 'dired-mode-map "x" 'evildir-eshell))
+    (evil-define-key 'motion dired-mode-map "x" 'evildir-eshell))
 
 (use-packages display-fill-column-indicator evil
     :config
