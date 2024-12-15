@@ -2,9 +2,9 @@
 for path
 do
     path=${path%/}
-    directory=${path%/*}
-    case $directory in '')
-        directory=.
+    directory=.
+    case $path in ?*/*)
+        directory=${path%/*}
     esac
     file=${path##*/}
     name=${file%%.*}
