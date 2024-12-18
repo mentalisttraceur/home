@@ -1,3 +1,2 @@
 #!/bin/sh -
-. ~/.gwsl
 exec emacsclient --alternate-editor= "$@"

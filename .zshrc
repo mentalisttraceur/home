@@ -24,7 +24,3 @@ case ${TERMUX_VERSION+x} in x)
     PATH=$PREFIX/local/bin:$PATH
     export XDG_RUNTIME_DIR=$PREFIX/var/run
 esac
-
-case ${WSL_DISTRO_NAME+x} in x)
-    source ~/.gwsl
-esac
