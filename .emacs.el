@@ -1817,7 +1817,7 @@
         (dired-previous-line 1))
     (defun dired-filename-search-forward (bound)
         (let ((start-of-search (point)))
-            (while (and (not (eobp))
+            (while (and (< (pos-eol) (point-max))
                         (or (eolp)
                             (not (dired-file-name-at-point))))
                 (dired-next-line 1))
