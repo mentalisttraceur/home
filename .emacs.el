@@ -6081,6 +6081,7 @@
         (denote-dired-mode 1)
         (setq-local revert-buffer-function (task--buffer-revert regex))
         (revert-buffer)
+        (setq buffer-undo-list nil)
         (dired-goto-first-file))
     (defun task--buffer-revert (filter-regex)
         (lambda-let (filter-regex) (&rest arguments)
