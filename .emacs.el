@@ -4706,6 +4706,20 @@
         (evil-insert-state))
     (evil-define-key 'motion dired-mode-map "x" 'evildir-eshell))
 
+(use-packages dired evil undo-tree
+    :config
+    (add-hook 'dired-mode-hook 'undo-tree-mode)
+    (defun evildir-undo ()
+        (interactive)
+        (let ((buffer-read-only nil))
+            (become-command 'evil-undo)))
+    (defun evildir-redo ()
+        (interactive)
+        (let ((buffer-read-only nil))
+            (become-command 'evil-redo)))
+    (evil-define-key 'motion dired-mode-map "u" 'evildir-undo)
+    (evil-define-key 'motion dired-mode-map "U" 'evildir-redo))
+
 (use-packages display-fill-column-indicator evil
     :config
     (evil-declare-not-repeat 'toggle-show-80+-characters)
