@@ -401,7 +401,7 @@
 
 (defun advice-how (symbol function)
     (when-let (advice (advice-member-p function symbol))
-        (aref (aref advice 2) 2)))
+        (advice--how advice)))
 
 (defun advice-list (symbol)
     (let ((advice-list ()))
