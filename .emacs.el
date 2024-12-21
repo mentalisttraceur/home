@@ -355,6 +355,15 @@
                   (form-replace from-form to-form (cdr in-form)))
             in-form)))
 
+(defun form-delete (form in-form)
+    (while (and (consp in-form)
+                (equal (car in-form) form))
+        (setq in-form (cdr in-form)))
+    (if (consp in-form)
+        (cons (form-delete form (car in-form))
+              (form-delete form (cdr in-form)))
+        in-form))
+
 
 (defun function-lisp (function)
     (let ((raw (indirect-function function)))
