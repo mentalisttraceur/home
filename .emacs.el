@@ -6155,15 +6155,15 @@
         (denote-dired-mode 1)
         (setq-local revert-buffer-function (task--buffer-revert regex))
         (revert-buffer)
-        (setq buffer-undo-list nil)
         (dired-goto-first-file))
     (defun task--buffer-revert (filter-regex)
         (lambda-let (filter-regex) (&rest arguments)
             (let ((inhibit-redisplay t))
-                (apply 'dired-revert arguments)
-                (save-point
-                    (note--filter-dired)
-                    (task--filter-dired filter-regex)))))
+                (with-undo-amalgamate
+                    (apply 'dired-revert arguments)
+                    (save-point
+                        (note--filter-dired)
+                        (task--filter-dired filter-regex))))))
     (defun task-list ()
         (interactive)
         (task--buffer "*Tasks*" nil))
