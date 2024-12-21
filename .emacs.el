@@ -400,6 +400,15 @@
             (unless was-already-open
                 (kill-buffer buffer)))))
 
+(defun function-lisp-anonymize (definition)
+    (cond
+        ((memq (car definition) '(defun defsubst))
+            (cons 'lambda (cddr definition)))
+        ((eq (car definition) 'defmacro)
+            (cons 'macro (cons 'lambda (cddr definition))))
+        (t
+            definition)))
+
 
 (defun advice-how (symbol function)
     (when-let (advice (advice-member-p function symbol))
