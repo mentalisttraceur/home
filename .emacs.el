@@ -356,6 +356,30 @@
             in-form)))
 
 
+(defun function-lisp (function)
+    (let ((raw (indirect-function function)))
+        (if (or (subr-native-elisp-p raw)
+                (byte-code-function-p raw))
+            (if-let ((source (find-function-library function))
+                     (file (cdr source)))
+                (function-lisp--read-from-source (car source) file)
+                nil)
+            (if (subrp raw)
+                nil
+                raw))))
+
+(defun function-lisp--read-from-source (name file)
+    (let* ((buffers (buffer-list))
+           (found (find-function-search-for-symbol name nil file))
+           (buffer   (car found))
+           (position (cdr found))
+           (was-already-open (memq buffer buffers)))
+        (prog1
+            (read (set-marker (make-marker) position buffer))
+            (unless was-already-open
+                (kill-buffer buffer)))))
+
+
 (defun advice-how (symbol function)
     (when-let (advice (advice-member-p function symbol))
         (aref (aref advice 2) 2)))
