@@ -178,6 +178,7 @@
              '(lambda (&rest arguments)
                   ,form)
              ,bindings)))
+
 (defmacro compose--gensym ()
     `(let* ((gensym-counter counter)
             (symbol (if (symbolp function)
@@ -364,6 +365,7 @@
                 (nconc
                     (copy-sequence to-forms)
                     (form-replace from-forms to-forms unmatched-in-forms))))))
+
 (defun form-replace--car (from-forms to-forms nested-form)
     (if (consp nested-form)
         (list (form-replace from-forms to-forms nested-form))
