@@ -347,6 +347,15 @@
                  (delete-directory ,name t)))))
 
 
+(defun form-replace (from-form to-form in-form)
+    (if (equal in-form from-form)
+        to-form
+        (if (consp in-form)
+            (cons (form-replace from-form to-form (car in-form))
+                  (form-replace from-form to-form (cdr in-form)))
+            in-form)))
+
+
 (defun advice-how (symbol function)
     (when-let (advice (advice-member-p function symbol))
         (aref (aref advice 2) 2)))
