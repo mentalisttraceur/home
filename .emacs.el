@@ -350,10 +350,12 @@
 (defun form-replace (from-form to-form in-form)
     (if (equal in-form from-form)
         to-form
-        (if (consp in-form)
-            (cons (form-replace from-form to-form (car in-form))
-                  (form-replace from-form to-form (cdr in-form)))
-            in-form)))
+        (form-replace--cdr from-form to-form in-form)))
+(defun form-replace--cdr (from-form to-form in-form)
+    (if (consp in-form)
+        (cons (form-replace      from-form to-form (car in-form))
+              (form-replace--cdr from-form to-form (cdr in-form)))
+        in-form))
 
 (defun form-delete (form in-form)
     (while (and (consp in-form)
