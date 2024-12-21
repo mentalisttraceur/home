@@ -347,19 +347,30 @@
                  (delete-directory ,name t)))))
 
 
-(defun form-replace (in-form from-form &rest to-forms)
-    (if (equal in-form from-form)
-        to-forms
-        (form-replace--cdr in-form from-form to-forms)))
-(defun form-replace--cdr (in-form from-form to-forms)
-    (if (consp in-form)
-        (nconc (form-replace--car (car in-form) from-form to-forms)
-               (form-replace--cdr (cdr in-form) from-form to-forms))
-        in-form))
-(defun form-replace--car (in-form from-form to-forms)
-    (if (equal in-form from-form)
-        (copy-sequence to-forms)
-        (list (form-replace--cdr in-form from-form to-forms))))
+(defun form-replace (from-forms to-forms in-forms)
+    (when in-forms
+        (let ((unmatched-in-forms in-forms)
+              (unmatched-from-forms from-forms))
+            (while (and unmatched-in-forms
+                        unmatched-from-forms
+                        (equal (car unmatched-in-forms)
+                               (car unmatched-from-forms)))
+                (pop unmatched-in-forms)
+                (pop unmatched-from-forms))
+            (if unmatched-from-forms
+                (nconc
+                    (form-replace--car from-forms to-forms (car in-forms))
+                    (form-replace      from-forms to-forms (cdr in-forms)))
+                (nconc
+                    (copy-sequence to-forms)
+                    (form-replace from-forms to-forms unmatched-in-forms))))))
+(defun form-replace--car (from-forms to-forms nested-form)
+    (if (consp nested-form)
+        (list (form-replace from-forms to-forms nested-form))
+        (if (and (equal nested-form (car from-forms))
+                 (not (cdr from-forms)))
+            (copy-sequence to-forms)
+            (list nested-form))))
 
 
 (defun function-lisp (function)
