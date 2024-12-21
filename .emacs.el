@@ -1854,6 +1854,17 @@
 
 (use-package dired
     :config
+    (fset 'fixed-dired-readin
+        (form-replace
+            '((if (consp buffer-undo-list)
+                  (setq buffer-undo-list nil)))
+            ()
+            (form-replace
+                '((buffer-undo-list t))
+                ()
+                (function-lisp-anonymize
+                    (function-lisp 'dired-readin)))))
+    (advice-add 'dired-readin :override 'fixed-dired-readin)
     (setq dired-dwim-target t)
     (define-key dired-mode-map "I" 'dired-kill-subdir)
     (when termux
