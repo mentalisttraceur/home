@@ -377,6 +377,8 @@
 
 (defun function-lisp (function)
     (let ((raw (indirect-function function)))
+        (while (advice--p raw)
+            (setq raw (advice--cdr raw)))
         (if (or (subr-native-elisp-p raw)
                 (byte-code-function-p raw))
             (if-let ((source (find-function-library function))
