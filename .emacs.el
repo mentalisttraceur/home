@@ -347,24 +347,19 @@
                  (delete-directory ,name t)))))
 
 
-(defun form-replace (from-form to-form in-form)
+(defun form-replace (in-form from-form &rest to-forms)
     (if (equal in-form from-form)
-        to-form
-        (form-replace--cdr from-form to-form in-form)))
-(defun form-replace--cdr (from-form to-form in-form)
+        to-forms
+        (form-replace--cdr in-form from-form to-forms)))
+(defun form-replace--cdr (in-form from-form to-forms)
     (if (consp in-form)
-        (cons (form-replace      from-form to-form (car in-form))
-              (form-replace--cdr from-form to-form (cdr in-form)))
+        (nconc (form-replace--car (car in-form) from-form to-forms)
+               (form-replace--cdr (cdr in-form) from-form to-forms))
         in-form))
-
-(defun form-delete (form in-form)
-    (while (and (consp in-form)
-                (equal (car in-form) form))
-        (setq in-form (cdr in-form)))
-    (if (consp in-form)
-        (cons (form-delete form (car in-form))
-              (form-delete form (cdr in-form)))
-        in-form))
+(defun form-replace--car (in-form from-form to-forms)
+    (if (equal in-form from-form)
+        (copy-sequence to-forms)
+        (list (form-replace--cdr in-form from-form to-forms))))
 
 
 (defun function-lisp (function)
