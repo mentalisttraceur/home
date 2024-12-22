@@ -389,6 +389,8 @@
                 nil
                 raw))))
 
+(autoload 'find-function-library "find-func")
+
 (defun function-lisp--read-from-source (name file)
     (let* ((buffers (buffer-list))
            (found (find-function-search-for-symbol name nil file))
