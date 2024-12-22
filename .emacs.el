@@ -1866,7 +1866,10 @@
                 '((buffer-undo-list t))
                 ()
                 (function-lisp-anonymize
-                    (function-lisp 'dired-readin)))))
+                    (let ((file-name-handler-alist file-name-handler-alist)
+                          (gzip-handler (cons "\\.gz$" 'jka-compr-handler)))
+                        (push gzip-handler file-name-handler-alist)
+                        (function-lisp 'dired-readin))))))
     (advice-add 'dired-readin :override 'fixed-dired-readin)
     (setq dired-dwim-target t)
     (define-key dired-mode-map "I" 'dired-kill-subdir)
