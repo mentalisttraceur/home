@@ -1348,6 +1348,37 @@
 (advice-add 'save-buffers-kill-emacs :around 'hack-save-buffers-kill-emacs)
 
 
+(defun fixed-start-of-paragraph-text ()
+    (interactive)
+    (let ((point (point)))
+        (unwind-protect
+            (progn
+                (backward-paragraph)
+                (skip-chars-forward " \t\n" point)
+                (when (save-excursion
+                          (forward-paragraph)
+                          (skip-chars-backward " \t\n")
+                          (>= (point) point))
+                    (setq point (point))))
+            (goto-char point))
+        point))
+
+(defun fixed-end-of-paragraph-text ()
+    (interactive)
+    (let ((point (point)))
+        (unwind-protect
+            (progn
+                (forward-paragraph)
+                (skip-chars-backward " \t\n" point)
+                (when (save-excursion
+                          (backward-paragraph)
+                          (skip-chars-forward " \t\n")
+                          (<= (point) point))
+                    (setq point (point))))
+            (goto-char point))
+        point))
+
+
 (defmacro use-packages (&rest packages-:config-body)
     (let ((head (cons 'use-package packages-:config-body))
           (tail packages-:config-body))
