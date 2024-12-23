@@ -1348,46 +1348,54 @@
 (advice-add 'save-buffers-kill-emacs :around 'hack-save-buffers-kill-emacs)
 
 
-(defun fixed-start-of-paragraph-text ()
-    (interactive)
+(defun fixed-start-of-paragraph-text (&optional include-whole-line)
+    (interactive "P")
     (let ((point (point)))
         (unwind-protect
             (progn
                 (backward-paragraph)
                 (skip-chars-forward " \t\n" point)
+                (when include-whole-line
+                    (skip-chars-backward " \t"))
                 (when (save-excursion
                           (forward-paragraph)
                           (skip-chars-backward " \t\n")
+                          (when include-whole-line
+                              (skip-chars-forward " \t"))
                           (>= (point) point))
                     (setq point (point))))
             (goto-char point))
         point))
 
-(defun fixed-end-of-paragraph-text ()
-    (interactive)
+(defun fixed-end-of-paragraph-text (&optional include-whole-line)
+    (interactive "P")
     (let ((point (point)))
         (unwind-protect
             (progn
                 (forward-paragraph)
                 (skip-chars-backward " \t\n" point)
+                (when include-whole-line
+                    (skip-chars-forward " \t"))
                 (when (save-excursion
                           (backward-paragraph)
                           (skip-chars-forward " \t\n")
+                          (when include-whole-line
+                              (skip-chars-backward " \t"))
                           (<= (point) point))
                     (setq point (point))))
             (goto-char point))
         point))
 
-(defun count-lines-paragraph ()
+(defun count-lines-paragraph (&optional include-whole-line)
     (save-excursion
         (count-lines
-            (fixed-start-of-paragraph-text)
-            (fixed-end-of-paragraph-text))))
+            (fixed-start-of-paragraph-text include-whole-line)
+            (fixed-end-of-paragraph-text include-whole-line))))
 
-(defun in-paragraph-p ()
+(defun in-paragraph-p (&optional include-whole-line)
     (save-excursion
-        (< (fixed-start-of-paragraph-text)
-           (fixed-end-of-paragraph-text))))
+        (< (fixed-start-of-paragraph-text include-whole-line)
+           (fixed-end-of-paragraph-text include-whole-line))))
 
 
 (defmacro use-packages (&rest packages-:config-body)
