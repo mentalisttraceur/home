@@ -1378,6 +1378,12 @@
             (goto-char point))
         point))
 
+(defun count-lines-paragraph ()
+    (save-excursion
+        (count-lines
+            (fixed-start-of-paragraph-text)
+            (fixed-end-of-paragraph-text))))
+
 
 (defmacro use-packages (&rest packages-:config-body)
     (let ((head (cons 'use-package packages-:config-body))
