@@ -1398,6 +1398,64 @@
            (fixed-end-of-paragraph-text include-whole-line))))
 
 
+(defvar minimum-fill-column 40)
+
+(defun smoother-fill-paragraph ()
+    (interactive)
+    (when (in-paragraph-p t)
+        (fill-paragraph)
+        (let* ((maximum-lines       (count-lines-paragraph))
+               (minimum-fill-column (max minimum-fill-column
+                                         (* fill-column 0.5)))
+               (metrics (smoother-fill-paragraph--metrics fill-column))
+               (best-fill-column fill-column)
+               (best-jaggedness  (cdr metrics))
+               (best-width       (car metrics))
+               (fill-column (1- best-width)))
+            (while (and (>= fill-column minimum-fill-column)
+                        (prog1 t (fill-paragraph))
+                        (= (count-lines-paragraph) maximum-lines))
+                (setq metrics (smoother-fill-paragraph--metrics fill-column))
+                (let ((jaggedness (cdr metrics))
+                      (width      (car metrics)))
+                    (if (< jaggedness best-jaggedness)
+                        (setq best-fill-column fill-column
+                              best-jaggedness jaggedness
+                              best-width width)
+                        (when (and (= jaggedness best-jaggedness)
+                                   (< width best-width))
+                            (setq best-fill-column fill-column
+                                  best-width width)))
+                    (setq fill-column (1- width))))
+            (setq fill-column best-fill-column)
+            (fill-paragraph))))
+
+(defun smoother-fill-paragraph--metrics (&optional cutoff)
+    (let* ((paragraph (save-excursion
+                          (buffer-substring-no-properties
+                              (fixed-start-of-paragraph-text t)
+                              (fixed-end-of-paragraph-text t))))
+           (lines (string-split paragraph "\n"))
+           (longest (length (car lines)))
+           (shortest (length (pop lines)))
+           (jaggedness 0))
+        (if cutoff
+            (setq longest (min longest cutoff)
+                  shortest (min shortest cutoff))
+            (setq cutoff most-positive-fixnum))
+        (while lines
+            (let* ((line (pop lines))
+                   (length (length line)))
+                (setq longest (max longest length))
+                (setq longest (min longest cutoff))
+                (setq shortest (min shortest length))
+                (when lines
+                    (setq jaggedness (max jaggedness (- longest shortest))))))
+        (cons longest jaggedness)))
+
+(define-key global-map "\M-q" 'smoother-fill-paragraph)
+
+
 (defmacro use-packages (&rest packages-:config-body)
     (let ((head (cons 'use-package packages-:config-body))
           (tail packages-:config-body))
