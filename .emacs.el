@@ -1384,6 +1384,11 @@
             (fixed-start-of-paragraph-text)
             (fixed-end-of-paragraph-text))))
 
+(defun in-paragraph-p ()
+    (save-excursion
+        (< (fixed-start-of-paragraph-text)
+           (fixed-end-of-paragraph-text))))
+
 
 (defmacro use-packages (&rest packages-:config-body)
     (let ((head (cons 'use-package packages-:config-body))
