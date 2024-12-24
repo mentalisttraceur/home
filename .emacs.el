@@ -68,7 +68,9 @@
                 (setcar (cdr arguments) string)))
         arguments)
     (advice-add 'xselect--encode-string
-        :filter-args 'hack-xselect--encode-string))
+        :filter-args 'hack-xselect--encode-string)
+    (define-key global-map [XF86AudioLowerVolume] 'ignore)
+    (define-key global-map [XF86AudioRaiseVolume] 'ignore))
 
 
 (set-face-background 'highlight "#003800")
