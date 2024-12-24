@@ -3144,8 +3144,7 @@
 (defvar datetime-read-popup-calendar nil)
 
 (defun datetime-read--preview (short now cell)
-    (when-let ((overlay (car cell))
-               (_       (eq (current-buffer) (overlay-buffer overlay))))
+    (when-let (overlay (car cell))
         (let ((input (substring-no-properties (minibuffer-contents))))
             (condition-case error
                 (let-unpack ((parsed info) (datetime-parse--loop
@@ -3263,12 +3262,13 @@
           (now  (decode-time (current-time))))
         (add-single-use-hook 'minibuffer-setup-hook
             (lambda-let (cell) ()
-                (setcar cell (make-overlay (point-max) (point-max) nil t t))))
-        (with-hook (('post-command-hook
-                        (lambda-let (short now cell) ()
-                            (datetime-read--preview short now cell))))
-            (let ((datetime (read-string prompt initial-input)))
-                (datetime-parse datetime short now)))))
+                (setcar cell (make-overlay (point-max) (point-max) nil t t))
+                (add-hook 'post-command-hook
+                    (lambda-let (short now cell) ()
+                        (datetime-read--preview short now cell))
+                    nil t)))
+        (let ((datetime (read-string prompt initial-input)))
+            (datetime-parse datetime short now))))
 
 (defun datetime-expand (datetime &optional space-instead-of-t)
     (concat (substring datetime 0 4)
