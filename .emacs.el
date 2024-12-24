@@ -3162,7 +3162,6 @@
                         (error-message-string error)))))))
 
 (defun datetime-read--preview-show (overlay string)
-    (move-overlay overlay (point-max) (point-max))
     (overlay-put overlay 'before-string
         (when (length> string 0)
             (concat (propertize " " 'cursor t) "[" string "]"))))
@@ -3264,7 +3263,7 @@
           (now  (decode-time (current-time))))
         (add-single-use-hook 'minibuffer-setup-hook
             (lambda-let (cell) ()
-                (setcar cell (make-overlay (point-max) (point-max)))))
+                (setcar cell (make-overlay (point-max) (point-max) nil t t))))
         (with-hook (('post-command-hook
                         (lambda-let (short now cell) ()
                             (datetime-read--preview short now cell))))
