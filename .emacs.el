@@ -4182,7 +4182,8 @@
         (evil-repeat-stop))
     (defvar history-quit nil)
     (defun history--require-match-p (_)
-        history-quit)
+        (or history-quit
+            (>= vertico--index 0)))
     (defun history--require-match (arguments)
         (if (length= arguments 2)
             (setcdr (last arguments) (list nil 'history--require-match-p))
