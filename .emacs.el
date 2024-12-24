@@ -1455,6 +1455,25 @@
                     (setq jaggedness (max jaggedness (- longest shortest))))))
         (cons longest jaggedness)))
 
+(defun smoother-fill-paragraph-post-command ()
+    (with-undo-amalgamate
+        (save-excursion
+            (let* ((origin (point))
+                   (end-with-whitespace (fixed-end-of-paragraph-text t))
+                   (end-without-whitespace (progn
+                                               (skip-chars-backward " \t")
+                                               (point)))
+                   (split (max origin end-without-whitespace))
+                   (trailing-whitespace-before-point (buffer-substring
+                                                      end-without-whitespace
+                                                      split))
+                   (trailing-whitespace-after-point (buffer-substring
+                                                     split
+                                                     end-with-whitespace)))
+                (smoother-fill-paragraph)
+                (insert-before-markers trailing-whitespace-before-point)
+                (insert trailing-whitespace-after-point)))))
+
 (define-key global-map "\M-q" 'smoother-fill-paragraph)
 
 
