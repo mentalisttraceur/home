@@ -4180,7 +4180,7 @@
         (evil-repeat-start)
         (add-to-list 'evil-repeat-info `(,function))
         (evil-repeat-stop))
-    (defconst history-quit nil)
+    (defvar history-quit nil)
     (defun history--require-match-p (_)
         history-quit)
     (defun history--require-match (arguments)
