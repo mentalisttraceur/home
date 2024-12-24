@@ -1551,6 +1551,16 @@
     (advice-add 'help-function-def--button-function
         :after 'fixed-help-view-source)
     (define-key help-mode-map "\C-m" 'help-view-source)
+    (defun fixed-package--print-email-button
+            (package--print-email-button recipient)
+        (if (consp (car-safe recipient))
+            (while recipient
+                (funcall package--print-email-button (pop recipient))
+                (when recipient
+                    (insert "             ")))
+            (funcall package--print-email-button recipient)))
+    (advice-add 'package--print-email-button
+        :around 'fixed-package--print-email-button)
     (defun independent-help--name (type formatter arguments)
         (if arguments
             (format "*Help (%s: %s)*" type (apply formatter arguments))
