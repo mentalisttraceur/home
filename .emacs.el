@@ -1476,6 +1476,8 @@
 
 (define-key global-map "\M-q" 'smoother-fill-paragraph)
 
+(setq sentence-end-double-space nil)
+
 
 (defmacro use-packages (&rest packages-:config-body)
     (let ((head (cons 'use-package packages-:config-body))
