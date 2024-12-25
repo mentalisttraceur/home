@@ -3655,6 +3655,22 @@
 
 (use-package eat
     :config
+    (defun fixed-eat--subtract-prefix-width (width)
+        (- width (max (length line-prefix) (length wrap-prefix))))
+    (defun fixed-eat-term-resize (arguments)
+        (let ((width (cadr arguments)))
+            (setq width (fixed-eat--subtract-prefix-width width))
+            (setcar (cdr arguments) width))
+        arguments)
+    (advice-add 'eat-term-resize :filter-args 'fixed-eat-term-resize)
+    (defun fixed-eat--eshell-adjust-make-process-args
+            (eat--eshell-adjust-make-process-args &rest arguments)
+        (with-advice (('window-max-chars-per-line
+                          :filter-return
+                          'fixed-eat--subtract-prefix-width))
+            (apply eat--eshell-adjust-make-process-args arguments)))
+    (advice-add 'eat--eshell-adjust-make-process-args
+        :around 'fixed-eat--eshell-adjust-make-process-args)
     (defun eat-point ()
         (when eat-terminal
             (marker-position
