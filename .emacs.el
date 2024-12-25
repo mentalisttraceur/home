@@ -79,6 +79,8 @@
     (define-key minibuffer-inactive-mode-map [mouse-1] nil)
     (define-key mode-line-buffer-identification-keymap
         [mode-line mouse-1] 'ignore)
+    (defun gui-backend-set-selection (_selection-type data)
+        (call-process-region data nil "termux-clipboard-set" nil 0))
     (defun fixed-browse-url-xdg-open (url &optional _unused)
         (message "opening %s" url)
         (browse-url-xdg-open url))
