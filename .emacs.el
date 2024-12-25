@@ -24,6 +24,9 @@
 (init-graphic-frame (selected-frame))
 (add-hook 'after-make-frame-functions 'init-graphic-frame)
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+(when termux
+    (setq-default wrap-prefix (propertize "⤷" 'face 'fringe)
+                  line-prefix (propertize " " 'face 'fringe)))
 (setq enable-recursive-minibuffers t)
 (setq scroll-conservatively 101)
 (setq hscroll-step 1)
