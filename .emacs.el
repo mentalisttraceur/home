@@ -3767,6 +3767,37 @@
         (funcall pop-to-command--callback)))
 (provide 'pop-to-command)
 
+(defconst fake-fringe--wrap-prefix (propertize "⤷" 'face 'fringe))
+(defconst fake-fringe--line-prefix (propertize " " 'face 'fringe))
+(defun fake-fringe (&optional toggle-global-default)
+    (interactive "P")
+    (if toggle-global-default
+        (progn
+            (if (default-value 'wrap-prefix)
+                (setq-default wrap-prefix nil
+                              line-prefix nil)
+                (setq-default wrap-prefix fake-fringe--wrap-prefix
+                              line-prefix fake-fringe--line-prefix))
+            (if (and (local-variable-p 'wrap-prefix)
+                     (eq wrap-prefix (default-value 'wrap-prefix)))
+                (kill-local-variable 'wrap-prefix)
+                (kill-local-variable 'line-prefix)))
+        (if (eq wrap-prefix (default-value 'wrap-prefix))
+            (if (default-value 'wrap-prefix)
+                (setq wrap-prefix nil
+                      line-prefix nil)
+                (setq wrap-prefix fake-fringe--wrap-prefix
+                      line-prefix fake-fringe--line-prefix))
+            (kill-local-variable 'wrap-prefix)
+            (kill-local-variable 'line-prefix)))
+    (if (local-variable-p 'wrap-prefix)
+        (message "fake-fringe: locally %s (globally %s)"
+            (not (not wrap-prefix))
+            (not (not (default-value 'wrap-prefix))))
+        (message "fake-fringe: globally %s"
+            (not (not (default-value 'wrap-prefix))))))
+(provide 'fake-fringe)
+
 (use-package evil
     :init
     (setq evil-undo-system 'undo-tree)
