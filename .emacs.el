@@ -5010,6 +5010,8 @@
 
 (use-packages evil pop-to-command undo-tree
     :config
+    (add-to-list 'display-buffer-alist
+        (list "^\\*undo-tree Diff\\*$"))
     (defun hack-undo-tree-diff (&optional node)
         (with-temporary-directory directory
             (let* ((name   (file-name-nondirectory (buffer-name)))
