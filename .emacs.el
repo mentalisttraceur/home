@@ -24,9 +24,6 @@
 (init-graphic-frame (selected-frame))
 (add-hook 'after-make-frame-functions 'init-graphic-frame)
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
-(when termux
-    (setq-default wrap-prefix (propertize "⤷" 'face 'fringe)
-                  line-prefix (propertize " " 'face 'fringe)))
 (setq enable-recursive-minibuffers t)
 (setq scroll-conservatively 101)
 (setq hscroll-step 1)
@@ -3798,6 +3795,11 @@
             (not (not (default-value 'wrap-prefix))))))
 (provide 'fake-fringe)
 
+(when termux
+    (use-package fake-fringe
+        :config
+        (fake-fringe t)))
+
 (use-package evil
     :init
     (setq evil-undo-system 'undo-tree)
@@ -4362,6 +4364,7 @@
             visual-line-mode truncate-lines))
     (evil-declare-not-repeat 'cycle-line-wrap)
     (define-key space-map ";" 'cycle-line-wrap)
+    (define-key space-map ":" 'fake-fringe)
     (define-key space-map "]" (toggle select-enable-clipboard))
     (define-key space-map "l" 'consult-line)
     (define-key space-map "L" 'consult-line-resume)
