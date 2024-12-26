@@ -5033,9 +5033,9 @@
                     nil
                     "undo-tree Diff"
                     (apply-partially 'delete-directory directory t))
+                (setq directory nil)
                 (select-window
-                    (get-buffer-window undo-tree-visualizer-buffer-name))
-                (setq directory nil))))
+                    (get-buffer-window undo-tree-visualizer-buffer-name)))))
     (defun hack-undo-tree-visualizer-show-diff (&optional node)
         (setq undo-tree-visualizer-diff t)
         (with-current-buffer undo-tree-visualizer-parent-buffer
