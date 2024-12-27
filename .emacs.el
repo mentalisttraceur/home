@@ -3262,15 +3262,15 @@
         (setq initial-input (concat initial-input " ")))
     (let ((cell (cons nil nil))
           (now  (decode-time (current-time))))
-        (add-single-use-hook 'minibuffer-setup-hook
+        (minibuffer-with-setup-hook
             (lambda-let (cell) ()
                 (setcar cell (make-overlay (point-max) (point-max) nil t t))
                 (add-hook 'post-command-hook
                     (lambda-let (short now cell) ()
                         (datetime-read--preview short now cell))
-                    nil t)))
-        (let ((datetime (read-string prompt initial-input)))
-            (datetime-parse datetime short now))))
+                    nil t))
+            (let ((datetime (read-string prompt initial-input)))
+                (datetime-parse datetime short now)))))
 
 (defun datetime-expand (datetime &optional space-instead-of-t)
     (concat (substring datetime 0 4)
@@ -3402,8 +3402,9 @@
                     (save-excursion
                         (1+ (search-backward crm-separator nil t)))
                     (point)))))
-    (defun hack-completing-read-multiple (&rest _)
-        (add-single-use-hook 'minibuffer-setup-hook
+    (defun hack-completing-read-multiple
+            (completing-read-multiple &rest arguments)
+        (minibuffer-with-setup-hook
             (lambda ()
                 (add-hook 'post-command-hook
                     'hide-chosen-crm-completions nil t)
@@ -3424,9 +3425,10 @@
                                 (delete-char -1)
                                 (vertico--update)
                                 (vertico-exit-input))
-                            (vertico-exit)))))))
+                            (vertico-exit)))))
+            (apply completing-read-multiple arguments)))
     (advice-add 'completing-read-multiple
-        :before 'hack-completing-read-multiple))
+        :around 'hack-completing-read-multiple))
 
 (use-packages window vertico
     :config
