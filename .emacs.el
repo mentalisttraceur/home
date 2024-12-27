@@ -3393,14 +3393,14 @@
             (setq next-vertico-scroll vertico--scroll)
             (vertico-insert)
             (goto-char (minibuffer-prompt-end))
-            (while (search-forward "\x36E1CA" nil 'x)
+            (while (search-forward crm-separator nil 'x)
                 (delete-char -1)
                 (insert crm-separator))
             (insert crm-separator input)
             (unless (> count 1)
                 (delete-region
                     (save-excursion
-                        (1+ (search-backward "\x36E1CA" nil t)))
+                        (1+ (search-backward crm-separator nil t)))
                     (point)))))
     (defun hack-completing-read-multiple (&rest _)
         (add-single-use-hook 'minibuffer-setup-hook
