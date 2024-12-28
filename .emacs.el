@@ -140,6 +140,9 @@
 (setq resize-mini-windows t)
 
 
+(setq display-buffer-alist '((t display-buffer-same-window)))
+
+
 (defmacro lambda-let (varlist args &rest body)
     (declare (indent 2))
     (let (bindings parameter argument)
@@ -5838,7 +5841,6 @@
             (command-execute-in-keymap window-state-map)
             (let ((aw-dispatch-alist '((?q ignore))))
                 (aw-dispatch-default ?q))))
-    (setq display-buffer-alist '((t display-buffer-same-window)))
     (define-key evil-motion-state-map "s" 'window-state-for-one-command)
     (define-key evil-normal-state-map "s" nil)
     (define-key evil-motion-state-map "S" 'window-state)
