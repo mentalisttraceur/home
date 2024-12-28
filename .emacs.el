@@ -2205,10 +2205,11 @@
                 (let* ((backlink (concat output "/gitdir"))
                        (worktree-.git-file (git--read-link backlink)))
                     (abbreviate-file-name
-                        (file-name-directory
-                            (if worktree-.git-file
-                                worktree-.git-file
-                                output))))
+                        (directory-file-name
+                            (file-name-directory
+                                (if worktree-.git-file
+                                    worktree-.git-file
+                                    output)))))
                 (if (git--not-in-repository-error-p output)
                     nil
                     (error "git rev-parse error: (%S) %s" status output))))))
