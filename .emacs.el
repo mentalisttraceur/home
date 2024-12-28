@@ -2224,15 +2224,26 @@
 
 (use-package display-fill-column-indicator
     :config
-    (setq-default display-fill-column-indicator-column 79)
-    (defun toggle-show-80+-characters ()
-        (interactive)
-        (when (eq last-command 'toggle-show-80+-characters)
-            (display-fill-column-indicator-mode 'toggle)
-            (if display-fill-column-indicator-mode
-                (highlight-regexp   ".\\{79\\}\\(.*\\)" 'hi-yellow 1)
-                (unhighlight-regexp ".\\{79\\}\\(.*\\)")))
-        (message "display-fill-column-indicator-mode: %s"
+    (setq-default fill-column 79)
+    (defun control-fill-column (prefix-argument)
+        (interactive "P")
+        (let ((overlong-regexp (format ".\\{%d\\}\\(.*\\)" fill-column)))
+            (unhighlight-regexp overlong-regexp))
+        (if prefix-argument
+            (if (integerp prefix-argument)
+                (if (< prefix-argument 1)
+                    (display-fill-column-indicator-mode -1)
+                    (setq fill-column prefix-argument)
+                    (display-fill-column-indicator-mode 1))
+                (display-fill-column-indicator-mode 1))
+            (when (eq last-command 'control-fill-column)
+                (display-fill-column-indicator-mode 'toggle)))
+        (setq display-fill-column-indicator-column (1+ fill-column))
+        (let ((overlong-regexp (format ".\\{%d\\}\\(.*\\)" fill-column)))
+            (when display-fill-column-indicator-mode
+                (highlight-regexp overlong-regexp 'hi-yellow 1)))
+        (message "fill-column: %S display: %s"
+            fill-column
             display-fill-column-indicator-mode)))
 
 (use-package gnutls
@@ -4929,8 +4940,8 @@
 
 (use-packages display-fill-column-indicator evil
     :config
-    (evil-declare-not-repeat 'toggle-show-80+-characters)
-    (define-key space-map "|" 'toggle-show-80+-characters))
+    (evil-declare-not-repeat 'control-fill-column)
+    (define-key space-map "|" 'control-fill-column))
 
 (use-packages eshell eat evil
     :config
