@@ -1404,11 +1404,14 @@
 
 (defvar minimum-fill-column 40)
 
-(defun smoother-fill-paragraph ()
-    (interactive)
+(defun smoother-fill-paragraph (prefix-argument)
+    (interactive "P")
     (when (in-paragraph-p t)
-        (fill-paragraph)
-        (let* ((maximum-lines       (count-lines-paragraph))
+        (let* ((fill-column (if prefix-argument
+                                (prefix-numeric-value prefix-argument)
+                                fill-column))
+               (_ (fill-paragraph))
+               (maximum-lines       (count-lines-paragraph))
                (minimum-fill-column (max minimum-fill-column
                                          (* fill-column 0.5)))
                (metrics (smoother-fill-paragraph--metrics fill-column))
