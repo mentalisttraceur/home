@@ -506,6 +506,23 @@
     `(apply-split-nest with-hook-1 ,hook-list 1 ,body))
 
 
+(defmacro with-variable-watcher-1 (add-variable-watcher-arguments &rest body)
+    `(let ((--with-variable-watcher-1-- (list ,@add-variable-watcher-arguments)))
+         (unwind-protect
+             (progn
+                 (condition-case error
+                     (apply 'add-variable-watcher --with-variable-watcher-1--)
+                     (wrong-number-of-arguments
+                         (setq --with-variable-watcher-1-- nil)
+                         (signal (car error) (cdr error))))
+                 ,@body)
+             (when --with-variable-watcher-1--
+                 (apply 'remove-variable-watcher --with-variable-watcher-1--)))))
+
+(defmacro with-variable-watcher (watcher-list &rest body)
+    `(apply-split-nest with-variable-watcher-1 ,watcher-list 1 ,body))
+
+
 (defmacro with-face-attribute-1 (face attribute value &rest body)
     `(let ((--with-face-attribute-1-- (face-attribute ,face ,attribute)))
          (unwind-protect
