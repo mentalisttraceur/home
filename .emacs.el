@@ -2024,20 +2024,26 @@
 
 (use-package dired
     :config
-    (fset 'fixed-dired-readin
-        (form-replace
-            '((if (consp buffer-undo-list)
-                  (setq buffer-undo-list nil)))
-            ()
-            (form-replace
-                '((buffer-undo-list t))
-                ()
-                (function-lisp-anonymize
-                    (let ((file-name-handler-alist file-name-handler-alist)
-                          (gzip-handler (cons "\\.gz$" 'jka-compr-handler)))
-                        (push gzip-handler file-name-handler-alist)
-                        (function-lisp 'dired-readin))))))
-    (advice-add 'dired-readin :override 'fixed-dired-readin)
+    (defun hack-dired-readin (dired-readin &rest arguments)
+        (combine-change-calls 1 (1+ (buffer-size))
+            (let ((cell (cons nil nil))
+                  result)
+                (with-hook (('dired-before-readin-hook
+                                (lambda-let (cell) ()
+                                    (setcar cell buffer-undo-list))
+                                99 t))
+                    (with-advice (('erase-buffer
+                                      :before
+                                      (lambda-let (cell) (&rest _)
+                                          (setq buffer-undo-list (car cell))))
+                                  ('dired-readin-insert
+                                      :after
+                                      (lambda-let (cell) (&rest _)
+                                          (setcar cell buffer-undo-list))))
+                        (setq result (apply dired-readin arguments))))
+                (setq buffer-undo-list (car cell))
+                result)))
+    (advice-add 'dired-readin :around 'hack-dired-readin)
     (setq dired-dwim-target t)
     (define-key dired-mode-map "I" 'dired-kill-subdir)
     (when termux
