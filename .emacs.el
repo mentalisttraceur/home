@@ -455,6 +455,7 @@
                  ,@body)
              (when --with-advice-1--
                  (setcdr --with-advice-1-- (cddr --with-advice-1--))
+                 (setcdr (cdr --with-advice-1--) nil)
                  (apply 'advice-remove --with-advice-1--)))))
 
 (defmacro with-advice (advice-list &rest body)
