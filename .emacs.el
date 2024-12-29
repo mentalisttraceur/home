@@ -1239,6 +1239,15 @@
             window)))
 
 
+(defun prompt-with-default (prompt &optional default)
+    (if default
+        (format-prompt
+            (string-remove-suffix ":"
+                (string-remove-suffix " " prompt))
+            default)
+        prompt))
+
+
 (defun read-other-buffer (prompt)
     (with-advice (('confirm-nonexistent-file-or-buffer :override 'always))
         (read-buffer-to-switch prompt)))
