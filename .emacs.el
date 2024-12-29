@@ -2280,23 +2280,17 @@
 
 (use-package crm
     :config
-    (defun hide-chosen-crm-completions--filter (completions)
+    (defun hide-chosen-crm-completions--predicate (candidate)
         (let* ((input (minibuffer-contents-no-properties))
                (already-chosen (butlast (split-string input crm-separator))))
-            (seq-filter
-                (lambda-let (already-chosen) (item)
-                    (not (member item already-chosen)))
-                completions)))
-    (defvar-local hide-chosen-crm-completions--backup nil)
+            (not (member candidate already-chosen))))
     (defun hide-chosen-crm-completions ()
-        (if hide-chosen-crm-completions--backup
-            (setq crm-completion-table
-                  (if (functionp hide-chosen-crm-completions--backup)
-                      (compose 'hide-chosen-crm-completions--filter
-                               hide-chosen-crm-completions--backup)
-                      (hide-chosen-crm-completions--filter
-                          hide-chosen-crm-completions--backup)))
-            (setq hide-chosen-crm-completions--backup crm-completion-table))))
+        (setq crm-completion-table
+              (apply-partially
+                  'completion-table-with-predicate
+                  crm-completion-table
+                  'hide-chosen-crm-completions--predicate
+                  t))))
 
 (use-package package
     :config
@@ -3448,8 +3442,7 @@
             (completing-read-multiple &rest arguments)
         (minibuffer-with-setup-hook
             (lambda ()
-                (add-hook 'post-command-hook
-                    'hide-chosen-crm-completions nil t)
+                (hide-chosen-crm-completions)
                 (let ((map (make-sparse-keymap)))
                     (set-keymap-parent map (current-local-map))
                     (use-local-map map))
