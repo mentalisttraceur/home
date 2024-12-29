@@ -2283,6 +2283,8 @@
     (defun hide-chosen-crm-completions--predicate (candidate)
         (let* ((input (minibuffer-contents-no-properties))
                (already-chosen (butlast (split-string input crm-separator))))
+            (when (consp candidate)
+                (setq candidate (car candidate)))
             (not (member candidate already-chosen))))
     (defun hide-chosen-crm-completions ()
         (setq crm-completion-table
