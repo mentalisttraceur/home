@@ -1224,6 +1224,12 @@
         (regexp-opt-group strings paren lax)))
 
 
+(defun buffer-name-idempotent (buffer-or-name)
+    (if (bufferp buffer-or-name)
+        (buffer-name buffer-or-name)
+        buffer-or-name))
+
+
 (defun minibuffer-current-buffer ()
     (if-let (window (minibuffer-selected-window))
         (window-buffer window)
