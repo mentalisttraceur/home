@@ -1260,6 +1260,25 @@
     (with-advice (('confirm-nonexistent-file-or-buffer :override 'always))
         (read-buffer-to-switch prompt)))
 
+(defun complete-buffer (&optional exclude include)
+    (unless (listp exclude)
+        (setq exclude (list exclude)))
+    (setq exclude (mapcar 'get-buffer exclude))
+    (unless (listp include)
+        (setq include (list include)))
+    (setq include (mapcar 'get-buffer include))
+    (completion-table-dynamic
+        (lambda-let (exclude include) (string)
+            (let ((buffers (buffer-list))
+                  (hidden-p (lambda (buffer)
+                                (string-prefix-p " " (buffer-name buffer)))))
+                (setq buffers (seq-difference buffers exclude))
+                (if (equal (char-after (car (crm--current-element))) ? )
+                    (setq buffers (seq-filter hidden-p buffers))
+                    (setq buffers (seq-remove hidden-p buffers)))
+                (setq buffers (append include buffers))
+                (mapcar 'buffer-name buffers)))))
+
 (defun read-buffer-multiple
         (prompt &optional except default require-match predicate)
     (when (bufferp default)
