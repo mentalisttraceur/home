@@ -1069,7 +1069,9 @@
             (let* ((keys (read-key-sequence-in-keymap keymap nil))
                    (binding (lookup-key keymap keys t)))
                 (when run-hooks
-                    (run-post-command-hook)
+                    (run-post-command-hook))
+                (setq this-command binding)
+                (when run-hooks
                     (run-pre-command-hook))
                 (setq last-command-event (aref keys (1- (length keys))))
                 (if binding
