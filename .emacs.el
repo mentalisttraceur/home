@@ -1285,7 +1285,7 @@
         (setq default (buffer-name default)))
     (let* ((history ())
            (choices (completing-read-multiple
-                        (prompt-with-default prompt default)
+                        prompt
                         (if except
                             (complete-buffer except default)
                             (complete-buffer nil default))
