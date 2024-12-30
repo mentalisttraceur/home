@@ -3445,6 +3445,17 @@
 (use-package vertico
     :config
     (vertico-mode 1)
+    (setq vertico-resize nil)
+    (defun fixed-vertico-resize (&rest _)
+        (let* ((candidates (length vertico--candidates))
+               (shown-candidates (min vertico-count candidates))
+               (available-width (window-max-chars-per-line))
+               (content-lines (count-visual-lines
+                                  (point-min) (point-max)))
+               (desired-height (+ content-lines shown-candidates))
+               (delta (- desired-height (window-height))))
+            (window-resize nil delta)))
+    (advice-add 'vertico--resize :after 'fixed-vertico-resize)
     (setq vertico-cycle t)
     (setq minibuffer-prompt-properties
         (append '(cursor-intangible t) minibuffer-prompt-properties))
