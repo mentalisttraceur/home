@@ -1287,8 +1287,8 @@
            (choices (completing-read-multiple
                         (prompt-with-default prompt default)
                         (if except
-                            (internal-complete-buffer-except except)
-                            'internal-complete-buffer)
+                            (complete-buffer except default)
+                            (complete-buffer nil default))
                         predicate require-match nil 'history default)))
         (prog1
             choices
