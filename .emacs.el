@@ -2325,7 +2325,10 @@
                 (display-fill-column-indicator-mode 1))
             (when (eq last-command 'control-fill-column)
                 (display-fill-column-indicator-mode 'toggle)))
-        (setq display-fill-column-indicator-column (1+ fill-column))
+        (setq display-fill-column-indicator-column
+              (+ fill-column
+                 (max (length wrap-prefix)
+                      (length fill-prefix))))
         (let ((overlong-regexp (format ".\\{%d\\}\\(.*\\)" fill-column)))
             (when display-fill-column-indicator-mode
                 (highlight-regexp overlong-regexp 'hi-yellow 1)))
