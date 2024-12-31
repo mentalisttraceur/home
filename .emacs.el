@@ -940,10 +940,13 @@
             (goto-char start)
             (let ((count 0))
                 (while (< (point) end)
+                    (setq start (point))
                     (end-of-visual-line)
                     (when (and (eolp) (not (eobp)))
                         (forward-char))
-                    (setq count (1+ count)))
+                    (if (= (point) start)
+                        (forward-char)
+                        (setq count (1+ count))))
                 count))))
 
 
