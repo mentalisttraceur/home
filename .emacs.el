@@ -2028,6 +2028,24 @@
                               :filter-args
                               'hack-insert-before-markers-and-inherit))
                 (eshell-send-input))))
+    (defun foreground-process-in-eshell-p ()
+        (let ((found-foreground-process nil)
+              (processes eshell-process-list))
+            (while (and (not found-foreground-process)
+                        processes)
+                (let ((entry (pop processes)))
+                    (setq found-foregroung-process (not (cdr entry)))))
+            found-foreground-process))
+    (defun fixed-eshell-interrupt-process (&rest _)
+        (unless (foreground-process-in-eshell-p)
+            (save-excursion
+                (goto-char (point-max))
+                (insert
+                    (propertize "\n"
+                        'field 'end-of-input
+                        'rear-nonsticky t)))))
+    (advice-add 'eshell-interrupt-process
+        :before 'fixed-eshell-interrupt-process)
     (defun fixed-eshell-up-arrow ()
         (interactive)
         (when (in-eshell-scrollback-p)
