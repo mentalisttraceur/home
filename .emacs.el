@@ -3475,6 +3475,7 @@
     (defun count-vertico-lines ()
         (save-excursion
             (save-mutation
+                (goto-char (minibuffer-prompt-end))
                 (insert (overlay-get vertico--count-ov 'before-string))
                 (goto-char (point-max))
                 (insert (overlay-get vertico--candidates-ov 'after-string))
