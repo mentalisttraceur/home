@@ -928,21 +928,23 @@
 
 
 (defun count-visual-lines (start end)
-    (setq start (max (point-min) (min start (point-max))))
-    (setq end (max (point-min) (min end (point-max))))
-    (when (< end start)
-        (let ((temporary start))
-            (setq start end)
-            (setq end temporary)))
-    (save-excursion
-        (goto-char start)
-        (let ((count 0))
-            (while (< (point) end)
-                (end-of-visual-line)
-                (when (and (eolp) (not (eobp)))
-                    (forward-char))
+    (if truncate-lines
+        (count-lines start end)
+        (setq start (max (point-min) (min start (point-max))))
+        (setq end (max (point-min) (min end (point-max))))
+        (when (< end start)
+            (let ((temporary start))
+                (setq start end)
+                (setq end temporary)))
+        (save-excursion
+            (goto-char start)
+            (let ((count 0))
+                (while (< (point) end)
+                    (end-of-visual-line)
+                    (when (and (eolp) (not (eobp)))
+                        (forward-char))
                     (setq count (1+ count)))
-            count)))
+                count))))
 
 
 (defun delete-forward-in-line (start count)
