@@ -3474,10 +3474,8 @@
     (setq vertico-resize nil)
     (defun count-vertico-lines ()
         (save-excursion
+            (goto-char (point-max))
             (save-mutation
-                (goto-char (minibuffer-prompt-end))
-                (insert (overlay-get vertico--count-ov 'before-string))
-                (goto-char (point-max))
                 (insert (overlay-get vertico--candidates-ov 'after-string))
                 (count-visual-lines (point-min) (point-max)))))
     (defun fixed-vertico-resize (&rest _)
