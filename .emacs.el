@@ -1151,6 +1151,23 @@
         (nreverse values)))
 
 
+(defun front-sticky-p (property &optional position object)
+    (setq-if-nil position (point))
+    (let ((sticky (get-text-property position 'front-sticky object)))
+        (or (eq sticky t)
+            (memq property sticky))))
+
+(defun rear-nonsticky-p (property &optional position object)
+    (setq-if-nil position (point))
+    (if (or (and (stringp object)
+                 (= position 0))
+            (= position 1))
+        t
+        (let ((nonsticky (get-text-property (1- position) 'rear-nonsticky)))
+            (or (eq nonsticky t)
+                (memq property nonsticky)))))
+
+
 (defun replace-field (new-contents &optional position)
     (delete-field position)
     (if position
