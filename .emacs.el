@@ -1151,8 +1151,6 @@
         (nreverse values)))
 
 
-(defun field-string-no-properties (&optional position)
-    (substring-no-properties (field-string position)))
 (defun replace-field (new-contents &optional position)
     (delete-field position)
     (if position
