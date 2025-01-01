@@ -1530,29 +1530,39 @@
         (let* ((fill-column (if prefix-argument
                                 (prefix-numeric-value prefix-argument)
                                 fill-column))
+               (start (fixed-start-of-paragraph-text t))
+               (end   (fixed-end-of-paragraph-text t))
                (_ (fill-paragraph))
                (maximum-lines       (count-lines-paragraph))
                (minimum-fill-column (max minimum-fill-column
                                          (* fill-column 0.5)))
                (metrics (smoother-fill-paragraph--metrics fill-column))
                (best-fill-column fill-column)
-               (best-jaggedness  (cdr metrics))
+               (best-variance    (cadr metrics))
+               (best-jaggedness  (caddr metrics))
                (best-width       (car metrics))
                (fill-column (1- best-width)))
             (while (and (>= fill-column minimum-fill-column)
                         (prog1 t (fill-paragraph))
                         (= (count-lines-paragraph) maximum-lines))
                 (setq metrics (smoother-fill-paragraph--metrics fill-column))
-                (let ((jaggedness (cdr metrics))
+                (let ((variance   (cadr metrics))
+                      (jaggedness (caddr metrics))
                       (width      (car metrics)))
-                    (if (< jaggedness best-jaggedness)
+                    (if (< variance best-variance)
                         (setq best-fill-column fill-column
+                              best-variance variance
                               best-jaggedness jaggedness
                               best-width width)
-                        (when (and (= jaggedness best-jaggedness)
-                                   (< width best-width))
+                        (if (and (= variance best-variance)
+                                 (< jaggedness best-jaggedness))
                             (setq best-fill-column fill-column
-                                  best-width width)))
+                                  best-jaggedness jaggedness
+                                  best-width width)
+                            (when (and (= jaggedness best-jaggedness)
+                                       (< width best-width))
+                            (setq best-fill-column fill-column
+                                  best-width width))))
                     (setq fill-column (1- width))))
             (setq fill-column best-fill-column)
             (fill-paragraph))))
@@ -1565,6 +1575,8 @@
            (lines (string-split paragraph "\n"))
            (longest (length (car lines)))
            (shortest (length (pop lines)))
+           (last-length longest)
+           (variance 0)
            (jaggedness 0))
         (if cutoff
             (setq longest (min longest cutoff)
@@ -1577,8 +1589,10 @@
                 (setq longest (min longest cutoff))
                 (setq shortest (min shortest length))
                 (when lines
-                    (setq jaggedness (max jaggedness (- longest shortest))))))
-        (cons longest jaggedness)))
+                    (setq variance (max variance (- longest shortest))))
+                (+= jaggedness (abs (- length last-length)))
+                (setq last-length length)))
+        (list longest variance jaggedness)))
 
 (defun smoother-fill-paragraph-post-command ()
     (with-undo-amalgamate
