@@ -1200,8 +1200,7 @@
         (save-excursion
             (goto-char position)
             (insert new-contents))
-        (insert new-contents)
-        (goto-char (+ (point) (length new-contents)))))
+        (insert new-contents)))
 
 
 (defvar command-at-point-mode-alist nil)
