@@ -1168,6 +1168,19 @@
                 (memq property nonsticky)))))
 
 
+(defun fixed-field-at-position (&optional position)
+    (let ((beginning (field-beginning position))
+          (end       (field-end       position)))
+        (let ((field-1 (get-char-property beginning 'field))
+              (field-2 (get-char-property (1- end)  'field)))
+            (if (eq field-1 field-2)
+                field-1
+                (if (rear-nonsticky-p 'field position)
+                    (if (front-sticky-p 'field position)
+                        field-2
+                        nil)
+                    field-1)))))
+
 (defun replace-field (new-contents &optional position)
     (delete-field position)
     (if position
