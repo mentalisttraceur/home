@@ -1174,13 +1174,12 @@
         (let ((field-1 (get-char-property beginning 'field))
               (field-2 (get-char-property (1- end)  'field)))
             (if (eq field-1 field-2)
-                (values field-1 beginning end)
-                (setq-if-nil position (point))
+                field-1
                 (if (rear-nonsticky-p 'field position)
                     (if (front-sticky-p 'field position)
-                        (values field-2 position end)
-                        (values nil position position))
-                    (values field-1 beginning position))))))
+                        field-2
+                        nil)
+                    field-1)))))
 
 (defun fixed-field-string (field-string &optional position)
     (if (fixed-field-at-position position)
