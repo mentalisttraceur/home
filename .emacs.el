@@ -1195,18 +1195,21 @@
                         nil)
                     field-1)))))
 
-(defun fixed-field-string (field-string &optional position)
-    (if (fixed-field-at-position position)
-        (funcall field-string position)
-        ""))
-(advice-add 'field-string :around 'fixed-field-string)
-(advice-add 'field-string-no-properties :around 'fixed-field-string)
+(defun fixed-field-string (&optional position)
+    (let-uncons (beginning end (field-bounds position))
+        (buffer-substring beginning end)))
+(advice-add 'field-string :override 'fixed-field-string)
 
-(defun fixed-delete-field (delete-field &optional position)
-    (if (fixed-field-at-position position)
-        (funcall delete-field position)
-        nil))
-(advice-add 'delete-field :around 'fixed-delete-field)
+(defun fixed-field-string-no-properties (&optional position)
+    (let-uncons (beginning end (field-bounds position))
+        (buffer-substring-no-properties beginning end)))
+(advice-add 'field-string-no-properties
+    :override 'fixed-field-string-no-properties)
+
+(defun fixed-field-delete (&optional position)
+    (let-uncons (beginning end (field-bounds position))
+        (delete-region beginning end)))
+(advice-add 'delete-field :override 'fixed-field-delete)
 
 (defun replace-field (new-contents &optional position)
     (delete-field position)
