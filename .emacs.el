@@ -2433,6 +2433,7 @@
 
 (use-package package
     :config
+    (add-hook 'package-menu-mode-hook 'visual-line-mode)
     (defun fixed-package--with-response-buffer-1
             (package--with-response-buffer-1 url body &rest keywords)
         (setq body
