@@ -4560,7 +4560,9 @@
     (defun cycle-line-wrap ()
         (interactive)
         (if truncate-lines
-            (setq truncate-lines nil)
+            (progn
+                (setq truncate-lines nil)
+                (set-window-hscroll nil 0))
             (visual-line-mode 'toggle)
             (when (not visual-line-mode)
                 (setq truncate-lines t)))
