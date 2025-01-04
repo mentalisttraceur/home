@@ -3535,12 +3535,20 @@
             (save-mutation
                 (insert (overlay-get vertico--candidates-ov 'after-string))
                 (count-visual-lines (point-min) (point-max)))))
+    (defvar-local fixed-vertico-resize--state nil)
+    (defun fixed-vertico-resize--before (&rest _)
+        (setq fixed-vertico-resize--state
+            (cons visual-line-mode truncate-lines)))
     (defun fixed-vertico-resize (&rest _)
-        (setq truncate-lines nil)
-        (set-window-hscroll nil 0)
+        (when (car fixed-vertico-resize--state)
+            (visual-line-mode 1))
+        (setq truncate-lines (cdr fixed-vertico-resize--state))
+        (unless truncate-lines
+            (set-window-hscroll nil 0))
         (let* ((desired-height (count-vertico-lines))
                (delta (- desired-height (window-height))))
             (window-resize nil delta)))
+    (advice-add 'vertico--resize :before 'fixed-vertico-resize--before)
     (advice-add 'vertico--resize :after 'fixed-vertico-resize)
     (setq vertico-cycle t)
     (setq minibuffer-prompt-properties
