@@ -4557,6 +4557,7 @@
     (define-key space-map "I" (toggle inhibit-read-only))
     (define-key space-map "#" 'display-line-numbers-mode)
     (set-face-foreground 'line-number "#808080")
+    (setq truncate-partial-width-windows nil)
     (defun cycle-line-wrap ()
         (interactive)
         (if truncate-lines
