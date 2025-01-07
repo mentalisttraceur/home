@@ -2407,6 +2407,12 @@
         (error "vc-dir called"))
     (advice-add 'vc-dir :override 'hack-vc-dir))
 
+(use-packages vc parent-buffer
+    :config
+    (add-hook 'vc-annotate-mode-hook
+        (lambda ()
+            (parent-buffer-set vc-parent-buffer))))
+
 (use-package diff-mode
     :config
     (set-face-background 'diff-added "#005000")
