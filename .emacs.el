@@ -2285,8 +2285,6 @@
                 (rename-buffer name))
             buffer)))
 
-(defvar-local indirect-buffer-file-name nil)
-
 (add-to-list 'text-property-default-nonsticky
     (cons 'full-path t))
 (defun full-path-property-split (start end &optional object separators trim)
@@ -4431,8 +4429,7 @@
         (interactive)
         (let ((path (or dired-directory
                         (get-text-property (point) 'full-path)
-                        buffer-file-name
-                        indirect-buffer-file-name)))
+                        buffer-file-name)))
             (if (not path)
                 (dired default-directory)
                 (dired (file-name-parent-directory path))
@@ -4825,18 +4822,19 @@
             (list "echo" (concat (buffer-name) " is not in a git repository"))
             nil
             name))
+    (defvar-local git--visited-path nil)
     (defun git-pop-to-command (command &optional visited-path)
         (if-let (root (git-worktree-root))
             (let ((default-directory root))
                 (add-single-use-hook 'pop-to-command-setup-hook
                     (lambda-let (visited-path) ()
-                        (setq-local indirect-buffer-file-name visited-path)))
+                        (setq-local git--visited-path visited-path)))
                 (pop-to-command-eshell command default-directory))
             (pop-to-command-eshell--not-in-a-git-repository
                 (string-join (cons "eshell:" command) " "))))
     (defun git--target-path (use-visited)
         (if use-visited
-            (or indirect-buffer-file-name
+            (or git--visited-path
                 buffer-file-name
                 (expand-file-name default-directory))
             nil))
