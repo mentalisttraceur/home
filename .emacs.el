@@ -4824,19 +4824,18 @@
             (list "echo" (concat (buffer-name) " is not in a git repository"))
             nil
             name))
-    (defvar-local git--visited-path nil)
     (defun git-pop-to-command (command &optional visited-path)
         (if-let (root (git-worktree-root))
             (let ((default-directory root))
                 (add-single-use-hook 'pop-to-command-setup-hook
                     (lambda-let (visited-path) ()
-                        (setq-local git--visited-path visited-path)))
+                        (setq-local indirect-buffer-file-name visited-path)))
                 (pop-to-command-eshell command default-directory))
             (pop-to-command-eshell--not-in-a-git-repository
                 (string-join (cons "eshell:" command) " "))))
     (defun git--target-path (use-visited)
         (if use-visited
-            (or git--visited-path
+            (or indirect-buffer-file-name
                 buffer-file-name
                 (expand-file-name default-directory))
             nil))
