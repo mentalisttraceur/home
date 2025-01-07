@@ -1687,6 +1687,9 @@
             (with-current-buffer child
                 (setq parent-buffer parent)))))
 (add-hook 'kill-buffer-hook 'parent-buffer--kill-hook)
+(defun parent-buffer-setter (&optional parent)
+    (setq-if-nil parent (current-buffer))
+    (apply-partially 'parent-buffer-set parent))
 (provide 'parent-buffer)
 
 (use-package cl-seq
