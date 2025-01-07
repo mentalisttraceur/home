@@ -5258,8 +5258,7 @@
                     (select-window window)))))
     (defun hack-undo-tree-visualizer-show-diff (&optional node)
         (setq undo-tree-visualizer-diff t)
-        (with-current-buffer undo-tree-visualizer-parent-buffer
-	    (hack-undo-tree-diff node)))
+        (hack-undo-tree-visualizer-update-diff node))
     (advice-add 'undo-tree-visualizer-show-diff
         :override 'hack-undo-tree-visualizer-show-diff)
     (defun hack-undo-tree-visualizer-update-diff (&optional node)
