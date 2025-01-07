@@ -4428,6 +4428,7 @@
     (defun smoother-dired ()
         (interactive)
         (let ((path (or dired-directory
+                        (get-text-property (point) 'full-path)
                         buffer-file-name)))
             (if (not path)
                 (dired default-directory)
