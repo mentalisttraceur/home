@@ -3501,8 +3501,8 @@
     (defun undo-tree-visualizer-quit ()
         (interactive)
         (undo-tree-clear-visualizer-data buffer-undo-tree)
-        (if-let (parent undo-tree-visualizer-parent-buffer)
-            (with-current-buffer parent
+        (when undo-tree-visualizer-parent-buffer
+            (with-current-buffer undo-tree-visualizer-parent-buffer
 	        (remove-hook 'before-change-functions 'undo-tree-kill-visualizer t)))
         (when undo-tree-visualizer-diff
             (undo-tree-visualizer-hide-diff))
