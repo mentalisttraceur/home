@@ -3570,6 +3570,12 @@
         (undo-tree-visualizer-set)
         (undo-tree-visualizer-selection-mode -1)))
 
+(use-packages undo-tree parent-buffer
+    :config
+    (add-hook 'undo-tree-visualizer-mode-hook
+        (lambda ()
+            (parent-buffer-set undo-tree-visualizer-parent-buffer))))
+
 (use-package vertico
     :config
     (vertico-mode 1)
