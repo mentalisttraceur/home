@@ -4431,7 +4431,8 @@
         (interactive)
         (let ((path (or dired-directory
                         (get-text-property (point) 'full-path)
-                        buffer-file-name)))
+                        buffer-file-name
+                        indirect-buffer-file-name)))
             (if (not path)
                 (dired default-directory)
                 (dired (file-name-parent-directory path))
