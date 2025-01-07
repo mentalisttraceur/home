@@ -1664,6 +1664,31 @@
         (ignore-error 'iter-end-of-sequence
             (iter-next iterator yield-result))))
 
+(defvar-local parent-buffer nil)
+(defvar-local child-buffers nil)
+(defun parent-buffer (&optional buffer)
+    (buffer-local-value 'parent-buffer (or buffer (current-buffer))))
+(defun parent-buffer-set (parent &optional buffer)
+    (setq-if-nil buffer (current-buffer))
+    (save-current-buffer
+        (when parent-buffer
+            (set-buffer parent-buffer)
+            (setq child-buffers (delq buffer child-buffers)))
+        (set-buffer parent)
+        (push buffer child-buffers))
+    (setq parent-buffer parent))
+(defun parent-buffer--kill-hook ()
+    (let ((parent parent-buffer)
+          (buffer (current-buffer)))
+        (when parent
+            (with-current-buffer parent
+                (setq child-buffers (delq buffer child-buffers))))
+        (dolist (child child-buffers)
+            (with-current-buffer child
+                (setq parent-buffer parent)))))
+(add-hook 'kill-buffer-hook 'parent-buffer--kill-hook)
+(provide 'parent-buffer)
+
 (use-package cl-seq
     :config
     (defun any (seq &rest cl-reduce-keyword-arguments)
