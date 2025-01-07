@@ -2285,6 +2285,8 @@
                 (rename-buffer name))
             buffer)))
 
+(defvar-local indirect-buffer-file-name nil)
+
 (add-to-list 'text-property-default-nonsticky
     (cons 'full-path t))
 (defun full-path-property-split (start end &optional object separators trim)
