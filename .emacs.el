@@ -5278,7 +5278,7 @@
         "L" 'undo-tree-visualize-switch-branch-right)
     (define-key space-map "u" 'undo-tree-visualize))
 
-(use-packages evil pop-to-command undo-tree
+(use-packages evil parent-buffer pop-to-command undo-tree
     :config
     (add-to-list 'display-buffer-alist
         (list "^\\*undo-tree Diff\\*$"))
@@ -5315,6 +5315,8 @@
     (advice-add 'undo-tree-visualizer-show-diff
         :override 'hack-undo-tree-visualizer-show-diff)
     (defun hack-undo-tree-visualizer-update-diff (&optional node)
+        (add-single-use-hook 'pop-to-command-setup-hook
+            (parent-buffer-setter))
         (with-current-buffer undo-tree-visualizer-parent-buffer
 	    (hack-undo-tree-diff node)))
     (advice-add 'undo-tree-visualizer-update-diff
