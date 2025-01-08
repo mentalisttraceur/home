@@ -1310,6 +1310,13 @@
         buffer-or-name))
 
 
+(defun buffer-file-or-directory (&optional buffer-or-name)
+    (save-current-buffer
+        (when buffer-or-name
+            (set-buffer buffer-or-name))
+        (or buffer-file-name dired-directory)))
+
+
 (defun minibuffer-current-buffer ()
     (if-let (window (minibuffer-selected-window))
         (window-buffer window)
