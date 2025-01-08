@@ -4369,6 +4369,8 @@
                         (forward-sexp)
                         (backward-char)
                         (eval-last-sexp prefix-argument))))))
+    (add-to-list 'temporary-goal-column-preserving-commands
+        'smoother-eval-last-sexp)
     (define-key space-map "e" 'smoother-eval-last-sexp)
     (add-to-list 'temporary-goal-column-preserving-commands 'eval-last-sexp)
     (define-key space-map "E" 'eval-print-last-sexp)
