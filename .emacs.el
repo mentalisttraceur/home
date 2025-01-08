@@ -1690,6 +1690,16 @@
 (defun parent-buffer-setter (&optional parent)
     (setq-if-nil parent (current-buffer))
     (apply-partially 'parent-buffer-set parent))
+(defun parent-buffer-search (predicate &optional buffer)
+    (save-current-buffer
+        (when buffer
+            (set-buffer buffer))
+        (when parent-buffer
+            (set-buffer parent-buffer)
+            (until (or (funcall predicate (current-buffer))
+                       (not parent-buffer))
+                (set-buffer parent-buffer))
+            (current-buffer))))
 (provide 'parent-buffer)
 
 (use-package cl-seq
