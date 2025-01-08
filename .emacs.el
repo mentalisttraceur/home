@@ -4824,12 +4824,16 @@
             nil
             name))
     (defvar-local git--visited-path nil)
-    (defun git-pop-to-command (command &optional visited-path)
+    (defun git-pop-to-command (command &optional use-visited)
         (if-let (root (git-worktree-root))
-            (let ((default-directory root))
+            (let ((default-directory root)
+                  (path (git--target-path use-visited)))
+                (when path
+                    (setq path (file-relative-name path root))
+                    (nconc command (list path)))
                 (add-single-use-hook 'pop-to-command-setup-hook
-                    (lambda-let (visited-path) ()
-                        (setq-local git--visited-path visited-path)))
+                    (lambda-let (path) ()
+                        (setq-local git--visited-path path)))
                 (pop-to-command-eshell command default-directory))
             (pop-to-command-eshell--not-in-a-git-repository
                 (string-join (cons "eshell:" command) " "))))
@@ -4837,17 +4841,14 @@
         (if use-visited
             (or git--visited-path
                 buffer-file-name
-                (expand-file-name default-directory))
+                default-directory)
             nil))
     (defmacro git (&rest arguments)
         (let ((command (cons "git" (mapcar 'symbol-name arguments))))
             `(lambda (prefix-argument)
                  (interactive "P")
-                 (let ((command (list ,@command))
-                       (path    (git--target-path prefix-argument)))
-                     (when path
-                         (nconc command (list path)))
-                     (git-pop-to-command command path)))))
+                 (let ((command (list ,@command)))
+                     (git-pop-to-command command prefix-argument)))))
     (defun git--commit-ish (prefix-argument prompt)
         (if prefix-argument
             (if (integerp prefix-argument)
@@ -4868,12 +4869,10 @@
     (define-key git-map "a" (git add -p))
     (defun git-add-new (prefix-argument)
         (interactive "P")
-        (let ((path    (git--target-path t))
-              (command (list "git add")))
-            (if prefix-argument
-                (nconc command (list "--force" path))
-                (nconc command (list path)))
-            (git-pop-to-command command path)))
+        (let ((command (list "git add")))
+            (when prefix-argument
+                (nconc command (list "--force")))
+            (git-pop-to-command command t)))
     (define-key git-map "A" 'git-add-new)
     (define-key git-map "q" (git checkout -p))
     (define-key git-map "w" (git reset -p))
