@@ -4372,7 +4372,6 @@
     (add-to-list 'temporary-goal-column-preserving-commands
         'smoother-eval-last-sexp)
     (define-key space-map "e" 'smoother-eval-last-sexp)
-    (add-to-list 'temporary-goal-column-preserving-commands 'eval-last-sexp)
     (define-key space-map "E" 'eval-print-last-sexp)
     (defmacro toggle (variable &optional skip-preview)
         (let* ((name          (symbol-name variable))
