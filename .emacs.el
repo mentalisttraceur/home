@@ -4774,6 +4774,9 @@
                 (become-command 'diff-unsaved-changes))))
     (defun partial-save ()
         (interactive)
+        (when (not buffer-file-name)
+            (when-let (buffer (parent-buffer-search 'buffer-file-name))
+                (set-buffer buffer)))
         (if (not buffer-file-name)
             (pop-to-command-eshell--not-a-file "Partial save")
             (with-temporary-directory directory
