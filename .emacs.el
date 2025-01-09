@@ -1555,7 +1555,8 @@
                                 (prefix-numeric-value prefix-argument)
                                 fill-column))
                (_ (fill-paragraph))
-               (maximum-lines       (count-lines-paragraph))
+               (best-height (count-lines-paragraph))
+               (maximum-lines (1+ best-height))
                (minimum-fill-column (max minimum-fill-column
                                          (* fill-column 0.5)))
                (metrics (smoother-fill-paragraph--metrics fill-column))
@@ -1565,15 +1566,17 @@
                (fill-column (1- best-width)))
             (while (and (>= fill-column minimum-fill-column)
                         (prog1 t (fill-paragraph))
-                        (= (count-lines-paragraph) maximum-lines))
+                        (<= (count-lines-paragraph) maximum-lines))
                 (setq metrics (smoother-fill-paragraph--metrics fill-column))
                 (let ((jaggedness (cdr metrics))
+                      (height     (count-lines-paragraph))
                       (width      (car metrics)))
                     (if (< jaggedness best-jaggedness)
                         (setq best-fill-column fill-column
                               best-jaggedness jaggedness
                               best-width width)
                         (when (and (= jaggedness best-jaggedness)
+                                   (= height best-height)
                                    (< width best-width))
                             (setq best-fill-column fill-column
                                   best-width width)))
