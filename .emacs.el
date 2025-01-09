@@ -4709,6 +4709,8 @@
         (when (not buffer-file-name)
             (when-let (buffer (parent-buffer-search 'buffer-file-name))
                 (set-buffer buffer)))
+        (add-single-use-hook 'pop-to-command-setup-hook
+            (parent-buffer-setter))
         (if (not buffer-file-name)
             (pop-to-command-eshell--not-a-file "Diff unsaved")
             (with-temporary-directory directory
