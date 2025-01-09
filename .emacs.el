@@ -4807,6 +4807,9 @@
             (delete-directory directory t))
     (defun partial-revert ()
         (interactive)
+        (when (not buffer-file-name)
+            (when-let (buffer (parent-buffer-search 'buffer-file-name))
+                (set-buffer buffer)))
         (if (not buffer-file-name)
             (call-interactively 'revert-buffer)
             (with-temporary-directory directory
