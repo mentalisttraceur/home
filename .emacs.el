@@ -1571,7 +1571,9 @@
                 (let ((jaggedness (cdr metrics))
                       (height     (count-lines-paragraph))
                       (width      (car metrics)))
-                    (if (< jaggedness best-jaggedness)
+                    (if (if (> height best-height)
+                            (< (+ jaggedness 2) best-jaggedness)
+                            (< jaggedness best-jaggedness))
                         (setq best-fill-column fill-column
                               best-jaggedness jaggedness
                               best-width width)
