@@ -4909,7 +4909,6 @@
             (list "echo" (concat (buffer-name) " is not in a git repository"))
             nil
             name))
-    (defvar-local git--visited-path nil)
     (defun git-pop-to-command (command &optional use-visited)
         (if-let (root (git-worktree-root))
             (let ((default-directory root)
@@ -4918,15 +4917,14 @@
                     (setq path (file-relative-name path root))
                     (nconc command (list path)))
                 (add-single-use-hook 'pop-to-command-setup-hook
-                    (lambda-let (path) ()
-                        (setq-local git--visited-path path)))
+                    (parent-buffer-setter))
                 (pop-to-command-eshell command default-directory))
             (pop-to-command-eshell--not-in-a-git-repository
                 (string-join (cons "eshell:" command) " "))))
     (defun git--target-path (use-visited)
         (if use-visited
-            (or git--visited-path
-                buffer-file-name
+            (or (buffer-file-or-directory)
+                (parent-buffer-file-or-directory)
                 default-directory)
             nil))
     (defmacro git (&rest arguments)
