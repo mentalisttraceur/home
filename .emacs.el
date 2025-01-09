@@ -4870,6 +4870,8 @@
                             (write-file-no-visit file-1)))
                     (with-current-buffer buffer-2
                         (write-file-no-visit file-2))
+                    (add-single-use-hook 'pop-to-command-setup-hook
+                        (parent-buffer-setter))
                     (pop-to-command-eshell
                         (list "gp" file-2 file-1)
                         (concat name-1 " -> " name-2)
