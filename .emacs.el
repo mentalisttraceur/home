@@ -1700,6 +1700,9 @@
                        (not parent-buffer))
                 (set-buffer parent-buffer))
             (current-buffer))))
+(defun parent-buffer-file-or-directory (&optional buffer)
+    (when-let (found (parent-buffer-search 'buffer-file-or-directory buffer))
+        (buffer-file-or-directory found)))
 (provide 'parent-buffer)
 
 (use-package cl-seq
