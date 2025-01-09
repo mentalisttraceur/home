@@ -4706,6 +4706,9 @@
             name))
     (defun diff-unsaved-changes ()
         (interactive)
+        (when (not buffer-file-name)
+            (when-let (buffer (parent-buffer-search 'buffer-file-name))
+                (set-buffer buffer)))
         (if (not buffer-file-name)
             (pop-to-command-eshell--not-a-file "Diff unsaved")
             (with-temporary-directory directory
