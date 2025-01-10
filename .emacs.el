@@ -3993,7 +3993,7 @@
     (when pop-to-command--callback
         (funcall pop-to-command--callback)))
 (defun pop-to-command-eat (command &optional context name callback)
-    (require 'eshell)
+    (require 'eat)
     (setq name (pop-to-command-buffer-name "eat" command context name))
     (let ((program   (car command))
           (arguments (cdr command))
