@@ -1605,8 +1605,9 @@
         (when parent-buffer
             (set-buffer parent-buffer)
             (setq child-buffers (delq buffer child-buffers)))
-        (set-buffer new-parent-buffer)
-        (push buffer child-buffers))
+        (when new-parent-buffer
+            (set-buffer new-parent-buffer)
+            (push buffer child-buffers)))
     (setq parent-buffer new-parent-buffer))
 (defun parent-buffer--kill-hook ()
     (let ((parent parent-buffer)
