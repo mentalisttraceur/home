@@ -6201,6 +6201,10 @@
              (point)))
     (setq denote-faces-file-name-keywords-for-dired
         `((dired-filename-search-forward
+           (".trashed-[0-9]+-"
+               ,point-to-match-beginning-form
+               ,point-to-match-end-form
+               (0 'android-trash-face))
            (,date-t-time-regex
                ,point-to-match-beginning-form
                ,point-to-match-end-form
@@ -6239,6 +6243,7 @@
            ("\\..*$"
                (progn
                    (goto-char (match-beginning 0))
+                   (search-forward-regexp ".trashed-[0-9]+-" (match-end 0) t)
                    (when (equal (char-after) ?.)
                        (forward-char))
                    (point))
@@ -6270,6 +6275,8 @@
     (defface task-faces-duration '((t :inherit default)) "")
     (set-face-foreground 'task-faces-repeat   "#FF0000")
     (set-face-foreground 'task-faces-duration "#00FF00")
+    (defface android-trash-face '((t :inherit default)) "")
+    (set-face-foreground 'android-trash-face "#802020")
     (defun denoted--add-nil-id (path)
         (let ((name (file-name-nondirectory path)))
             (concat
