@@ -2289,6 +2289,59 @@
 (add-hook 'dired-after-readin-hook 'full-path-property--dired)
 (provide 'full-path-property)
 
+(defun android-trash-p (path)
+    (setq path (directory-file-name path))
+    (let ((name (file-name-nondirectory path)))
+        (if (string-match-p "^\\.trashed-[0-9]+-.*$" name)
+            t
+            nil)))
+(defun android-trash--trashed-path (path)
+    (setq path (directory-file-name path))
+    (let* ((name      (file-name-nondirectory path))
+           (directory (file-name-directory path))
+           (now       (time-convert (current-time) 'integer))
+           (30-days   (* 30 24 60 60))
+           (expires   (+ now 30-days))
+           (trashed   (format ".trashed-%d-%s" expires name)))
+        (concat directory trashed)))
+(defun android-trash (path)
+    (if (android-trash-p path)
+        path
+        (setq path (expand-file-name path))
+        (let ((trashed-path (android-trash--trashed-path path)))
+            (dired-rename-file path trashed-path nil)
+            trashed-path)))
+(defun android-trash--original-path (trashed-path)
+    (setq trashed-path (directory-file-name trashed-path))
+    (let ((trashed-name (file-name-nondirectory trashed-path))
+          (directory    (file-name-directory trashed-path)))
+        (string-match "^\\.trashed-[0-9]+-\\(.*\\)$" trashed-name)
+        (let ((name (match-string 1 trashed-name)))
+            (concat directory name))))
+(defun android-trash--find-trash (path)
+    (setq path (directory-file-name path))
+    (let* ((name      (file-name-nondirectory path))
+           (directory (file-name-directory path))
+           (trashed (concat
+                        ".trashed-[0-9]+-"
+                        (regexp-quote name)
+                        "$")))
+        (unless directory
+            (setq directory default-directory))
+        (directory-files directory t trashed)))
+(define-error 'android-trash-missing "Trash is missing" 'file-missing)
+(defun android-trash-restore (path)
+    (if (android-trash-p path)
+        (let* ((trashed (expand-file-name path))
+               (original (android-trash--original-path trashed)))
+            (dired-rename-file trashed original nil))
+        (let ((trashed (car (last (android-trash--find-trash path))))
+              (original (expand-file-name path)))
+            (if trashed
+                (dired-rename-file trashed original nil)
+                (signal 'android-trash-missing (list path))))))
+(provide 'android-trash)
+
 (when termux
     (use-package image-mode
         :config
