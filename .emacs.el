@@ -1597,6 +1597,8 @@
 (defvar-local child-buffers nil)
 (defun parent-buffer (&optional buffer)
     (buffer-local-value 'parent-buffer (or buffer (current-buffer))))
+(defun child-buffers (&optional buffer)
+    (buffer-local-value 'child-buffers (or buffer (current-buffer))))
 (defun parent-buffer-set (parent &optional buffer)
     (setq-if-nil buffer (current-buffer))
     (save-current-buffer
