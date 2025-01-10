@@ -3584,7 +3584,14 @@
         (dotimes (_ count)
             (undo-tree-visualizer-select-right 1))
         (undo-tree-visualizer-set)
-        (undo-tree-visualizer-selection-mode -1)))
+        (undo-tree-visualizer-selection-mode -1))
+    (defun independent-undo-tree-name ()
+        (concat " *undo-tree (" (buffer-name) ")*"))
+    (defun independent-undo-tree ()
+        (interactive)
+        (setq-local undo-tree-visualizer-buffer-name
+            (independent-undo-tree-name))
+        (call-interactively 'undo-tree-visualize)))
 
 (use-packages undo-tree parent-buffer
     :config
@@ -5312,12 +5319,12 @@
         "H" 'undo-tree-visualize-switch-branch-left)
     (evil-define-key 'replace undo-tree-visualizer-mode-map
         "L" 'undo-tree-visualize-switch-branch-right)
-    (define-key space-map "u" 'undo-tree-visualize))
+    (define-key space-map "u" 'independent-undo-tree))
 
 (use-packages evil parent-buffer pop-to-command undo-tree
     :config
     (add-to-list 'display-buffer-alist
-        (list "^\\*undo-tree Diff\\*$"))
+        (list "^\\*undo-tree Diff .*\\*$"))
     (defun hack-undo-tree-diff (&optional node)
         (with-temporary-directory directory
             (let* ((name   (file-name-nondirectory (buffer-name)))
@@ -5338,12 +5345,14 @@
                 (pop-to-command-eshell
                     (list "*env" "PAGER=cat"
                         "cdexec" directory "gd" name-1 name-2)
-                    nil
+                    (buffer-name)
                     "undo-tree Diff"
                     (apply-partially 'delete-directory directory t))
                 (setq directory nil)
-                (when-let (window (get-buffer-window
-                                      undo-tree-visualizer-buffer-name))
+                (let ((name (buffer-name)))
+                    (with-current-buffer parent-buffer
+                        (setq-local undo-tree-diff-buffer-name name)))
+                (when-let (window (get-buffer-window parent-buffer))
                     (select-window window)))))
     (defun hack-undo-tree-visualizer-show-diff (&optional node)
         (setq undo-tree-visualizer-diff t)
