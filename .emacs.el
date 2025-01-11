@@ -1312,6 +1312,33 @@
                 (push (pop choices) buffer-name-history)))))
 
 
+(defun smoother-kill-buffer (&optional buffer)
+    (unless buffer
+        (setq buffer (current-buffer)))
+    (set-buffer buffer)
+    (add-hook 'kill-buffer-hook
+        (lambda ()
+            (let ((buffer (current-buffer)))
+                (dolist (window (get-buffer-window-list buffer nil t))
+                    (quit-window nil window)
+                    (set-buffer buffer))))
+            nil t)
+    (kill-buffer buffer))
+
+(defun smoother-kill-buffers (buffers)
+    (interactive (list
+                     (let ((current (minibuffer-current-buffer)))
+                         (read-buffer-multiple
+                             "Kill buffers: " nil current t))))
+    (let ((count 0))
+        (dolist (buffer buffers)
+            (when (smoother-kill-buffer buffer)
+                (setq count (1+ count))))
+        (if (equal count 1)
+            (message "Killed 1 buffer")
+            (message "Killed %d buffers" count))))
+
+
 (defun write-file-no-visit (filename)
     (without-restriction
         (write-region 1 (point-max) filename)))
@@ -4458,30 +4485,6 @@
                (new-name (read-string "Buffer name: " old-name)))
             (rename-buffer new-name unique)))
     (define-key space-map "B" 'smoother-buffer-rename)
-    (defun smoother-kill-buffer (&optional buffer)
-        (unless buffer
-            (setq buffer (current-buffer)))
-        (set-buffer buffer)
-        (add-hook 'kill-buffer-hook
-            (lambda ()
-                (let ((buffer (current-buffer)))
-                    (dolist (window (get-buffer-window-list buffer nil t))
-                        (quit-window nil window)
-                        (set-buffer buffer))))
-                nil t)
-        (kill-buffer buffer))
-    (defun smoother-kill-buffers (buffers)
-        (interactive (list
-                         (let ((current (minibuffer-current-buffer)))
-                             (read-buffer-multiple
-                                 "Kill buffers: " nil current t))))
-        (let ((count 0))
-            (dolist (buffer buffers)
-                (when (smoother-kill-buffer buffer)
-                    (setq count (1+ count))))
-            (if (equal count 1)
-                (message "Killed 1 buffer")
-                (message "Killed %d buffers" count))))
     (define-key space-map "k" 'smoother-kill-buffers)
     (define-key space-map "f" 'find-file)
     (define-key space-map "F" 'find-alternate-file)
