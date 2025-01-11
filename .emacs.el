@@ -2332,6 +2332,20 @@
                 (rename-buffer name))
             buffer)))
 
+(use-packages dired parent-buffer
+    :config
+    (defun smoother-dired ()
+        (interactive)
+        (let ((path (or dired-directory
+                        (get-text-property (point) 'full-path)
+                        buffer-file-name
+                        (parent-buffer-file-or-directory))))
+            (if (not path)
+                (dired default-directory)
+                (dired (file-name-parent-directory path))
+                (dired-goto-file (expand-file-name path))
+                (recenter)))))
+
 (add-to-list 'text-property-default-nonsticky
     (cons 'full-path t))
 (defun full-path-property-split (start end &optional object separators trim)
@@ -4501,17 +4515,6 @@
     (define-key space-map "k" 'smoother-kill-buffers)
     (define-key space-map "f" 'find-file)
     (define-key space-map "F" 'find-alternate-file)
-    (defun smoother-dired ()
-        (interactive)
-        (let ((path (or dired-directory
-                        (get-text-property (point) 'full-path)
-                        buffer-file-name
-                        (parent-buffer-file-or-directory))))
-            (if (not path)
-                (dired default-directory)
-                (dired (file-name-parent-directory path))
-                (dired-goto-file (expand-file-name path))
-                (recenter))))
     (define-key space-map "d" 'smoother-dired)
     (add-to-list 'evil-motion-state-modes 'dired-mode)
     (define-key space-map "y" 'execute-extended-command)
