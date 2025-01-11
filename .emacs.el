@@ -2169,6 +2169,23 @@
     :config
     (setq tramp-default-method "sshx"))
 
+(defun smoother-eval-last-sexp (prefix-argument)
+    (interactive "P")
+    (condition-case error
+        (scan-sexps (1+ (point)) -1)
+        (:success
+            (eval-last-sexp prefix-argument))
+        (scan-error
+            (when (and (equal (caddr error) (point))
+                       (equal (cadddr error) (point))
+                       (equal (char-after (point)) ?\())
+                (save-excursion
+                    (forward-sexp)
+                    (backward-char)
+                    (eval-last-sexp prefix-argument))))))
+(add-to-list 'temporary-goal-column-preserving-commands
+    'smoother-eval-last-sexp)
+
 (use-package dired
     :config
     (defun hack-dired-readin (dired-readin &rest arguments)
@@ -4441,22 +4458,6 @@
         (advice-add 'elisp--preceding-sexp :around 'fixed-last-s-expression))
     (setq evil-highlight-closing-paren-at-point-states '(not))
     (setq evil-show-paren-range 1)
-    (defun smoother-eval-last-sexp (prefix-argument)
-        (interactive "P")
-        (condition-case error
-            (scan-sexps (1+ (point)) -1)
-            (:success
-                (eval-last-sexp prefix-argument))
-            (scan-error
-                (when (and (equal (caddr error) (point))
-                           (equal (cadddr error) (point))
-                           (equal (char-after (point)) ?\())
-                    (save-excursion
-                        (forward-sexp)
-                        (backward-char)
-                        (eval-last-sexp prefix-argument))))))
-    (add-to-list 'temporary-goal-column-preserving-commands
-        'smoother-eval-last-sexp)
     (define-key space-map "e" 'smoother-eval-last-sexp)
     (define-key space-map "E" 'eval-print-last-sexp)
     (defmacro toggle (variable &optional skip-preview)
