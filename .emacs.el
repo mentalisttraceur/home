@@ -1249,7 +1249,8 @@
 (defun minibuffer-current-buffer ()
     (if-let (window (minibuffer-selected-window))
         (window-buffer window)
-        (current-buffer)))
+        nil))
+
 
 (defun next-window-other-buffer (&optional window minibuffer all-frames)
     (let* ((window (next-window window minibuffer all-frames))
