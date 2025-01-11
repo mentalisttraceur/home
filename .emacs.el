@@ -5251,6 +5251,22 @@
 
 (use-packages eshell eat evil
     :config
+    (evil-define-command evil-eat-eshell-paste (count &optional register)
+        :suppress-operator t
+        (interactive "*P<x>")
+        (let* ((string (evil-paste-to-string count register))
+               (string (string-remove-suffix "\n" string)))
+            (process-send-string nil string)))
+    (dolist (key '("p" "P"))
+        (evil-define-key 'normal eat-eshell-semi-char-mode-map
+            key 'evil-eat-eshell-paste))
+    (evil-define-command evil-eat-eshell-replacing-paste
+            (count &optional register)
+        (interactive "*P<x>")
+        (user-error "replacing paste unsupported for child process"))
+    (dolist (key '("gp" "gP"))
+        (evil-define-key 'normal eat-eshell-semi-char-mode-map
+            key 'evil-eat-eshell-replacing-paste))
     (add-hook 'eat-eshell-exec-hook
         (lambda ()
             (evil-local-set-key 'insert "\C-v" 'eat-self-input)
