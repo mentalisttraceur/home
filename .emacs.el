@@ -1349,6 +1349,13 @@
             (message "Killed %d buffers" count))))
 
 
+(defun smoother-buffer-rename (unique)
+    (interactive "P")
+    (let* ((old-name (buffer-name))
+           (new-name (read-string "Buffer name: " old-name)))
+        (rename-buffer new-name unique)))
+
+
 (defun write-file-no-visit (filename)
     (without-restriction
         (write-region 1 (point-max) filename)))
@@ -4490,11 +4497,6 @@
             (if prefix-argument
                 (become-command 'switch-to-buffer-resume)
                 (become-command 'switch-to-buffer))))
-    (defun smoother-buffer-rename (unique)
-        (interactive "P")
-        (let* ((old-name (buffer-name))
-               (new-name (read-string "Buffer name: " old-name)))
-            (rename-buffer new-name unique)))
     (define-key space-map "B" 'smoother-buffer-rename)
     (define-key space-map "k" 'smoother-kill-buffers)
     (define-key space-map "f" 'find-file)
