@@ -4603,35 +4603,6 @@
         (setq history-quit t)
         (vertico-exit))
     (evil-declare-not-repeat 'history-quit)
-    (define-key space-map "t" 'latest-eshell)
-    (add-to-list 'evil-normal-state-modes 'eshell-mode)
-    (defvar-local evil-eshell-state-for-next-input 'normal)
-    (advice-add 'eshell-send-input
-        :before
-        (lambda (&rest _)
-            (setq evil-eshell-state-for-next-input evil-state)))
-    (defun evil-eshell-force-normal-state ()
-        (interactive)
-        (evil-force-normal-state)
-        (setq evil-eshell-state-for-next-input evil-state))
-    (defun evil-eshell-setup ()
-        (setq evil-yank-incomplete-line-linewise nil)
-        (evil-local-set-key 'normal [escape] 'eshell-interrupt-process)
-        (evil-local-set-key 'insert [escape] 'evil-eshell-force-normal-state)
-        (evil-local-set-key 'operator [escape] 'evil-force-normal-state)
-        (evil-local-set-key 'insert "\C-d" 'eshell-send-eof-to-process))
-    (add-hook 'eshell-mode-hook 'evil-eshell-setup)
-    (add-hook 'eshell-pre-command-hook
-        (lambda ()
-            (setq evil-eshell-state-for-next-input evil-state)
-            (evil-insert-state)))
-    (add-hook 'eshell-post-command-hook
-        (lambda ()
-            (evil-force-normal-state)
-            (when (eq (current-buffer) (window-buffer (selected-window)))
-                (evil-change-state evil-eshell-state-for-next-input))))
-    (evil-declare-not-repeat 'fixed-eshell-send-input)
-    (evil-declare-not-repeat 'eshell-interrupt-process)
     (define-key space-map "T" 'eat)
     (add-to-list 'evil-emacs-state-modes 'eat-mode)
     (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil)))
@@ -5204,6 +5175,38 @@
 (use-packages dired evil
     :config
     (evil-define-key 'motion dired-mode-map "." 'evil-repeat))
+
+(use-packages eshell evil
+    :config
+    (defvar-local evil-eshell-state-for-next-input 'normal)
+    (advice-add 'eshell-send-input
+        :before
+        (lambda (&rest _)
+            (setq evil-eshell-state-for-next-input evil-state)))
+    (defun evil-eshell-force-normal-state ()
+        (interactive)
+        (evil-force-normal-state)
+        (setq evil-eshell-state-for-next-input evil-state))
+    (defun evil-eshell-setup ()
+        (setq evil-yank-incomplete-line-linewise nil)
+        (evil-local-set-key 'normal [escape] 'eshell-interrupt-process)
+        (evil-local-set-key 'insert [escape] 'evil-eshell-force-normal-state)
+        (evil-local-set-key 'operator [escape] 'evil-force-normal-state)
+        (evil-local-set-key 'insert "\C-d" 'eshell-send-eof-to-process))
+    (add-hook 'eshell-mode-hook 'evil-eshell-setup)
+    (add-hook 'eshell-pre-command-hook
+        (lambda ()
+            (setq evil-eshell-state-for-next-input evil-state)
+            (evil-insert-state)))
+    (add-hook 'eshell-post-command-hook
+        (lambda ()
+            (evil-force-normal-state)
+            (when (eq (current-buffer) (window-buffer (selected-window)))
+                (evil-change-state evil-eshell-state-for-next-input))))
+    (evil-declare-not-repeat 'fixed-eshell-send-input)
+    (evil-declare-not-repeat 'eshell-interrupt-process)
+    (add-to-list 'evil-normal-state-modes 'eshell-mode)
+    (define-key space-map "t" 'latest-eshell))
 
 (defun user-friendly-path (path)
     (let ((from-home (concat "~/" (file-relative-name path "~/"))))
