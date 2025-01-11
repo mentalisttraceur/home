@@ -5010,7 +5010,8 @@
             (interactive)
             (let ((default-directory "~/Downloads"))
                 (pop-to-command-eshell
-                    '("sh" "-c" "yt-dlp -f bestaudio \"`p`\"") nil "yt-dlp"))))
+                    '("sh" "-c" "yt-dlp -f bestaudio --no-playlist \"`p`\"")
+                    nil "yt-dlp"))))
     (define-key space-misc-map "m"
         (lambda ()
             (interactive)
