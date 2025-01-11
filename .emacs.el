@@ -1337,7 +1337,7 @@
 
 (defun smoother-kill-buffers (buffers)
     (interactive (list
-                     (let ((current (minibuffer-current-buffer)))
+                     (let ((current (current-buffer-excluding-minibuffers)))
                          (read-buffer-multiple
                              "Kill buffers: " nil current t))))
     (let ((count 0))
