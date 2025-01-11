@@ -1252,6 +1252,15 @@
         nil))
 
 
+(defun selected-window-excluding-minibuffers ()
+    (if-let (window (minibuffer-selected-window))
+        window
+        (selected-window)))
+
+(defun current-buffer-excluding-minibuffers ()
+    (window-buffer (minibuffer-selected-window)))
+
+
 (defun next-window-other-buffer (&optional window minibuffer all-frames)
     (let* ((window (next-window window minibuffer all-frames))
            (buffer (window-buffer window)))
