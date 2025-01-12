@@ -2281,10 +2281,10 @@
             (file-name-directory path)
             (file-name-nondirectory path)
             'update-dired-entry path old-path))
-    (defun update-dired-entry (path &optional new-path)
-        (setq-if-nil new-path path)
+    (defun update-dired-entry (path &optional old-path)
+        (setq-if-nil old-path path)
         (save-excursion
-            (when (dired-goto-file path)
+            (when (dired-goto-file old-path)
                 (beginning-of-line)
                 (let ((marker-character (following-char)))
                     (when (eq marker-character ? )
@@ -2294,14 +2294,14 @@
                             (point)
                             (line-beginning-position 2)))
                     (dired-add-entry
-                        (directory-file-name new-path)
+                        (directory-file-name path)
                         marker-character)))))
     (defun fixed-dired-rename-file
             (dired-rename-file path new-path &rest arguments)
         (with-advice (('dired-remove-file
                           :override
                           (lambda-let (new-path) (path)
-                              (update-dired-file path new-path))))
+                              (update-dired-file new-path path))))
             (apply dired-rename-file path new-path arguments)))
     (advice-add 'dired-rename-file :around 'fixed-dired-rename-file)
     (defun revert-dired-buffers (directory)
