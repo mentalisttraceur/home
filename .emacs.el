@@ -4802,8 +4802,6 @@
         (when (not buffer-file-name)
             (when-let (buffer (parent-buffer-search 'buffer-file-name))
                 (set-buffer buffer)))
-        (add-single-use-hook 'pop-to-command-setup-hook
-            (parent-buffer-setter))
         (if (not buffer-file-name)
             (call-interactively 'revert-buffer)
             (with-temporary-directory directory
@@ -4815,6 +4813,8 @@
                         (copy-file buffer-file-name file)
                         (write-region 1 1 file))
                     (write-file-no-visit unsaved)
+                    (add-single-use-hook 'pop-to-command-setup-hook
+                        (parent-buffer-setter))
                     (pop-to-command-eshell
                         (list "gp" unsaved file)
                         (buffer-name)
