@@ -1645,13 +1645,14 @@
     (buffer-local-value 'child-buffers (or buffer (current-buffer))))
 (defun parent-buffer-set (new-parent-buffer &optional buffer)
     (setq-if-nil buffer (current-buffer))
-    (save-current-buffer
-        (when parent-buffer
-            (set-buffer parent-buffer)
-            (setq child-buffers (delq buffer child-buffers)))
-        (when new-parent-buffer
-            (set-buffer new-parent-buffer)
-            (push buffer child-buffers)))
+    (unless (eq new-parent-buffer parent-buffer)
+        (save-current-buffer
+            (when parent-buffer
+                (set-buffer parent-buffer)
+                (setq child-buffers (delq buffer child-buffers)))
+            (when new-parent-buffer
+                (set-buffer new-parent-buffer)
+                (push buffer child-buffers))))
     (setq parent-buffer new-parent-buffer))
 (defun parent-buffer--kill-hook ()
     (let ((parent parent-buffer)
