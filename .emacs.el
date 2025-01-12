@@ -2058,7 +2058,7 @@
     :config
     (defun eshell-quote-argument-2 (string)
         (let ((eshell-special-chars-outside-quoting
-                  eshell-special-chars-inside-quoting))
+                  (cons ?$ eshell-special-chars-inside-quoting)))
             (concat
                 "\""
                 (eshell-quote-argument string)
@@ -5228,7 +5228,7 @@
         (interactive "<r>")
         (let* ((paths (full-path-property-split start end))
                (nicer (mapcar 'user-friendly-path paths))
-               (quoted (mapcar 'eshell-quote-argument nicer)))
+               (quoted (mapcar 'eshell-quote-argument-2 nicer)))
             (eshell t)
             (when (in-eshell-scrollback-p)
                 (end-of-buffer))
