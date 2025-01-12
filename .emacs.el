@@ -2056,6 +2056,13 @@
 
 (use-package eshell
     :config
+    (defun eshell-quote-argument-2 (string)
+        (let ((eshell-special-chars-outside-quoting
+                  eshell-special-chars-inside-quoting))
+            (concat
+                "\""
+                (eshell-quote-argument string)
+                "\"")))
     (setq eshell-highlight-prompt nil)
     (setq eshell-prompt-regexp "^[$#] ")
     (setq eshell-prompt-function
