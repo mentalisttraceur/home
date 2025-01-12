@@ -5217,7 +5217,7 @@
 
 (use-packages dired eshell evil
     :config
-    (evil-define-operator evildir-eshell (start end)
+    (evil-define-operator evil-dired-eshell (start end)
         (interactive "<r>")
         (let* ((paths (full-path-property-split start end))
                (nicer (mapcar 'user-friendly-path paths))
@@ -5228,21 +5228,21 @@
             (save-excursion
                 (insert " " (string-join quoted " "))))
         (evil-insert-state))
-    (evil-define-key 'motion dired-mode-map "x" 'evildir-eshell))
+    (evil-define-key 'motion dired-mode-map "x" 'evil-dired-eshell))
 
 (use-packages dired evil undo-tree
     :config
     (add-hook 'dired-mode-hook 'undo-tree-mode)
-    (defun evildir-undo ()
+    (defun evil-dired-undo ()
         (interactive)
         (let ((buffer-read-only nil))
             (become-command 'evil-undo)))
-    (defun evildir-redo ()
+    (defun evil-dired-redo ()
         (interactive)
         (let ((buffer-read-only nil))
             (become-command 'evil-redo)))
-    (evil-define-key 'motion dired-mode-map "u" 'evildir-undo)
-    (evil-define-key 'motion dired-mode-map "U" 'evildir-redo))
+    (evil-define-key 'motion dired-mode-map "u" 'evil-dired-undo)
+    (evil-define-key 'motion dired-mode-map "U" 'evil-dired-redo))
 
 (use-packages display-fill-column-indicator evil
     :config
