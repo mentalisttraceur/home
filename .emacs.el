@@ -4424,7 +4424,7 @@
             (when (> count 0)
                 (forward-char))))
     (evil-define-motion evil-find-char-pair-to (count char1 char2)
-        :type exclusive
+        :type inclusive
         (interactive "p<C><C>")
         (evil-find-char-pair count char1 char2)
         (when (> count 0)
