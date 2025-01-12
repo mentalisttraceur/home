@@ -1643,7 +1643,7 @@
     (buffer-local-value 'parent-buffer (or buffer (current-buffer))))
 (defun child-buffers (&optional buffer)
     (buffer-local-value 'child-buffers (or buffer (current-buffer))))
-(defun parent-buffer-set (new-parent-buffer &optional buffer)
+(defun set-parent-buffer (new-parent-buffer &optional buffer)
     (setq-if-nil buffer (current-buffer))
     (unless (eq new-parent-buffer parent-buffer)
         (save-current-buffer
@@ -1666,7 +1666,7 @@
 (add-hook 'kill-buffer-hook 'parent-buffer--kill-hook)
 (defun parent-buffer-setter (&optional new-parent-buffer)
     (setq-if-nil new-parent-buffer (current-buffer))
-    (apply-partially 'parent-buffer-set new-parent-buffer))
+    (apply-partially 'set-parent-buffer new-parent-buffer))
 (defun parent-buffer-search (predicate &optional buffer)
     (save-current-buffer
         (when buffer
@@ -2495,7 +2495,7 @@
     :config
     (add-hook 'vc-annotate-mode-hook
         (lambda ()
-            (parent-buffer-set vc-parent-buffer))))
+            (set-parent-buffer vc-parent-buffer))))
 
 (use-package diff-mode
     :config
@@ -3666,7 +3666,7 @@
     :config
     (add-hook 'undo-tree-visualizer-mode-hook
         (lambda ()
-            (parent-buffer-set undo-tree-visualizer-parent-buffer))))
+            (set-parent-buffer undo-tree-visualizer-parent-buffer))))
 
 (use-package vertico
     :config
