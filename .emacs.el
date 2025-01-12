@@ -4641,6 +4641,7 @@
     (evil-declare-not-repeat 'cycle-line-wrap)
     (define-key space-map ";" 'cycle-line-wrap)
     (define-key space-map ":" 'fake-fringe)
+    (define-key space-map "[" 'delete-trailing-whitespace)
     (define-key space-map "]" (toggle select-enable-clipboard))
     (define-key space-map "l" 'consult-line)
     (define-key space-map "L" 'consult-line-resume)
