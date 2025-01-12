@@ -1662,7 +1662,7 @@
                 (setq child-buffers (delq buffer child-buffers))))
         (dolist (child child-buffers)
             (with-current-buffer child
-                (setq parent-buffer parent)))))
+                (set-parent-buffer parent)))))
 (add-hook 'kill-buffer-hook 'parent-buffer--kill-hook)
 (defun parent-buffer-setter (&optional new-parent-buffer)
     (setq-if-nil new-parent-buffer (current-buffer))
