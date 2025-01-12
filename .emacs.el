@@ -5186,20 +5186,23 @@
     :config
     (evil-define-operator evil-dired-delete
             (start end type register yank-handler)
+        :move-point nil
         :type line
         (interactive "<R><x><y>")
         (let ((paths (full-path-property-split start end))
-              (lines 0))
+              (lines 0)
+              (origin (point)))
             (dolist (path paths)
                 (if (android-trash-p path)
                     (dired-delete-file path 'always)
                     (android-trash path)
                     (setq lines (1+ lines))))
             (goto-char start)
-            (forward-line lines))
-        (setq end (point))
-        (let ((evil-was-yanked-without-register nil))
-            (evil-yank start end type register yank-handler)))
+            (forward-line lines)
+            (setq end (point))
+            (let ((evil-was-yanked-without-register nil))
+                (evil-yank start end type register yank-handler))
+            (goto-char origin)))
     (evil-define-key 'motion dired-mode-map "d" 'evil-dired-delete)
     (evil-define-key 'motion dired-mode-map "." 'evil-repeat))
 
