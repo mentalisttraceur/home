@@ -4902,14 +4902,14 @@
             nil
             name))
     (defun git-pop-to-command (command &optional use-visited)
+        (add-single-use-hook 'pop-to-command-setup-hook
+            (parent-buffer-setter))
         (if-let (root (git-worktree-root))
             (let ((default-directory root)
                   (path (git--target-path use-visited)))
                 (when path
                     (setq path (file-relative-name path root))
                     (nconc command (list path)))
-                (add-single-use-hook 'pop-to-command-setup-hook
-                    (parent-buffer-setter))
                 (pop-to-command-eshell command default-directory))
             (pop-to-command-eshell--not-in-a-git-repository
                 (string-join (cons "eshell:" command) " "))))
