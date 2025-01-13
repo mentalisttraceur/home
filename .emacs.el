@@ -2360,7 +2360,7 @@
     (setq-if-nil separators "\n+")
     (if-let (paths (text-property-values start end 'full-path object))
         paths
-        (string-split string separators t trim)))
+        (string-split object separators t trim)))
 (defun full-path-property--dired ()
     (save-excursion
         (goto-char (point-min))
