@@ -2703,7 +2703,12 @@
                         debugger-continue
                         debugger-step-through))
         (advice-add function :before 'fixed-debug--exit-checklist))
-    (define-key debugger-mode-map "q" 'debugger-continue))
+    (defun smoother-debugger-exit ()
+        (interactive)
+        (if (fixed-debug--in-debugger-p)
+            (debugger-continue)
+            (quit-window)))
+    (define-key debugger-mode-map "q" 'smoother-debugger-exit))
 
 (use-package calendar
     :config
