@@ -1064,6 +1064,31 @@
     (file-attribute-size (file-attributes filename)))
 
 
+(defun next-string-split-separator
+        (position separators &optional omit-nulls object limit)
+    (when omit-nulls
+        (setq separators (concat "\\(" separators "\\)+")))
+    (if (stringp object)
+        (let ((string (substring object position limit)))
+            (if (string-match separators string)
+                (if (> (match-beginning 0) 0)
+                    (+ position (match-beginning 0))
+                    (setq position (+ position (match-end 0)))
+                    (setq string (substring string (match-end 0)))
+                    (if (string-match separators string)
+                        (+ position (match-beginning 0))
+                        limit))
+                limit))
+        (save-excursion
+            (if (search-forward-regexp separators limit 'x)
+                (if (> (match-beginning 0) position)
+                    (match-beginning 0)
+                    (if (search-forward-regexp separators limit 'x)
+                        (match-beginning 0)
+                        limit))
+                limit))))
+
+
 (defun text-property-values (start end property &optional object)
     (unless start
         (if (stringp object)
