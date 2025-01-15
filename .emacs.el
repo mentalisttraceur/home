@@ -1080,6 +1080,9 @@
                         limit))
                 limit))
         (save-excursion
+            (when object
+                (set-buffer object))
+            (goto-char position)
             (if (search-forward-regexp separators limit 'x)
                 (if (> (match-beginning 0) position)
                     (match-beginning 0)
