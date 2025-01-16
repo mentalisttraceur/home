@@ -2305,6 +2305,13 @@
                 (goto-char start-of-search)
                 nil)))
     (defun update-dired-file (path &optional old-path)
+        (when (and old-path
+                   (not (equal (file-name-directory path)
+                               (file-name-directory old-path))))
+            (dired-fun-in-all-buffers
+                (file-name-directory old-path)
+                (file-name-nondirectory old-path)
+                'update-dired-entry path old-path))
         (dired-fun-in-all-buffers
             (file-name-directory path)
             (file-name-nondirectory path)
@@ -2312,7 +2319,8 @@
     (defun update-dired-entry (path &optional old-path)
         (setq-if-nil old-path path)
         (save-excursion
-            (when (dired-goto-file old-path)
+            (if (not (dired-goto-file old-path))
+                (dired-add-entry (directory-file-name path))
                 (beginning-of-line)
                 (let ((marker-character (following-char)))
                     (when (eq marker-character ? )
