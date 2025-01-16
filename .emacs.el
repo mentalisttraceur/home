@@ -2477,7 +2477,8 @@
     (when (or (not to-path)
               (directory-name-p to-path))
         (setq to-path (android-trash--restored-path path to-path)))
-    (dired-rename-file path to-path nil))
+    (dired-rename-file path to-path nil)
+    to-path)
 (provide 'android-trash)
 
 (when termux
