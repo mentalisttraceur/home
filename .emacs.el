@@ -5272,6 +5272,38 @@
             (forward-line (1- line))
             (move-to-column column)))
     (evil-define-key 'motion dired-mode-map "d" 'evil-dired-delete)
+    (defun evil-dired--paste (register)
+        (let* ((text (evil-paste-to-string 1 register))
+               (paths (full-path-property-split nil nil text)))
+            (dolist (path paths)
+                (forward-line)
+                (if (android-trash-p path)
+                    (let ((new-path (android-trash-restore
+                                        path dired-directory)))
+                        (dired-remove-entry new-path)
+                        (dired-add-entry new-path))
+                    (let ((dired-recursive-copies 'always))
+                        (dired-copy-file path dired-directory nil))))))
+    (evil-define-command evil-dired-paste-after (count register)
+        :suppress-operator t
+        (interactive "p<x>")
+        (evil-save-column
+            (dotimes (_ count)
+                (evil-dired--paste register))))
+    (evil-define-key 'motion dired-mode-map "p" 'evil-dired-paste-after)
+    (evil-define-command evil-dired-paste-before (count register)
+        :suppress-operator t
+        (interactive "p<x>")
+        (evil-save-column
+            (let ((line (line-number-at-pos)))
+                (if (= line 1)
+                    (setq line 2)
+                    (forward-line -1))
+                (dotimes (_ count)
+                    (evil-dired--paste register))
+                (goto-char (point-min))
+                (forward-line (1- line)))))
+    (evil-define-key 'motion dired-mode-map "P" 'evil-dired-paste-before)
     (evil-define-key 'motion dired-mode-map "." 'evil-repeat))
 
 (use-packages eshell evil
