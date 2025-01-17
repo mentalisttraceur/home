@@ -2465,7 +2465,7 @@
         (setq-if-nil directory default-directory)
         (directory-files directory t trashed)))
 (define-error 'android-trash-missing "Trash is missing" 'file-missing)
-(defun android-trash-restore (path &optional to-path)
+(defun android-trash-restore (path &optional to-path ok-if-already-exists)
     (setq path (directory-file-name path))
     (setq path (expand-file-name path))
     (when to-path
@@ -2477,7 +2477,7 @@
     (when (or (not to-path)
               (directory-name-p to-path))
         (setq to-path (android-trash--restored-path path to-path)))
-    (dired-rename-file path to-path nil)
+    (dired-rename-file path to-path ok-if-already-exists)
     to-path)
 (provide 'android-trash)
 
