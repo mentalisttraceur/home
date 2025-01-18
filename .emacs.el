@@ -117,6 +117,12 @@
 (advice-add 'mouse-set-point :after 'fixed-mouse-set-point)
 
 
+(setq-default mode-line-buffer-identification
+    (propertized-buffer-identification "%b"))
+
+(setcar (member "   " mode-line-format) "  ")
+
+
 (electric-indent-mode -1)
 (setq-default c-basic-offset 4)
 (setq lisp-body-indent 4)
