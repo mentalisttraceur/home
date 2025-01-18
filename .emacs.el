@@ -2428,7 +2428,7 @@
         (goto-char (point-min))
         (let ((inhibit-read-only t))
             (while (< (point) (point-max))
-                (when-let (path (dired-file-name-at-point))
+                (when-let (path (dired-get-filename nil t))
                     (put-text-property
                         (line-beginning-position)
                         (line-end-position)
