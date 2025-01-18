@@ -2415,6 +2415,14 @@
                         (push path result)))
                 (push part result)))
         (nreverse result)))
+(defun full-path-property--eshell-ls (fileinfo)
+    (if (stringp fileinfo)
+        (propertize fileinfo 'full-path (expand-file-name fileinfo))
+        (let ((file (pop fileinfo)))
+            (cons
+                (propertize file 'full-path (expand-file-name file))
+                fileinfo))))
+(advice-add 'eshell-ls-annotate :filter-return 'full-path-property--eshell-ls)
 (defun full-path-property--dired ()
     (save-excursion
         (goto-char (point-min))
