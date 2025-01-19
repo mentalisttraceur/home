@@ -4305,6 +4305,7 @@
                 (current-kill 0))
             (prefix-numeric-value count)))
     (define-key evil-motion-state-map "\"" 'evil-use-register)
+    (define-key evil-motion-state-map "ga" 'what-cursor-position)
     (define-key evil-normal-state-map "U" 'evil-redo)
     (define-key evil-normal-state-map "H" 'evil-join)
     (define-key evil-motion-state-map "H" nil)
