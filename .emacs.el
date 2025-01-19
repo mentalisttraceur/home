@@ -5292,7 +5292,7 @@
 (shred-define-key "gp" 'shred-evil-paste)
 (shred-define-key "gP" 'shred-evil-paste)
 
-(use-packages dired evil
+(use-packages dired android-trash evil
     :config
     (evil-define-operator evil-dired-delete
             (start end type register yank-handler)
