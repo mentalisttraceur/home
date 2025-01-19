@@ -6857,9 +6857,6 @@
             (set-buffer-modified-p nil)
             (evil-insert-state)))
     (define-key space-map "n" 'note)
-    (defun note--filter-dired ()
-        (dired-mark-if (member (dired-get-filename t t) '("." "..")) nil)
-        (dired-do-kill-lines))
     (defun note-list ()
         (interactive)
         (let* ((buffer (dired-find-buffer-nocreate denote-directory))
@@ -6871,7 +6868,6 @@
                 (dired-hide-details-mode 1)
                 (denote-dired-mode 1))
             (revert-buffer)
-            (note--filter-dired)
             (list buffer was-already-open was-already-focused)))
     (define-key space-map "N"
         (lambda ()
@@ -6929,7 +6925,6 @@
                 (with-undo-amalgamate
                     (apply 'dired-revert arguments)
                     (save-point
-                        (note--filter-dired)
                         (task--filter-dired filter-regex))))))
     (defun task-list ()
         (interactive)
