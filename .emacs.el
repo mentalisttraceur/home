@@ -125,6 +125,11 @@
 (setcar (cdr (assq 'vc-mode mode-line-format)) "")
 
 
+(when termux
+    (define-key mode-line-major-mode-keymap [mode-line down-mouse-1] 'ignore)
+    (define-key mode-line-minor-mode-keymap [mode-line down-mouse-1] 'ignore))
+
+
 (electric-indent-mode -1)
 (setq-default c-basic-offset 4)
 (setq lisp-body-indent 4)
