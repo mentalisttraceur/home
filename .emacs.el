@@ -2509,6 +2509,10 @@
     to-path)
 (provide 'android-trash)
 
+(use-package dired-x
+    :config
+    (add-hook 'dired-mode-hook 'dired-omit-mode))
+
 (use-packages dired-x android-trash
     :config
     (setq dired-omit-files
