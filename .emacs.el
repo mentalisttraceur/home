@@ -2509,6 +2509,11 @@
     to-path)
 (provide 'android-trash)
 
+(use-packages dired-x android-trash
+    :config
+    (setq dired-omit-files
+        (concat dired-omit-files "\\|\\`[.]trashed-[0-9]+-")))
+
 (when termux
     (use-package image-mode
         :config
