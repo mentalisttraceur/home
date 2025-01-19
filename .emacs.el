@@ -5018,7 +5018,7 @@
                     (nconc command (list path)))
                 (pop-to-command-eshell command default-directory))
             (pop-to-command-eshell--not-in-a-git-repository
-                (string-join (cons "eshell:" command) " "))))
+                (string-join command " "))))
     (defun git--target-path (use-visited)
         (if use-visited
             (or (buffer-file-or-directory)
