@@ -122,6 +122,8 @@
 
 (setcar (member "   " mode-line-format) "  ")
 
+(setcar (cdr (assq 'vc-mode mode-line-format)) "")
+
 
 (electric-indent-mode -1)
 (setq-default c-basic-offset 4)
