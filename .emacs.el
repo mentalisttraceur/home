@@ -3756,6 +3756,7 @@
 
 (use-package vertico
     :config
+    (require 'display-line-numbers)
     (vertico-mode 1)
     (setq vertico-resize nil)
     (defun count-vertico-lines ()
