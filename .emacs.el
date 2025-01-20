@@ -5300,6 +5300,31 @@
 (shred-define-key "gp" 'shred-evil-paste)
 (shred-define-key "gP" 'shred-evil-paste)
 
+(use-packages dired evil
+    :config
+    (setq dired-listing-switches "-l")
+    (defun evil-dired--toggle-hidden (switches)
+        (if (dired-check-switches switches "[aA]")
+            (delete ?A (delete ?a switches))
+            (concat switches "A")))
+    (defun evil-dired-toggle-hidden ()
+        (interactive)
+        (let ((new-switches (evil-dired--toggle-hidden dired-actual-switches))
+              (view (list (line-number-at-pos)
+                          (window-start)
+                          (window-vscroll)
+                          (window-hscroll))))
+            (dired-sort-other new-switches)
+            (redisplay)
+            (unless (equal (list (line-number-at-pos)
+                                 (window-start)
+                                 (window-vscroll)
+                                 (window-hscroll))
+                           view)
+                (pulse-momentary-highlight-one-line))
+            (message "ls %s" new-switches)))
+    (evil-define-key 'motion dired-mode-map "H" 'evil-dired-toggle-hidden))
+
 (use-packages dired android-trash evil
     :config
     (evil-define-operator evil-dired-delete
