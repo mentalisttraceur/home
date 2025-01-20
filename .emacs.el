@@ -4115,6 +4115,12 @@
             (setcar (cdr arguments) width))
         arguments)
     (advice-add 'eat-term-resize :filter-args 'fixed-eat-term-resize)
+    (when wsl
+        (defun hack-eat-term-resize (arguments)
+            (let ((width (cadr arguments)))
+                (setcar (cdr arguments) (1- width)))
+            arguments)
+        (advice-add 'eat-term-resize :filter-args 'hack-eat-term-resize))
     (defun fixed-eat--eshell-adjust-make-process-args
             (eat--eshell-adjust-make-process-args &rest arguments)
         (with-advice (('window-max-chars-per-line
