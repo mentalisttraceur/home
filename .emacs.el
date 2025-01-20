@@ -2524,7 +2524,9 @@
                 (push 'suppress-nothing-to-omit set-message-functions))
             (apply dired-omit-expunge arguments)))
     (advice-add 'dired-omit-expunge :around 'fixed-dired-omit-expunge)
-    (add-hook 'dired-mode-hook 'dired-omit-mode))
+    (add-hook 'dired-mode-hook 'dired-omit-mode)
+    (setq dired-omit-files "\\`\\.\\.?\\'")
+    (setq dired-omit-extensions nil))
 
 (use-packages dired-x android-trash
     :config
