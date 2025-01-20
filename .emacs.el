@@ -6501,7 +6501,7 @@
              (point)))
     (setq denote-faces-file-name-keywords-for-dired
         `((dired-filename-search-forward
-           (".trashed-[0-9]+-"
+           ("\\.trashed-[0-9]+-"
                ,point-to-match-beginning-form
                ,point-to-match-end-form
                (0 'android-trash-face))
@@ -6543,7 +6543,7 @@
            ("\\..*$"
                (progn
                    (goto-char (match-beginning 0))
-                   (search-forward-regexp ".trashed-[0-9]+-" (match-end 0) t)
+                   (search-forward-regexp "\\.trashed-[0-9]+-" (match-end 0) t)
                    (when (equal (char-after) ?.)
                        (forward-char))
                    (point))
