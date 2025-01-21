@@ -5317,6 +5317,7 @@
 
 (use-packages dired android-trash evil
     :config
+    (defvar evil-dired-delete-keep-entries nil)
     (evil-define-operator evil-dired-delete
             (start end type register yank-handler)
         :move-point nil
@@ -5334,8 +5335,11 @@
             (goto-char start)
             (forward-line lines)
             (setq end (point))
-            (let ((buffer-read-only nil))
-                (evil-delete start end type register yank-handler))
+            (if evil-dired-delete-keep-entries
+                (let ((evil-was-yanked-without-register nil))
+                    (evil-yank start end type register yank-handler))
+                (let ((buffer-read-only nil))
+                    (evil-delete start end type register yank-handler)))
             (goto-char (point-min))
             (forward-line (1- line))
             (move-to-column column)))
