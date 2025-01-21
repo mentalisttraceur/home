@@ -2056,8 +2056,8 @@
             (while (and older (not (dlist-car older)))
                 (setq older (dlist-cdr older)))
             older)
-        (if-let ((local  histdir-buffer-local-history--head)
-                 (shared (aref (histdir-history-table (histdir--history)) 3))
+        (if-let ((shared (aref (histdir-history-table (histdir--history)) 3))
+                 (local  histdir-buffer-local-history--head)
                  (_      (not (equal (dlist-car local) (dlist-car shared)))))
             local
             shared)))
