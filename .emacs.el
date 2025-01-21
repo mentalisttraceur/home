@@ -5368,15 +5368,23 @@
             (let ((dired-recursive-copies 'always))
                 (dired-copy-file path to-path nil)
                 nil)))
-    (defun evil-dired--paste (register)
+    (defun evil-dired--replacing-paste-1 (path _to-path)
+        (let ((new-path (dired-get-filename)))
+            (dired-delete-file new-path 'always)
+            (evil-dired--paste-1 path new-path)))
+    (defun evil-dired--paste (register &optional replace)
         (let* ((text (evil-paste-to-string 1 register))
                (paths (full-path-property-split nil nil text))
+               (paste-1 (if replace
+                            'evil-dired--replacing-paste-1
+                            'evil-dired--paste-1))
                start end yank-handler
                (moved nil))
-            (forward-line)
+            (unless replace
+                (forward-line))
             (setq start (pos-bol))
             (dolist (path paths)
-                (when (evil-dired--paste-1 path dired-directory)
+                (when (funcall paste-1 path dired-directory)
                     (setq moved t))
                 (forward-line))
             (when moved
@@ -5409,21 +5417,12 @@
                 (goto-char (point-min))
                 (forward-line (1- line)))))
     (evil-define-key 'motion dired-mode-map "P" 'evil-dired-paste-before)
-    (defun evil-dired--replacing-paste (register)
-        (let* ((text (evil-paste-to-string 1 register))
-               (paths (full-path-property-split nil nil text)))
-            (dolist (path paths)
-                (let ((new-path (dired-get-filename)))
-                    (dired-delete-file new-path 'always)
-                    (evil-dired--paste-1 path new-path))
-                (forward-line)))
-        (forward-line -1))
     (evil-define-command evil-dired-replacing-paste-after (count register)
         :suppress-operator t
         (interactive "p<x>")
         (evil-save-column
             (dotimes (_ count)
-                (evil-dired--replacing-paste register))))
+                (evil-dired--paste register t))))
     (evil-define-key 'motion dired-mode-map "gp" 'evil-dired-replacing-paste-after)
     (evil-define-command evil-dired-replacing-paste-before (count register)
         :suppress-operator t
@@ -5431,7 +5430,7 @@
         (evil-save-column
             (let ((line (line-number-at-pos)))
                 (dotimes (_ count)
-                    (evil-dired--replacing-paste register))
+                    (evil-dired--paste register t))
                 (goto-char (point-min))
                 (forward-line (1- line)))))
     (evil-define-key 'motion dired-mode-map "gP" 'evil-dired-replacing-paste-before)
