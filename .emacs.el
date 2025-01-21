@@ -2372,7 +2372,6 @@
                           (dired-get-filename t t))))
             (prog1
                 (apply dired-revert arguments)
-                ;(redisplay)
                 (unless (equal (list (line-number-at-pos)
                                      (window-start)
                                      (window-vscroll)
