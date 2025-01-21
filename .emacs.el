@@ -2534,26 +2534,6 @@
     to-path)
 (provide 'android-trash)
 
-(use-package dired-x
-    :config
-    (defun suppress-nothing-to-omit (message)
-        (when (equal message "(Nothing to omit)")
-            t))
-    (defun fixed-dired-omit-expunge (dired-omit-expunge &rest arguments)
-        (let ((set-message-functions set-message-functions))
-            (unless (called-interactively-p 'any)
-                (push 'suppress-nothing-to-omit set-message-functions))
-            (apply dired-omit-expunge arguments)))
-    (advice-add 'dired-omit-expunge :around 'fixed-dired-omit-expunge)
-    (add-hook 'dired-mode-hook 'dired-omit-mode)
-    (setq dired-omit-files "\\`\\.\\.?\\'")
-    (setq dired-omit-extensions nil))
-
-(use-packages dired-x android-trash
-    :config
-    (setq dired-omit-files
-        (concat dired-omit-files "\\|\\`\\.trashed-[0-9]+-")))
-
 (when termux
     (use-package image-mode
         :config
