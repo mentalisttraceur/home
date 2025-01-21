@@ -5340,6 +5340,12 @@
             (forward-line (1- line))
             (move-to-column column)))
     (evil-define-key 'motion dired-mode-map "d" 'evil-dired-delete)
+    (evil-define-operator evil-dired-delete-line (register yank-handler)
+        :move-point nil
+        :motion nil
+        (interactive "<x><y>")
+        (evil-dired-delete (pos-bol) (pos-eol) 'line register yank-handler))
+    (evil-define-key 'motion dired-mode-map "D" 'evil-dired-delete-line)
     (defun evil-dired--paste-1 (path to-path)
         (if (android-trash-p path)
             (let ((new-path (android-trash-restore path to-path)))
