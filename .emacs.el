@@ -869,7 +869,7 @@
     (bihash-count (aref table 2)))
 
 
-(defun count-visual-lines (start end)
+(defun count-visual-lines (start end &optional max-count)
     (if truncate-lines
         (count-lines start end)
         (setq start (max (point-min) (min start (point-max))))
@@ -878,10 +878,13 @@
             (let ((temporary start))
                 (setq start end)
                 (setq end temporary)))
+        (unless max-count
+            (setq max-count most-positive-fixnum))
         (save-excursion
             (goto-char start)
             (let ((count 0))
-                (while (< (point) end)
+                (while (and (< (point) end)
+                            (< count max-count))
                     (setq start (point))
                     (end-of-visual-line)
                     (when (and (eolp) (not (eobp)))
