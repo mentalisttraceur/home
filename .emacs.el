@@ -602,6 +602,17 @@
 (advice-add 'line-move-1 :around 'hack-line-move-1)
 
 
+(defun fixed-line-move-visual (count &optional no-error to-end try-vscroll)
+    (let ((line-move-visual t)
+          step)
+        (if (> count 0)
+            (setq step 1)
+            (setq step -1)
+            (setq count (- count)))
+        (dotimes (_ count)
+            (line-move step no-error to-end try-vscroll))))
+
+
 (defun loglsb (integer)
     (logand integer (- integer)))
 (defun logfls (integer)
