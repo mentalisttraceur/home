@@ -4439,6 +4439,20 @@
     (setq evil-shift-round nil)
     (define-key evil-replace-state-map [escape] 'evil-insert-state)
     (define-key evil-motion-state-map "\C-m" nil)
+    (evil-define-motion fixed-evil-next-visual-line (count)
+        :type exclusive
+        (interactive "p")
+        (evil-signal-without-movement
+            (fixed-line-move-visual count)))
+    (advice-add 'evil-next-visual-line
+        :override 'fixed-evil-next-visual-line)
+    (evil-define-motion fixed-evil-previous-visual-line (count)
+        :type exclusive
+        (interactive "p")
+        (evil-signal-without-movement
+            (fixed-line-move-visual (- count))))
+    (advice-add 'evil-previous-visual-line
+        :override 'fixed-evil-previous-visual-line)
     (defun fixed-newline ()
         (interactive)
         (when (memq evil-state '(insert replace emacs))
