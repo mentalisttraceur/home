@@ -6165,6 +6165,37 @@
         (with-advice (('aw-window-list :filter-return 'hack-aw-window-list)
                       ('avy-tree :around 'hack-avy-tree))
             (aw-select "" action)))
+    (defun hack-aw--lead-overlay (path leaf)
+        (let ((window (cdr leaf)))
+            (with-selected-window window
+                (let* ((start (window-start))
+                       (text (aw--overlay-str window (point-max) path))
+                       (end (save-excursion
+                                (goto-char start)
+                                (let* ((width (string-width text))
+                                       (initial (current-column))
+                                       (target (+ initial width))
+                                       (final (move-to-column target))
+                                       (delta (- final target)))
+                                    (when (> delta 0)
+                                        (if (equal (char-before) ?\t)
+                                            (backward-char)
+                                            (let ((padding (make-string delta ? )))
+                                                (setq text (concat text padding))))))
+                                (point)))
+                       (property (if (> (- end start) 0)
+                                     'display
+                                     'after-string))
+                       (face (if (window-minibuffer-p window)
+                                 'aw-minibuffer-leading-char-face
+                                 'aw-leading-char-face))
+                       (overlay (make-overlay start end
+                                    (window-buffer window))))
+                    (put-text-property 0 (length text) 'face face text)
+                    (overlay-put overlay property text)
+                    (overlay-put overlay 'window window)
+                    (push overlay avy--overlays-lead)))))
+    (advice-add 'aw--lead-overlay :override 'hack-aw--lead-overlay)
     (defvar window-state nil)
     (defconst window-state-normal
         '("#00FF00" "#808080" "#141414" "W" "Window state"))
