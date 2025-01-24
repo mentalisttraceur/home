@@ -4413,12 +4413,10 @@
     (defun fixed-evil-goto-line (evil-goto-count &optional count)
         (if count
             (funcall evil-goto-count count)
-            (let* ((end   (point-max))
-                   (end-1 (- end 1))
-                   (last  (buffer-substring-no-properties end-1 end)))
+            (let ((end (point-max)))
                 (evil-ensure-column
-                    (if (equal last "\n")
-                        (goto-char end-1)
+                    (if (equal (char-before end) ?\n)
+                        (goto-char (1- end))
                         (goto-char end))))))
     (advice-add 'evil-goto-line :around 'fixed-evil-goto-line)
     (setq evil-move-beyond-eol t)
