@@ -5084,7 +5084,7 @@
     (define-key git-map "l" (git log))
     (define-key git-map "L" (git log -p))
     (define-key git-map "o" (git reflog))
-    (define-key git-map "p" (git stash list -p))
+    (define-key git-map "f" (git stash list -p))
     (define-key git-map "d" (git diff))
     (define-key git-map "s" (git diff --staged))
     (define-key git-map "a" (git add -p))
