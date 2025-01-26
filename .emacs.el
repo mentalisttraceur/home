@@ -917,6 +917,16 @@
         (delete-region (pos-bol) (pos-bol (+ count 1)))))
 
 
+(defun scroll-to-fill-window ()
+    (let ((window-height (floor (window-screen-lines)))
+          (used-lines (count-visual-lines
+                          (window-start)
+                          (window-end nil t))))
+        (when (< used-lines window-height)
+            (ignore-error 'beginning-of-buffer
+                (scroll-down (- window-height used-lines))))))
+
+
 (defun repeat-string (string count)
     (string-join (make-list count string)))
 
