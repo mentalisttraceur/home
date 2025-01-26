@@ -2310,7 +2310,7 @@
     (defun dired-goto-first-file ()
         (interactive)
         (goto-char 1)
-        (let ((last-point (point)))
+        (let ((last-point -1))
             (until (or (dired-get-filename nil t)
                        (= last-point (point)))
                 (setq last-point (point))
