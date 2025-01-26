@@ -7059,7 +7059,9 @@
         (save-excursion
             (goto-char 1)
             (let ((inhibit-read-only t))
-                (delete-line)))
+                (put-text-property (pos-bol) (1+ (pos-eol)) 'cursor-intangible t)
+                (put-text-property (pos-bol) (1+ (pos-eol)) 'invisible t)))
+        (cursor-intangible-mode 1)
         (when-let ((marker-at-1    (set-marker (make-marker) 1))
                    (directory-at-1 (rassoc marker-at-1 dired-subdir-alist)))
             (setcdr directory-at-1 0)))
