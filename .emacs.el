@@ -5356,13 +5356,17 @@
 (use-packages dired evil
     :config
     (setq dired-listing-switches "-l")
-    (defun evil-dired--toggle-hidden (switches)
-        (if (dired-check-switches switches "[aA]")
-            (delete ?A (delete ?a switches))
-            (concat switches "A")))
     (defun evil-dired-toggle-hidden ()
         (interactive)
-        (let ((new-switches (evil-dired--toggle-hidden dired-actual-switches)))
+        (let ((old-switches dired-actual-switches)
+              new-switches)
+            (if (not (dired-check-switches old-switches "[aA]"))
+                (setq new-switches (concat old-switches "A"))
+                (evil-save-column
+                    (while-let ((name (dired-get-filename t t))
+                                (_ (string-prefix-p "." name)))
+                        (dired-next-line 1)))
+                (setq new-switches (delete ?A (delete ?a old-switches))))
             (dired-sort-other new-switches)
             (message "ls %s" new-switches)))
     (evil-define-key 'motion dired-mode-map "H" 'evil-dired-toggle-hidden))
