@@ -1,0 +1,4 @@
+#!/bin/sh -
+ls "$@" \
+| grep '_qq\|^//DIRED' \
+| grep "${EMACS_TASK_FILTER}\|^//DIRED"

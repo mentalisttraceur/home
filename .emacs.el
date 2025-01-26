@@ -7058,13 +7058,6 @@
         (interactive)
         (denote-title-prompt nil "Task"))
     (defun task--filter-dired (&optional filter-regex)
-        (dired-mark-files-regexp (concat "_" task-tag))
-        (dired-toggle-marks)
-        (dired-do-kill-lines)
-        (when filter-regex
-            (dired-mark-files-regexp filter-regex)
-            (dired-toggle-marks)
-            (dired-do-kill-lines))
         (save-excursion
             (goto-char 1)
             (let ((inhibit-read-only t))
@@ -7081,8 +7074,12 @@
     (defun task--buffer-revert (filter-regex)
         (lambda-let (filter-regex) (&rest arguments)
             (with-pulsed-dired-revert
-                (let ((inhibit-redisplay t))
-                    (with-undo-amalgamate
+                (with-undo-amalgamate
+                    (let ((insert-directory-program "emacs-task-ls")
+                          (process-environment process-environment))
+                        (when filter-regex
+                            (push (concat "EMACS_TASK_FILTER=" filter-regex)
+                                process-environment))
                         (apply 'dired-revert arguments)
                         (task--filter-dired filter-regex))))))
     (defun task-list ()
@@ -7117,6 +7114,7 @@
         (interactive (list (denote--keywords-crm (task-tags) "Task tags")))
         (let* ((tags  (denoted-tag-sort tags))
                (regex (concat "_" (regexp-opt-group tags t) "[_.]"))
+               (regex (string-replace "\\(?:" "\\(" regex))
                (title (concat "*Tasks (" (string-join tags ",") ")*")))
             (task--buffer title regex)
             (setq-local task-list--tags tags)))
