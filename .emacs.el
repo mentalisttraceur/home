@@ -7083,10 +7083,11 @@
         (dired-goto-first-file))
     (defun task--buffer-revert (filter-regex)
         (lambda-let (filter-regex) (&rest arguments)
-            (let ((inhibit-redisplay t))
-                (with-undo-amalgamate
-                    (apply 'dired-revert arguments)
-                    (task--filter-dired filter-regex)))))
+            (with-pulsed-dired-revert
+                (let ((inhibit-redisplay t))
+                    (with-undo-amalgamate
+                        (apply 'dired-revert arguments)
+                        (task--filter-dired filter-regex))))))
     (defun task-list ()
         (interactive)
         (task--buffer "*Tasks*" nil))
