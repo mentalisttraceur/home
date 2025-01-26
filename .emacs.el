@@ -7075,8 +7075,7 @@
             (let ((inhibit-redisplay t))
                 (with-undo-amalgamate
                     (apply 'dired-revert arguments)
-                    (save-point
-                        (task--filter-dired filter-regex))))))
+                    (task--filter-dired filter-regex)))))
     (defun task-list ()
         (interactive)
         (task--buffer "*Tasks*" nil))
