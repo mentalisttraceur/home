@@ -2473,7 +2473,8 @@
                 (dired default-directory)
                 (dired (file-name-parent-directory path))
                 (dired-goto-file (expand-file-name path))
-                (recenter)))))
+                (recenter)
+                (scroll-to-fill-window)))))
 
 (add-to-list 'text-property-default-nonsticky
     (cons 'full-path t))
