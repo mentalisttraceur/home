@@ -7057,15 +7057,6 @@
     (defun task-prompt ()
         (interactive)
         (denote-title-prompt nil "Task"))
-    (defun task--filter-dired (&optional filter-regex)
-        (save-excursion
-            (goto-char 1)
-            (let ((inhibit-read-only t)
-                  (start (pos-bol))
-                  (end (1+ (pos-eol))))
-                (put-text-property start end 'cursor-intangible t)
-                (put-text-property start end 'invisible t)))
-        (cursor-intangible-mode 1))
     (defun task--buffer (title regex)
         (reuse-independent-dired title denote-directory)
         (dired-hide-details-mode 1)
@@ -7075,15 +7066,12 @@
         (dired-goto-first-file))
     (defun task--buffer-revert (filter-regex)
         (lambda-let (filter-regex) (&rest arguments)
-            (with-pulsed-dired-revert
-                (with-undo-amalgamate
-                    (let ((insert-directory-program "emacs-task-ls")
-                          (process-environment process-environment))
-                        (when filter-regex
-                            (push (concat "EMACS_TASK_FILTER=" filter-regex)
-                                process-environment))
-                        (apply 'dired-revert arguments)
-                        (task--filter-dired filter-regex))))))
+            (let ((insert-directory-program "emacs-task-ls")
+                  (process-environment process-environment))
+                (when filter-regex
+                    (push (concat "EMACS_TASK_FILTER=" filter-regex)
+                        process-environment))
+                (apply 'dired-revert arguments))))
     (defun task-list ()
         (interactive)
         (task--buffer "*Tasks*" nil))
