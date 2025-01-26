@@ -6997,11 +6997,12 @@
                (was-already-open (if buffer t nil))
                (was-already-focused (eq (current-buffer) buffer)))
             (if buffer
-                (switch-to-buffer buffer)
+                (progn
+                    (switch-to-buffer buffer)
+                    (revert-buffer))
                 (setq buffer (dired denote-directory))
                 (dired-hide-details-mode 1)
                 (denote-dired-mode 1))
-            (revert-buffer)
             (list buffer was-already-open was-already-focused)))
     (define-key space-map "N"
         (lambda ()
