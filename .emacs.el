@@ -2408,21 +2408,21 @@
                 (scroll-to-fill-window))))
     (advice-add 'dired-restore-positions
         :after 'fixed-dired-restore-positions)
+    (defun pulsed-dired-revert--view ()
+        (list (count-visual-lines
+                  (window-start)
+                  (save-excursion
+                      (beginning-of-visual-line)))
+              (window-hscroll)
+              (dired-get-filename t t)))
     (defun pulsed-dired-revert (dired-revert &rest arguments)
-        (let ((view (list (line-number-at-pos)
-                          (window-start)
-                          (window-vscroll)
-                          (window-hscroll)
-                          (dired-get-filename t t))))
+        (let ((view-before (pulsed-dired-revert--view)))
             (prog1
                 (apply dired-revert arguments)
-                (unless (equal (list (line-number-at-pos)
-                                     (window-start)
-                                     (window-vscroll)
-                                     (window-hscroll)
-                                     (dired-get-filename t t))
-                               view)
-                    (pulse-momentary-highlight-region (pos-bol) (pos-eol))))))
+                (let ((view-after (pulsed-dired-revert--view)))
+                    (unless (equal view-before view-after)
+                        (pulse-momentary-highlight-region
+                            (pos-bol) (pos-eol)))))))
     (advice-add 'dired-revert :around 'pulsed-dired-revert)
     (defun revert-dired-buffers (directory)
         (setq directory (expand-file-name (file-name-as-directory directory)))
