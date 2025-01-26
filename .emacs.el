@@ -2422,7 +2422,7 @@
                                      (window-hscroll)
                                      (dired-get-filename t t))
                                view)
-                    (pulse-momentary-highlight-one-line)))))
+                    (pulse-momentary-highlight-region (pos-bol) (pos-eol))))))
     (advice-add 'dired-revert :around 'pulsed-dired-revert)
     (defun revert-dired-buffers (directory)
         (setq directory (expand-file-name (file-name-as-directory directory)))
