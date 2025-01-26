@@ -2427,15 +2427,24 @@
                       (beginning-of-visual-line)))
               (window-hscroll)
               (dired-get-filename t t)))
-    (defun pulsed-dired-revert (dired-revert &rest arguments)
-        (let ((view-before (pulsed-dired-revert--view)))
-            (prog1
-                (apply dired-revert arguments)
-                (let ((view-after (pulsed-dired-revert--view)))
-                    (unless (equal view-before view-after)
-                        (pulse-momentary-highlight-region
-                            (pos-bol) (pos-eol)))))))
-    (advice-add 'dired-revert :around 'pulsed-dired-revert)
+    (defvar pulsed-dired-revert--nested nil)
+    (defmacro with-pulsed-dired-revert (&rest body)
+        (let ((before (make-symbol "pulsed-dired-revert--before"))
+              (after  (make-symbol "pulsed-dired-revert--after")))
+            `(let ((,before (unless pulsed-dired-revert--nested
+                                (pulsed-dired-revert--view))))
+                 (prog1
+                     (let ((pulsed-dired-revert--nested t))
+                         ,@body)
+                     (unless pulsed-dired-revert--nested
+                         (let ((,after (pulsed-dired-revert--view)))
+                             (unless (equal ,before ,after)
+                                 (pulse-momentary-highlight-region
+                                     (pos-bol) (pos-eol)))))))))
+    (defun pulsed-dired-revert--advice (dired-revert &rest arguments)
+        (with-pulsed-dired-revert
+            (apply dired-revert arguments)))
+    (advice-add 'dired-revert :around 'pulsed-dired-revert--advice)
     (defun revert-dired-buffers (directory)
         (setq directory (expand-file-name (file-name-as-directory directory)))
         (dolist (buffer (buffer-list))
