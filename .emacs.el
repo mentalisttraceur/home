@@ -2319,7 +2319,6 @@
     (defun dired-goto-last-file ()
         (interactive)
         (goto-char (point-max))
-        (redisplay)
         (dired-previous-line 1))
     (defun dired-filename-search-forward (bound)
         (let ((start-of-search (point)))
