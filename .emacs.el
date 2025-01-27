@@ -537,6 +537,24 @@
     `(apply-split-nest with-variable-watcher-1 ,watcher-list 1 ,body))
 
 
+(defmacro without-local-variable-1 (symbol &rest body)
+    `(let ((--without-local-variable-1-- (when (local-variable-p ,symbol)
+                                             (if (boundp ,symbol)
+                                                 (cons t (symbol-value ,symbol))
+                                                 (cons nil nil)))))
+         (unwind-protect
+             (progn
+                 (kill-local-variable ,symbol)
+                 ,@body)
+             (when --without-local-variable-1--
+                 (make-local-variable ,symbol)
+                 (when (car --without-local-variable-1--)
+                     (set ,symbol (cdr --without-local-variable-1--)))))))
+
+(defmacro without-local-variable (symbol-list &rest body)
+    `(apply-split-nest without-local-variable-1 ,symbol-list 1 ,body))
+
+
 (defmacro with-face-attribute-1 (face attribute value &rest body)
     `(let ((--with-face-attribute-1-- (face-attribute ,face ,attribute)))
          (unwind-protect
