@@ -7033,7 +7033,7 @@
         (interactive "P")
         (denoted-try 'denoted-name-edit))
     (define-key evil-motion-state-map "gC" 'name-change)
-    (defun smoother-delete-file--1 (&optional filename)
+    (defun smoother-delete-file--1 (filename)
         (when (confirm-p (format "Delete %s?" (abbreviate-file-name filename)))
             (delete-file filename)
             (when-let (buffer (find-buffer-visiting filename))
