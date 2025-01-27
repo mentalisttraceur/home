@@ -2473,11 +2473,14 @@
                 (setq new (pop dired-buffers)))
             (push new dired-buffers)
             buffer))
-    (defun reuse-independent-dired (name directory &rest arguments)
+    (defun reuse-independent-dired (name directory &optional switches revert)
         (let ((buffer (get-buffer name)))
             (if buffer
-                (pop-to-buffer-same-window buffer)
-                (setq buffer (independent-dired directory))
+                (progn
+                    (pop-to-buffer-same-window buffer)
+                    (when revert
+                        (revert-buffer)))
+                (setq buffer (independent-dired directory switches))
                 (rename-buffer name))
             buffer)))
 
