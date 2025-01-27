@@ -2464,10 +2464,10 @@
             (apply dired-find-buffer-nocreate arguments)))
     (advice-add 'dired-find-buffer-nocreate
         :around 'independent-dired--find-buffer-nocreate)
-    (defun independent-dired (directory &rest arguments)
+    (defun independent-dired (directory &optional switches)
         (let (buffer new)
             (let ((dired-buffers nil))
-                (setq buffer (apply 'dired directory arguments))
+                (setq buffer (dired directory switches))
                 (with-current-buffer buffer
                     (setq independent-dired-buffer t))
                 (setq new (pop dired-buffers)))
