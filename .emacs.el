@@ -7113,8 +7113,9 @@
                      process-environment))
              ,@body))
     (defun task--buffer (title filter-regex)
-        (task--with-filtered-ls filter-regex
-            (reuse-independent-dired title denote-directory nil t))
+        (without-local-variable ('process-environment)
+            (task--with-filtered-ls filter-regex
+                (reuse-independent-dired title denote-directory nil t)))
         (setq-local revert-buffer-function (task--buffer-revert filter-regex))
         (dired-hide-details-mode 1)
         (denote-dired-mode 1)
