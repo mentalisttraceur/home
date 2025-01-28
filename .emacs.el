@@ -7153,7 +7153,9 @@
                          nil nil datetime)))
             (unless (string-prefix-p "*Tasks" (buffer-name))
                 (task-list))
-            (dired-goto-file path)))
+            (dired-goto-file path)
+            (pulse-momentary-highlight-region
+                (pos-bol) (pos-eol))))
     (define-key space-map "g" 'task-create)
     (define-key space-map "G" 'task-list)
     (defun task-tags ()
