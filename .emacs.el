@@ -2357,6 +2357,24 @@
                         nil))
                 (goto-char start-of-search)
                 nil)))
+    (defun add-dired-file (path &optional marker predicate)
+        (dired-fun-in-all-buffers
+            (file-name-directory path)
+            (file-name-nondirectory path)
+            'add-dired-entry path marker predicate))
+    (defun add-dired-entry (path &optional marker relative predicate)
+        (setq-if-nil predicate 'string-lessp)
+        (setq path (directory-file-name path))
+        (let ((show-hidden (dired-check-switches dired-actual-switches "[aA]")))
+            (when (or show-hidden
+                      (/= (aref (file-name-nondirectory path) 0) ?.))
+                (save-excursion
+                    (unless (dired-goto-file path)
+                        (dired-goto-first-file)
+                        (while-let ((next-path (dired-get-filename))
+                                    (_ (funcall predicate next-path path)))
+                            (dired-next-line 1))
+                        (dired-add-entry path marker relative))))))
     (defun update-dired-file (path &optional old-path)
         (when (and old-path
                    (not (equal (file-name-directory path)
