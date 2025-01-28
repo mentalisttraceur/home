@@ -2485,13 +2485,6 @@
         (with-pulsed-dired-revert
             (apply dired-revert arguments)))
     (advice-add 'dired-revert :around 'pulsed-dired-revert--advice)
-    (defun revert-dired-buffers (directory)
-        (setq directory (expand-file-name (file-name-as-directory directory)))
-        (dolist (buffer (buffer-list))
-            (with-current-buffer buffer
-                (when (derived-mode-p 'dired-mode)
-                    (when (equal directory (expand-file-name dired-directory))
-                        (revert-buffer))))))
     (defvar-local independent-dired-buffer nil)
     (defun independent-dired--filter-p (cell)
         (let ((buffer (cdr cell)))
