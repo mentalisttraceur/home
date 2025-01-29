@@ -2350,7 +2350,7 @@
         (dired-fun-in-all-buffers
             (file-name-directory path)
             (file-name-nondirectory path)
-            'add-dired-entry path marker predicate))
+            'add-dired-entry path marker nil predicate))
     (defun add-dired-entry (path &optional marker relative predicate)
         (setq-if-nil predicate 'string-lessp)
         (setq path (directory-file-name path))
