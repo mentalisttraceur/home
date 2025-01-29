@@ -3891,6 +3891,13 @@
             (window-resize nil delta)))
     (advice-add 'vertico--resize :before 'fixed-vertico-resize--before)
     (advice-add 'vertico--resize :after 'fixed-vertico-resize)
+    (defun fixed-vertico--truncate-multiline
+            (vertico--truncate-multiline string &rest arguments)
+        (if truncate-lines
+            (apply vertico--truncate-multiline string arguments)
+            string))
+    (advice-add 'vertico--truncate-multiline
+        :around 'fixed-vertico--truncate-multiline)
     (setq vertico-cycle t)
     (setq minibuffer-prompt-properties
         (append '(cursor-intangible t) minibuffer-prompt-properties))
