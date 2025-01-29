@@ -7547,7 +7547,8 @@
 (evil-define-command music-paste-after (count register)
     :suppress-operator t
     (interactive "p<x>")
-    (music--paste count register 1))
+    (music--line-move-after-refresh
+        (music--paste count register 1)))
 (music-define-key 'normal "p" 'music-paste-after)
 (evil-define-command music-paste-before (count register)
     :suppress-operator t
@@ -7568,12 +7569,14 @@
 (evil-define-command music-replacing-paste-after (count register)
     :suppress-operator t
     (interactive "p<x>")
-    (evil-next-line (music-replacing-paste-before count register)))
+    (music--line-move-after-refresh
+        (music-replacing-paste-before count register)))
 (music-define-key 'normal "gp" 'music-replacing-paste-after)
 (music-define-key 'normal "gP" 'music-replacing-paste-before)
 (defun music-open-after (count)
     (interactive "p")
-    (music--open count (music-select) (music--index-for-point 1)))
+    (music--line-move-after-refresh
+        (music--open count (music-select) (music--index-for-point 1))))
 (music-define-key 'normal "o" 'music-open-after)
 (defun music-open-before (count)
     (interactive "p")
