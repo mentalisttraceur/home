@@ -7359,6 +7359,7 @@
         (add-hook 'post-command-hook 'music--post-command-seek nil t)
         (pop-to-buffer buffer)))
 (defvar music--refresh-next-line nil)
+(defvar music--refresh-next-index nil)
 (defvar music--refresh-next-column nil)
 (defun music--refresh (socket buffer)
     (when (get-buffer-window buffer 'visible)
@@ -7378,6 +7379,14 @@
                 (when music--refresh-next-line
                     (goto-line music--refresh-next-line)
                     (setq music--refresh-next-line nil))
+                (when music--refresh-next-index
+                    (goto-char 1)
+                    (when-let (match (text-property-search-forward
+                                         'mpv-index
+                                         music--refresh-next-index
+                                         'equal))
+                        (goto-char (prop-match-beginning match)))
+                    (setq music--refresh-next-index nil))
                 (when music--refresh-next-column
                     (move-to-column music--refresh-next-column)
                     (setq music--refresh-next-column nil)
@@ -7385,6 +7394,12 @@
 (defun music--line-move-after-refresh (count)
     (let ((current (line-number-at-pos (point))))
         (setq music--refresh-next-line (+ current count)))
+    (setq music--refresh-next-column (current-column)))
+(defun music--index-move-after-refresh (count)
+    (let ((current (if (= (point) (buffer-end 1))
+                       (get-text-property (1- (point)) 'mpv-index)
+                       (get-text-property (point) 'mpv-index))))
+        (setq music--refresh-next-index (+ current count)))
     (setq music--refresh-next-column (current-column)))
 (defface music-current-entry-face '((t :foreground "#80FFFF")) "")
 (defface music-current-playing-entry-face
