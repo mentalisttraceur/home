@@ -3891,11 +3891,13 @@
             (window-resize nil delta)))
     (advice-add 'vertico--resize :before 'fixed-vertico-resize--before)
     (advice-add 'vertico--resize :after 'fixed-vertico-resize)
+    (defconst fixed-vertico--multiline-wrap
+        (propertize "\n↳" 'face 'vertico-multiline))
     (defun fixed-vertico--truncate-multiline
             (vertico--truncate-multiline string &rest arguments)
         (if truncate-lines
             (apply vertico--truncate-multiline string arguments)
-            string))
+            (string-replace "\n" fixed-vertico--multiline-wrap string)))
     (advice-add 'vertico--truncate-multiline
         :around 'fixed-vertico--truncate-multiline)
     (setq vertico-cycle t)
