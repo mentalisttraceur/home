@@ -5794,7 +5794,7 @@
             (setq buffer (get-buffer-create name))
             (set-buffer buffer)
             (histdir-repl-mode))
-        (pop-to-buffer-same-window buffer)
+        (pop-to-buffer buffer)
         (unpack (default-directory histdir) buffer-locals)
         (unless (get-buffer-process (current-buffer))
             (let ((process-environment environment))
