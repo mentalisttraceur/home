@@ -7358,6 +7358,8 @@
                     nil t)))
         (add-hook 'post-command-hook 'music--post-command-seek nil t)
         (pop-to-buffer buffer)))
+(defvar music--refresh-next-line nil)
+(defvar music--refresh-next-column nil)
 (defun music--refresh (socket buffer)
     (when (get-buffer-window buffer 'visible)
         (with-current-buffer buffer
@@ -7370,8 +7372,19 @@
                             (music--insert-playlist socket))))
                 (when-let (position (next-single-property-change
                                         1 'mpv--position))
-                    (goto-char position)
+                    (progn
+                        (goto-char position)
+                        (setq temporary-goal-column (current-column))))
+                (when music--refresh-next-line
+                    (goto-line music--refresh-next-line)
+                    (setq music--refresh-next-line nil))
+                (when music--refresh-next-column
+                    (move-to-column music--refresh-next-column)
+                    (setq music--refresh-next-column nil)
                     (setq temporary-goal-column (current-column)))))))
+(defun music--line-move-after-refresh (lines)
+    (setq music--refresh-next-line (+ (line-number-at-pos (point)) lines))
+    (setq music--refresh-next-column (current-column)))
 (defface music-current-entry-face '((t :foreground "#80FFFF")) "")
 (defface music-current-playing-entry-face
     '((t :inherit music-current-entry-face :weight bold :foreground "#FF4040"))
