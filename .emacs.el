@@ -1719,33 +1719,23 @@
         (ignore-error 'iter-end-of-sequence
             (iter-next iterator yield-result))))
 
-(defvar-local parent-buffer nil)
-(defvar-local child-buffers nil)
+(defvar-local parent-buffer--list nil)
 (defun parent-buffer (&optional buffer)
-    (buffer-local-value 'parent-buffer (or buffer (current-buffer))))
-(defun child-buffers (&optional buffer)
-    (buffer-local-value 'child-buffers (or buffer (current-buffer))))
+    (save-current-buffer
+        (when buffer
+            (set-buffer buffer))
+        (seq-find 'buffer-live-p parent-buffer--list)))
 (defun set-parent-buffer (new-parent-buffer &optional buffer)
-    (setq-if-nil buffer (current-buffer))
-    (unless (eq new-parent-buffer parent-buffer)
-        (save-current-buffer
-            (when parent-buffer
-                (set-buffer parent-buffer)
-                (setq child-buffers (delq buffer child-buffers)))
-            (when new-parent-buffer
-                (set-buffer new-parent-buffer)
-                (push buffer child-buffers))))
-    (setq parent-buffer new-parent-buffer))
-(defun parent-buffer--kill-hook ()
-    (let ((parent parent-buffer)
-          (buffer (current-buffer)))
-        (when parent
-            (with-current-buffer parent
-                (setq child-buffers (delq buffer child-buffers))))
-        (dolist (child child-buffers)
-            (with-current-buffer child
-                (set-parent-buffer parent)))))
-(add-hook 'kill-buffer-hook 'parent-buffer--kill-hook)
+    (save-current-buffer
+        (when buffer
+            (set-buffer buffer))
+        (unless (eq (car parent-buffer--list) new-parent-buffer)
+            (setq parent-buffer--list
+                (cons
+                    new-parent-buffer
+                    (buffer-local-value
+                        'parent-buffer--list
+                        new-parent-buffer))))))
 (defun parent-buffer-setter (&optional new-parent-buffer)
     (setq-if-nil new-parent-buffer (current-buffer))
     (apply-partially 'set-parent-buffer new-parent-buffer))
@@ -1753,12 +1743,11 @@
     (save-current-buffer
         (when buffer
             (set-buffer buffer))
-        (when parent-buffer
-            (set-buffer parent-buffer)
-            (until (or (funcall predicate (current-buffer))
-                       (not parent-buffer))
-                (set-buffer parent-buffer))
-            (current-buffer))))
+        (seq-find
+            (lambda-let (predicate) (buffer)
+                (and (buffer-live-p buffer)
+                     (funcall predicate buffer)))
+            parent-buffer--list)))
 (defun parent-buffer-file-or-directory (&optional buffer)
     (when-let (found (parent-buffer-search 'buffer-file-or-directory buffer))
         (buffer-file-or-directory found)))
