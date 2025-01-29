@@ -7382,8 +7382,9 @@
                     (move-to-column music--refresh-next-column)
                     (setq music--refresh-next-column nil)
                     (setq temporary-goal-column (current-column)))))))
-(defun music--line-move-after-refresh (lines)
-    (setq music--refresh-next-line (+ (line-number-at-pos (point)) lines))
+(defun music--line-move-after-refresh (count)
+    (let ((current (line-number-at-pos (point))))
+        (setq music--refresh-next-line (+ current count)))
     (setq music--refresh-next-column (current-column)))
 (defface music-current-entry-face '((t :foreground "#80FFFF")) "")
 (defface music-current-playing-entry-face
