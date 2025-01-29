@@ -5795,6 +5795,7 @@
             (set-buffer buffer)
             (histdir-repl-mode))
         (pop-to-buffer buffer)
+        (setq buffer-undo-list t)
         (unpack (default-directory histdir) buffer-locals)
         (unless (get-buffer-process (current-buffer))
             (let ((process-environment environment))
