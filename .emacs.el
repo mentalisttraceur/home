@@ -3904,6 +3904,7 @@
     (setq minibuffer-prompt-properties
         (append '(cursor-intangible t) minibuffer-prompt-properties))
     (add-hook 'minibuffer-setup-hook 'cursor-intangible-mode)
+    (set-face-foreground 'vertico-multiline "#FF0000")
     (defvar-local next-vertico-index nil)
     (defvar-local next-vertico-scroll nil)
     (defun hack-vertico--recompute (state)
