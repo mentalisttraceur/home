@@ -2517,7 +2517,9 @@
             (if (not path)
                 (dired default-directory)
                 (dired (file-name-parent-directory path))
-                (dired-goto-file (expand-file-name path))
+                (setq path (expand-file-name path))
+                (add-dired-entry path nil nil t)
+                (dired-goto-file path)
                 (recenter)
                 (scroll-to-fill-window)
                 (pulse-momentary-highlight-region
