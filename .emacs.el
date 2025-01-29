@@ -2360,7 +2360,7 @@
             (save-excursion
                 (unless (dired-goto-file path)
                     (dired-goto-first-file)
-                    (while-let ((next-path (dired-get-filename))
+                    (while-let ((next-path (dired-get-filename nil t))
                                 (_ (funcall predicate next-path path)))
                         (dired-next-line 1))
                     (dired-add-entry path marker relative)))))
