@@ -2723,7 +2723,7 @@
         (setq display-fill-column-indicator-column
               (+ fill-column
                  (max (length wrap-prefix)
-                      (length fill-prefix))))
+                      (length line-prefix))))
         (let ((overlong-regexp (format ".\\{%d\\}\\(.*\\)" fill-column)))
             (when display-fill-column-indicator-mode
                 (highlight-regexp overlong-regexp 'hi-yellow 1)))
