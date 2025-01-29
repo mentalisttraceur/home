@@ -2720,10 +2720,6 @@
                 (display-fill-column-indicator-mode 1))
             (when (eq last-command 'control-fill-column)
                 (display-fill-column-indicator-mode 'toggle)))
-        (setq display-fill-column-indicator-column
-              (+ fill-column
-                 (max (length wrap-prefix)
-                      (length line-prefix))))
         (let ((overlong-regexp (format ".\\{%d\\}\\(.*\\)" fill-column)))
             (when display-fill-column-indicator-mode
                 (highlight-regexp overlong-regexp 'hi-yellow 1)))
@@ -4194,28 +4190,12 @@
 
 (use-package eat
     :config
-    (defun fixed-eat--subtract-prefix-width (width)
-        (- width (max (length line-prefix) (length wrap-prefix))))
-    (defun fixed-eat-term-resize (arguments)
-        (let ((width (cadr arguments)))
-            (setq width (fixed-eat--subtract-prefix-width width))
-            (setcar (cdr arguments) width))
-        arguments)
-    (advice-add 'eat-term-resize :filter-args 'fixed-eat-term-resize)
     (when wsl
         (defun hack-eat-term-resize (arguments)
             (let ((width (cadr arguments)))
                 (setcar (cdr arguments) (1- width)))
             arguments)
         (advice-add 'eat-term-resize :filter-args 'hack-eat-term-resize))
-    (defun fixed-eat--eshell-adjust-make-process-args
-            (eat--eshell-adjust-make-process-args &rest arguments)
-        (with-advice (('window-max-chars-per-line
-                          :filter-return
-                          'fixed-eat--subtract-prefix-width))
-            (apply eat--eshell-adjust-make-process-args arguments)))
-    (advice-add 'eat--eshell-adjust-make-process-args
-        :around 'fixed-eat--eshell-adjust-make-process-args)
     (defun eat-point ()
         (when eat-terminal
             (marker-position
@@ -4308,42 +4288,6 @@
     (when pop-to-command--callback
         (funcall pop-to-command--callback)))
 (provide 'pop-to-command)
-
-(defconst fake-fringe--wrap-prefix (propertize "⤷" 'face 'fringe))
-(defconst fake-fringe--line-prefix (propertize " " 'face 'fringe))
-(defun fake-fringe (&optional toggle-global-default)
-    (interactive "P")
-    (if toggle-global-default
-        (progn
-            (if (default-value 'wrap-prefix)
-                (setq-default wrap-prefix nil
-                              line-prefix nil)
-                (setq-default wrap-prefix fake-fringe--wrap-prefix
-                              line-prefix fake-fringe--line-prefix))
-            (if (and (local-variable-p 'wrap-prefix)
-                     (eq wrap-prefix (default-value 'wrap-prefix)))
-                (kill-local-variable 'wrap-prefix)
-                (kill-local-variable 'line-prefix)))
-        (if (eq wrap-prefix (default-value 'wrap-prefix))
-            (if (default-value 'wrap-prefix)
-                (setq wrap-prefix nil
-                      line-prefix nil)
-                (setq wrap-prefix fake-fringe--wrap-prefix
-                      line-prefix fake-fringe--line-prefix))
-            (kill-local-variable 'wrap-prefix)
-            (kill-local-variable 'line-prefix)))
-    (if (local-variable-p 'wrap-prefix)
-        (message "fake-fringe: locally %s (globally %s)"
-            (not (not wrap-prefix))
-            (not (not (default-value 'wrap-prefix))))
-        (message "fake-fringe: globally %s"
-            (not (not (default-value 'wrap-prefix))))))
-(provide 'fake-fringe)
-
-(when termux
-    (use-package fake-fringe
-        :config
-        (fake-fringe t)))
 
 (use-package evil
     :init
@@ -4857,7 +4801,6 @@
             visual-line-mode truncate-lines))
     (evil-declare-not-repeat 'cycle-line-wrap)
     (define-key space-map ";" 'cycle-line-wrap)
-    (define-key space-map ":" 'fake-fringe)
     (define-key space-map "[" 'delete-trailing-whitespace)
     (define-key space-map "]" (toggle select-enable-clipboard))
     (define-key space-map "l" 'consult-line)
