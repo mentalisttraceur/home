@@ -2519,7 +2519,9 @@
                 (dired (file-name-parent-directory path))
                 (dired-goto-file (expand-file-name path))
                 (recenter)
-                (scroll-to-fill-window)))))
+                (scroll-to-fill-window)
+                (pulse-momentary-highlight-region
+                    (pos-bol) (pos-eol))))))
 
 (add-to-list 'text-property-default-nonsticky
     (cons 'full-path t))
