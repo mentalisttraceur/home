@@ -5331,7 +5331,7 @@
     (toggle datetime-read-popup-calendar t))
 
 (define-derived-mode shred-mode nil "shred")
-(defvar shred-candidate nil)
+(defvar shred-candidate ?1)
 (defvar shred--previous-candidate-content nil)
 (defun shred--show-candidate ()
     (when shred-candidate
