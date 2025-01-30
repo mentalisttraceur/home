@@ -7708,7 +7708,10 @@
                      (if current-prefix-arg
                          (1- (prefix-numeric-value current-prefix-arg))
                          (get-text-property (point) 'mpv-index))))
-    (mpv-ipc music--socket (list "playlist-play-index" target)))
+    (let ((current (mpv-ipc-expand-integer music--socket "${playlist-pos}")))
+        (if (equal target current)
+            (music-pause-toggle)
+            (mpv-ipc music--socket (list "playlist-play-index" target)))))
 (define-key music-mode-map "\C-m" 'music-play)
 (music-define-key 'normal "i" 'evil-motion-state)
 (music-define-key 'normal "a" 'evil-motion-state)
