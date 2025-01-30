@@ -7411,7 +7411,9 @@
     (setq music--refresh-next-column (current-column)))
 (defun music--index-move-after-refresh (count)
     (let ((current (if (= (point) (buffer-end 1))
-                       (get-text-property (1- (point)) 'mpv-index)
+                       (if (= (point) 1)
+                           1
+                           (get-text-property (1- (point)) 'mpv-index))
                        (get-text-property (point) 'mpv-index))))
         (setq music--refresh-next-index (+ current count)))
     (setq music--refresh-next-column (current-column)))
