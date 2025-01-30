@@ -5397,9 +5397,9 @@
             (unless kill-ring-yank-pointer
                 (setq kill-ring-yank-pointer kill-ring))))
     nil)
-(defun shred (&optional register)
+(defun shred (register)
     (interactive (list shred-candidate))
-    (if (or (not register) (equal register ?\"))
+    (if (= register ?\")
         (shred-kill 0)
         (if (<= ?1 register ?9)
             (shred-kill (- register ?1))
