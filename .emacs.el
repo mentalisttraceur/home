@@ -2764,6 +2764,14 @@
     (advice-add 'package--with-response-buffer-1
         :around 'fixed-package--with-response-buffer-1))
 
+(use-package bytecomp
+    :config
+    (setq byte-compile-log-buffer " *Compile-Log*"))
+(use-package comp
+    :config
+    (setq comp-log-buffer-name " *Native-compile-Log*")
+    (setq comp-async-buffer-name " *Async-native-compile-log*"))
+
 (use-package hexl
     :config
     (defun fixed-hexl-insert-char-1 (hexl-insert-char character)
