@@ -3870,13 +3870,14 @@
     (require 'display-line-numbers)
     (vertico-mode 1)
     (setq vertico-resize nil)
-    (defun count-vertico-lines ()
+    (defun count-vertico-candidate-lines ()
         (save-excursion
             (goto-char (point-max))
-            (save-mutation
-                (insert (overlay-get vertico--candidates-ov 'after-string))
-                (count-visual-lines (point-min) (point-max)))))
-    (defvar vertico-max-height 11)
+            (let ((end-of-input (point)))
+                (save-mutation
+                    (insert (overlay-get vertico--candidates-ov 'after-string))
+                    (count-visual-lines (+ end-of-input 2) (point-max))))))
+    (defvar vertico-max-height 10)
     (defvar vertico-max-count 10)
     (defun fixed-vertico--exhibit (&rest _)
         (vertico--compute-scroll)
@@ -3889,7 +3890,7 @@
                                           (1- (/ vertico-count 2)))))
             (setq fixed-vertico--scroll-margin-clamp vertico-scroll-margin)
             (vertico--display-candidates (vertico--arrange-candidates)))
-        (count-vertico-lines))
+        (count-vertico-candidate-lines))
     (defvar-local fixed-vertico-resize--state nil)
     (defun fixed-vertico-resize--before (&rest _)
         (setq fixed-vertico-resize--state
@@ -3900,7 +3901,7 @@
         (setq truncate-lines (cdr fixed-vertico-resize--state))
         (unless truncate-lines
             (set-window-hscroll nil 0))
-        (let ((needed-height (count-vertico-lines))
+        (let ((needed-height (count-vertico-candidate-lines))
               (fixed-vertico--scroll-margin-clamp vertico-scroll-margin))
             (while (and (> needed-height vertico-max-height)
                         (> vertico-count 1))
