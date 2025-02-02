@@ -7465,6 +7465,8 @@
                        'music-current-entry-face
                        'music-current-playing-entry-face)))
         (dotimes (index count)
+            (when (= index current)
+                (evil-set-marker ?^))
             (insert (music--playlist-entry socket index current face)))))
 (defun music--propertize (index path text)
     (propertize text 'mpv-index index 'full-path path))
