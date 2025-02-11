@@ -5260,13 +5260,17 @@
         (dotimes (_ count)
             (condition-case _error
                 (evil-next-line)
-                (end-of-buffer (vertico-next)))))
+                (end-of-buffer
+                    (setq this-command 'vertico-next)
+                    (vertico-next)))))
     (evil-define-motion evil-vertico-previous-line (count)
         (setq-if-nil count 1)
         (dotimes (_ count)
             (condition-case _error
                 (evil-previous-line)
-                (beginning-of-buffer (vertico-previous)))))
+                (beginning-of-buffer
+                    (setq this-command 'vertico-previous)
+                    (vertico-previous)))))
     (defun misc-minibuffer-setup ()
         (setq evil-yank-incomplete-line-linewise nil)
         (dolist (key '([down] "j" "о"))
