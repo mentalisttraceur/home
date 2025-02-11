@@ -3864,13 +3864,10 @@
         (vertico--compute-scroll)
         (setq vertico-count vertico-max-count))
     (advice-add 'vertico--exhibit :before 'fixed-vertico--exhibit)
-    (defvar fixed-vertico--scroll-margin-clamp)
     (defun fixed-vertico-resize--redisplay ()
-        (let ((vertico-scroll-margin (min vertico-scroll-margin
-                                          fixed-vertico--scroll-margin-clamp
-                                          (1- (/ vertico-count 2)))))
-            (setq fixed-vertico--scroll-margin-clamp vertico-scroll-margin)
-            (vertico--display-candidates (vertico--arrange-candidates)))
+        (setq vertico-scroll-margin (min vertico-scroll-margin
+                                         (1- (/ vertico-count 2))))
+        (vertico--display-candidates (vertico--arrange-candidates))
         (count-vertico-candidate-lines))
     (defvar-local fixed-vertico-resize--state nil)
     (defun fixed-vertico-resize--before (&rest _)
@@ -3883,7 +3880,7 @@
         (unless truncate-lines
             (set-window-hscroll nil 0))
         (let ((needed-height (count-vertico-candidate-lines))
-              (fixed-vertico--scroll-margin-clamp vertico-scroll-margin))
+              (vertico-scroll-margin vertico-scroll-margin))
             (while (and (> needed-height vertico-max-height)
                         (> vertico-count 1))
                 (setq vertico-count (1- vertico-count))
