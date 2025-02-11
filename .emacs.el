@@ -3869,6 +3869,19 @@
                                          (1- (/ vertico-count 2))))
         (vertico--display-candidates (vertico--arrange-candidates))
         (count-vertico-candidate-lines))
+    (defun fixed-vertico-resize--chop ()
+        (save-excursion
+            (goto-char (point-max))
+            (let ((end-of-input (point))
+                  (lines (overlay-get vertico--candidates-ov 'after-string)))
+                (save-mutation
+                    (insert lines)
+                    (beginning-of-visual-line (- 1 vertico-max-height))
+                    (let ((excess (- (point) (+ end-of-input 2))))
+                        (when (> excess 0)
+                            (overlay-put vertico--candidates-ov 'after-string
+                                (concat (substring lines 0 2)
+                                        (substring lines (+ excess 2))))))))))
     (defvar-local fixed-vertico-resize--state nil)
     (defun fixed-vertico-resize--before (&rest _)
         (setq fixed-vertico-resize--state
