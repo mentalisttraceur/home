@@ -897,31 +897,6 @@
         (dotimes (_ count)
             (line-move step no-error to-end try-vscroll))))
 
-(defun count-visual-lines (start end &optional max-count)
-    (if truncate-lines
-        (count-lines start end)
-        (setq start (max (point-min) (min start (point-max))))
-        (setq end (max (point-min) (min end (point-max))))
-        (when (< end start)
-            (let ((temporary start))
-                (setq start end)
-                (setq end temporary)))
-        (unless max-count
-            (setq max-count most-positive-fixnum))
-        (save-excursion
-            (goto-char start)
-            (let ((count 0))
-                (while (and (< (point) end)
-                            (< count max-count))
-                    (setq start (point))
-                    (end-of-visual-line)
-                    (when (and (eolp) (not (eobp)))
-                        (forward-char))
-                    (if (= (point) start)
-                        (forward-char)
-                        (setq count (1+ count))))
-                count))))
-
 
 (defun delete-forward-in-line (start count)
     (delete-region start (save-excursion
@@ -937,7 +912,7 @@
 
 (defun scroll-to-fill-window ()
     (let ((window-height (floor (window-screen-lines)))
-          (used-lines (count-visual-lines
+          (used-lines (count-screen-lines
                           (window-start)
                           (window-end nil t))))
         (when (< used-lines window-height)
@@ -2421,7 +2396,7 @@
             (when (eobp)
                 (setcar line-cell nil))
             (let ((column (current-column))
-                  (lines-from-bottom (- (count-visual-lines
+                  (lines-from-bottom (- (count-screen-lines
                                             (point)
                                             (window-end nil t)))))
                 (setcdr line-cell (list column lines-from-bottom))))
@@ -2450,7 +2425,7 @@
     (advice-add 'dired-restore-positions
         :around 'fixed-dired-restore-positions)
     (defun pulsed-dired-revert--view ()
-        (list (count-visual-lines
+        (list (count-screen-lines
                   (window-start)
                   (save-excursion
                       (beginning-of-visual-line)))
@@ -3878,13 +3853,22 @@
     (require 'display-line-numbers)
     (vertico-mode 1)
     (setq vertico-resize nil)
+    (defun count-vertico-input-lines ()
+        (let ((candidates (overlay-get vertico--candidates-ov 'after-string)))
+            (unwind-protect
+                (progn
+                    (overlay-put vertico--candidates-ov 'after-string nil)
+                    (count-screen-lines (point-min) (point-max)))
+                (overlay-put vertico--candidates-ov 'after-string candidates))))
     (defun count-vertico-candidate-lines ()
         (save-excursion
             (goto-char (point-max))
             (let ((end-of-input (point)))
                 (save-mutation
                     (insert (overlay-get vertico--candidates-ov 'after-string))
-                    (count-visual-lines (+ end-of-input 2) (point-max))))))
+                    (let* ((end (point-max))
+                           (start (min (+ end-of-input 2) end)))
+                        (count-screen-lines start end))))))
     (defvar vertico-max-height 10)
     (defvar vertico-max-count 10)
     (defun fixed-vertico--exhibit (&rest _)
@@ -3922,7 +3906,7 @@
                     (setq vertico-count (1+ vertico-count))
                     (setq needed-height (fixed-vertico-resize--redisplay)))
                 (setq needed-height vertico-max-height))
-            (let* ((input-height (count-visual-lines (point-min) (point-max)))
+            (let* ((input-height (count-vertico-input-lines))
                    (delta (+ (- needed-height (window-height)) input-height)))
                 (window-resize nil delta))))
     (advice-add 'vertico--resize :before 'fixed-vertico-resize--before)
