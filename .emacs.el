@@ -3212,21 +3212,21 @@
     '((t :foreground "#FF4040" :weight bold)) "")
 
 (defun datetime-parse (string &optional short now)
-    (let-unpack ((parsed _) (datetime-parse--loop string short now))
-        (let-unpack ((second minute hour day month year) parsed)
-            (concat
-                (when year
-                    (format "%04d" year))
-                (when (and year month)
-                    (format "%02d" month))
-                (when (and year month day)
-                    (format "%02d" day))
-                (when (and year month day hour)
-                    (format "T%02d" hour))
-                (when (and year month day hour minute)
-                    (format "%02d" minute))
-                (when (and year month day hour minute second)
-                    (format "%02d" second))))))
+    (let-unpack ((parsed _) (datetime-parse--loop string short now)
+                 (second minute hour day month year) parsed)
+        (concat
+            (when year
+                (format "%04d" year))
+            (when (and year month)
+                (format "%02d" month))
+            (when (and year month day)
+                (format "%02d" day))
+            (when (and year month day hour)
+                (format "T%02d" hour))
+            (when (and year month day hour minute)
+                (format "%02d" minute))
+            (when (and year month day hour minute second)
+                (format "%02d" second)))))
 
 (defun datetime-parse--loop (string &optional short now)
     (setq-if-nil now (decode-time (current-time)))
