@@ -203,12 +203,13 @@
          symbol))
 
 
-(defvar multiple-values--rest nil)
+(defvar multiple-values--rest)
 
 (defun values (&rest objects)
     (prog1
         (pop objects)
-        (setq multiple-values--rest objects)))
+        (when (boundp 'multiple-values--rest)
+            (setq multiple-values--rest objects))))
 
 (defmacro multiple-values-bind (names form &rest body)
     (let ((name (pop names))
