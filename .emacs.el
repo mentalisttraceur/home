@@ -453,7 +453,7 @@
 
 (defun advice-remove-all (symbol)
     (dolist (advice (advice-list symbol))
-        (let-unpack ((_how function) advice)
+        (seq-let (_how function) advice
             (advice-remove symbol function))))
 
 (defmacro with-advice-1 (advice-add-arguments &rest body)
@@ -942,7 +942,7 @@
         (window-hscroll)))
 
 (defun jump-to-position-with-scroll (position-with-scroll)
-    (let-unpack ((position start vscroll hscroll) position-with-scroll)
+    (seq-let (position start vscroll hscroll) position-with-scroll
         (goto-char position)
         (let ((window (selected-window)))
             (set-window-start window start t)
@@ -965,8 +965,8 @@
         (window-hscroll)))
 
 (defun jump-to-line-and-column-with-scroll (line-and-column-with-scroll)
-    (let-unpack ((line column start vscroll hscroll)
-                     line-and-column-with-scroll)
+    (seq-let (line column start vscroll hscroll)
+            line-and-column-with-scroll
         (goto-char (point-min))
         (forward-line (1- line))
         (move-to-column column)
@@ -990,7 +990,7 @@
         (window-hscroll)))
 
 (defun jump-to-marker-with-scroll (marker-with-scroll)
-    (let-unpack ((marker start vscroll hscroll) marker-with-scroll)
+    (seq-let (marker start vscroll hscroll) marker-with-scroll
         (if-let (buffer (marker-buffer marker))
             (switch-to-buffer buffer)
             (user-error "Buffer no longer exists"))
@@ -1934,7 +1934,7 @@
         (dolist (datetime (gethash hash (histdir-history-calls history)))
             (histdir-history--add history datetime hash string))))
 (defun histdir--see-call-change (history watch-event)
-    (let-unpack ((_descriptor action file) watch-event)
+    (seq-let (_descriptor action file) watch-event
         (when (memq action '(deleted renamed))
             (when-let (datetime (histdir--datetime-from-path file))
                 (histdir-history--remove history datetime)))
@@ -1944,7 +1944,7 @@
             (with-temp-buffer
                 (histdir--read-call file history)))))
 (defun histdir--see-string-change (history watch-event)
-    (let-unpack ((_descriptor action file) watch-event)
+    (seq-let (_descriptor action file) watch-event
         (when (eq action 'renamed)
             (setq file (nth 3 watch-event)))
         (when (memq action '(created changed renamed))
@@ -3306,14 +3306,14 @@
              (setf (decoded-time-day bindings) nil)
              (setf (decoded-time-day parsed) (string-to-number (car word))))
          ((string-match-p "^[0-9]\\{3,\\}-[0-9][0-9]-[0-9][0-9]$" (car word))
-             (let-unpack ((year month day) (string-split (car word) "-"))
+             (seq-let (year month day) (string-split (car word) "-")
                  (setf (decoded-time-month bindings) nil)
                  (setf (decoded-time-day   bindings) nil)
                  (setf (decoded-time-year  parsed) (string-to-number year))
                  (setf (decoded-time-month parsed) (string-to-number month))
                  (setf (decoded-time-day   parsed) (string-to-number day))))
          ((string-match-p "^[0-9]\\{3,\\}-[0-9][0-9]$" (car word))
-             (let-unpack ((year month day) (string-split (car word) "-"))
+             (seq-let (year month day) (string-split (car word) "-")
                  (setf (decoded-time-month bindings) nil)
                  (setf (decoded-time-year  parsed) (string-to-number year))
                  (setf (decoded-time-month parsed) (string-to-number month))))
@@ -3339,7 +3339,7 @@
              (setf (decoded-time-second bindings) nil)
              (setf (decoded-time-second parsed) (string-to-number (car word))))
          ((string-match-p "^[0-9][0-9]?:[0-9][0-9]:[0-9][0-9]$" (car word))
-             (let-unpack ((hour minute second) (string-split (car word) ":"))
+             (seq-let (hour minute second) (string-split (car word) ":")
                  (setf (decoded-time-hour   bindings) nil)
                  (setf (decoded-time-minute bindings) nil)
                  (setf (decoded-time-second bindings) nil)
@@ -3347,7 +3347,7 @@
                  (setf (decoded-time-minute parsed) (string-to-number minute))
                  (setf (decoded-time-second parsed) (string-to-number second))))
          ((string-match-p "^[0-9][0-9]?:[0-9][0-9]$" (car word))
-             (let-unpack ((hour minute second) (string-split (car word) ":"))
+             (seq-let (hour minute second) (string-split (car word) ":")
                  (setf (decoded-time-hour   bindings) nil)
                  (setf (decoded-time-minute bindings) nil)
                  (setf (decoded-time-hour   parsed) (string-to-number hour))
@@ -3685,7 +3685,7 @@
         (select-window (minibuffer-window))))
 
 (defun datetime-read--preview-format (parsed preview-info)
-    (let-unpack ((previous-parsed bindings _string) preview-info)
+    (seq-let (previous-parsed bindings _string) preview-info
         (concat
             (datetime-read--preview-format-1
                 'year  parsed previous-parsed nil)
@@ -4115,7 +4115,7 @@
                    (preview (apply-partially 'hack-consult-preview
                                  (consult--insertion-preview input input)
                                  (cons nil nil))))
-                (let-unpack ((history index bol) (consult--current-history))
+                (seq-let (history index bol) (consult--current-history)
                     (delete-command input)
                     (with-temp-buffer
                         (insert-before-markers command)
@@ -5968,7 +5968,7 @@
     (interactive "p")
     (if (and (= count 1) (= (point) (eat-point)))
         (histdir-repl-backspace-char-in-input 1)
-        (let-unpack ((start point) (histdir-repl-enter-input 0))
+        (seq-let (start point) (histdir-repl-enter-input 0)
             (setq count (min count (- point start)))
             (histdir-repl-backspace-char-in-input count))))
 (defun histdir-repl-enter+replace-input (count character)
@@ -6001,13 +6001,13 @@
 (defvar-local histdir-repl--evil-replace-edges nil)
 (defun histdir-repl-evil-replace-state ()
     (interactive)
-    (let-unpack ((start point end) (histdir-repl-enter-input 0))
+    (seq-let (start point end) (histdir-repl-enter-input 0)
         (setq histdir-repl--evil-replace-edges (list start point end end)))
     (evil-replace-state))
 (defun histdir-repl-self-input+replace ()
     (interactive)
-    (let-unpack ((_start-of-input start-of-replace _end-of-replace end-of-input)
-                     histdir-repl--evil-replace-edges)
+    (seq-let (_start-of-input start-of-replace _end-of-replace end-of-input)
+            histdir-repl--evil-replace-edges
         (let ((point-before-replace (point)))
             (call-interactively 'eat-self-input)
             (setcar (cdr histdir-repl--evil-replace-edges)
@@ -6018,8 +6018,8 @@
                     (1+ end-of-input))))))
 (defun histdir-repl-evil-replace-backspace ()
     (interactive)
-    (let-unpack ((start-of-input start-of-replace end-of-replace end-of-input)
-                     histdir-repl--evil-replace-edges)
+    (seq-let (start-of-input start-of-replace end-of-replace end-of-input)
+            histdir-repl--evil-replace-edges
         (when (< start-of-input (point))
             (if (< start-of-replace (point))
                 (if (<= (point) end-of-replace)
@@ -6038,8 +6038,8 @@
                     (1- start-of-replace))))))
 (defun histdir-repl-evil-replace-delete ()
     (interactive)
-    (let-unpack ((start-of-input start-of-replace end-of-replace end-of-input)
-                     histdir-repl--evil-replace-edges)
+    (seq-let (start-of-input start-of-replace end-of-replace end-of-input)
+            histdir-repl--evil-replace-edges
         (call-interactively 'eat-self-input)
         (setq histdir-repl--evil-replace-edges (list
             start-of-input
@@ -6324,7 +6324,7 @@
         (setq window-state-this-register evil-this-register)
         (while window-state--execute-once
             (setq window-state--execute-once window-state--execute-more)
-            (let-unpack ((hint tint dim tag help-string) window-state)
+            (seq-let (hint tint dim tag help-string) window-state
                 (with-face-attribute (
                         'aw-leading-char-face :foreground hint
                         'aw-background-face   :foreground tint
@@ -7091,7 +7091,7 @@
                 (dired-goto-last-file))))
     (defun note-list-search ()
         (interactive)
-        (let-unpack ((buffer was-already-open was-already-focused) (note-list))
+        (seq-let (buffer was-already-open was-already-focused) (note-list)
             (run-with-idle-timer 0 nil
                 (lambda-let (buffer was-already-open was-already-focused) ()
                     (condition-case error
@@ -7793,8 +7793,8 @@
 (defun tumblr-prompt-for-blog ()
     (completing-read "Tumblr blog: " tumblr-blogs nil 'confirm))
 (defun tumblr (&rest arguments)
-    (let-unpack ((status output) (apply-process tumblr--python
-                                     tumblr--script arguments))
+    (seq-let (status output) (apply-process tumblr--python
+                                     tumblr--script arguments)
          (if (equal status 0)
              output
              (error "tumblr error: %s" output))))
@@ -7822,7 +7822,7 @@
         (tumblr "delete" buffer-file-name)))
 (defun tumblr-pull ()
     (interactive)
-    (let-unpack ((status output) (funcall-process "p"))
+    (seq-let (status output) (funcall-process "p")
         (if (equal status 0)
             (let* ((default-directory denote-directory)
                    (file (tumblr "pull" output)))
@@ -7900,10 +7900,10 @@
         (define-key keymap english-key binding)))
 (defun russian-vi-bind (map)
     (dolist (pair russian-vi-symbol-pairs)
-        (let-unpack ((russian english) pair)
+        (seq-let (russian english) pair
             (russian-vi-bind--1 map russian english)))
     (dolist (pair russian-vi-letter-pairs)
-        (let-unpack ((russian english) pair)
+        (seq-let (russian english) pair
             (russian-vi-bind--1 map russian english)
             (let ((russian (upcase russian))
                   (english (upcase english)))
@@ -7919,7 +7919,7 @@
                 (russian-vi-bind binding)))
         map))
 (defun russian-vi-letter-map--1 (string pair)
-    (let-unpack ((russian english) pair)
+    (seq-let (russian english) pair
         (string-replace english russian string)))
 (defun russian-vi-letter-map (english-string)
     (seq-reduce 'russian-vi-letter-map--1
