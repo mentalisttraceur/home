@@ -253,16 +253,6 @@
         (cadr forms)))
 
 
-(defmacro unpack (names list)
-    (let* ((setq-form (list 'setq))
-           (last-cons setq-form)
-           (unpack-1 '(prog1 (car --unpack--)
-                             (setq --unpack-- (cdr --unpack--)))))
-        (dolist (name names)
-            (setcdr last-cons (list name unpack-1))
-            (setq last-cons (cddr last-cons)))
-        `(let ((--unpack-- ,list)) ,setq-form nil)))
-
 (defmacro seq-let* (unpack-list &rest body)
     `(apply-split-nest seq-let ,unpack-list 2 ,body))
 
@@ -3238,8 +3228,8 @@
         (setq word words)
         (while word
             (when (length> (car word) 0)
-                (unpack (previous-parsed _ previous-bindings)
-                        (datetime-parse--bind nil parsed integers))
+                (seq-setq (previous-parsed _ previous-bindings)
+                    (datetime-parse--bind nil parsed integers))
                 (setq previous-parsed
                       (datetime-parse--future-bias nil previous-parsed now))
                 (setq integer nil)
@@ -3250,8 +3240,8 @@
                           (+ integers-before-span integers-in-span))
                     (setq integers-in-span 0)))
             (pop word))
-        (unpack (parsed _ bindings)
-                (datetime-parse--bind nil parsed integers bindings))
+        (seq-setq (parsed _ bindings)
+            (datetime-parse--bind nil parsed integers bindings))
         (unless (and short (not (any (take 6 parsed))))
             (setq parsed (datetime-parse--future-bias nil parsed now)))
         (when short
@@ -3571,9 +3561,8 @@
            (next-slot (nth (1+ index) slots)))
         `(progn
              (setf (,decoded-time-slot offsets) t)
-             (unpack (parsed integers bindings)
-                     (datetime-parse--bind
-                         ',next-slot parsed integers bindings))
+             (seq-setq (parsed integers bindings)
+                 (datetime-parse--bind ',next-slot parsed integers bindings))
              (when (,decoded-time-slot bindings)
                  (if (eq (,decoded-time-slot bindings) t)
                      (setf (,decoded-time-slot bindings) nil)
@@ -5853,7 +5842,7 @@
             (histdir-repl-mode))
         (pop-to-buffer buffer)
         (setq buffer-undo-list t)
-        (unpack (default-directory histdir) buffer-locals)
+        (seq-setq (default-directory histdir) buffer-locals)
         (unless (get-buffer-process (current-buffer))
             (let ((process-environment environment))
                 (eat-exec buffer name program nil arguments)))
