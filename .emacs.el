@@ -263,13 +263,8 @@
             (setq last-cons (cddr last-cons)))
         `(let ((--unpack-- ,list)) ,setq-form nil)))
 
-(defmacro let-unpack-1 (names list &rest body)
-    `(let ((--let-unpack-1-- ,list) ,@names)
-         (unpack ,names --let-unpack-1--)
-         ,@body))
-
-(defmacro let-unpack (unpack-list &rest body)
-    `(apply-split-nest let-unpack-1 ,unpack-list 2 ,body))
+(defmacro seq-let* (unpack-list &rest body)
+    `(apply-split-nest seq-let ,unpack-list 2 ,body))
 
 (defmacro uncons (car-name cdr-name cell)
     `(let ((--uncons-- ,cell))
@@ -3140,8 +3135,8 @@
     (calendar-day-of-week (list month day year)))
 
 (defun fixed-decoded-time-add (time delta)
-    (let-unpack ((second  minute  hour  day  month  year dst zone) time
-                 (second+ minute+ hour+ day+ month+ year+) delta)
+    (seq-let* ((second  minute  hour  day  month  year dst zone) time
+               (second+ minute+ hour+ day+ month+ year+) delta)
         (setq-if-nil year+   0)
         (setq-if-nil month+  0)
         (setq-if-nil day+    0)
@@ -3211,8 +3206,8 @@
     '((t :foreground "#FF4040" :weight bold)) "")
 
 (defun datetime-parse (string &optional short now)
-    (let-unpack ((parsed _) (datetime-parse--loop string short now)
-                 (second minute hour day month year) parsed)
+    (seq-let* ((parsed _) (datetime-parse--loop string short now)
+               (second minute hour day month year) parsed)
         (concat
             (when year
                 (format "%04d" year))
@@ -3633,9 +3628,8 @@
     (when-let (overlay (car cell))
         (let ((input (substring-no-properties (minibuffer-contents))))
             (condition-case error
-                (let-unpack ((parsed info) (datetime-parse--loop
-                                               input short now)
-                             (_ _ _ day month year) parsed)
+                (seq-let* ((parsed info) (datetime-parse--loop input short now)
+                           (_ _ _ day month year) parsed)
                     (datetime-read--preview-calendar year month day cell)
                     (save-point
                         (delete-minibuffer-contents)
