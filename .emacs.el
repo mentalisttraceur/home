@@ -211,14 +211,25 @@
         (when (boundp 'multiple-values--rest)
             (setq multiple-values--rest objects))))
 
+(defun multiple-values--call (form rest)
+    `(let ((multiple-values--rest nil))
+         (prog1
+             ,form
+             (setq ,rest multiple-values--rest))))
+
 (defmacro multiple-values-bind (names form &rest body)
-    (let ((name (pop names))
-          (rest (make-symbol "rest")))
-        `(let (,name ,rest)
-             (let ((multiple-values--rest nil))
-                 (setq ,name ,form)
-                 (setq ,rest multiple-values--rest))
-             (seq-let ,names ,rest
+    (let* ((name (pop names))
+           (rest (make-symbol "rest"))
+           (call (multiple-values--call form rest))
+           (varlist `((,name ,call)))
+           (last-cell varlist)
+           (pop-form `(pop ,rest)))
+        (dolist (name names)
+            (let ((pair `(,name ,pop-form)))
+                (setcdr last-cell (cons pair nil))
+                (setq last-cell (cdr last-cell))))
+        `(let (,rest)
+             (let ,varlist
                  ,@body))))
 
 
