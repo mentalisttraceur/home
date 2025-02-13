@@ -158,24 +158,19 @@
 
 (defmacro lambda-let (varlist args &rest body)
     (declare (indent 2))
-    (let (bindings parameter argument)
-        (dolist (var varlist)
-            (if (listp var)
-                (if (length= var 2)
-                    (setq parameter (car var)
-                          argument  (cadr var))
+    (let ((cell varlist))
+        (while cell
+            (let ((var (car cell)))
+                (if (listp var)
                     (if (length= var 1)
-                        (setq parameter (setq argument (car var)))
-                        (eval `(let (,var)))))
-                (setq parameter (setq argument var)))
-            (push `(cons ',parameter ,argument) bindings))
-        (if bindings
-            (setq bindings (cons 'list (nreverse bindings)))
-            (setq bindings t))
+                        (setcar cell (cons (car var) var)))
+                    (setcar cell (list var var))))
+            (setq cell (cdr cell)))
         `(eval
-             '(lambda ,args
-                  ,@body)
-             ,bindings)))
+             '(let ,varlist
+                  (lambda ,args
+                      ,@body))
+             t)))
 
 
 (defmacro compose (&rest functions)
