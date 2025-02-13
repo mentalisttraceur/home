@@ -211,7 +211,6 @@
 (defvar multiple-values--rest nil)
 
 (defun values (&rest objects)
-    (setq multiple-values--rest nil)
     (prog1
         (pop objects)
         (setq multiple-values--rest objects)))
