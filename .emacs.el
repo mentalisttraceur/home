@@ -5755,7 +5755,7 @@
     (advice-add 'undo-tree-visualizer-hide-diff
         :override 'hack-undo-tree-visualizer-hide-diff))
 
-(use-packages xterm evil
+(use-packages term/xterm evil
     :config
     (defun evil-xterm-paste--as-keys (text)
         (let ((keys (listify-key-sequence text)))
