@@ -1365,7 +1365,7 @@
                             (complete-buffer nil default))
                         predicate require-match nil 'history default)))
         (prog1
-            choices
+            (mapcar 'get-buffer choices)
             (while choices
                 (push (pop choices) buffer-name-history)))))
 
