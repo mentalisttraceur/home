@@ -5144,6 +5144,13 @@
                 (nconc command (list (format "stash@{%d}" prefix-argument))))
             (git-pop-to-command command)))
     (define-key git-map "r" 'git-pop)
+    (defun git-stash-drop (prefix-argument)
+        (interactive "P")
+        (let ((command (list "git" "stash" "drop")))
+            (when prefix-argument
+                (nconc command (list (format "stash@{%d}" prefix-argument))))
+            (git-pop-to-command command)))
+    (define-key git-map "R" 'git-stash-drop)
     (define-key git-map "u" (git pull))
     (defun git-p (prefix-argument &optional force)
         (interactive "P")
