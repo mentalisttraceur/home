@@ -1,0 +1,8 @@
+#!/bin/sh -
+cd "${GIT_PREFIX:-.}" || exit 1
+git init "$@" || exit 1
+if git rev-parse HEAD >/dev/null 2>&1
+then
+    exit 0
+fi
+git commit --allow-empty -m 'Empty root commit'
