@@ -1369,6 +1369,13 @@
             (while choices
                 (push (pop choices) buffer-name-history)))))
 
+(defun hack-read-buffer-to-switch (prompt)
+    (completing-read
+        prompt
+        (complete-buffer (current-buffer))
+        nil nil nil 'buffer-name-history))
+(advice-add 'read-buffer-to-switch :override 'hack-read-buffer-to-switch)
+
 
 (defun smoother-kill-buffer (&optional buffer)
     (unless buffer
