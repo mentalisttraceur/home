@@ -6237,7 +6237,7 @@
     (defun fixed-aw--make-background (window)
         (let ((buffer (window-buffer window)))
             (with-current-buffer buffer
-                (let ((overlay (make-overlay 1 (buffer-size) buffer nil t)))
+                (let ((overlay (make-overlay 1 (buffer-end 1) buffer nil t)))
                     (overlay-put overlay 'face 'aw-background-face)
                     overlay))))
     (defun fixed-aw--make-backgrounds (window-list)
