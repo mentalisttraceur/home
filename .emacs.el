@@ -294,6 +294,9 @@
 (defmacro <<= (place count)
     `(augmented-assignment ash ,place ,count))
 
+(define-augmented-assignment min= min)
+(define-augmented-assignment max= max)
+
 
 (defmacro until (test &rest body)
     `(while (not ,test)
