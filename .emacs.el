@@ -5937,18 +5937,11 @@
     (process-send-string nil "\C-e")
     (sleep-for 0.04)
     (point))
-(defvar-local histdir-repl--line-wrap-suffix nil)
-(defun histdir-repl--filter-substring (start end)
-    (let ((string (filter-buffer-substring start end)))
-        (if histdir-repl--line-wrap-suffix
-            (let ((suffix (concat histdir-repl--line-wrap-suffix "\n")))
-                (string-replace suffix "" string))
-            string)))
 (defun histdir-repl-get-input (&optional position)
     (interactive)
     (let ((start (histdir-repl-beginning-of-input))
           (end   (histdir-repl-end-of-input)))
-        (substring-no-properties (histdir-repl--filter-substring start end))))
+        (substring-no-properties (filter-buffer-substring start end))))
 (defun histdir-repl-delete-input (&optional position)
     (interactive)
     (goto-char (eat-point))
@@ -5968,9 +5961,9 @@
     (goto-char (eat-point))
     (process-send-string nil "\C-c"))
 (defun histdir-repl-forward-char-in-input (&optional count)
-    (process-send-string nil (repeat-string "\eOC" (or count 1))))
+    (process-send-string nil (repeat-string "\e[C" (or count 1))))
 (defun histdir-repl-backward-char-in-input (&optional count)
-    (process-send-string nil (repeat-string "\eOD" (or count 1))))
+    (process-send-string nil (repeat-string "\e[D" (or count 1))))
 (defun histdir-repl-backspace-char-in-input (&optional count)
     (process-send-string nil (repeat-string "\C-?" (or count 1))))
 (defun histdir-repl-delete-char-in-input (&optional count)
@@ -5988,7 +5981,7 @@
         (setq desired-point (min desired-point end))
         (setq desired-point (max desired-point start))
         (histdir-repl-backward-char-in-input (length
-            (histdir-repl--filter-substring desired-point end)))
+            (filter-buffer-substring desired-point end)))
         (list start desired-point end)))
 (defun histdir-repl-insert ()
     (interactive)
@@ -6018,8 +6011,7 @@
         (if (<= start point-in-buffer end)
             (setq desired-point point-in-buffer)
             (setq desired-point point-in-terminal))
-        (setq length (length
-                         (histdir-repl--filter-substring desired-point end)))
+        (setq length (length (filter-buffer-substring desired-point end)))
         (when (> length count)
             (histdir-repl-backward-char-in-input (- length count)))
         (setq count (min length count))
@@ -6047,8 +6039,7 @@
         (if (<= start point-in-buffer end)
             (setq desired-point point-in-buffer)
             (setq desired-point point-in-terminal))
-        (setq length (length
-                         (histdir-repl--filter-substring desired-point end)))
+        (setq length (length (filter-buffer-substring desired-point end)))
         (when (> length count)
             (histdir-repl-backward-char-in-input (- length count)))
         (setq count (min length count))
@@ -6142,7 +6133,7 @@
             (prog1
                 (<= start point-in-buffer end)
                 (histdir-repl-backward-char-in-input (length
-                    (histdir-repl--filter-substring point-in-terminal end)))))))
+                    (filter-buffer-substring point-in-terminal end)))))))
 (defun histdir-repl-beginning-of-line ()
     (interactive)
     (if (histdir-repl-point-in-input-p)
@@ -6159,9 +6150,9 @@
            (end-of-input   (histdir-repl-end-of-input))
            (start-of-range (max start-of-range start-of-input))
            (end-of-range   (min end-of-range end-of-input))
-           (skip           (length (histdir-repl--filter-substring
+           (skip           (length (filter-buffer-substring
                                        end-of-range end-of-input)))
-           (deleted        (histdir-repl--filter-substring
+           (deleted        (filter-buffer-substring
                                start-of-range end-of-range)))
         (histdir-repl-backward-char-in-input skip)
         (histdir-repl-backspace-char-in-input (length deleted))
@@ -6249,12 +6240,10 @@
     (let* ((program      (car command))
            (program-name (file-name-base program))
            (repl         (histdir-repl-name program-name))
-           (histdir      (concat "~/.history/" repl))
-           (buffer       (histdir-repl command histdir
-                             (cons "PAGER=cat" process-environment))))
-        (when (equal repl "python")
-            (setq histdir-repl--line-wrap-suffix "\\"))
-        buffer))
+           (histdir      (concat "~/.history/" repl)))
+        (histdir-repl command histdir
+            (append '("PAGER=cat" "PYTHON_BASIC_REPL=1")
+                process-environment))))
 (put 'eshell/r 'eshell-no-numeric-conversions t)
 (defun eshell/ro (&rest command)
     (other-window-prefix)
