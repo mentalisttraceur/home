@@ -2111,16 +2111,20 @@
                 "\""
                 (eshell-quote-argument string)
                 "\"")))
-    (setq eshell-highlight-prompt nil)
     (setq eshell-prompt-regexp "^[$#] ")
     (setq eshell-prompt-function
         (lambda ()
-            (propertize
-                (if (= (user-uid) 0) "# " "$ ")
-                'read-only t
-                'field 'prompt
-                'front-sticky '(read-only)
-                'rear-nonsticky t)))
+            (if (= (user-uid) 0) "# " "$ ")))
+    (when (< emacs-major-version 30)
+        (setq eshell-highlight-prompt nil)
+        (setq eshell-prompt-function
+            (lambda ()
+                (propertize
+                    (if (= (user-uid) 0) "# " "$ ")
+                    'read-only t
+                    'field 'prompt
+                    'front-sticky '(read-only)
+                    'rear-nonsticky t))))
     (setq eshell-banner-message "")
     (defvar latest-eshell nil)
     (defun latest-eshell--add (eshell &rest arguments)
@@ -2236,6 +2240,10 @@
     :config
     (define-key eshell-hist-mode-map [up] 'fixed-eshell-up-arrow)
     (define-key eshell-hist-mode-map [down] 'fixed-eshell-down-arrow))
+(use-package em-prompt
+    :config
+    (set-face-foreground 'eshell-prompt nil)
+    (set-face-bold 'eshell-prompt nil))
 
 (use-package tramp
     :config
