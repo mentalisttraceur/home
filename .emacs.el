@@ -3177,19 +3177,7 @@
             dst zone)))
 
 (defun decoded-time-negate (delta)
-    (list
-        (when-let (second (decoded-time-second delta))
-            (- second))
-        (when-let (minute (decoded-time-minute delta))
-            (- minute))
-        (when-let (hour   (decoded-time-hour   delta))
-            (- hour))
-        (when-let (day    (decoded-time-day    delta))
-            (- day))
-        (when-let (month  (decoded-time-month  delta))
-            (- month))
-        (when-let (year   (decoded-time-year   delta))
-            (- year))))
+    (mapcar (lambda (x) (when x (- x))) delta))
 
 (defun decoded-time-iterate (time delta count)
     (when (< count 0)
