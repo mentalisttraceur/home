@@ -2115,16 +2115,6 @@
     (setq eshell-prompt-function
         (lambda ()
             (if (= (user-uid) 0) "# " "$ ")))
-    (when (< emacs-major-version 30)
-        (setq eshell-highlight-prompt nil)
-        (setq eshell-prompt-function
-            (lambda ()
-                (propertize
-                    (if (= (user-uid) 0) "# " "$ ")
-                    'read-only t
-                    'field 'prompt
-                    'front-sticky '(read-only)
-                    'rear-nonsticky t))))
     (setq eshell-banner-message "")
     (defvar latest-eshell nil)
     (defun latest-eshell--add (eshell &rest arguments)
