@@ -396,8 +396,8 @@
         (if (or (subr-native-elisp-p raw)
                 (byte-code-function-p raw)
                 (autoloadp raw))
-            (if-let ((source (find-function-library function))
-                     (file (cdr source)))
+            (if-let* ((source (find-function-library function))
+                      (file (cdr source)))
                 (function-lisp--read-from-source (car source) file)
                 nil)
             (if (subrp raw)
@@ -428,7 +428,7 @@
 
 
 (defun advice-how (symbol function)
-    (when-let (advice (advice-member-p function symbol))
+    (when-let* ((advice (advice-member-p function symbol)))
         (advice--how advice)))
 
 (defun advice-list (symbol)
@@ -470,7 +470,7 @@
 
 (defmacro without-advice-1 (advice-remove-arguments &rest body)
     `(let ((--without-advice-1-- (list ,@advice-remove-arguments)))
-         (if-let (how (apply 'advice-how --without-advice-1--))
+         (if-let* ((how (apply 'advice-how --without-advice-1--)))
              (unwind-protect
                  (progn
                      (apply 'advice-remove --without-advice-1--)
@@ -727,13 +727,13 @@
     (record 'ordered-hash-table (apply 'make-hash-table arguments) nil))
 
 (defun ordered-hash-table-get (table key &optional default)
-    (if-let (entry (gethash key (aref table 1)))
+    (if-let* ((entry (gethash key (aref table 1))))
         (dlist-car entry)
         default))
 
 (defun ordered-hash-table-pop (table key)
     (let ((hash-table (aref table 1)))
-        (when-let (entry (gethash key hash-table))
+        (when-let* ((entry (gethash key hash-table)))
             (remhash key hash-table)
             (when (eq entry (aref table 2))
                 (aset table 2 (dlist-cdr entry)))
@@ -807,7 +807,7 @@
 (defun bihash-pop (bihash key)
     (let ((forward-table (bihash--table bihash))
           (inverse-table (bihash--table (bihash-inverse bihash))))
-        (when-let (value (gethash key forward-table))
+        (when-let* ((value (gethash key forward-table)))
             (remhash key forward-table)
             (remhash value inverse-table)
             value)))
@@ -823,7 +823,7 @@
 
 
 (defun make-sorted-hash-table (predicate &rest arguments)
-    (if-let (test-cell (plist-member arguments :test))
+    (if-let* ((test-cell (plist-member arguments :test)))
         (setcar test-cell :key-test)
         (push 'eql arguments)
         (push :key-test arguments))
@@ -836,13 +836,13 @@
         nil))
 
 (defun sorted-hash-table-get (table key &optional default)
-    (if-let (entry (bihash-get (aref table 2) key))
+    (if-let* ((entry (bihash-get (aref table 2) key)))
         (dlist-car entry)
         default))
 
 (defun sorted-hash-table-pop (table key)
     (let ((bihash (aref table 2)))
-        (when-let (entry (bihash-pop bihash key))
+        (when-let* ((entry (bihash-pop bihash key)))
             (when (eq entry (aref table 3))
                 (aset table 3 (dlist-cdr entry)))
             (when (eq entry (aref table 4))
@@ -851,7 +851,7 @@
             (dlist-car entry))))
 
 (defun sorted-hash-table-put (table key value)
-    (if-let (entry (bihash-get (aref table 2) key))
+    (if-let* ((entry (bihash-get (aref table 2) key)))
         (dlist-setcar entry value)
         (let ((predicate (aref table 1))
               (keys      (bihash-inverse (aref table 2)))
@@ -985,7 +985,7 @@
 
 (defun jump-to-marker-with-scroll (marker-with-scroll)
     (seq-let (marker start vscroll hscroll) marker-with-scroll
-        (if-let (buffer (marker-buffer marker))
+        (if-let* ((buffer (marker-buffer marker)))
             (switch-to-buffer buffer)
             (user-error "Buffer no longer exists"))
         (goto-char marker)
@@ -1203,17 +1203,17 @@
 (defvar command-at-point-mode-alist nil)
 (defun command-string (&optional position)
     (let ((functions (alist-get major-mode command-at-point-mode-alist)))
-        (if-let ((function (nth 0 functions)))
+        (if-let* ((function (nth 0 functions)))
             (funcall function position)
             (field-string-no-properties position))))
 (defun delete-command (&optional position)
     (let ((functions (alist-get major-mode command-at-point-mode-alist)))
-        (if-let ((function (nth 1 functions)))
+        (if-let* ((function (nth 1 functions)))
             (funcall function position)
             (delete-field position))))
 (defun replace-command (new-command &optional position)
     (let ((functions (alist-get major-mode command-at-point-mode-alist)))
-        (if-let ((function (nth 2 functions)))
+        (if-let* ((function (nth 2 functions)))
             (funcall function new-command position)
             (replace-field new-command position))))
 
@@ -1224,7 +1224,7 @@
 
 (defun funcall-process (program &rest arguments)
     (let ((stdin))
-        (when-let (stdin-cell (memq :stdin arguments))
+        (when-let* ((stdin-cell (memq :stdin arguments)))
             (setq stdin (cadr stdin-cell))
             (setcdr stdin-cell (cddr stdin-cell))
             (setq arguments (delq :stdin arguments)))
@@ -1298,13 +1298,13 @@
 
 
 (defun minibuffer-current-buffer ()
-    (if-let (window (minibuffer-selected-window))
+    (if-let* ((window (minibuffer-selected-window)))
         (window-buffer window)
         nil))
 
 
 (defun selected-window-excluding-minibuffers ()
-    (if-let (window (minibuffer-selected-window))
+    (if-let* ((window (minibuffer-selected-window)))
         window
         (selected-window)))
 
@@ -1725,7 +1725,7 @@
                      (funcall predicate buffer)))
             parent-buffer--list)))
 (defun parent-buffer-file-or-directory (&optional buffer)
-    (when-let (found (parent-buffer-search 'buffer-file-or-directory buffer))
+    (when-let* ((found (parent-buffer-search 'buffer-file-or-directory buffer)))
         (buffer-file-or-directory found)))
 (provide 'parent-buffer)
 
@@ -1836,7 +1836,7 @@
 (defvar-local histdir-buffer-local-history-list nil)
 (defvar-local histdir-buffer-local-history--head nil)
 (defun histdir--update-buffer-local-history-pointers-1 (shared)
-    (if-let (local histdir-buffer-local-history--head)
+    (if-let* ((local histdir-buffer-local-history--head))
         (progn
             (dlist-setcdr local shared)
             (setq histdir-buffer-local-history-list (dlist-list local)))
@@ -1861,12 +1861,12 @@
 (defun histdir-history--remove-call (history hash datetime)
     (let* ((calls (histdir-history-calls history))
            (datetimes (gethash hash calls)))
-        (if-let (datetimes (delete datetime datetimes))
+        (if-let* ((datetimes (delete datetime datetimes)))
             (puthash hash datetimes calls)
             (remhash hash calls))))
 (defun histdir-history--add (history datetime hash string)
     (let ((table (histdir-history-table history)))
-        (when-let (replaced-string (sorted-hash-table-get table datetime))
+        (when-let* ((replaced-string (sorted-hash-table-get table datetime)))
             (unless (equal replaced-string string)
                 (let ((replaced-hash (histdir--hash replaced-string)))
                     (histdir-history--remove-call
@@ -1876,7 +1876,7 @@
         (histdir--update-buffer-local-history-pointers history)))
 (defun histdir-history--remove (history datetime)
     (let ((table (histdir-history-table history)))
-        (when-let (removed (bihash-get (aref table 2) datetime))
+        (when-let* ((removed (bihash-get (aref table 2) datetime)))
             (let* ((string (sorted-hash-table-pop table datetime))
                    (hash   (histdir--hash string)))
                 (histdir-history--remove-call history hash datetime))
@@ -1917,9 +1917,9 @@
                 (thread-yield)
                 (histdir--read-call (concat "call/" file) history)))))
 (defun histdir--read-call (call-file history)
-    (when-let ((datetime (histdir--datetime-from-path call-file))
-               (hash     (histdir--read-file call-file))
-               (_        (length> hash 0)))
+    (when-let* ((datetime (histdir--datetime-from-path call-file))
+                (hash     (histdir--read-file call-file))
+                (_        (length> hash 0)))
         (thread-yield)
         (let* ((call-directory   (file-name-directory call-file))
                (parent-directory (file-name-parent-directory call-directory))
@@ -1929,15 +1929,15 @@
                 (histdir-history--add history datetime hash string)
                 (histdir-history--add-call history hash datetime)))))
 (defun histdir--read-string (string-file history)
-    (when-let ((hash   (histdir--hash-from-path string-file))
-               (string (histdir--read-file string-file))
-               (_      (length> string 0)))
+    (when-let* ((hash   (histdir--hash-from-path string-file))
+                (string (histdir--read-file string-file))
+                (_      (length> string 0)))
         (dolist (datetime (gethash hash (histdir-history-calls history)))
             (histdir-history--add history datetime hash string))))
 (defun histdir--see-call-change (history watch-event)
     (seq-let (_descriptor action file) watch-event
         (when (memq action '(deleted renamed))
-            (when-let (datetime (histdir--datetime-from-path file))
+            (when-let* ((datetime (histdir--datetime-from-path file)))
                 (histdir-history--remove history datetime)))
         (when (eq action 'renamed)
             (setq file (nth 3 watch-event)))
@@ -2062,13 +2062,13 @@
             (while (and older (not (dlist-car older)))
                 (setq older (dlist-cdr older)))
             older)
-        (if-let ((shared (aref (histdir-history-table (histdir--history)) 3))
-                 (local  histdir-buffer-local-history--head)
-                 (_      (not (equal (dlist-car local) (dlist-car shared)))))
+        (if-let* ((shared (aref (histdir-history-table (histdir--history)) 3))
+                  (local  histdir-buffer-local-history--head)
+                  (_      (not (equal (dlist-car local) (dlist-car shared)))))
             local
             shared)))
 (defun histdir-input--older (position)
-    (if-let (older (histdir-input--cycle-older position))
+    (if-let* ((older (histdir-input--cycle-older position)))
         older
         position))
 (defun histdir-input--newer (position)
@@ -2521,7 +2521,7 @@
     (let ((parts (split-string object separators t trim))
           (result ()))
         (dolist (part parts)
-            (if-let (paths (text-property-values nil nil 'full-path part))
+            (if-let* ((paths (text-property-values nil nil 'full-path part)))
                 (while-let ((path (pop paths)))
                     (unless (eq path (car result))
                         (push path result)))
@@ -2540,7 +2540,7 @@
         (goto-char (point-min))
         (let ((inhibit-read-only t))
             (while (< (point) (point-max))
-                (when-let (path (dired-get-filename nil t))
+                (when-let* ((path (dired-get-filename nil t)))
                     (put-text-property
                         (line-beginning-position)
                         (line-end-position)
@@ -2847,7 +2847,7 @@
     (defun debug-parent-level ()
         (interactive)
         (fixed-debug--collect-garbage)
-        (when-let ((depth (pop fixed-debug--parent-depths)))
+        (when-let* ((depth (pop fixed-debug--parent-depths)))
             (let ((count (- (recursion-depth) depth)))
                 (when (> count 0)
                     (recursive-abort count)))))
@@ -2867,11 +2867,11 @@
     (advice-add 'debugger-quit :override 'fixed-debugger-quit)
     (defun fixed-debug--in-debugger-p ()
         (fixed-debug--collect-garbage)
-        (when-let ((depth (car fixed-debug--parent-depths)))
+        (when-let* ((depth (car fixed-debug--parent-depths)))
             (> (recursion-depth) depth)))
     (defun fixed-debug--exit-checklist (&rest _)
         (fixed-debug--collect-garbage)
-        (if-let ((parent-depth (car fixed-debug--parent-depths)))
+        (if-let* ((parent-depth (car fixed-debug--parent-depths)))
             (let ((debugger-depth (1+ parent-depth)))
                 (when (> (recursion-depth) debugger-depth)
                     (user-error "Not in most nested command loop")))
@@ -3479,7 +3479,7 @@
            (face (intern (concat "datetime-read-preview-" name "-face"))))
         `(unless (eq slot ',slot)
              (unless (,decoded-time-slot parsed)
-                 (when-let (cell (pop integers))
+                 (when-let* ((cell (pop integers)))
                      (let* ((word  (car cell))
                             (,slot (string-to-number word)))
                          (setcar cell (propertize word 'face ',face))
@@ -3627,7 +3627,7 @@
 (defvar datetime-read-popup-calendar nil)
 
 (defun datetime-read--preview (short now cell)
-    (when-let (overlay (car cell))
+    (when-let* ((overlay (car cell)))
         (let ((input (substring-no-properties (minibuffer-contents))))
             (condition-case error
                 (seq-let* ((parsed info) (datetime-parse--loop input short now)
@@ -3653,8 +3653,8 @@
             (progn
                 (setcdr cell nil)
                 (calendar-exit))
-            (if-let ((_      (cdr cell))
-                     (buffer (get-buffer "*Calendar*")))
+            (if-let* ((_      (cdr cell))
+                      (buffer (get-buffer "*Calendar*")))
                 (switch-to-buffer buffer)
                 (setcdr cell t)
                 (calendar))
@@ -3688,7 +3688,7 @@
                 'month parsed previous-parsed bindings)
             (datetime-read--preview-format-1
                 'day   parsed previous-parsed bindings)
-            (when-let (final-value (decoded-time-weekday parsed))
+            (when-let* ((final-value (decoded-time-weekday parsed)))
                 (let* ((names '(Sun Mon Tue Wed Thu Fri Sat))
                        (name  (nth final-value names))
                        (prior-value (decoded-time-weekday previous-parsed)))
@@ -4941,7 +4941,7 @@
     (defun diff-unsaved-changes ()
         (interactive)
         (when (not buffer-file-name)
-            (when-let (buffer (parent-buffer-search 'buffer-file-name))
+            (when-let* ((buffer (parent-buffer-search 'buffer-file-name)))
                 (set-buffer buffer)))
         (add-single-use-hook 'pop-to-command-setup-hook
             (parent-buffer-setter))
@@ -4969,7 +4969,7 @@
             (refresh-modified-state buffer)
             (delete-directory directory t)))
     (defun diff-buffer--pick (prompt)
-        (if-let (window (next-window-other-buffer nil 'never))
+        (if-let* ((window (next-window-other-buffer nil 'never)))
             (window-buffer window)
             (read-other-buffer prompt)))
     (defun diff-buffer (buffer-1 buffer-2)
@@ -5009,7 +5009,7 @@
     (defun partial-save ()
         (interactive)
         (when (not buffer-file-name)
-            (when-let (buffer (parent-buffer-search 'buffer-file-name))
+            (when-let* ((buffer (parent-buffer-search 'buffer-file-name)))
                 (set-buffer buffer)))
         (add-single-use-hook 'pop-to-command-setup-hook
             (parent-buffer-setter))
@@ -5042,7 +5042,7 @@
     (defun partial-revert ()
         (interactive)
         (when (not buffer-file-name)
-            (when-let (buffer (parent-buffer-search 'buffer-file-name))
+            (when-let* ((buffer (parent-buffer-search 'buffer-file-name)))
                 (set-buffer buffer)))
         (if (not buffer-file-name)
             (call-interactively 'revert-buffer)
@@ -5146,7 +5146,7 @@
     (defun git-pop-to-command (command &optional use-visited)
         (add-single-use-hook 'pop-to-command-setup-hook
             (parent-buffer-setter))
-        (if-let (root (git-worktree-root))
+        (if-let* ((root (git-worktree-root)))
             (let ((default-directory root)
                   (path (git--target-path use-visited)))
                 (when path
@@ -5252,7 +5252,7 @@
         (if (git-worktree-root)
             (if (or dired-directory buffer-file-name)
                 (call-interactively 'vc-annotate)
-                (if-let (buffer (parent-buffer-search 'buffer-file-name))
+                (if-let* ((buffer (parent-buffer-search 'buffer-file-name)))
                     (with-current-buffer buffer
                         (call-interactively 'vc-annotate))
                     (pop-to-command-eshell--not-a-file "Annotate")))
@@ -5391,7 +5391,7 @@
                     (goto-char 1))
                 (setq shred--previous-candidate-content content)))))
 (defun shred-buffer-create ()
-    (if-let (buffer (get-buffer " *shred*"))
+    (if-let* ((buffer (get-buffer " *shred*")))
         buffer
         (let ((buffer (get-buffer-create " *shred*")))
             (with-current-buffer buffer
@@ -5425,17 +5425,17 @@
 (shred-define-key "gp" 'shred-paste-after)
 (shred-define-key "gP" 'shred-paste-before)
 (defun shred-run-handler (string)
-    (when-let ((shred-handler (get-text-property 0 'shred-handler string))
-               (function (car-safe shred-handler))
-               (_ (functionp function)))
+    (when-let* ((shred-handler (get-text-property 0 'shred-handler string))
+                (function (car-safe shred-handler))
+                (_ (functionp function)))
         (let ((argument (car-safe (cdr shred-handler))))
             (funcall function (or argument string)))))
 (defun shred-kill (n)
-    (when-let ((link    (nthcdr (1- n) kill-ring))
-               (_       (>= n 0))
-               (removed (if (equal n 0)
-                            kill-ring
-                            (cdr link))))
+    (when-let* ((link    (nthcdr (1- n) kill-ring))
+                (_       (>= n 0))
+                (removed (if (equal n 0)
+                             kill-ring
+                             (cdr link))))
         (shred-run-handler (car removed))
         (if (equal n 0)
             (pop kill-ring)
@@ -5788,7 +5788,7 @@
                 (let ((name (buffer-name)))
                     (with-current-buffer parent-buffer
                         (setq-local undo-tree-diff-buffer-name name)))
-                (when-let (window (get-buffer-window parent-buffer))
+                (when-let* ((window (get-buffer-window parent-buffer)))
                     (select-window window)))))
     (defun hack-undo-tree-visualizer-show-diff (&optional node)
         (setq undo-tree-visualizer-diff t)
@@ -5804,7 +5804,7 @@
         :override 'hack-undo-tree-visualizer-update-diff)
     (defun hack-undo-tree-visualizer-hide-diff ()
         (setq undo-tree-visualizer-diff nil)
-        (if-let (window (get-buffer-window undo-tree-diff-buffer-name))
+        (if-let* ((window (get-buffer-window undo-tree-diff-buffer-name)))
             (quit-window nil window)))
     (advice-add 'undo-tree-visualizer-hide-diff
         :override 'hack-undo-tree-visualizer-hide-diff))
@@ -6077,8 +6077,8 @@
         (when (< start-of-input (point))
             (if (< start-of-replace (point))
                 (if (<= (point) end-of-replace)
-                    (if-let (replaced
-                                (cdr (assq (1- (point)) evil-replace-alist)))
+                    (if-let* ((replaced
+                                  (cdr (assq (1- (point)) evil-replace-alist))))
                         (process-send-string nil
                             (concat "\C-?" (char-to-string replaced) "\e[D"))
                         (histdir-repl-backspace-char-in-input)
@@ -6723,11 +6723,11 @@
     (setq denote-history-completion-in-prompts nil)
     (setq denote-rename-confirmations '(modify-file-name add-front-matter))
     (defun denote-file-note-type (path)
-        (when-let ((_ (or (not (file-exists-p path))
-                          (and (file-regular-p path)
-                               (not (file-symlink-p path)))))
-                   (extension (denote-get-file-extension-sans-encryption path))
-                   (types (denote--file-types-with-extension extension)))
+        (when-let* ((_ (or (not (file-exists-p path))
+                           (and (file-regular-p path)
+                                (not (file-symlink-p path)))))
+                    (extension (denote-get-file-extension-sans-encryption path))
+                    (types (denote--file-types-with-extension extension)))
             (car (seq-find
                      (lambda-let (path) (type)
                          (denote--regexp-in-file-p
@@ -6933,10 +6933,10 @@
                 (condition-case _error
                     (dired-rename-file path new-path 0)
                     (file-missing
-                        (when-let (buffer (get-file-buffer path))
+                        (when-let* ((buffer (get-file-buffer path)))
                             (with-current-buffer buffer
 	                        (set-visited-file-name new-path nil t))))))
-            (when-let (type (denote-file-note-type new-path))
+            (when-let* ((type (denote-file-note-type new-path)))
                 (denoted-rewrite-front-matter new-path title tags type))
             new-path))
     (defun denoted-format-file-name (datetime title suffix tags extension)
@@ -6986,10 +6986,10 @@
         (user-error "%s is not visiting a file or directory" (buffer-name)))
     (defun denoted-try (function &optional fallback-command)
         (setq-if-nil fallback-command 'denoted-try--default-fallback)
-        (if-let (path (buffer-file-name))
+        (if-let* ((path (buffer-file-name)))
              (funcall function path)
              (if (derived-mode-p 'dired-mode)
-                 (when-let (path (funcall function (dired-get-filename)))
+                 (when-let* ((path (funcall function (dired-get-filename))))
                      (dired-goto-file path))
                  (become-command fallback-command))))
     (defun denoted-title-set (path title)
@@ -7104,7 +7104,7 @@
     (defun smoother-delete-file--1 (filename)
         (when (confirm-p (format "Delete %s?" (abbreviate-file-name filename)))
             (dired-delete-file filename)
-            (when-let (buffer (find-buffer-visiting filename))
+            (when-let* ((buffer (find-buffer-visiting filename)))
                 (with-current-buffer buffer
                     (set-buffer-modified-p t)
                     (when (confirm-p (format "Kill %s?" (buffer-name)))
@@ -7290,7 +7290,7 @@
             (catch 'break
                 (dotimes (index (length parts))
                     (let ((part (nth index parts)))
-                        (when-let (repetition (task--parse-repetition part))
+                        (when-let* ((repetition (task--parse-repetition part)))
                             (setq datetime
                                 (task--step-datetime datetime repetition steps))
                             (setcar (nthcdr index parts)
@@ -7446,8 +7446,8 @@
 (defvar music--socket nil)
 (defun music ()
     (interactive)
-    (if-let ((buffer  (get-buffer "*Music*"))
-             (process (get-buffer-process buffer)))
+    (if-let* ((buffer  (get-buffer "*Music*"))
+              (process (get-buffer-process buffer)))
         (pop-to-buffer buffer)
         (setq buffer (get-buffer-create "*Music*"))
         (set-buffer buffer)
@@ -7491,8 +7491,8 @@
                         (erase-buffer)
                         (let ((inhibit-quit nil))
                             (music--insert-playlist socket))))
-                (when-let (position (next-single-property-change
-                                        1 'mpv--position))
+                (when-let* ((position (next-single-property-change
+                                          1 'mpv--position)))
                     (progn
                         (goto-char position)
                         (setq temporary-goal-column (current-column))))
@@ -7501,10 +7501,10 @@
                     (setq music--refresh-next-line nil))
                 (when music--refresh-next-index
                     (goto-char 1)
-                    (when-let (match (text-property-search-forward
-                                         'mpv-index
-                                         music--refresh-next-index
-                                         'equal))
+                    (when-let* ((match (text-property-search-forward
+                                           'mpv-index
+                                           music--refresh-next-index
+                                           'equal)))
                         (goto-char (prop-match-beginning match)))
                     (setq music--refresh-next-index nil))
                 (when music--refresh-next-column
@@ -7669,7 +7669,7 @@
         (music-playlist-remove index)))
 (music-define-key 'normal "D" 'music-delete-line)
 (defun music--index-for-point (offset)
-    (if-let (index (get-text-property (point) 'mpv-index))
+    (if-let* ((index (get-text-property (point) 'mpv-index)))
         (+ index offset)
         (music-playlist-count)))
 (defun music--paths-for-paste (register)
@@ -7882,7 +7882,7 @@
         (if (equal status 0)
             (let* ((default-directory denote-directory)
                    (file (tumblr "pull" output)))
-                (when-let ((buffer (find-buffer-visiting file)))
+                (when-let* ((buffer (find-buffer-visiting file)))
                     (refresh-modified-state buffer))
                 (find-file file))
             (error "paste error: %s" output))))
@@ -7950,7 +7950,7 @@
       ("ю" ".")
       ("Ю" ">")))
 (defun russian-vi-bind--1 (keymap russian-key english-key)
-    (when-let (binding (lookup-key keymap english-key))
+    (when-let* ((binding (lookup-key keymap english-key)))
         (define-key keymap russian-key binding)
         (define-key keymap english-key nil t)
         (define-key keymap english-key binding)))
