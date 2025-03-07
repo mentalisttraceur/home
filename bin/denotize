@@ -25,6 +25,16 @@ do
         date=${name%_*}
         time=${name#*_}
     ;;
+    MVIMG_${digits8}_$digits6)
+        name=${name#MVIMG_}
+        date=${name%_*}
+        time=${name#*_}
+    ;;
+    VID_${digits8}_$digits6)
+        name=${name#VID_}
+        date=${name%_*}
+        time=${name#*_}
+    ;;
     PXL_${digits8}_$digits9)
         name=${name#PXL_}
         date=${name%_*}
