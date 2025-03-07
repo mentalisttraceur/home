@@ -31,6 +31,11 @@ do
         time=${name#*_}
         time=${time%$digits3}
     ;;
+    Screenshot_$digits8-$digits6)
+        name=${name#Screenshot_}
+        date=${name%-*}
+        time=${name#*-}
+    ;;
     signal-$digits4-$digits2-$digits2-$digits2-$digits2-$digits2-$digits3)
         name=${name#signal-}
         year=${name%%-*}
