@@ -1581,11 +1581,11 @@
 
 (defvar minimum-fill-column 40)
 
-(defun smoother-fill-paragraph (prefix-argument)
+(defun smoother-fill-paragraph (&optional max-fill-column)
     (interactive "P")
     (when (in-paragraph-p t)
-        (let* ((fill-column (if prefix-argument
-                                (prefix-numeric-value prefix-argument)
+        (let* ((fill-column (if max-fill-column
+                                (prefix-numeric-value max-fill-column)
                                 fill-column))
                (_ (fill-paragraph))
                (best-fill-column fill-column)
