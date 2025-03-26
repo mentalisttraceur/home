@@ -5620,11 +5620,15 @@
 
 (use-packages dired eshell evil
     :config
+    (defun evil-dired-eshell--quote (path)
+        (if (= (aref path 0) ?~)
+            (concat "~" (eshell-quote-argument-2 (substring path 1)))
+            (eshell-quote-argument-2 path)))
     (evil-define-operator evil-dired-eshell (start end)
         (interactive "<r>")
         (let* ((paths (full-path-property-split start end))
                (nicer (mapcar 'user-friendly-path paths))
-               (quoted (mapcar 'eshell-quote-argument-2 nicer)))
+               (quoted (mapcar 'evil-dired-eshell--quote nicer)))
             (eshell t)
             (when (in-eshell-scrollback-p)
                 (end-of-buffer))
