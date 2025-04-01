@@ -6876,7 +6876,7 @@
                 (setq name (substring name 1)))
             (when (string-match "\\..*" name)
                 (match-string 0 name))))
-    (defconst denoted--exclude-regex "[^-[:alnum:]]")
+    (defconst denoted--exclude-regex "[^-%[:alnum:]]")
     (defun denoted--slug (string)
         (string-trim
             (replace-regexp-in-string denoted--exclude-regex ""
@@ -6892,7 +6892,7 @@
             (denoted--slug tag)))
     (defun denoted-tag-slug (tags)
         (mapcar 'denoted-tag--slug tags))
-    (defconst denoted-suffix--exclude-regex "[^=[:alnum:]]")
+    (defconst denoted-suffix--exclude-regex "[^=%[:alnum:]]")
     (defun denoted-suffix-slug (suffix)
         (string-trim
             (replace-regexp-in-string "==+" "="
