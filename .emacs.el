@@ -4274,6 +4274,7 @@
         (when eat-terminal
             (marker-position
                 (eat-term-display-cursor eat-terminal))))
+    (setq eat-enable-shell-prompt-annotation nil)
     (set-face-foreground 'eat-term-color-0  "#505050")
     (set-face-foreground 'eat-term-color-1  "#C00000")
     (set-face-foreground 'eat-term-color-2  "#00C000")
