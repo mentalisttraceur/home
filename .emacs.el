@@ -220,6 +220,7 @@
              (setq ,rest multiple-values--rest))))
 
 (defmacro multiple-values-bind (names form &rest body)
+    (declare (indent 2))
     (let* ((name (pop names))
            (rest (make-symbol "rest"))
            (call (multiple-values--call form rest))
@@ -263,6 +264,7 @@
 
 
 (defmacro seq-let* (unpack-list &rest body)
+    (declare (indent 1))
     `(apply-split-nest seq-let ,unpack-list 2 ,body))
 
 (defmacro uncons (car-name cdr-name cell)
@@ -277,6 +279,7 @@
          ,@body))
 
 (defmacro let-uncons (uncons-list &rest body)
+    (declare (indent 1))
     `(apply-split-nest let-uncons-1 ,uncons-list 3 ,body))
 
 
@@ -301,6 +304,7 @@
 
 
 (defmacro until (test &rest body)
+    (declare (indent 1))
     `(while (not ,test)
          ,@body))
 
@@ -330,6 +334,7 @@
 
 
 (defmacro save-point (&rest body)
+    (declare (indent 0))
     `(let ((--save-point-- (point)))
          (unwind-protect
              (progn
@@ -338,6 +343,7 @@
 
 
 (defmacro save-mutation (&rest body)
+    (declare (indent 0))
     `(let ((buffer-undo-list ()))
          (unwind-protect
              (progn
@@ -346,6 +352,7 @@
 
 
 (defmacro with-temporary-file (name &rest body)
+    (declare (indent 1))
     `(let (,name)
          (unwind-protect
              (progn
@@ -355,6 +362,7 @@
                  (delete-file ,name)))))
 
 (defmacro with-temporary-directory (name &rest body)
+    (declare (indent 1))
     `(let (,name)
          (unwind-protect
              (progn
@@ -468,6 +476,7 @@
                  (apply 'advice-remove --with-advice-1--)))))
 
 (defmacro with-advice (advice-list &rest body)
+    (declare (indent 1))
     `(apply-split-nest with-advice-1 ,advice-list 1 ,body))
 
 (defmacro without-advice-1 (advice-remove-arguments &rest body)
@@ -483,6 +492,7 @@
              ,@body)))
 
 (defmacro without-advice (advice-list &rest body)
+    (declare (indent 1))
     `(apply-split-nest without-advice-1 ,advice-list 1 ,body))
 
 (defmacro without-advice-all-1 (symbol &rest body)
@@ -495,6 +505,7 @@
                  (apply 'advice-add ,symbol advice)))))
 
 (defmacro without-advice-all (symbol-list &rest body)
+    (declare (indent 1))
     `(apply-split-nest without-advice-all-1 ,symbol-list 1 ,body))
 
 
@@ -513,6 +524,7 @@
                  (apply 'remove-hook --with-hook-1--)))))
 
 (defmacro with-hook (hook-list &rest body)
+    (declare (indent 1))
     `(apply-split-nest with-hook-1 ,hook-list 1 ,body))
 
 
@@ -530,6 +542,7 @@
                  (apply 'remove-variable-watcher --with-variable-watcher-1--)))))
 
 (defmacro with-variable-watcher (watcher-list &rest body)
+    (declare (indent 1))
     `(apply-split-nest with-variable-watcher-1 ,watcher-list 1 ,body))
 
 
@@ -548,6 +561,7 @@
                      (set ,symbol (cdr --without-local-variable-1--)))))))
 
 (defmacro without-local-variable (symbol-list &rest body)
+    (declare (indent 1))
     `(apply-split-nest without-local-variable-1 ,symbol-list 1 ,body))
 
 
@@ -561,10 +575,12 @@
                  --with-face-attribute-1--))))
 
 (defmacro with-face-attribute (face-attribute-list &rest body)
+    (declare (indent 1))
     `(apply-split-nest with-face-attribute-1 ,face-attribute-list 3 ,body))
 
 
 (defmacro with-buffer-modified-p (flag &rest body)
+    (declare (indent 1))
     `(let ((--with-buffer-modified-p-- (buffer-modified-p)))
          (unwind-protect
              (progn
@@ -574,6 +590,7 @@
 
 
 (defmacro with-visited-file-modtime (time-flag &rest body)
+    (declare (indent 1))
     `(let ((--with-visited-file-modtime-- (visited-file-modtime)))
          (unwind-protect
              (progn
@@ -946,6 +963,7 @@
             (set-window-hscroll window hscroll))))
 
 (defmacro save-point-position-with-scroll (&rest body)
+    (declare (indent 0))
     `(let ((--save-point-- (point-position-with-scroll)))
          (unwind-protect
              (progn
@@ -972,6 +990,7 @@
             (set-window-hscroll window hscroll))))
 
 (defmacro save-point-line-and-column-with-scroll (&rest body)
+    (declare (indent 0))
     `(let ((--save-point-- (point-line-and-column-with-scroll)))
          (unwind-protect
              (progn
@@ -997,6 +1016,7 @@
             (set-window-hscroll window hscroll))))
 
 (defmacro save-point-marker-with-scroll (&rest body)
+    (declare (indent 0))
     `(let ((--save-point-- (point-marker-with-scroll)))
          (unwind-protect
              (progn
@@ -1496,6 +1516,7 @@
 
 
 (defmacro defer-input (&rest body)
+    (declare (indent 0))
     `(let ((defer-input-map (make-sparse-keymap))
            (defer-input--events (list 'unused)))
          (define-key defer-input-map [t]
@@ -2434,6 +2455,7 @@
               (dired-get-filename t t)))
     (defvar pulsed-dired-revert--nested nil)
     (defmacro with-pulsed-dired-revert (&rest body)
+        (declare (indent 0))
         (let ((before (make-symbol "pulsed-dired-revert--before"))
               (after  (make-symbol "pulsed-dired-revert--after")))
             `(let ((,before (unless pulsed-dired-revert--nested
@@ -4436,6 +4458,7 @@
     (define-key evil-operator-state-map "q" 'evil-force-normal-state)
     (defvar override-evil-mode-line-tag nil)
     (defmacro with-override-evil-mode-line-tag (tag help-string &rest body)
+        (declare (indent 2))
         `(unwind-protect
              (progn
                  (setq override-evil-mode-line-tag (propertize ,tag
@@ -6413,6 +6436,7 @@
             (window-state--normal)
             (setq window-state--execute-once t)))
     (defmacro window-state-define-motion (name &rest body)
+        (declare (indent 1))
         `(defun ,name ()
              (interactive)
              (window-state--do-action
@@ -6478,6 +6502,7 @@
                          (t
                              (keyboard-quit)))))))
     (defmacro window-state-define-operator (name &rest body)
+        (declare (indent 1))
         (let ((move-name (intern (concat (symbol-name name) "-move"))))
             `(append
                  (window-state--define-operator ,name
