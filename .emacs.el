@@ -7484,7 +7484,8 @@
             (unless (or (evil-visual-state-p)
                         (evil-operator-state-p))
                 (save-point-line-and-column-with-scroll
-                    (let ((inhibit-read-only t))
+                    (let ((inhibit-read-only t)
+                          (buffer-undo-list t))
                         (erase-buffer)
                         (let ((inhibit-quit nil))
                             (music--insert-playlist socket))))
