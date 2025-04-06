@@ -7483,8 +7483,12 @@
                           :noquery t))
         (let* ((socket-path (mpv-ipc-socket-path-from-process process))
                (socket1 (wait-until
-                            (ignore-error mpv-ipc-connect-error
-                                (mpv-ipc-connect socket-path))
+                            (condition-case nil
+                                (mpv-ipc-connect socket-path)
+                                (mpv-ipc-connect-error
+                                    (unless (process-live-p process)
+                                        (pop-to-buffer buffer)
+                                        (error "error starting mpv"))))
                             0.1))
                (socket2 (mpv-ipc-connect socket-path)))
             (mpv-ipc socket1 '("disable_event" "all"))
