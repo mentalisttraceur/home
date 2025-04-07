@@ -49,7 +49,7 @@
         (or (gethash elc-file comp--no-native-compile)
             (funcall native-compile-async-skip-p file load selector))))
 
-(advice-add 'native-compile-async-skip-p
+(advice-add 'native--compile-async-skip-p
     :around 'fixed-native-compile-async-skip-p)
 
 
