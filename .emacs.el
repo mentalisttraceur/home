@@ -1768,7 +1768,7 @@
 (defun variadic-mapcar (function &rest lists)
     (setq lists (nreverse lists))
     (let ((results ()))
-        (while (any lists)
+        (while (seq-find 'identity lists)
             (let ((arguments ())
                   (head lists))
                 (while head
@@ -3269,7 +3269,7 @@
             (pop word))
         (seq-setq (parsed _ bindings)
             (datetime-parse--bind nil parsed integers bindings))
-        (unless (and short (not (any (take 6 parsed))))
+        (unless (and short (not (seq-find 'identity (take 6 parsed))))
             (setq parsed (datetime-parse--future-bias nil parsed now)))
         (when short
             (datetime-parse--plug parsed))
@@ -3279,7 +3279,7 @@
         (setq parsed (fixed-decoded-time-add parsed nil))
         (setq string (string-join words " "))
         (if (or (and (< (- (length (remove "" words)) integers-before-span) 2)
-                     (not (any offsets)))
+                     (not (seq-find 'identity offsets)))
                 (string-suffix-p " " string))
             (list parsed (list nil bindings string))
             (setq previous-parsed
