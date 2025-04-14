@@ -633,16 +633,6 @@
 (advice-add 'line-move-1 :around 'hack-line-move-1)
 
 
-(defun loglsb (integer)
-    (logand integer (- integer)))
-(defun logfls (integer)
-    (1- (logb (logxor 1 (ash integer 1)))))
-(defun logffs (integer)
-    (logfls (loglsb integer)))
-(defun logmsb (integer)
-    (ash 1 (logfls integer)))
-
-
 (defun dlist-cons (item dlist)
     (let ((entry (cons
                      (cons nil  dlist)
