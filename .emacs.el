@@ -726,34 +726,6 @@
     (dlist-insert link item (dlist-cdr link)))
 
 
-(defun make-ordered-hash-table (&rest arguments)
-    (record 'ordered-hash-table (apply 'make-hash-table arguments) nil))
-
-(defun ordered-hash-table-get (table key &optional default)
-    (if-let* ((entry (gethash key (aref table 1))))
-        (dlist-car entry)
-        default))
-
-(defun ordered-hash-table-pop (table key)
-    (let ((hash-table (aref table 1)))
-        (when-let* ((entry (gethash key hash-table)))
-            (remhash key hash-table)
-            (when (eq entry (aref table 2))
-                (aset table 2 (dlist-cdr entry)))
-            (dlist-unlink entry)
-            (dlist-car entry))))
-
-(defun ordered-hash-table-put (table key value)
-    (ordered-hash-table-pop table key)
-    (let ((entry (dlist-cons value (aref table 2))))
-        (puthash key entry (aref table 1))
-        (aset table 2 entry))
-    value)
-
-(defun ordered-hash-table-list (table)
-    (dlist-list (aref table 2)))
-
-
 (defun make-bihash (&rest arguments)
     (let ((tail arguments)
           (key-test nil)
