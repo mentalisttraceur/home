@@ -643,12 +643,6 @@
     (ash 1 (logfls integer)))
 
 
-(defun plist-put-default (plist property default-value &optional predicate)
-    (if (plist-member plist property predicate)
-        plist
-        (plist-put plist property default-value predicate)))
-
-
 (defun dlist-cons (item dlist)
     (let ((entry (cons
                      (cons nil  dlist)
