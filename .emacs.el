@@ -2143,11 +2143,16 @@
     (defun latest-eshell--add (eshell &rest arguments)
         (let ((buffer (apply eshell arguments)))
             (add-hook 'kill-buffer-hook 'latest-eshell--remove nil t)
-            (setq latest-eshell (cons buffer (delq buffer latest-eshell)))
-            buffer))
+            (latest-eshell--update buffer)))
+    (defun latest-eshell--update (buffer)
+        (setq latest-eshell (cons buffer (delq buffer latest-eshell)))
+        buffer)
     (defun latest-eshell--remove ()
         (setq latest-eshell (delq (current-buffer) latest-eshell)))
     (advice-add 'eshell :around 'latest-eshell--add)
+    (defun latest-eshell--find-p (entry)
+        (let ((buffer (car entry)))
+            (memq buffer latest-eshell)))
     (defun latest-eshell (&optional prefix-argument)
         (interactive "P")
         (if prefix-argument
@@ -2155,7 +2160,13 @@
                 (eshell)
                 (eshell prefix-argument))
             (if latest-eshell
-                (pop-to-buffer (car latest-eshell))
+                (let ((entries (window-prev-buffers)))
+                    (if-let* ((entry (seq-find 'latest-eshell--find-p entries)))
+                        (seq-let (buffer start point) entry
+                            (set-window-buffer-start-and-point
+                                (selected-window) buffer start point)
+                            (latest-eshell--update (current-buffer)))
+                        (pop-to-buffer (car latest-eshell))))
                 (eshell))))
     (setq eshell-history-size 0)
     (advice-add 'eshell-hist-initialize
