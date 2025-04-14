@@ -1752,19 +1752,6 @@
         (buffer-file-or-directory found)))
 (provide 'parent-buffer)
 
-(use-package cl-seq
-    :config
-    (defun any (seq &rest cl-reduce-keyword-arguments)
-        (setq cl-reduce-keyword-arguments
-            (plist-put-default cl-reduce-keyword-arguments :initial-value nil))
-        (apply 'cl-reduce (lambda (a b) (or a b)) seq
-               cl-reduce-keyword-arguments))
-    (defun all (seq &rest cl-reduce-keyword-arguments)
-        (setq cl-reduce-keyword-arguments
-            (plist-put-default cl-reduce-keyword-arguments :initial-value t))
-        (apply 'cl-reduce (lambda (a b) (and a b)) seq
-               cl-reduce-keyword-arguments)))
-
 (defun variadic-mapcar (function &rest lists)
     (setq lists (nreverse lists))
     (let ((results ()))
