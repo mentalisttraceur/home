@@ -708,11 +708,12 @@
     dlist)
 
 (defun dlist-p (object)
-    (and (listp object)
-         (listp (car object))
-         (listp (caar object))
-         (listp (cdar object))
-         (listp (cdr object))))
+    (or (null object)
+        (and (consp object)
+             (consp (car object))
+             (listp (caar object))
+             (listp (cdar object))
+             (consp (cdr object)))))
 
 (defun dlist-insert (link1 item link2)
     (let ((new-link (dlist-cons item link2)))
