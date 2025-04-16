@@ -6889,20 +6889,21 @@
                     'face 'denote-faces-prompt-old-name)
                 (propertize (file-name-nondirectory new-path)
                     'face 'denote-faces-prompt-new-name))))
-    (defun denoted-rewrite-front-matter (path title tags type)
+    (defun denoted-rewrite-front-matter (path datetime title tags type)
         (let* ((buffers (buffer-list))
                (buffer  (find-file-noselect path))
                (was-already-open    (memq buffer buffers))
                (had-unsaved-changes (when was-already-open
                                         (refresh-modified-state buffer)
                                         (buffer-modified-p buffer))))
-            (denote-rewrite-front-matter path title tags type)
+            (denote-rewrite-front-matter
+                path title tags "" (date-to-time datetime) datetime type)
             (unless had-unsaved-changes
                 (with-current-buffer buffer
                     (save-buffer)))
             (unless was-already-open
                 (kill-buffer buffer))))
-    (defun denoted--rename (path new-path directory title tags)
+    (defun denoted--rename (path new-path directory datetime title tags)
         (if (and (memq 'modify-file-name denote-rename-confirmations)
                  (not (denoted-rename-file-prompt path new-path)))
             path
@@ -6914,7 +6915,8 @@
                             (with-current-buffer buffer
 	                        (set-visited-file-name new-path nil t))))))
             (when-let* ((type (denote-file-note-type new-path)))
-                (denoted-rewrite-front-matter new-path title tags type))
+                (denoted-rewrite-front-matter
+                    new-path datetime title tags type))
             new-path))
     (defun denoted-format-file-name (datetime title suffix tags extension)
         (let ((parts (list extension)))
@@ -6957,7 +6959,7 @@
                         (file-name-directory new-path)
                         "."
                         (file-name-nondirectory new-path))))
-            (denoted--rename path new-path directory title tags)))
+            (denoted--rename path new-path directory datetime title tags)))
     (defun denoted-try--default-fallback ()
         (interactive)
         (user-error "%s is not visiting a file or directory" (buffer-name)))
@@ -7049,7 +7051,7 @@
                (new-path  (concat directory name)))
             (when (equal title (denote-retrieve-filename-title path))
                 (setq title (denoted-title-get path)))
-            (denoted--rename path new-path directory title tags)))
+            (denoted--rename path new-path directory datetime title tags)))
     (defun denoted-name-edit (path)
         (let* ((name (file-name-nondirectory path))
                (new  (denoted-name-prompt name)))
