@@ -10,7 +10,7 @@
 
 
 (menu-bar-mode -1)
-(defun init-graphic-frame (frame)
+(defun initialize-frame (frame)
     (when (display-graphic-p frame)
         (tool-bar-mode -1)
         (scroll-bar-mode -1)
@@ -26,8 +26,8 @@
     (if android
         (set-face-background 'default "#202020")
         (set-face-background 'default "#141414")))
-(init-graphic-frame (selected-frame))
-(add-hook 'after-make-frame-functions 'init-graphic-frame)
+(initialize-frame (selected-frame))
+(add-hook 'after-make-frame-functions 'initialize-frame)
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 (setq enable-recursive-minibuffers t)
 (setq scroll-conservatively 101)
@@ -40,8 +40,8 @@
 (load custom-file 'noerror)
 
 
-(setq init-gc-cons-threshold gc-cons-threshold
-      init-file-name-handler-alist file-name-handler-alist)
+(setq initial-gc-cons-threshold gc-cons-threshold
+      initial-file-name-handler-alist file-name-handler-alist)
 (setq gc-cons-threshold (* 1024 1024 1024)
       file-name-handler-alist nil)
 
@@ -8348,8 +8348,8 @@
                     (russian-vi-bind map))))))
 
 
-(setq gc-cons-threshold init-gc-cons-threshold
-      file-name-handler-alist init-file-name-handler-alist)
+(setq gc-cons-threshold initial-gc-cons-threshold
+      file-name-handler-alist initial-file-name-handler-alist)
 
 
 (setq initial-buffer-choice 'eshell)
