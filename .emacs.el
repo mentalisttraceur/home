@@ -4837,6 +4837,13 @@
         (evil-save-state
             (apply evil-repeat arguments)))
     (advice-add 'evil-repeat :around 'fixed-evil-repeat)
+    (defun fixed-evil-execute-repeat-info
+            (evil-execute-repeat-info &rest arguments)
+        (let ((input-decode-map nil)
+              (key-translation-map nil))
+            (apply evil-execute-repeat-info arguments)))
+    (advice-add 'evil-execute-repeat-info
+        :around 'fixed-evil-execute-repeat-info)
     (defun fixed-evil-execute-repeat-info-with-count (&rest arguments)
         (pop kill-buffer-hook))
     (advice-add 'evil-execute-repeat-info-with-count
