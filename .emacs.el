@@ -5761,7 +5761,7 @@
                     (apply-partially 'delete-directory directory t))
                 (setq directory nil)
                 (let ((name (buffer-name)))
-                    (with-current-buffer parent-buffer
+                    (with-current-buffer (parent-buffer)
                         (setq-local undo-tree-diff-buffer-name name)))
                 (when-let* ((window (get-buffer-window parent-buffer)))
                     (select-window window)))))
