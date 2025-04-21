@@ -2338,7 +2338,7 @@
                     (when (eq marker-character ? )
                         (setq marker-character nil))
                     (let ((buffer-read-only nil))
-	                (delete-region
+                        (delete-region
                             (point)
                             (line-beginning-position 2)))
                     (dired-add-entry
@@ -3776,7 +3776,7 @@
         (undo-tree-clear-visualizer-data buffer-undo-tree)
         (when undo-tree-visualizer-parent-buffer
             (with-current-buffer undo-tree-visualizer-parent-buffer
-	        (remove-hook 'before-change-functions 'undo-tree-kill-visualizer t)))
+                (remove-hook 'before-change-functions 'undo-tree-kill-visualizer t)))
         (when undo-tree-visualizer-diff
             (undo-tree-visualizer-hide-diff))
         (quit-window t))
@@ -5774,7 +5774,7 @@
         (add-single-use-hook 'pop-to-command-setup-hook
             (parent-buffer-setter))
         (with-current-buffer undo-tree-visualizer-parent-buffer
-	    (hack-undo-tree-diff node)))
+            (hack-undo-tree-diff node)))
     (advice-add 'undo-tree-visualizer-update-diff
         :override 'hack-undo-tree-visualizer-update-diff)
     (defun hack-undo-tree-visualizer-hide-diff ()
@@ -6913,7 +6913,7 @@
                     (file-missing
                         (when-let* ((buffer (get-file-buffer path)))
                             (with-current-buffer buffer
-	                        (set-visited-file-name new-path nil t))))))
+                                (set-visited-file-name new-path nil t))))))
             (when-let* ((type (denote-file-note-type new-path)))
                 (denoted-rewrite-front-matter
                     new-path datetime title tags type))
