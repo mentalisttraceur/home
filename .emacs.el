@@ -351,6 +351,31 @@
              (primitive-undo (length buffer-undo-list) buffer-undo-list))))
 
 
+(defmacro as-one-change (&rest body)
+    (declare (indent 0))
+    (let ((change-group (make-symbol "--as-one-change--change-group--"))
+          (hash (make-symbol "--as-one-change--hash--"))
+          (modified-p (make-symbol "--as-one-change--modified-p--"))
+          (buffer (make-symbol "--as-one-change--buffer--")))
+        `(let ((,change-group (prepare-change-group))
+               (,hash (buffer-hash))
+               (,modified-p (buffer-modified-p))
+               (,buffer (current-buffer))
+               (undo-outer-limit nil)
+               (undo-limit most-positive-fixnum)
+               (undo-strong-limit most-positive-fixnum))
+             (unwind-protect
+                 (progn
+                     (activate-change-group ,change-group)
+                     ,@body)
+                 (if (equal (buffer-hash ,buffer) ,hash)
+                     (with-current-buffer ,buffer
+                         (cancel-change-group ,change-group)
+                         (restore-buffer-modified-p ,modified-p))
+                     (accept-change-group ,change-group)
+                     (undo-amalgamate-change-group ,change-group))))))
+
+
 (defmacro with-temporary-file (name &rest body)
     (declare (indent 1))
     `(let (,name)
