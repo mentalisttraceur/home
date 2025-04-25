@@ -1590,38 +1590,39 @@
 (defun smoother-fill-paragraph (&optional max-fill-column)
     (interactive "P")
     (when (in-paragraph-p t)
-        (let* ((fill-column (if max-fill-column
-                                (prefix-numeric-value max-fill-column)
-                                fill-column))
-               (_ (fill-paragraph))
-               (best-fill-column fill-column)
-               (metrics (smoother-fill-paragraph--metrics fill-column))
-               (best-jaggedness (caddr metrics))
-               (best-height     (cadr metrics))
-               (best-width      (car metrics))
-               (maximum-lines (1+ best-height))
-               (minimum-fill-column (max minimum-fill-column
-                                         (* fill-column 0.5)))
-               (fill-column (1- best-width)))
-            (while (and (>= fill-column minimum-fill-column)
-                        (prog1 t (fill-paragraph))
-                        (<= (count-lines-paragraph) maximum-lines))
-                (seq-let (width height jaggedness)
-                        (smoother-fill-paragraph--metrics fill-column)
-                    (if (if (> height best-height)
-                            (< (+ jaggedness 2) best-jaggedness)
-                            (< jaggedness best-jaggedness))
-                        (setq best-fill-column fill-column
-                              best-jaggedness jaggedness
-                              best-width width)
-                        (when (and (= jaggedness best-jaggedness)
-                                   (= height best-height)
-                                   (< width best-width))
+        (as-one-change
+            (let* ((fill-column (if max-fill-column
+                                    (prefix-numeric-value max-fill-column)
+                                    fill-column))
+                   (_ (fill-paragraph))
+                   (best-fill-column fill-column)
+                   (metrics (smoother-fill-paragraph--metrics fill-column))
+                   (best-jaggedness (caddr metrics))
+                   (best-height     (cadr metrics))
+                   (best-width      (car metrics))
+                   (maximum-lines (1+ best-height))
+                   (minimum-fill-column (max minimum-fill-column
+                                             (* fill-column 0.5)))
+                   (fill-column (1- best-width)))
+                (while (and (>= fill-column minimum-fill-column)
+                            (prog1 t (fill-paragraph))
+                            (<= (count-lines-paragraph) maximum-lines))
+                    (seq-let (width height jaggedness)
+                            (smoother-fill-paragraph--metrics fill-column)
+                        (if (if (> height best-height)
+                                (< (+ jaggedness 2) best-jaggedness)
+                                (< jaggedness best-jaggedness))
                             (setq best-fill-column fill-column
-                                  best-width width)))
-                    (setq fill-column (1- width))))
-            (setq fill-column best-fill-column)
-            (fill-paragraph))))
+                                  best-jaggedness jaggedness
+                                  best-width width)
+                            (when (and (= jaggedness best-jaggedness)
+                                       (= height best-height)
+                                       (< width best-width))
+                                (setq best-fill-column fill-column
+                                      best-width width)))
+                        (setq fill-column (1- width))))
+                (setq fill-column best-fill-column)
+                (fill-paragraph)))))
 
 (defun smoother-fill-paragraph--metrics (&optional cutoff)
     (let* ((paragraph (save-excursion
@@ -1667,7 +1668,7 @@
             0)))
 
 (defun smoother-fill-paragraph-post-command ()
-    (with-undo-amalgamate
+    (as-one-change
         (save-excursion
             (let* ((origin (point))
                    (end-with-whitespace (fixed-end-of-paragraph-text t))
