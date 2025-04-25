@@ -1559,6 +1559,9 @@
 
 (defvar minimum-fill-column 40)
 
+(defvar smoother-fill-paragraph-overhang-characters
+    '(?. ?, ?? ?! ?\" ?' ?` ?\)))
+
 (defun smoother-fill-paragraph (&optional max-fill-column)
     (interactive "P")
     (when (in-paragraph-p t)
@@ -1602,22 +1605,39 @@
                               (fixed-end-of-paragraph-text t))))
            (lines (string-split paragraph "\n"))
            (height (length lines))
-           (longest (length (car lines)))
-           (shortest (length (pop lines)))
+           (line (pop lines))
+           (length (length line))
+           (shortest length)
+           (longest length)
+           (overhang (smoother-fill-paragraph--overhang line))
+           (longest-without-overhang (- length overhang))
            (jaggedness 0))
         (if cutoff
-            (setq longest (min longest cutoff)
-                  shortest (min shortest cutoff))
+            (progn
+                (min= shortest cutoff)
+                (min= longest cutoff)
+                (min= longest-without-overhang cutoff))
             (setq cutoff most-positive-fixnum))
         (while lines
-            (let* ((line (pop lines))
-                   (length (length line)))
-                (setq longest (max longest length))
-                (setq longest (min longest cutoff))
-                (setq shortest (min shortest length))
-                (when lines
-                    (setq jaggedness (max jaggedness (- longest shortest))))))
+            (setq line (pop lines))
+            (setq length (length line))
+            (min= shortest length)
+            (setq overhang (smoother-fill-paragraph--overhang line))
+            (max= longest length)
+            (max= longest-without-overhang (- length overhang))
+            (min= longest cutoff)
+            (min= longest-without-overhang cutoff)
+            (when lines
+                (max= jaggedness (- longest-without-overhang shortest) 0)))
         (list longest height jaggedness)))
+
+(defun smoother-fill-paragraph--overhang (string)
+    (let ((length (length string)))
+        (if (and (> length 0)
+                 (member (aref string (1- length))
+                         smoother-fill-paragraph-overhang-characters))
+            1
+            0)))
 
 (defun smoother-fill-paragraph-post-command ()
     (with-undo-amalgamate
