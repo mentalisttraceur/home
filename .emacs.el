@@ -1622,13 +1622,15 @@
             (setq line (pop lines))
             (setq length (length line))
             (min= shortest length)
-            (setq overhang (smoother-fill-paragraph--overhang line))
             (max= longest length)
-            (max= longest-without-overhang (- length overhang))
             (min= longest cutoff)
-            (min= longest-without-overhang cutoff)
-            (when lines
-                (max= jaggedness (- longest-without-overhang shortest) 0)))
+            (setq overhang (smoother-fill-paragraph--overhang line))
+            (let ((previous longest-without-overhang))
+                (max= longest-without-overhang (- length overhang))
+                (min= longest-without-overhang cutoff)
+                (when (or lines
+                          (> longest-without-overhang previous))
+                    (max= jaggedness (- longest-without-overhang shortest) 0))))
         (list longest height jaggedness)))
 
 (defun smoother-fill-paragraph--overhang (string)
