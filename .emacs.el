@@ -2710,6 +2710,24 @@
 (use-package display-fill-column-indicator
     :config
     (setq-default fill-column 79)
+    (defun update-fill-column-highlight (symbol new-value operation where)
+        (when (eq operation 'set)
+            (save-current-buffer
+                (when where
+                    (set-buffer where))
+                (unhighlight-regexp
+                    (format ".\\{%d\\}\\(.*\\)" fill-column))
+                (when (if (eq symbol 'display-fill-column-indicator-mode)
+                          new-value
+                          display-fill-column-indicator-mode)
+                    (highlight-regexp
+                        (format ".\\{%d\\}\\(.*\\)"
+                            (if (eq symbol 'fill-column)
+                                new-value
+                                fill-column))
+                        'hi-yellow 1)))))
+    (dolist (symbol '(fill-column display-fill-column-indicator-mode))
+        (add-variable-watcher symbol 'update-fill-column-highlight))
     (defun control-fill-column (prefix-argument)
         (interactive "P")
         (let ((overlong-regexp (format ".\\{%d\\}\\(.*\\)" fill-column)))
