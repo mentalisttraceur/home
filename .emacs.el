@@ -1588,12 +1588,14 @@
     '(?. ?, ?? ?! ?\" ?' ?` ?\)))
 
 (defun smoother-fill-paragraph (&optional max-fill-column)
-    (interactive "P")
+    (interactive (list
+                     (if current-prefix-arg
+                         (setq fill-column
+                               (prefix-numeric-value current-prefix-arg))
+                         fill-column)))
     (when (in-paragraph-p t)
         (as-one-change
-            (let* ((fill-column (if max-fill-column
-                                    (prefix-numeric-value max-fill-column)
-                                    fill-column))
+            (let* ((fill-column (or max-fill-column fill-column))
                    (_ (fill-paragraph))
                    (best-fill-column fill-column)
                    (metrics (smoother-fill-paragraph--metrics fill-column))
