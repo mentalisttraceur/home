@@ -2730,8 +2730,6 @@
         (add-variable-watcher symbol 'update-fill-column-highlight))
     (defun control-fill-column (prefix-argument)
         (interactive "P")
-        (let ((overlong-regexp (format ".\\{%d\\}\\(.*\\)" fill-column)))
-            (unhighlight-regexp overlong-regexp))
         (if prefix-argument
             (if (integerp prefix-argument)
                 (if (< prefix-argument 1)
@@ -2741,9 +2739,6 @@
                 (display-fill-column-indicator-mode 1))
             (when (eq last-command 'control-fill-column)
                 (display-fill-column-indicator-mode 'toggle)))
-        (let ((overlong-regexp (format ".\\{%d\\}\\(.*\\)" fill-column)))
-            (when display-fill-column-indicator-mode
-                (highlight-regexp overlong-regexp 'hi-yellow 1)))
         (message "fill-column: %S display: %s"
             fill-column
             display-fill-column-indicator-mode)))
