@@ -7985,7 +7985,7 @@
         (process-send-region process 1 (buffer-end 1))
         (process-send-eof process)
         process))
-(define-key space-map "a" 'ai)
+(evil-define-key 'normal markdown-mode-map " a" 'ai)
 
 (defconst russian-vi-letter-pairs
     '(("й" "q")
