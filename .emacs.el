@@ -7951,6 +7951,29 @@
 (define-key space-misc-map "u" 'tumblr-pull)
 (define-key space-misc-map "o" 'tumblr-open)
 
+(defconst ai--python (expand-file-name "~/.ai/venv/bin/python"))
+(defconst ai--script (expand-file-name "~/.ai/ai.py"))
+(defconst ai--command `(,ai--python ,ai--script "next-reply" "-"))
+(defun ai--sentinel (change-group)
+    (lambda-let (change-group) (process event-string)
+        (unless (process-live-p process)
+            (accept-change-group change-group)
+            (undo-amalgamate-change-group change-group))
+        (unless (equal event-string "finished\n")
+            (internal-default-process-sentinel
+                process event-string))))
+(defun ai ()
+    (let* ((change-group (prepare-change-group))
+           (process (make-process
+                        :name "ai"
+                        :buffer (current-buffer)
+                        :command ai--command
+                        :sentinel (ai--sentinel change-group))))
+        (activate-change-group change-group)
+        (process-send-region process 1 (buffer-end 1))
+        (process-send-eof process)
+        process))
+
 (defconst russian-vi-letter-pairs
     '(("й" "q")
       ("ц" "w")
