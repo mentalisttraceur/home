@@ -7281,7 +7281,6 @@
                     (setq day (fixed-decoded-time-add day one-day))))
             (let ((date (format-time-string "%Y%m%d" (encode-time day))))
                 (task-datetime-search date))))
-    (define-key space-map "a" 'task-agenda)
     (defun task--parse-datetime (datetime)
         (string-match date-t-time-regex datetime)
         (let ((years   (string-to-number-or-nil (match-string 1 datetime)))
@@ -7963,6 +7962,7 @@
             (internal-default-process-sentinel
                 process event-string))))
 (defun ai ()
+    (interactive)
     (let* ((change-group (prepare-change-group))
            (process (make-process
                         :name "ai"
@@ -7973,6 +7973,7 @@
         (process-send-region process 1 (buffer-end 1))
         (process-send-eof process)
         process))
+(define-key space-map "a" 'ai)
 
 (defconst russian-vi-letter-pairs
     '(("й" "q")
