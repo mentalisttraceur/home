@@ -7960,14 +7960,14 @@
 (defface ai-user-divider-face '((t :foreground "#FFFF00")) "")
 (defface ai-assistant-divider-face '((t :foreground "#FF00FF")) "")
 (defun ai--highlight ()
-    (let ((regex1 (format "^\\(#\\) User Input ###########################$"))
-          (regex2 (format "^# User Input \\(###########################\\)$"))
-          (regex3 (format "^\\(#\\) `AI Reply` ###########################$"))
-          (regex4 (format "^# `AI Reply` \\(###########################\\)$")))
-        (highlight-regexp regex1 'ai-user-divider-face 1)
-        (highlight-regexp regex2 'ai-user-divider-face 1)
-        (highlight-regexp regex3 'ai-assistant-divider-face 1)
-        (highlight-regexp regex4 'ai-assistant-divider-face 1)))
+    (font-lock-add-keywords nil
+        '(("^\\(#\\) User Input \\(###########################\\)$"
+              (1 'ai-user-divider-face t)
+              (2 'ai-user-divider-face t))
+          ("^\\(#\\) `AI Reply` \\(###########################\\)$"
+              (1 'ai-assistant-divider-face t)
+              (2 'ai-assistant-divider-face t)))
+        'append))
 (add-hook 'markdown-mode-hook 'ai--highlight)
 (defconst ai--python (expand-file-name "~/.ai/venv/bin/python"))
 (defconst ai--script (expand-file-name "~/.ai/ai.py"))
