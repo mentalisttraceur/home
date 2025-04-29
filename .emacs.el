@@ -168,11 +168,18 @@
                         (setcar cell (cons (car var) var)))
                     (setcar cell (list var var))))
             (setq cell (cdr cell)))
-        `(eval
-             '(let ,varlist
-                  (lambda ,args
-                      ,@body))
-             t)))
+        `(if (lambda-let--lexical-binding)
+             (let ,varlist
+                 (lambda ,args
+                     ,@body))
+             (eval
+                 '(let ,varlist
+                      (lambda ,args
+                          ,@body))
+                 t))))
+
+(defmacro lambda-let--lexical-binding ()
+    lexical-binding)
 
 
 (defmacro compose (&rest functions)
