@@ -11,17 +11,16 @@
 
 (menu-bar-mode -1)
 (defun init-graphic-frame (frame)
-    (if (not (display-graphic-p frame))
-        (if termux
-            (set-face-background 'default "#202020")
-            (set-face-background 'default "#141414"))
+    (when (display-graphic-p frame)
         (tool-bar-mode -1)
         (scroll-bar-mode -1)
         (select-frame frame)
         (set-frame-font "DejaVu Sans Mono-11.5")
-        (set-background-color "#141414")
         (set-foreground-color "#A0A0A0")
-        (set-cursor-color "#FFFFFF")))
+        (set-cursor-color "#FFFFFF"))
+    (if android
+        (set-face-background 'default "#202020")
+        (set-face-background 'default "#141414")))
 (init-graphic-frame (selected-frame))
 (add-hook 'after-make-frame-functions 'init-graphic-frame)
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
@@ -6422,7 +6421,7 @@
         '("#00FF00" "#808080" "#141414" "W" "Window state"))
     (defconst window-state-target-pending
         '("#00FF00" "#C08040" "#1E140A" "T" "Target-pending window state"))
-    (when termux
+    (when android
         (setcar (nthcdr 2 window-state-normal) "#202020")
         (setcar (nthcdr 2 window-state-target-pending) "#302010"))
     (defvar window-state-this-register nil)
