@@ -4739,7 +4739,7 @@
         (define-key map "gF" 'evil-find-char-pair-backward)
         (define-key map "gt" 'evil-find-char-pair-to)
         (define-key map "gT" 'evil-find-char-pair-to-backward))
-    (when termux
+    (when android
         (define-key evil-motion-state-map [down-mouse-1] nil))
     (define-prefix-command 'space-map)
     (define-key evil-motion-state-map " " 'space-map)
