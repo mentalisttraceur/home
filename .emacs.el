@@ -32,7 +32,14 @@
 (setq-default indent-tabs-mode nil)
 
 
-(setq touch-screen-display-keyboard t)
+(when (and android (not termux))
+    (setq touch-screen-display-keyboard t)
+    (let ((PATH (getenv "PATH")))
+        (dolist (path '("/data/data/com.termux/files/usr/bin"
+                        "/data/data/com.termux/files/usr/local/bin"))
+            (push path exec-path)
+            (setq PATH (concat path ":" PATH)))
+        (setenv "PATH" PATH)))
 
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
