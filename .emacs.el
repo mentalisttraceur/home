@@ -5010,8 +5010,11 @@
                     (add-single-use-hook 'eshell-exec-hook
                         (lambda-let (source-directory) (_process)
                             (setq default-directory source-directory)))
+                    (add-single-use-hook 'pop-to-command-setup-hook
+                        (lambda-let (directory) ()
+                            (setq default-directory directory)))
                     (pop-to-command-eshell
-                        (list "cdexec" directory "gd" file-name unsaved-name)
+                        (list "gd" file-name unsaved-name)
                         (buffer-name)
                         "Diff unsaved"
                         (apply-partially 'diff-unsaved-changes--finish
