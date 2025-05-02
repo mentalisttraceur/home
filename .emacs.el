@@ -5001,22 +5001,27 @@
                        (file         (concat directory "/" file-name))
                        (unsaved-name (concat "unsaved " file-name))
                        (unsaved      (concat directory "/" unsaved-name))
+                       (source-directory default-directory)
                        (default-directory "~"))
                     (if (file-exists-p buffer-file-name)
                         (copy-file buffer-file-name file)
                         (write-region 1 1 file))
                     (write-file-no-visit unsaved)
+                    (add-single-use-hook 'eshell-exec-hook
+                        (lambda-let (source-directory) (_process)
+                            (setq default-directory source-directory)))
                     (pop-to-command-eshell
                         (list "cdexec" directory "gd" file-name unsaved-name)
                         (buffer-name)
                         "Diff unsaved"
                         (apply-partially 'diff-unsaved-changes--finish
-                            (current-buffer) directory)))
+                            (current-buffer) directory source-directory)))
                 (setq directory nil))))
-    (defun diff-unsaved-changes--finish (buffer directory)
+    (defun diff-unsaved-changes--finish (buffer directory source-directory)
         (unwind-protect
             (refresh-modified-state buffer)
-            (delete-directory directory t)))
+            (delete-directory directory t)
+            (setq default-directory source-directory)))
     (defun diff-buffer--pick (prompt)
         (if-let* ((window (next-window-other-buffer nil 'never)))
             (window-buffer window)
