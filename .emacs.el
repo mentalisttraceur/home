@@ -5844,24 +5844,32 @@
                    (node-1 (or node
                                (undo-tree-node-previous node-2)
                                node-2))
+                   (source-directory default-directory)
                    (default-directory "~"))
                 (let ((undo-tree-inhibit-kill-visualizer t))
                     (undo-tree-set node-1 'preserve-timestamps)
                     (write-file-no-visit file-1)
                     (undo-tree-set node-2 'preserve-timestamps)
                     (write-file-no-visit file-2))
+                (add-single-use-hook 'eshell-exec-hook
+                    (lambda-let (source-directory) (_process)
+                        (setq default-directory source-directory)))
                 (pop-to-command-eshell
                     (list "*env" "PAGER=cat"
                         "cdexec" directory "gd" name-1 name-2)
                     (buffer-name)
                     "undo-tree Diff"
-                    (apply-partially 'delete-directory directory t))
+                    (apply-partially 'hack-undo-tree-diff--finish
+                        directory source-directory))
                 (setq directory nil)
                 (let ((name (buffer-name)))
                     (with-current-buffer (parent-buffer)
                         (setq-local undo-tree-diff-buffer-name name)))
                 (when-let* ((window (get-buffer-window (parent-buffer))))
                     (select-window window)))))
+    (defun hack-undo-tree-diff--finish (directory source-directory)
+        (delete-directory directory t)
+        (setq default-directory source-directory))
     (defun hack-undo-tree-visualizer-show-diff (&optional node)
         (setq undo-tree-visualizer-diff t)
         (hack-undo-tree-visualizer-update-diff node))
