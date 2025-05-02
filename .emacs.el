@@ -5055,8 +5055,11 @@
                 (add-single-use-hook 'eshell-exec-hook
                     (lambda-let (source-directory) (_process)
                         (setq default-directory source-directory)))
+                (add-single-use-hook 'pop-to-command-setup-hook
+                    (lambda-let (directory) ()
+                        (setq default-directory directory)))
                 (pop-to-command-eshell
-                    (list "cdexec" directory "gd" name-1 name-2)
+                    (list "gd" name-1 name-2)
                     (concat name-1 " -> " name-2)
                     "Diff buffer"
                     (apply-partially 'diff-buffer--finish
