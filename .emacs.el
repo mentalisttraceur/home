@@ -4393,30 +4393,6 @@
     (end-of-buffer)
     (when pop-to-command--callback
         (funcall pop-to-command--callback)))
-(defun pop-to-command-eat (command &optional context name callback)
-    (require 'eat)
-    (setq name (pop-to-command-buffer-name command context name))
-    (let ((program   (car command))
-          (arguments (cdr command))
-          (directory default-directory)
-          (buffer    (get-buffer name)))
-        (if buffer
-            (with-current-buffer buffer
-                (eat-kill-process))
-            (setq buffer (get-buffer-create name))
-            (set-buffer buffer)
-            (eat-mode))
-        (pop-to-buffer buffer)
-        (setq-local pop-to-command-buffer t)
-        (setq-local pop-to-command--callback callback)
-        (setq default-directory directory)
-        (add-hook 'eat-exit-hook 'pop-to-command--done-eat nil t)
-        (run-hooks 'pop-to-command-setup-hook)
-        (eat-exec buffer name program nil arguments)
-        buffer))
-(defun pop-to-command--done-eat (_process)
-    (when pop-to-command--callback
-        (funcall pop-to-command--callback)))
 (provide 'pop-to-command)
 
 (use-package evil
