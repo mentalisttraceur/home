@@ -5860,7 +5860,7 @@
                 (let ((name (buffer-name)))
                     (with-current-buffer (parent-buffer)
                         (setq-local undo-tree-diff-buffer-name name)))
-                (when-let* ((window (get-buffer-window parent-buffer)))
+                (when-let* ((window (get-buffer-window (parent-buffer))))
                     (select-window window)))))
     (defun hack-undo-tree-visualizer-show-diff (&optional node)
         (setq undo-tree-visualizer-diff t)
