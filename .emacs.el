@@ -5040,6 +5040,7 @@
                    (file-1 (concat directory "/" name-1))
                    (name-2 (file-name-nondirectory (buffer-name buffer-2)))
                    (file-2 (concat directory "/" name-2))
+                   (source-directory default-directory)
                    (default-directory "~"))
                 (when (equal name-1 name-2)
                     (setq name-2 (concat "(2) " name-2))
@@ -5051,12 +5052,19 @@
                         (write-file-no-visit file-2)))
                 (add-single-use-hook 'pop-to-command-setup-hook
                     (parent-buffer-setter))
+                (add-single-use-hook 'eshell-exec-hook
+                    (lambda-let (source-directory) (_process)
+                        (setq default-directory source-directory)))
                 (pop-to-command-eshell
                     (list "cdexec" directory "gd" name-1 name-2)
                     (concat name-1 " -> " name-2)
                     "Diff buffer"
-                    (apply-partially 'delete-directory directory t)))
+                    (apply-partially 'diff-buffer--finish
+                        directory source-directory)))
             (setq directory nil)))
+    (defun diff-buffer--finish (directory source-directory)
+        (delete-directory directory t)
+        (setq default-directory source-directory))
     (define-key space-map "c"
         (lambda (prefix-argument)
             (interactive "P")
