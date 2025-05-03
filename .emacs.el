@@ -5064,26 +5064,31 @@
                 (let* ((file-name (file-name-nondirectory buffer-file-name))
                        (file      (concat directory "/" file-name))
                        (unsaved   (concat directory "/unsaved " file-name))
+                       (source-directory default-directory)
                        (default-directory "~"))
                     (if (file-exists-p buffer-file-name)
                         (copy-file buffer-file-name file)
                         (write-region 1 1 file))
                     (write-file-no-visit unsaved)
+                    (add-single-use-hook 'eshell-exec-hook
+                        (lambda-let (source-directory) (_process)
+                            (setq default-directory source-directory)))
                     (pop-to-command-eshell
                         (list "gp" file unsaved)
                         (buffer-name)
                         "Partial save"
                         (apply-partially 'partial-save--finish
-                            (current-buffer) directory file)))
+                            (current-buffer) directory source-directory file)))
                 (setq directory nil))))
-    (defun partial-save--finish (buffer directory file)
+    (defun partial-save--finish (buffer directory source-directory file)
         (unwind-protect
             (with-current-buffer buffer
                 (when (or (file-exists-p buffer-file-name)
                           (> (file-size file) 0))
                     (copy-file file buffer-file-name t))
                 (refresh-modified-state buffer))
-            (delete-directory directory t)))
+            (delete-directory directory t)
+            (setq default-directory source-directory)))
     (defun partial-revert ()
         (interactive)
         (when (not buffer-file-name)
@@ -5095,6 +5100,7 @@
                 (let* ((file-name (file-name-nondirectory buffer-file-name))
                        (file      (concat directory "/" file-name))
                        (unsaved   (concat directory "/unsaved " file-name))
+                       (source-directory default-directory)
                        (default-directory "~"))
                     (if (file-exists-p buffer-file-name)
                         (copy-file buffer-file-name file)
@@ -5102,14 +5108,20 @@
                     (write-file-no-visit unsaved)
                     (add-single-use-hook 'pop-to-command-setup-hook
                         (parent-buffer-setter))
+                    (add-single-use-hook 'eshell-exec-hook
+                        (lambda-let (source-directory) (_process)
+                            (setq default-directory source-directory)))
                     (pop-to-command-eshell
                         (list "gp" unsaved file)
                         (buffer-name)
                         "Partial revert"
                         (apply-partially 'partial-revert--finish
-                            (current-buffer) directory unsaved)))
+                            (current-buffer)
+                            directory
+                            source-directory
+                            unsaved)))
                 (setq directory nil))))
-    (defun partial-revert--finish (buffer directory unsaved)
+    (defun partial-revert--finish (buffer directory source-directory unsaved)
         (unwind-protect
             (with-current-buffer buffer
                 (let ((buffer-file-name unsaved))
@@ -5117,7 +5129,8 @@
                 (setq buffer-file-truename
                     (abbreviate-file-name (file-truename buffer-file-name)))
                 (refresh-modified-state buffer))
-            (delete-directory directory t)))
+            (delete-directory directory t)
+            (setq default-directory source-directory)))
     (defvar partial-copy-from-current-to-target nil)
     (defun partial-copy (buffer-1 buffer-2)
         (interactive (if partial-copy-from-current-to-target
@@ -5137,11 +5150,15 @@
                 (list "echo" (concat (buffer-name buffer-2) " is special"))
                 (buffer-name)
                 "Partial copy")
+            (add-single-use-hook 'eshell-exec-hook
+                (lambda-let ((directory default-directory)) (_process)
+                    (setq default-directory directory)))
             (with-temporary-directory directory
                 (let* ((name-1 (file-name-nondirectory (buffer-name buffer-1)))
                        (file-1 (concat directory "/" name-1))
                        (name-2 (file-name-nondirectory (buffer-name buffer-2)))
                        (file-2 (concat directory "/" name-2))
+                       (source-directory default-directory)
                        (default-directory "~"))
                     (when (equal name-1 name-2)
                         (setq name-2 (concat "(2) " name-2))
@@ -5156,9 +5173,9 @@
                         (concat name-1 " -> " name-2)
                         "Partial copy"
                         (apply-partially 'partial-copy--finish
-                            buffer-2 directory file-2)))
+                            buffer-2 directory source-directory file-2)))
                 (setq directory nil))))
-    (defun partial-copy--finish (buffer-2 directory file-2)
+    (defun partial-copy--finish (buffer-2 directory source-directory file-2)
         (unwind-protect
             (with-current-buffer buffer-2
                 (let ((buffer-file-name file-2))
@@ -5167,7 +5184,8 @@
                     (setq buffer-file-truename
                         (abbreviate-file-name (file-truename buffer-file-name)))
                     (refresh-modified-state buffer-2)))
-            (delete-directory directory t)))
+            (delete-directory directory t)
+            (setq default-directory source-directory)))
     (define-key space-map "w"
         (lambda (prefix-argument)
             (interactive "P")
