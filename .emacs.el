@@ -87,6 +87,7 @@
 
 (when termux
     (define-key minibuffer-inactive-mode-map [mouse-1] nil)
+    (define-key minibuffer-inactive-mode-map [down-mouse-1] nil)
     (define-key mode-line-buffer-identification-keymap
         [mode-line mouse-1] 'ignore)
     (define-key global-map [wheel-up] 'scroll-down-line)
