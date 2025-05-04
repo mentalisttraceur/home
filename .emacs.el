@@ -8118,7 +8118,8 @@
                        evil-visual-state-map evil-operator-state-map
                        window-state-map histdir-repl-mode-map music-mode-map
                        undo-tree-visualizer-mode-map
-                       calendar-mode-map messages-buffer-mode-map global-map))
+                       calendar-mode-map help-mode-map messages-buffer-mode-map
+                       global-map))
         (russian-vi-bind map))
     (dolist (cell evil-minor-mode-keymaps-alist)
         (let ((inner-alist (cdr cell)))
