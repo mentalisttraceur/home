@@ -4718,6 +4718,17 @@
         (define-key map "gT" 'evil-find-char-pair-to-backward))
     (when android
         (define-key evil-motion-state-map [down-mouse-1] nil))
+    (when (and android (not termux))
+        (defun use-raw-input ()
+            (set-text-conversion-style nil))
+        (defun use-fancy-input ()
+            (set-text-conversion-style 'action))
+        (add-hook 'evil-normal-state-entry-hook   'use-raw-input)
+        (add-hook 'evil-operator-state-entry-hook 'use-raw-input)
+        (add-hook 'evil-motion-state-entry-hook   'use-raw-input)
+        (add-hook 'evil-visual-state-entry-hook   'use-raw-input)
+        (add-hook 'evil-replace-state-entry-hook  'use-raw-input)
+        (add-hook 'evil-insert-state-entry-hook   'use-fancy-input))
     (define-prefix-command 'space-map)
     (define-key evil-motion-state-map " " 'space-map)
     (dolist (map (list evil-motion-state-map evil-insert-state-map
