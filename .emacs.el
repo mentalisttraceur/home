@@ -8029,6 +8029,10 @@
                 process event-string))))
 (defun ai ()
     (interactive)
+    (unless (= (char-before (buffer-end 1)) ?\n)
+        (save-excursion
+            (goto-char (buffer-end 1))
+            (insert-before-markers "\n")))
     (let* ((change-group (prepare-change-group))
            (process (make-process
                         :name "ai"
