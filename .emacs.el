@@ -4320,6 +4320,19 @@
 
 (use-package eat
     :config
+    (defun hack-make-process (arguments)
+        (let* ((cell (cdr (plist-member arguments :command)))
+               (command (car cell)))
+            (when (and (equal (car command) "/usr/bin/env")
+                       (equal (cadr command) "sh"))
+                (setcar cell (cdr command))))
+        arguments)
+    (defun fixed-eat--eshell-adjust-make-process-args
+            (eat--eshell-adjust-make-process-args &rest arguments)
+        (with-advice (('make-process :filter-args 'hack-make-process))
+            (apply eat--eshell-adjust-make-process-args arguments)))
+    (advice-add 'eat--eshell-adjust-make-process-args
+        :around 'fixed-eat--eshell-adjust-make-process-args)
     (when wsl
         (defun hack-eat-term-resize (arguments)
             (when (eq major-mode 'eshell-mode)
