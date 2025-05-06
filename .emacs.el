@@ -83,6 +83,7 @@
 
 (when (and android (not termux))
     (setq touch-screen-display-keyboard t)
+    (setq touch-screen-enable-hscroll nil)
     (let ((PATH (getenv "PATH")))
         (dolist (path '("/data/data/com.termux/files/usr/bin"
                         "/data/data/com.termux/files/usr/local/bin"))
@@ -4929,10 +4930,12 @@
         (interactive)
         (if truncate-lines
             (progn
+                (setq touch-screen-enable-hscroll nil)
                 (setq truncate-lines nil)
                 (set-window-hscroll nil 0))
             (visual-line-mode 'toggle)
             (when (not visual-line-mode)
+                (setq touch-screen-enable-hscroll t)
                 (setq truncate-lines t)))
         (message "visual-line-mode: %s truncate-lines: %s"
             visual-line-mode truncate-lines))
