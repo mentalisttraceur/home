@@ -3898,6 +3898,8 @@
     :config
     (require 'display-line-numbers)
     (vertico-mode 1)
+    (when (and android (not termux))
+        (define-key vertico-map [touchscreen-begin] nil t))
     (setq vertico-resize nil)
     (defun count-vertico-input-lines ()
         (let ((candidates (overlay-get vertico--candidates-ov 'after-string)))
