@@ -4335,12 +4335,12 @@
                        (equal (cadr command) "sh"))
                 (setcar cell (cdr command))))
         arguments)
-    (defun fixed-eat--eshell-adjust-make-process-args
-            (eat--eshell-adjust-make-process-args &rest arguments)
+    (defun fixed-eat--make-process (function &rest arguments)
         (with-advice (('make-process :filter-args 'hack-make-process))
-            (apply eat--eshell-adjust-make-process-args arguments)))
+            (apply function arguments)))
+    (advice-add 'eat-exec :around 'fixed-eat--make-process)
     (advice-add 'eat--eshell-adjust-make-process-args
-        :around 'fixed-eat--eshell-adjust-make-process-args)
+        :around 'fixed-eat--make-process)
     (when wsl
         (defun hack-eat-term-resize (arguments)
             (when (eq major-mode 'eshell-mode)
