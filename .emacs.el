@@ -1461,6 +1461,7 @@
 
 
 (setq use-short-answers t)
+(setq use-dialog-box nil)
 (define-key y-or-n-p-map "\C-m" 'act)
 (define-key y-or-n-p-map [return] 'act)
 (define-key y-or-n-p-map "н" "n")
