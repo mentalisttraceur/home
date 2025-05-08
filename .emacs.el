@@ -86,6 +86,7 @@
     (setq touch-screen-display-keyboard t)
     (setq android-pass-multimedia-buttons-to-system t)
     (setq touch-screen-enable-hscroll nil)
+    (setq android-use-exec-loader nil)
     (let ((PATH (getenv "PATH")))
         (dolist (path '("/data/data/com.termux/files/usr/bin"
                         "/data/data/com.termux/files/usr/local/bin"))
