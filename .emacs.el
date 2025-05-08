@@ -77,6 +77,7 @@
 
 (set-face-background 'highlight "#003800")
 
+
 (when android
     (define-key mode-line-buffer-identification-keymap
         [mode-line mouse-1] 'ignore))
