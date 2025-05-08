@@ -74,10 +74,6 @@
     (define-key global-map [XF86AudioLowerVolume] 'ignore)
     (define-key global-map [XF86AudioRaiseVolume] 'ignore))
 
-
-(set-face-background 'highlight "#003800")
-
-
 (when android
     (define-key mode-line-buffer-identification-keymap
         [mode-line mouse-1] 'ignore))
@@ -106,6 +102,9 @@
         (browse-url-xdg-open url))
     (setq browse-url-browser-function 'fixed-browse-url-xdg-open)
     (setq woman-manpath '("~/../usr/share/man")))
+
+
+(set-face-background 'highlight "#003800")
 
 
 (blink-cursor-mode -1)
