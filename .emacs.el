@@ -4352,9 +4352,14 @@
     (defun fixed-eat--make-process (function &rest arguments)
         (with-advice (('make-process :filter-args 'hack-make-process))
             (apply function arguments)))
-    (advice-add 'eat-exec :around 'fixed-eat--make-process)
     (advice-add 'eat--eshell-adjust-make-process-args
         :around 'fixed-eat--make-process)
+    (advice-add 'eat-exec :around 'fixed-eat--make-process)
+    (defun hack-eat-exec (arguments)
+        (when (equal (caddr arguments) "/usr/bin/env")
+            (setcar (cddr arguments) "env"))
+        arguments)
+    (advice-add 'eat-exec :filter-args 'hack-eat-exec)
     (when wsl
         (defun hack-eat-term-resize (arguments)
             (when (eq major-mode 'eshell-mode)
