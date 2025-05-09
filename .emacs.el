@@ -58,6 +58,15 @@
 (pixel-scroll-precision-mode 1)
 (setq touch-screen-precision-scroll t)
 
+(defun fixed-line-move (function &rest arguments)
+    (let ((offset (window-vscroll nil t)))
+        (unwind-protect
+            (apply function arguments)
+            (when (> (count-screen-lines (window-start) (point)) 1)
+                (set-window-vscroll (selected-window) offset t)))))
+
+(advice-add 'line-move :around 'fixed-line-move)
+
 
 (when wsl
     (defun replace-invalid-unicode-1 (character)
