@@ -4441,6 +4441,7 @@
     (evil-mode 1)
     (evil-declare-not-repeat 'scroll-up-line)
     (evil-declare-not-repeat 'scroll-down-line)
+    (evil-declare-not-repeat 'touch-screen-scroll)
     (defun fixed-evil-paste-before (evil-paste-before &rest arguments)
         (evil-save-column
             (apply evil-paste-before arguments)))
