@@ -4,7 +4,7 @@
 (setq auto-save-list-file-prefix nil)
 
 
-(defconst android (getenv "ANDROID_ROOT"))
+(defconst android (eq system-type 'android))
 (defconst termux (getenv "TERMUX_VERSION"))
 (defconst wsl (getenv "WSL_DISTRO_NAME"))
 
