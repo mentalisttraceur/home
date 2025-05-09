@@ -642,6 +642,16 @@
     `(apply-split-nest with-face-attribute-1 ,face-attribute-list 3 ,body))
 
 
+(defmacro with-text-conversion-style (value &rest body)
+    (declare (indent 1))
+    `(let ((--with-text-conversion-style-- text-conversion-style))
+         (unwind-protect
+             (progn
+                 (set-text-conversion-style ,value)
+                 ,@body)
+             (set-text-conversion-style --with-text-conversion-style--))))
+
+
 (defmacro with-buffer-modified-p (flag &rest body)
     (declare (indent 1))
     `(let ((--with-buffer-modified-p-- (buffer-modified-p)))
