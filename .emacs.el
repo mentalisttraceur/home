@@ -55,6 +55,10 @@
     :around 'fixed-native-compile-async-skip-p)
 
 
+(pixel-scroll-precision-mode 1)
+(setq touch-screen-precision-scroll t)
+
+
 (when wsl
     (defun replace-invalid-unicode-1 (character)
         (if (> character #x10FFFF)
