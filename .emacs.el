@@ -97,12 +97,12 @@
     (setq ls-lisp-use-insert-directory-program t)
     (setq touch-screen-enable-hscroll nil)
     (setq android-use-exec-loader nil)
-    (let ((PATH (getenv "PATH")))
-        (dolist (path '("/data/data/com.termux/files/usr/bin"
-                        "/data/data/com.termux/files/usr/local/bin"))
-            (push path exec-path)
-            (setq PATH (concat path ":" PATH)))
-        (setenv "PATH" PATH)))
+    (setq exec-path
+        (list
+            "/data/data/com.termux/files/usr/local/bin"
+            "/data/data/com.termux/files/usr/bin"
+            (directory-file-name exec-directory)))
+    (setenv "PATH" (concat (car exec-path) ":" (cadr exec-path))))
 
 (when termux
     (define-key minibuffer-inactive-mode-map [mouse-1] nil)
