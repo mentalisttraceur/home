@@ -706,6 +706,11 @@
 (advice-add 'line-move-1 :around 'hack-line-move-1)
 
 
+(defun extra-keyboard-modifiers ()
+    (if (= extra-keyboard-modifiers 0)
+        nil
+        (event-modifiers extra-keyboard-modifiers)))
+
 (defun dlist-cons (item dlist)
     (let ((entry (cons
                      (cons nil  dlist)
