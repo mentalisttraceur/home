@@ -711,6 +711,13 @@
         nil
         (event-modifiers extra-keyboard-modifiers)))
 
+(defun set-extra-keyboard-modifiers (modifiers)
+    (setq extra-keyboard-modifiers
+        (if modifiers
+            (tool-bar-apply-modifiers ?x modifiers)
+            0)))
+
+
 (defun dlist-cons (item dlist)
     (let ((entry (cons
                      (cons nil  dlist)
