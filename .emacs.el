@@ -5943,15 +5943,15 @@
     (add-hook 'eat-eshell-exec-hook
         (lambda ()
             (evil-local-set-key 'insert "\C-v" 'eat-self-input)
-            (evil-local-set-key 'insert (kbd "C-м")
+            (evil-local-set-key 'insert [?\C-м]
                 (lambda (count)
                     (interactive "p")
                     (eat-self-input count ?\C-v)))
-            (dolist (key `("\C-q" ,(kbd "C-й")))
+            (dolist (key `("\C-q" [?\C-й]))
                 (evil-local-set-key 'insert key 'eat-quoted-input))))
     (add-hook 'eat-eshell-exit-hook
         (lambda ()
-            (dolist (key `("\C-v" ,(kbd "C-м") "\C-q" ,(kbd "C-й")))
+            (dolist (key `("\C-v" [?\C-м] "\C-q" [?\C-й]))
                 (evil-local-set-key 'insert key nil)))))
 
 (use-packages hexl evil
