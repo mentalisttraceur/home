@@ -4900,10 +4900,24 @@
     (when android
         (define-key evil-motion-state-map [down-mouse-1] nil))
     (when (and android (not termux))
+        (defun remap-fancy-input ()
+            (let* ((sequence (vector last-command-event))
+                   (decoded (lookup-key input-decode-map sequence)))
+                (when decoded
+                    (when (functionp decoded)
+                        (setq decoded (funcall decoded nil)))
+                    (delete-char -1)
+                    (setq unread-command-events
+                        (nconc
+                            (listify-key-sequence decoded)
+                            unread-command-events))
+                    t)))
         (defun use-raw-input ()
-            (set-text-conversion-style nil))
+            (set-text-conversion-style nil)
+            (remove-hook 'post-text-conversion-hook 'remap-fancy-input))
         (defun use-fancy-input ()
-            (set-text-conversion-style 'action))
+            (set-text-conversion-style 'action)
+            (add-hook 'post-text-conversion-hook 'remap-fancy-input))
         (add-hook 'evil-normal-state-entry-hook   'use-raw-input)
         (add-hook 'evil-operator-state-entry-hook 'use-raw-input)
         (add-hook 'evil-motion-state-entry-hook   'use-raw-input)
