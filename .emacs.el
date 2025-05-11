@@ -718,6 +718,88 @@
             0)))
 
 
+(defface modifier-latch-face '((t :inherit escape-glyph)) "")
+(defface modifier-lock-face  '((t :inherit warning)) "")
+(defun modifier--description-1 (latched locked modifier string)
+    (cond
+        ((memq modifier latched)
+            (put-text-property 0 1 'face 'modifier-latch-face string)
+            string)
+        ((memq modifier locked)
+            (put-text-property 0 1 'face 'modifier-lock-face string)
+            string)
+        (t
+            nil)))
+(defun modifier--description (latched locked)
+    (concat
+        (modifier--description-1 latched locked 'alt     "A-")
+        (modifier--description-1 latched locked 'control "C-")
+        (modifier--description-1 latched locked 'hyper   "H-")
+        (modifier--description-1 latched locked 'meta    "M-")
+        (modifier--description-1 latched locked 'shift   "S-")
+        (modifier--description-1 latched locked 'super   "s-")))
+(defvar modifier--stack ())
+(defun modifier--apply (prompt)
+    (with-text-conversion-style nil
+        (internal-echo-keystrokes-prefix)
+        (let* ((locked (extra-keyboard-modifiers))
+               (description (concat
+                                prefix-command--last-echo
+                                (when prefix-command--last-echo
+                                    " ")
+                                (modifier--description
+                                    modifier--stack
+                                    locked)))
+               (event (read-event description))
+               (modifiers (nconc
+                              locked
+                              modifier--stack))
+               (event (tool-bar-apply-modifiers event modifiers))
+               (event (vector event)))
+            (if-let* ((key (lookup-key key-translation-map event)))
+                (if (functionp key)
+                    (funcall key prompt)
+                    key)
+                event))))
+(defun modifier-lock-toggle (modifier)
+    (let ((locked (extra-keyboard-modifiers)))
+        (if (memq modifier locked)
+            (setq locked (delq modifier locked))
+            (push modifier locked))
+        (set-extra-keyboard-modifiers locked)))
+(defconst modifier-combinations (list ()))
+(defmacro modifier--define (modifier)
+    (let ((modifier-lock (intern (concat (symbol-name modifier) "-lock"))))
+        `(progn
+             (nconc modifier-combinations
+                 (mapcar
+                     (lambda (combination)
+                         (cons ',modifier combination))
+                     modifier-combinations))
+             (defun ,modifier-lock (prompt)
+                 (modifier-lock-toggle ',modifier)
+                 (setq modifier--stack (delq ',modifier modifier--stack))
+                 (if modifier--stack
+                     (modifier--apply prompt)
+                     (internal-echo-keystrokes-prefix)
+                     (message prefix-command--last-echo)
+                     []))
+             (defun ,modifier (prompt)
+                 (let ((modifier--stack (cons ',modifier modifier--stack)))
+                     (modifier--apply prompt))))))
+(modifier--define super)
+(modifier--define shift)
+(modifier--define meta)
+(modifier--define hyper)
+(modifier--define control)
+(modifier--define alt)
+(defun modifier-echo-description ()
+    (unless modifier--stack
+        (when-let* ((locked (extra-keyboard-modifiers)))
+            (modifier--description nil locked))))
+(add-hook 'prefix-command-echo-keystrokes-functions 'modifier-echo-description)
+
+
 (defun dlist-cons (item dlist)
     (let ((entry (cons
                      (cons nil  dlist)
