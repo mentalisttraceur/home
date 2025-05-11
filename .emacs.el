@@ -756,7 +756,7 @@
                               modifier--stack))
                (event (tool-bar-apply-modifiers event modifiers))
                (event (vector event)))
-            (if-let* ((key (lookup-key key-translation-map event)))
+            (if-let* ((key (lookup-key input-decode-map event)))
                 (if (functionp key)
                     (funcall key prompt)
                     key)
