@@ -4916,7 +4916,8 @@
         (add-hook 'evil-motion-state-entry-hook   'use-raw-input)
         (add-hook 'evil-visual-state-entry-hook   'use-raw-input)
         (add-hook 'evil-replace-state-entry-hook  'use-raw-input)
-        (add-hook 'evil-insert-state-entry-hook   'use-fancy-input))
+        (add-hook 'evil-insert-state-entry-hook   'use-raw-input)
+        (add-hook 'evil-emacs-state-entry-hook   'use-fancy-input))
     (define-prefix-command 'space-map)
     (define-key evil-motion-state-map " " 'space-map)
     (dolist (map (list evil-motion-state-map evil-insert-state-map
