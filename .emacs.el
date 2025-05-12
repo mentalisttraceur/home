@@ -5084,7 +5084,7 @@
         (vertico-exit))
     (evil-declare-not-repeat 'history-quit)
     (define-key space-map "T" 'eat)
-    (add-to-list 'evil-emacs-state-modes 'eat-mode)
+    (add-to-list 'evil-insert-state-modes 'eat-mode)
     (add-hook 'eat-exit-hook (lambda (_process) (evil-normal-state nil)))
     (add-hook 'eat-mode-hook
         (lambda ()
