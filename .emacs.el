@@ -4913,6 +4913,7 @@
             (set-text-conversion-style 'action)
             (add-hook 'post-text-conversion-hook
                 'fancy-input--post-text-conversion))
+        (setq evil-emacs-state-cursor evil-insert-state-cursor)
         (add-hook 'evil-normal-state-entry-hook   'fancy-input-off)
         (add-hook 'evil-operator-state-entry-hook 'fancy-input-off)
         (add-hook 'evil-motion-state-entry-hook   'fancy-input-off)
