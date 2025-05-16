@@ -10,6 +10,8 @@
 
 
 (menu-bar-mode -1)
+(when (and android (not termux))
+     (defvar initial-frame-width nil))
 (defun initialize-frame (frame)
     (when (display-graphic-p frame)
         (tool-bar-mode -1)
@@ -19,8 +21,11 @@
             (set-fringe-style 16))
         (set-fontset-font t nil "Fairfax HD")
         (set-frame-font "DejaVu Sans Mono-11.5")
-        (when (and android (< (frame-width) 52))
-            (set-frame-font "DejaVu Sans Mono-11.0"))
+        (when android
+            (unless initial-frame-width
+                (setq initial-frame-width (frame-width)))
+            (when (< initial-frame-width 52)
+                (set-frame-font "DejaVu Sans Mono-11.0")))
         (set-foreground-color "#A0A0A0")
         (set-cursor-color "#FFFFFF"))
     (if android
