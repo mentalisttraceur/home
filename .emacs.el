@@ -5588,24 +5588,30 @@
         'doc-view-previous-line-or-previous-page)
     (evil-define-key 'motion doc-view-mode-map [right] 'image-forward-hscroll)
     (evil-define-key 'motion doc-view-mode-map [left] 'image-backward-hscroll)
-    (evil-define-motion evil-vertico-next-line (count)
+    (evil-define-motion evil-minibuffer-next-line (count)
         (setq-if-nil count 1)
         (dotimes (_ count)
             (condition-case _error
                 (evil-next-line)
-                (end-of-buffer (vertico-next)))))
-    (evil-define-motion evil-vertico-previous-line (count)
+                (end-of-buffer
+                    (if vertico--input
+                        (vertico-next)
+                        (next-history-element 1))))))
+    (evil-define-motion evil-minibuffer-previous-line (count)
         (setq-if-nil count 1)
         (dotimes (_ count)
             (condition-case _error
                 (evil-previous-line)
-                (beginning-of-buffer (vertico-previous)))))
+                (beginning-of-buffer
+                    (if vertico--input
+                        (vertico-previous)
+                        (previous-history-element 1))))))
     (defun misc-minibuffer-setup ()
         (setq evil-yank-incomplete-line-linewise nil)
         (dolist (key '([down] "j" "о"))
-            (evil-local-set-key 'normal key 'evil-vertico-next-line))
+            (evil-local-set-key 'normal key 'evil-minibuffer-next-line))
         (dolist (key '([up] "k" "л"))
-            (evil-local-set-key 'normal key 'evil-vertico-previous-line))
+            (evil-local-set-key 'normal key 'evil-minibuffer-previous-line))
         (let ((quit (cond
                         ((memq this-command '(history-execute history-change))
                             'history-quit)
