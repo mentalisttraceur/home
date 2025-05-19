@@ -19,7 +19,10 @@
         (select-frame frame)
         (when android
             (set-fringe-style 16))
-        (set-fontset-font t nil "Fairfax HD")
+        (dolist (font '("Fairfax HD"
+                        "Noto Emoji"
+                        "Sarasa Mono TC"))
+            (set-fontset-font t (cons 0 (max-char)) font nil 'prepend))
         (set-frame-font "DejaVu Sans Mono-11.5")
         (when android
             (unless initial-frame-width
