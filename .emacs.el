@@ -66,6 +66,10 @@
     :around 'fixed-native-compile-async-skip-p)
 
 
+(set-char-table-range char-width-table ?👁 2)
+(optimize-char-table char-width-table)
+
+
 (pixel-scroll-precision-mode 1)
 (setq touch-screen-precision-scroll t)
 
