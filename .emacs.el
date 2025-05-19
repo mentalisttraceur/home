@@ -151,6 +151,9 @@
     (lambda ()
         (local-set-key [\C-tab] 'other-window)))
 
+(define-key global-map [?\C-+] 'text-scale-increase)
+(define-key global-map [?\C-=] 'text-scale-increase)
+(define-key global-map [?\C--] 'text-scale-decrease)
 
 (defun fixed-mouse-set-point (&rest _)
     (setq temporary-goal-column
