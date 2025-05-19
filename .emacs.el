@@ -80,6 +80,18 @@
                 (setq column (- column (- wrong actual))))))
     column)
 (advice-add 'current-column :filter-return 'fixed-current-column)
+(defun fixed-move-to-column (move-to-column column &optional force)
+    (funcall move-to-column column)
+    (let ((bound (point)))
+        (goto-char (pos-bol))
+        (while (re-search-forward ".\u200d." bound t)
+            (let* ((match  (match-string 0))
+                   (actual (string-width match))
+                   (wrong  (+ (char-width (aref match 0))
+                              (char-width (aref match 2)))))
+                (setq column (+ column (- wrong actual))))))
+    (funcall move-to-column column force))
+(advice-add 'move-to-column :around 'fixed-move-to-column)
 
 
 (pixel-scroll-precision-mode 1)
