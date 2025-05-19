@@ -69,6 +69,18 @@
 (set-char-table-range char-width-table ?👁 2)
 (optimize-char-table char-width-table)
 
+(defun fixed-current-column (column)
+    (let ((bound (point)))
+        (goto-char (pos-bol))
+        (while (re-search-forward ".\u200d." bound 'x)
+            (let* ((match  (match-string 0))
+                   (actual (string-width match))
+                   (wrong  (+ (char-width (aref match 0))
+                              (char-width (aref match 2)))))
+                (setq column (- column (- wrong actual))))))
+    column)
+(advice-add 'current-column :filter-return 'fixed-current-column)
+
 
 (pixel-scroll-precision-mode 1)
 (setq touch-screen-precision-scroll t)
