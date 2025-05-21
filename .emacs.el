@@ -3142,7 +3142,7 @@
 
 (use-package calendar
     :config
-    (defvar calendar-months-before-current (if termux 0 1))
+    (defvar calendar-months-before-current (if android 0 1))
     (defvar calendar-months-after-current 1)
     (defun calendar-generate (month year)
         (setq displayed-month month)
