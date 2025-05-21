@@ -6038,6 +6038,14 @@
     (evil-define-key 'normal hexl-mode-map "r" 'evil-hexl-replace)
     (define-key space-map "X" 'hexl-mode))
 
+(use-packages image-mode evil
+    :config
+    (add-to-list 'evil-motion-state-modes 'image-mode)
+    (evil-define-key 'motion image-mode-map "h" 'image-backward-hscroll)
+    (evil-define-key 'motion image-mode-map "j" 'image-next-line)
+    (evil-define-key 'motion image-mode-map "k" 'image-previous-line)
+    (evil-define-key 'motion image-mode-map "l" 'image-forward-hscroll))
+
 (use-packages evil undo-tree
     :config
     (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
