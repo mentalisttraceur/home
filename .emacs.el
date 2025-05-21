@@ -3917,7 +3917,7 @@
                                       year))
                            (month (or month 1))
                            (day   (or day 1)))
-                        (unless (datetime--valid-month month)
+                        (unless (datetime--valid-month-p month)
                             (setq month 1))
                         (unless (datetime--valid-day year month day)
                             (setq day 1))
