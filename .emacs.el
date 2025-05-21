@@ -4959,9 +4959,10 @@
         (defun fancy-input-off ()
             (set-text-conversion-style nil))
         (defun fancy-input-on ()
-            (set-text-conversion-style 'action)
-            (add-hook 'post-text-conversion-hook
-                'fancy-input--post-text-conversion))
+            (unless buffer-read-only
+                (set-text-conversion-style 'action)
+                (add-hook 'post-text-conversion-hook
+                    'fancy-input--post-text-conversion)))
         (setq evil-emacs-state-cursor evil-insert-state-cursor)
         (add-hook 'evil-normal-state-entry-hook   'fancy-input-off)
         (add-hook 'evil-operator-state-entry-hook 'fancy-input-off)
