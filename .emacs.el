@@ -2858,7 +2858,12 @@
             (lambda (cell)
                 (let-uncons (code meaning cell)
                     (cons (ash code 16) meaning)))
-            exif--orientation)))
+            exif--orientation))
+    (defun exif-write-orientation (path angle)
+        (let ((option (if (= angle 0)
+                          "-Orientation="
+                          (format "-Orientation=Rotate %d" angle))))
+            (funcall-process "exiftool" "-overwrite_original" option path))))
 
 (when termux
     (use-package image-mode
