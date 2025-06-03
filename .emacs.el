@@ -7398,7 +7398,7 @@
                 'string-lessp)))
     (defun denoted-tag-add (path)
         (let* ((tags    (denoted-tag-get path))
-               (options (seq-difference (denote-keywords) tags))
+               (options (seq-difference (denoted-tags-in-directory) tags))
                (added   (denoted-tag-prompt options))
                (merged  (append tags added))
                (unique  (seq-uniq merged)))
