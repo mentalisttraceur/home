@@ -2865,6 +2865,17 @@
                           (format "-Orientation=Rotate %d" angle))))
             (funcall-process "exiftool" "-overwrite_original" option path))))
 
+(use-packages exif image-mode
+    :config
+    (defun image-write-rotation-to-exif ()
+        (let* ((image (image--get-image))
+               (path  (image-property image :file))
+               (angle (image-property image :rotation)))
+            (if angle
+                (setq angle (truncate angle))
+                (setq angle 0))
+            (exif-write-orientation path angle))))
+
 (when termux
     (use-package image-mode
         :config
