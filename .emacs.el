@@ -2874,7 +2874,11 @@
             (if angle
                 (setq angle (truncate angle))
                 (setq angle 0))
-            (exif-write-orientation path angle))))
+            (exif-write-orientation path angle)))
+    (defun image-rotate-autosave (&rest _)
+        (when (derived-mode-p 'image-mode)
+            (image-write-rotation-to-exif)))
+    (advice-add 'image-rotate :after 'image-rotate-autosave))
 
 (when termux
     (use-package image-mode
