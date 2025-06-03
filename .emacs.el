@@ -7386,7 +7386,7 @@
     (defun denoted-tag-sort (tags)
         (sort (copy-sequence tags) #'string-lessp))
     (defun denoted-tag-prompt (tags)
-        (let ((vertico-sort-function 'vertico-sort-alpha))
+        (let ((vertico-sort-function 'vertico-sort-history-alpha))
             (denoted-tag-slug (denote--keywords-crm tags "File tags"))))
     (defun denoted-tags-in-directory (&optional directory)
         (setq-if-nil directory default-directory)
