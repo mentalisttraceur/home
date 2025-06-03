@@ -2670,6 +2670,11 @@
                         (goto-char (point-max)))))))
     (advice-add 'dired-restore-positions
         :around 'fixed-dired-restore-positions)
+    (defun dired-create (path)
+        (interactive (list (read-file-name "Create: ")))
+        (if (directory-name-p path)
+            (dired-create-directory path)
+            (dired-create-empty-file path)))
     (defun pulsed-dired-revert--view ()
         (list (count-screen-lines
                   (window-start)
