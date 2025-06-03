@@ -6031,6 +6031,16 @@
             (dolist (key `("\C-v" [?\C-м] "\C-q" [?\C-й]))
                 (evil-local-set-key 'insert key nil)))))
 
+(use-packages help evil
+    :config
+    (evil-declare-not-repeat 'describe-function)
+    (evil-declare-not-repeat 'describe-variable)
+    (evil-declare-not-repeat 'describe-key)
+    (evil-declare-not-repeat 'describe-key-briefly)
+    (evil-declare-not-repeat 'view-echo-area-messages)
+    (evil-declare-not-repeat 'view-lossage)
+    (evil-declare-not-repeat 'where-is))
+
 (use-packages hexl evil
     :config
     (defun evil-hexl-replace (count)
