@@ -2846,6 +2846,15 @@
     to-path)
 (provide 'android-trash)
 
+(use-package exif
+    :config
+    (nconc exif--orientation
+        (mapcar
+            (lambda (cell)
+                (let-uncons (code meaning cell)
+                    (cons (ash code 16) meaning)))
+            exif--orientation)))
+
 (when termux
     (use-package image-mode
         :config
