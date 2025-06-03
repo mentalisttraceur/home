@@ -7388,6 +7388,14 @@
     (defun denoted-tag-prompt (tags)
         (let ((vertico-sort-function 'vertico-sort-alpha))
             (denoted-tag-slug (denote--keywords-crm tags "File tags"))))
+    (defun denoted-tags-in-directory (&optional directory)
+        (setq-if-nil directory default-directory)
+        (delete-dups
+            (sort
+                (mapcan 'denote-extract-keywords-from-path
+
+                    (directory-files default-directory nil "__" t))
+                'string-lessp)))
     (defun denoted-tag-add (path)
         (let* ((tags    (denoted-tag-get path))
                (options (seq-difference (denote-keywords) tags))
