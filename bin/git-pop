@@ -34,10 +34,19 @@ message=`git log --format='%s' -n1` || return 1
 git commit --quiet --allow-empty -m "[git-pop 1/3] $message" || return 1
 git add --update || return 1
 git commit --quiet --allow-empty -m "[git-pop 2/3] $message" || return 1
-if ! git stash pop --quiet "$@"
+if info=`! git stash pop --quiet "$@" 2>&1`
 then
-    git stash drop "$@"
-    return 1
+    case $info in
+    *'The stash entry is kept in case you need it again.')
+        info=${info%'The stash entry is kept in case you need it again.'}
+        printf '%s' "$info" >&2
+        git stash drop "$@"
+        return 1
+    ;;
+    ?*)
+        printf '%s\n' "$info" >&2
+        return 1
+    esac
 fi
 git add -p || return 1
 finish || return 1
