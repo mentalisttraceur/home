@@ -1,4 +1,34 @@
 #!/bin/sh -
+
+finish()
+{
+    git commit --quiet --allow-empty -m "[git-pop] $message" || return 1
+    if ! git diff --quiet
+    then
+        git stash || return 1
+    fi
+    git reset --quiet HEAD~2 || return 1
+    git reset --quiet --soft HEAD~1 || return 1
+}
+
+continue_()
+{
+    message=`git log --format='%s' -n1` || return 1
+    case $message in
+    '[git-pop 2/3] '*)
+        message=${message#'[git-pop 2/3] '}
+        finish || return 1
+        return 0
+    esac
+    printf '%s\n' 'fatal: no pop in progress' >&2
+    return 1
+}
+
+case $1 in '--continue')
+    continue_ || return 1
+    return 0
+esac
+
 git stash show "$@" >/dev/null || return 1
 message=`git log --format='%s' -n1` || return 1
 git commit --quiet --allow-empty -m "[git-pop 1/3] $message" || return 1
@@ -6,10 +36,4 @@ git add --update || return 1
 git commit --quiet --allow-empty -m "[git-pop 2/3] $message" || return 1
 git stash pop --quiet "$@" || return 1
 git add -p || return 1
-git commit --quiet --allow-empty -m "[git-pop] $message" || return 1
-if ! git diff --quiet
-then
-    git stash || return 1
-fi
-git reset --quiet HEAD~2 || return 1
-git reset --quiet --soft HEAD~1 || return 1
+finish || return 1
