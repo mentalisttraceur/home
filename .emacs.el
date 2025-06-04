@@ -101,7 +101,7 @@
     (let ((offset (window-vscroll nil t)))
         (unwind-protect
             (apply function arguments)
-            (when (> (count-screen-lines (window-start) (point)) 1)
+            (when (> (count-screen-lines (window-start) (point) t) 1)
                 (set-window-vscroll (selected-window) offset t)))))
 
 (advice-add 'line-move :around 'fixed-line-move)
