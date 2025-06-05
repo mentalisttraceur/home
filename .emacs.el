@@ -7166,46 +7166,29 @@
             "\\(?30:R\\)"
             "\\(?18:[0-9]*\\)"
             p-duration-regex))
-    (defconst point-to-match-beginning-form
-        '(progn
-             (goto-char (match-beginning 0))
-             (point)))
-    (defconst point-to-match-end-form
-        '(progn
-             (goto-char (match-end 0))
-             (point)))
     (setq denote-faces-file-name-keywords-for-dired
-        `((dired-filename-search-forward
-           ("\\.trashed-[0-9]+-"
-               ,point-to-match-beginning-form
-               ,point-to-match-end-form
-               (0 'android-trash-face))
-           (,date-t-time-regex
-               ,point-to-match-beginning-form
-               ,point-to-match-end-form
-               (1  'denote-faces-year)
-               (2  'denote-faces-month)
-               (3  'denote-faces-day)
-               (10 'denote-faces-delimiter)
-               (4  'denote-faces-hour)
-               (5  'denote-faces-minute)
-               (6  'denote-faces-second))
-           (,r-repeat-p-duration-regex
-               ,point-to-match-beginning-form
-               ,point-to-match-end-form
-               (30 'task-faces-repeat nil t)
-               (20 'task-faces-repeat nil t)
-               (21 'task-faces-repeat nil t)
-               (22 'task-faces-repeat nil t)
-               (27 'task-faces-repeat nil t)
-               (23 'task-faces-repeat nil t)
-               (10 'denote-faces-delimiter nil t)
-               (24 'task-faces-repeat nil t)
-               (25 'task-faces-repeat nil t)
-               (26 'task-faces-repeat nil t))
+        `(("\\.trashed-[0-9]+-"
+              (0 'android-trash-face))
+          (,date-t-time-regex
+              (1  'denote-faces-year)
+              (2  'denote-faces-month)
+              (3  'denote-faces-day)
+              (10 'denote-faces-delimiter)
+              (4  'denote-faces-hour)
+              (5  'denote-faces-minute)
+              (6  'denote-faces-second))
+          (,r-repeat-p-duration-regex
+              (30 'task-faces-repeat nil t)
+              (20 'task-faces-repeat nil t)
+              (21 'task-faces-repeat nil t)
+              (22 'task-faces-repeat nil t)
+              (27 'task-faces-repeat nil t)
+              (23 'task-faces-repeat nil t)
+              (10 'denote-faces-delimiter nil t)
+              (24 'task-faces-repeat nil t)
+              (25 'task-faces-repeat nil t)
+              (26 'task-faces-repeat nil t))
            (,p-duration-regex
-               ,point-to-match-beginning-form
-               ,point-to-match-end-form
                (20 'task-faces-duration nil t)
                (21 'task-faces-duration nil t)
                (22 'task-faces-duration nil t)
@@ -7215,33 +7198,20 @@
                (24 'task-faces-duration nil t)
                (25 'task-faces-duration nil t)
                (26 'task-faces-duration nil t))
-           ("\\..*$"
-               (progn
-                   (goto-char (match-beginning 0))
-                   (search-forward-regexp "\\.trashed-[0-9]+-" (match-end 0) t)
-                   (when (equal (char-after) ?.)
-                       (forward-char))
-                   (point))
-               ,point-to-match-end-form
-               (0 'denote-faces-extension))
-           ("\\(=+\\)\\([^-_=.]+\\)"
-               ,point-to-match-beginning-form
-               ,point-to-match-end-form
-               (1 'denote-faces-delimiter)
-               (2 'denote-faces-signature))
-           ("\\(_+\\)\\([^_=.]+\\)"
-               ,point-to-match-beginning-form
-               ,point-to-match-end-form
-               (1 'denote-faces-delimiter)
-               (2 'denote-faces-keywords))
-           ("-+\\|=+\\|_+"
-               ,point-to-match-beginning-form
-               ,point-to-match-end-form
-               (0 'denote-faces-delimiter))
-           ("[^-_=]+"
-               ,point-to-match-beginning-form
-               ,point-to-match-end-form
-               (0 'denote-faces-title)))))
+          ("[-.]+"
+              (0 'denote-faces-delimiter))
+          ("\\(==\\)\\([^_.]+\\)"
+              ("\\([-=]+\\)\\([^-_=.]+\\)"
+                  (goto-char (match-beginning 0))
+                  (goto-char (match-end 0))
+                  (1 'denote-faces-delimiter)
+                  (2 'denote-faces-signature)))
+          ("\\(__\\)\\([^=.]+\\)"
+              ("\\([-_]+\\)\\([^-_=.]+\\)"
+                  (goto-char (match-beginning 0))
+                  (goto-char (match-end 0))
+                  (1 'denote-faces-delimiter)
+                  (2 'denote-faces-keywords)))))
     (set-face-foreground 'denote-faces-month  "#FFA060")
     (set-face-foreground 'denote-faces-minute "#FFA060")
     (set-face-foreground 'denote-faces-keywords "#8080FF")
