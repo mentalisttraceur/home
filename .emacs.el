@@ -3927,7 +3927,10 @@
                         (datetime-read--preview-format parsed info)))
                 (error
                     (datetime-read--preview-show overlay
-                        (error-message-string error)))))))
+                        (error-message-string error))))
+            (let* ((height (count-screen-lines))
+                   (delta (- height (window-height))))
+                (window-resize nil delta)))))
 
 (defun datetime-read--preview-show (overlay string)
     (overlay-put overlay 'before-string
