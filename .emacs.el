@@ -2515,6 +2515,17 @@
 
 (use-package dired
     :config
+    (defvar dired-abbreviate-headers t)
+    (defun fixed-dired-readin (&rest arguments)
+        (when dired-abbreviate-headers
+            (save-excursion
+                (goto-char 1)
+                (let ((inhibit-read-only t)
+                      (case-fold-search nil)
+                      (home (expand-file-name "~")))
+                    (while (search-forward home nil t)
+                        (replace-match "~" t t))))))
+    (advice-add 'dired-readin :after 'fixed-dired-readin)
     (defun hack-dired-readin (dired-readin &rest arguments)
         (combine-change-calls 1 (1+ (buffer-size))
             (let ((cell (cons nil nil))
