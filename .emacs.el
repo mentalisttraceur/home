@@ -2541,6 +2541,14 @@
                                   ('dired-readin-insert
                                       :after
                                       (lambda-let (cell) (&rest _)
+                                          (setcar cell buffer-undo-list)))
+                                  ('dired-switches-recursive-p
+                                      :after
+                                      (lambda-let (cell) (&rest _)
+                                          (setq buffer-undo-list (car cell))))
+                                  ('dired-build-subdir-alist
+                                      :after
+                                      (lambda-let (cell) (&rest _)
                                           (setcar cell buffer-undo-list))))
                         (setq result (apply dired-readin arguments))))
                 (setq buffer-undo-list (car cell))
