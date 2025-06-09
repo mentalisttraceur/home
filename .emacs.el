@@ -4590,13 +4590,12 @@
             (setcar (cddr arguments) "env"))
         arguments)
     (advice-add 'eat-exec :filter-args 'hack-eat-exec)
-    (when wsl
-        (defun hack-eat-term-resize (arguments)
-            (when (eq major-mode 'eshell-mode)
-                (let ((width (cadr arguments)))
-                    (setcar (cdr arguments) (1- width))))
-            arguments)
-        (advice-add 'eat-term-resize :filter-args 'hack-eat-term-resize))
+    (defun hack-eat-term-resize (arguments)
+        (when (eq major-mode 'eshell-mode)
+            (let ((width (cadr arguments)))
+                (setcar (cdr arguments) (1- width))))
+        arguments)
+    (advice-add 'eat-term-resize :filter-args 'hack-eat-term-resize)
     (defun eat-point ()
         (when eat-terminal
             (marker-position
