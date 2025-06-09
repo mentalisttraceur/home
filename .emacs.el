@@ -4629,7 +4629,7 @@
     (if context
         (concat "*" name " (" context ")*")
         (concat "*" name "*")))
-(defun pop-to-command-eshell (command &optional context name callback)
+(defun pop-to-command (command &optional context name callback)
     (require 'eshell)
     (setq name (pop-to-command-buffer-name command context name))
     (let ((program   (car command))
@@ -5263,8 +5263,8 @@
             (evil-initialize-state)
             (dolist (key '([escape] "q" "й"))
                 (evil-local-set-key 'normal key 'quit-window))))
-    (defun pop-to-command-eshell--not-a-file (name)
-        (pop-to-command-eshell
+    (defun pop-to-command--not-a-file (name)
+        (pop-to-command
             (list "echo" (concat (buffer-name) " is not visiting a file"))
             (buffer-name)
             name))
@@ -5276,7 +5276,7 @@
         (add-single-use-hook 'pop-to-command-setup-hook
             (parent-buffer-setter))
         (if (not buffer-file-name)
-            (pop-to-command-eshell--not-a-file "Diff unsaved")
+            (pop-to-command--not-a-file "Diff unsaved")
             (with-temporary-directory directory
                 (let* ((file-name    (file-name-nondirectory buffer-file-name))
                        (file         (concat directory "/" file-name))
@@ -5294,7 +5294,7 @@
                     (add-single-use-hook 'pop-to-command-setup-hook
                         (lambda-let (directory) ()
                             (setq default-directory directory)))
-                    (pop-to-command-eshell
+                    (pop-to-command
                         (list "gd" file-name unsaved-name)
                         (buffer-name)
                         "Diff unsaved"
@@ -5339,7 +5339,7 @@
                 (add-single-use-hook 'pop-to-command-setup-hook
                     (lambda-let (directory) ()
                         (setq default-directory directory)))
-                (pop-to-command-eshell
+                (pop-to-command
                     (list "gd" name-1 name-2)
                     (concat name-1 " -> " name-2)
                     "Diff buffer"
@@ -5363,7 +5363,7 @@
         (add-single-use-hook 'pop-to-command-setup-hook
             (parent-buffer-setter))
         (if (not buffer-file-name)
-            (pop-to-command-eshell--not-a-file "Partial save")
+            (pop-to-command--not-a-file "Partial save")
             (with-temporary-directory directory
                 (let* ((file-name (file-name-nondirectory buffer-file-name))
                        (file      (concat directory "/" file-name))
@@ -5377,7 +5377,7 @@
                     (add-single-use-hook 'eshell-exec-hook
                         (lambda-let (source-directory) (_process)
                             (setq default-directory source-directory)))
-                    (pop-to-command-eshell
+                    (pop-to-command
                         (list "gp" file unsaved)
                         (buffer-name)
                         "Partial save"
@@ -5415,7 +5415,7 @@
                     (add-single-use-hook 'eshell-exec-hook
                         (lambda-let (source-directory) (_process)
                             (setq default-directory source-directory)))
-                    (pop-to-command-eshell
+                    (pop-to-command
                         (list "gp" unsaved file)
                         (buffer-name)
                         "Partial revert"
@@ -5450,7 +5450,7 @@
             (parent-buffer-setter))
         (if (not (or (derived-mode-p 'text-mode 'prog-mode)
                      (eq major-mode 'fundamental-mode)))
-            (pop-to-command-eshell
+            (pop-to-command
                 (list "echo" (concat (buffer-name buffer-2) " is special"))
                 (buffer-name)
                 "Partial copy")
@@ -5472,7 +5472,7 @@
                             (write-file-no-visit file-1)))
                     (with-current-buffer buffer-2
                         (write-file-no-visit file-2))
-                    (pop-to-command-eshell
+                    (pop-to-command
                         (list "gp" file-2 file-1)
                         (concat name-1 " -> " name-2)
                         "Partial copy"
@@ -5505,8 +5505,8 @@
                 (become-command 'partial-copy)
                 (become-command 'partial-revert))))
     (define-key space-map "R" 'revert-buffer)
-    (defun pop-to-command-eshell--not-in-a-git-repository (name)
-        (pop-to-command-eshell
+    (defun pop-to-command--not-in-a-git-repository (name)
+        (pop-to-command
             (list "echo" (concat (buffer-name) " is not in a git repository"))
             nil
             name))
@@ -5519,8 +5519,8 @@
                 (when path
                     (setq path (file-relative-name path root))
                     (nconc command (list path)))
-                (pop-to-command-eshell command default-directory))
-            (pop-to-command-eshell--not-in-a-git-repository
+                (pop-to-command command default-directory))
+            (pop-to-command--not-in-a-git-repository
                 (string-join command " "))))
     (defun git--target-path (use-visited)
         (if use-visited
@@ -5622,8 +5622,8 @@
                 (if-let* ((buffer (parent-buffer-search 'buffer-file-name)))
                     (with-current-buffer buffer
                         (call-interactively 'vc-annotate))
-                    (pop-to-command-eshell--not-a-file "Annotate")))
-            (pop-to-command-eshell--not-in-a-git-repository "Annotate")))
+                    (pop-to-command--not-a-file "Annotate")))
+            (pop-to-command--not-in-a-git-repository "Annotate")))
     (define-key git-map "b" 'git-annotate)
     (define-universal-argument-space-keys git-map " v")
     (define-key git-map [escape] 'ignore)
@@ -5634,7 +5634,7 @@
         (lambda ()
             (interactive)
             (let ((default-directory "~/Downloads"))
-                (pop-to-command-eshell
+                (pop-to-command
                     `("yt-dlp" "-f" "bestaudio" "--no-playlist"
                          ,(evil-paste-to-string 1))
                     nil "yt-dlp"))))
@@ -5642,7 +5642,7 @@
         (lambda ()
             (interactive)
             (let ((default-directory "~"))
-                (pop-to-command-eshell
+                (pop-to-command
                     '("termux-media-scan" "/storage/emulated/0")))))
     (define-key space-misc-map "+" 'text-scale-increase)
     (define-key space-misc-map "=" 'text-scale-increase)
@@ -6181,7 +6181,7 @@
                 (add-single-use-hook 'pop-to-command-setup-hook
                     (lambda-let (directory) ()
                         (setq default-directory directory)))
-                (pop-to-command-eshell
+                (pop-to-command
                     (list "*env" "PAGER=cat"
                         "gd" name-1 name-2)
                     (buffer-name)
