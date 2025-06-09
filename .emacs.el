@@ -8440,6 +8440,11 @@
                 (let ((map (cdr cell)))
                     (russian-vi-bind map))))))
 
+(defconst syncthing--command '("syncthing" "serve" "--no-browser"))
+(when (and android (not termux))
+    (pop-to-command syncthing--command)
+    (rename-buffer " *synchthing*")
+    (evil-normal-state))
 
 (setq gc-cons-threshold initial-gc-cons-threshold
       file-name-handler-alist initial-file-name-handler-alist)
