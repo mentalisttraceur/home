@@ -2578,21 +2578,6 @@
         (interactive)
         (goto-char (point-max))
         (dired-previous-line 1))
-    (defun dired-goto-file-matching-prefix-1 (prefix &optional limit)
-        (beginning-of-line)
-        (let ((path-prefix (expand-file-name prefix)))
-            (with-advice (('dired-get-filename
-                              :filter-return
-                              (lambda-let (path-prefix) (path)
-                                  (if (string-prefix-p path-prefix path)
-                                      path-prefix
-                                      path))))
-                (dired-goto-file-1 prefix path-prefix limit))))
-    (defun dired-goto-file-matching-prefix (prefix)
-        (when-let* ((found (save-excursion
-                               (goto-char (point-min))
-                               (dired-goto-file-matching-prefix-1 prefix))))
-            (goto-char found)))
     (defun add-dired-file (path &optional marker force predicate)
         (dired-fun-in-all-buffers
             (file-name-directory path)
