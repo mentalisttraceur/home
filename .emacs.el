@@ -2607,10 +2607,7 @@
                   (dired-check-switches dired-actual-switches "[aA]"))
             (save-excursion
                 (unless (dired-goto-file path)
-                    (dired-goto-first-file)
-                    (while-let ((next-path (dired-get-filename nil t))
-                                (_ (funcall predicate next-path path)))
-                        (dired-next-line 1))
+                    (dired-binary-search path)
                     (dired-add-entry path marker relative)))))
     (defun update-dired-file (path &optional old-path)
         (when (and old-path
