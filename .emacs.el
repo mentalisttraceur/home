@@ -5300,6 +5300,8 @@
                         (copy-file buffer-file-name file)
                         (write-region 1 1 file))
                     (write-file-no-visit unsaved)
+                    (when-let* ((mode (file-modes file)))
+                        (set-file-modes unsaved mode))
                     (add-single-use-hook 'eshell-exec-hook
                         (lambda-let (source-directory) (_process)
                             (setq default-directory source-directory)))
