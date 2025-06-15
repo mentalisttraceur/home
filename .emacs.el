@@ -8253,6 +8253,7 @@
 (defvar tumblr-blogs '(
     "mentalisttraceur"
     "mentalisttraceur-humor"
+    "mentalisttraceur-incomplete"
     "mentalisttraceur-long"
     "mentalisttraceur-process"
     "mentalisttraceur-reactions"
