@@ -4280,6 +4280,12 @@
             (string-replace "\n" fixed-vertico--multiline-wrap string)))
     (advice-add 'vertico--truncate-multiline
         :around 'fixed-vertico--truncate-multiline)
+    (defun fixed-vertico--setup (vertico--setup &rest arguments)
+        (let ((fringe fringe-indicator-alist))
+            (prog1
+                (apply vertico--setup arguments)
+                (setq fringe-indicator-alist fringe))))
+    (advice-add 'vertico--setup :around 'fixed-vertico--setup)
     (setq vertico-cycle t)
     (setq minibuffer-prompt-properties
         (append '(cursor-intangible t) minibuffer-prompt-properties))
