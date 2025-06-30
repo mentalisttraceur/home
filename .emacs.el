@@ -106,14 +106,18 @@
 
 (advice-add 'line-move :around 'fixed-line-move)
 
+
+(defvar pixel-scroll-align-edge t)
+
 (defun pixel-scroll-align-edge ()
-    (seq-let (_ _ top bottom) (pos-visible-in-window-p nil nil t)
-        (if (and top (> top 0))
-            (unless (eq this-command 'touch-screen-scroll)
-                (set-window-vscroll (selected-window) 0))
-            (when (and bottom (> bottom 0))
-                (let ((vscroll (+ (window-vscroll nil t) bottom)))
-                    (set-window-vscroll (selected-window) vscroll t))))))
+    (when pixel-scroll-align-edge
+        (seq-let (_ _ top bottom) (pos-visible-in-window-p nil nil t)
+            (if (and top (> top 0))
+                (unless (eq this-command 'touch-screen-scroll)
+                    (set-window-vscroll (selected-window) 0))
+                (when (and bottom (> bottom 0))
+                    (let ((vscroll (+ (window-vscroll nil t) bottom)))
+                        (set-window-vscroll (selected-window) vscroll t)))))))
 
 (add-hook 'post-command-hook 'pixel-scroll-align-edge)
 
