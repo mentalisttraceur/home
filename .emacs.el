@@ -4285,6 +4285,7 @@
     (advice-add 'vertico--truncate-multiline
         :around 'fixed-vertico--truncate-multiline)
     (defun fixed-vertico--setup (vertico--setup &rest arguments)
+        (setq-local pixel-scroll-align-edge nil)
         (let ((fringe fringe-indicator-alist))
             (prog1
                 (apply vertico--setup arguments)
