@@ -4252,6 +4252,7 @@
                     (> fixed-vertico--scroll-direction 0)))))
     (advice-add 'vertico--resize :around 'fixed-vertico-resize)
     (defun fixed-vertico-resize--align (bottom)
+        (setq pixel-scroll-align-edge-skip-once t)
         (setq vertico-count 1)
         (let* ((vertico-scroll-margin 0)
                (needed-height (fixed-vertico-resize--redisplay)))
@@ -4288,7 +4289,6 @@
     (advice-add 'vertico--truncate-multiline
         :around 'fixed-vertico--truncate-multiline)
     (defun fixed-vertico--setup (vertico--setup &rest arguments)
-        (setq-local pixel-scroll-align-edge nil)
         (let ((fringe fringe-indicator-alist))
             (prog1
                 (apply vertico--setup arguments)
