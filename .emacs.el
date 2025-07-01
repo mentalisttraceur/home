@@ -108,16 +108,19 @@
 
 
 (defvar pixel-scroll-align-edge t)
+(defvar pixel-scroll-align-edge-skip-once nil)
 
 (defun pixel-scroll-align-edge ()
-    (when pixel-scroll-align-edge
-        (seq-let (_ _ top bottom) (pos-visible-in-window-p nil nil t)
-            (if (and top (> top 0))
-                (unless (eq this-command 'touch-screen-scroll)
-                    (set-window-vscroll (selected-window) 0))
-                (when (and bottom (> bottom 0))
-                    (let ((vscroll (+ (window-vscroll nil t) bottom)))
-                        (set-window-vscroll (selected-window) vscroll t)))))))
+    (if pixel-scroll-align-edge-skip-once
+        (setq pixel-scroll-align-edge-skip-once nil)
+        (when pixel-scroll-align-edge
+            (seq-let (_ _ top bottom) (pos-visible-in-window-p nil nil t)
+                (if (and top (> top 0))
+                    (unless (eq this-command 'touch-screen-scroll)
+                        (set-window-vscroll (selected-window) 0))
+                    (when (and bottom (> bottom 0))
+                        (let ((vscroll (+ (window-vscroll nil t) bottom)))
+                            (set-window-vscroll (selected-window) vscroll t))))))))
 
 (add-hook 'post-command-hook 'pixel-scroll-align-edge)
 
