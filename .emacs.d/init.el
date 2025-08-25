@@ -8324,6 +8324,7 @@
 
 (defface ai-user-divider-face '((t :foreground "#FFFF00")) "")
 (defface ai-assistant-divider-face '((t :foreground "#FF00FF")) "")
+(defface ai-tool-divider-face '((t :foreground "#FF0000")) "")
 (defun ai--highlight ()
     (font-lock-add-keywords nil
         '(("^\\(#\\) User Input \\(###########################\\)$"
@@ -8331,7 +8332,13 @@
               (2 'ai-user-divider-face t))
           ("^\\(#\\) `AI Reply` \\(###########################\\)$"
               (1 'ai-assistant-divider-face t)
-              (2 'ai-assistant-divider-face t)))
+              (2 'ai-assistant-divider-face t))
+          ("^\\(##\\) Tool Calls \\(##########################\\)$"
+              (1 'ai-tool-divider-face t)
+              (2 'ai-tool-divider-face t))
+          ("^\\(#\\) Tool Reply \\(###########################\\)$"
+              (1 'ai-tool-divider-face t)
+              (2 'ai-tool-divider-face t)))
         'append))
 (add-hook 'markdown-mode-hook 'ai--highlight)
 (defconst ai--python (expand-file-name "~/.ai/venv/bin/python"))
