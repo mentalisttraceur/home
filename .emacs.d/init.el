@@ -11,7 +11,7 @@
 
 (menu-bar-mode -1)
 (when (and android (not termux))
-     (defvar initial-frame-width nil))
+    (defvar initial-frame-width nil))
 (defun initialize-frame (frame)
     (when (display-graphic-p frame)
         (tool-bar-mode -1)
