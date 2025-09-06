@@ -8458,12 +8458,25 @@
                     (evil-ex-define-cmd mapped definition))))))
 (use-packages calendar help ace-window consult evil undo-tree
     :config
-    (dolist (map (list evil-motion-state-map evil-normal-state-map
-                       evil-visual-state-map evil-operator-state-map
-                       window-state-map histdir-repl-mode-map music-mode-map
-                       undo-tree-visualizer-mode-map
-                       calendar-mode-map help-mode-map messages-buffer-mode-map
-                       global-map))
+    (dolist (map (list
+                  ; Emacs-included maps
+                  calendar-mode-map
+                  help-mode-map
+                  messages-buffer-mode-map
+                  ; Third-party packages' maps
+                  evil-motion-state-map
+                  evil-normal-state-map
+                  evil-operator-state-map
+                  evil-visual-state-map
+                  markdown-mode-map
+                  undo-tree-visualizer-mode-map
+                  ; My custom features' maps
+                  histdir-repl-mode-map
+                  music-mode-map
+                  shred-mode-map
+                  window-state-map
+                  ; Fallback
+                  global-map))
         (russian-vi-bind map))
     (dolist (cell evil-minor-mode-keymaps-alist)
         (let ((inner-alist (cdr cell)))
