@@ -2759,22 +2759,22 @@
 
 (use-packages dired parent-buffer
     :config
-    (defun smoother-dired ()
+    (defun smoother-dired (&optional path)
         (interactive)
-        (let ((path (or dired-directory
-                        (get-text-property (point) 'full-path)
-                        buffer-file-name
-                        (parent-buffer-file-or-directory))))
-            (if (not path)
-                (dired default-directory)
-                (dired (file-name-parent-directory path))
-                (setq path (expand-file-name path))
-                (add-dired-entry path nil nil t)
-                (dired-goto-file path)
-                (recenter)
-                (scroll-to-fill-window)
-                (pulse-momentary-highlight-region
-                    (pos-bol) (pos-eol))))))
+        (setq path (or path
+                       dired-directory
+                       (get-text-property (point) 'full-path)
+                       buffer-file-name
+                       (parent-buffer-file-or-directory)))
+        (if (not path)
+            (dired default-directory)
+            (dired (file-name-parent-directory path))
+            (setq path (expand-file-name path))
+            (add-dired-entry path nil nil t)
+            (dired-goto-file path)
+            (recenter)
+            (scroll-to-fill-window)
+            (pulse-momentary-highlight-region (pos-bol) (pos-eol)))))
 
 (add-to-list 'text-property-default-nonsticky
     (cons 'full-path t))
