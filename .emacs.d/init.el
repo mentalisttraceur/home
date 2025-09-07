@@ -5652,14 +5652,33 @@
     (define-prefix-command 'space-misc-map)
     (define-key space-map "z" 'space-misc-map)
     (define-universal-argument-space-keys space-misc-map " z")
-    (define-key space-misc-map "y"
-        (lambda ()
-            (interactive)
-            (let ((default-directory "~/Downloads"))
-                (pop-to-command
-                    `("yt-dlp" "-f" "bestaudio" "--no-playlist"
-                         ,(evil-paste-to-string 1))
-                    nil "yt-dlp"))))
+    (defun yt-dlp ()
+        (interactive)
+        (let ((default-directory "~/Downloads")
+              (url (evil-paste-to-string 1)))
+            (pop-to-command
+                `("yt-dlp"
+                     "-f" "bestaudio"
+                     "--no-playlist"
+                     "--windows-filenames"
+                     "--print" "after_move:filename"
+                     "--no-quiet"
+                     "--no-simulate"
+                     ,url)
+                url
+                "yt-dlp"
+                'yt-dlp--finish)))
+    (defun yt-dlp--finish ()
+        (save-excursion
+            (goto-char (point-max))
+            (forward-line -3)
+            (let* ((file (filter-buffer-substring (pos-bol) (pos-eol)))
+                   (path (concat default-directory file)))
+                (evil-local-set-key 'motion " d"
+                    (lambda-let (path) ()
+                        (interactive)
+                        (smoother-dired path))))))
+    (define-key space-misc-map "y" 'yt-dlp)
     (define-key space-misc-map "m"
         (lambda ()
             (interactive)
