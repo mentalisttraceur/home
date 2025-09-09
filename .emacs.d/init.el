@@ -4163,18 +4163,18 @@
         (define-key vertico-map [touchscreen-begin] nil t))
     (setq vertico-resize nil)
     (defun count-vertico-input-lines ()
-        (let ((candidates (overlay-get vertico--candidates-ov 'after-string)))
+        (let ((candidates (overlay-get vertico--candidates-ov 'before-string)))
             (unwind-protect
                 (progn
-                    (overlay-put vertico--candidates-ov 'after-string nil)
+                    (overlay-put vertico--candidates-ov 'before-string nil)
                     (count-screen-lines (point-min) (point-max)))
-                (overlay-put vertico--candidates-ov 'after-string candidates))))
+                (overlay-put vertico--candidates-ov 'before-string candidates))))
     (defun count-vertico-candidate-lines ()
         (save-excursion
             (goto-char (point-max))
             (let ((end-of-input (point)))
                 (save-mutation
-                    (insert (overlay-get vertico--candidates-ov 'after-string))
+                    (insert (overlay-get vertico--candidates-ov 'before-string))
                     (let* ((end (point-max))
                            (start (min (+ end-of-input 2) end)))
                         (count-screen-lines start end))))))
@@ -4205,13 +4205,18 @@
         (setq vertico-count vertico-max-count))
     (advice-add 'vertico--exhibit :before 'fixed-vertico-resize--exhibit)
     (defun fixed-vertico-resize--redisplay ()
-        (vertico--display-candidates (vertico--arrange-candidates))
+        (let ((lines (vertico--arrange-candidates)))
+            (when lines
+                (push "\n" lines))
+            (push (propertize " " 'cursor t) lines)
+            (overlay-put vertico--candidates-ov 'before-string
+                (string-join lines)))
         (count-vertico-candidate-lines))
     (defmacro fixed-vertico-resize--chop (&rest body)
         `(save-excursion
              (goto-char (point-max))
              (let ((end-of-input (point))
-                   (lines (overlay-get vertico--candidates-ov 'after-string)))
+                   (lines (overlay-get vertico--candidates-ov 'before-string)))
                  (save-mutation
                      (insert lines)
                      ,@body))))
@@ -4221,14 +4226,14 @@
             (end-of-visual-line (1+ vertico-max-height))
             (let ((excess (- (point) (point-max))))
                 (when (< excess 0)
-                    (overlay-put vertico--candidates-ov 'after-string
+                    (overlay-put vertico--candidates-ov 'before-string
                         (substring lines 0 excess))))))
     (defun fixed-vertico-resize--chop-top ()
         (fixed-vertico-resize--chop
             (beginning-of-visual-line (- 1 vertico-max-height))
             (let ((excess (- (point) (+ end-of-input 2))))
                 (when (> excess 0)
-                    (overlay-put vertico--candidates-ov 'after-string
+                    (overlay-put vertico--candidates-ov 'before-string
                         (concat (substring lines 0 2)
                                 (substring lines (+ excess 2))))))))
     (defun fixed-vertico-resize (vertico--resize &rest arguments)
@@ -4236,6 +4241,7 @@
               (truncate truncate-lines))
             (prog1
                 (apply vertico--resize arguments)
+                (setq resize-mini-windows nil)
                 (when visual
                     (visual-line-mode 1))
                 (setq truncate-lines truncate)
@@ -4243,7 +4249,7 @@
                     (set-window-hscroll nil 0))
                 (fixed-vertico-resize--align
                     (> fixed-vertico--scroll-direction 0)))))
-    (advice-add 'vertico--resize :around 'fixed-vertico-resize)
+    (advice-add 'vertico--resize-window :around 'fixed-vertico-resize)
     (defun fixed-vertico-resize--align (bottom)
         (setq pixel-scroll-align-edge-skip-once t)
         (setq vertico-count 1)
