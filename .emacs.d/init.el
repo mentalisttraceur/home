@@ -5015,7 +5015,9 @@
         (interactive "p<C><C>")
         (evil-find-char-pair (- count) char1 char2)
         (forward-char 2))
-    (dolist (map (list evil-motion-state-map evil-normal-state-map))
+    (dolist (map (list evil-motion-state-map
+                       evil-normal-state-map
+                       evil-visual-state-map))
         (define-key map "gf" 'evil-find-char-pair)
         (define-key map "gF" 'evil-find-char-pair-backward)
         (define-key map "gt" 'evil-find-char-pair-to)
