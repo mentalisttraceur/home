@@ -8372,7 +8372,7 @@
 (add-hook 'markdown-mode-hook 'ai--highlight)
 (defconst ai--python (expand-file-name "~/.ai/venv/bin/python"))
 (defconst ai--script (expand-file-name "~/.ai/ai.py"))
-(defconst ai--command `(,ai--python ,ai--script "next-reply" "-"))
+(defconst ai--command `(,ai--python ,ai--script "-"))
 (defun ai--sentinel (change-group)
     (lambda-let (change-group) (process event-string)
         (unless (process-live-p process)
