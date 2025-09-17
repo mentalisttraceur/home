@@ -28,7 +28,7 @@
         (when android
             (unless initial-frame-width
                 (setq initial-frame-width (frame-width)))
-            (when (< initial-frame-width 52)
+            (when (member initial-frame-width '(47 82))
                 (set-frame-font "DejaVu Sans Mono-11.0")))
         (set-foreground-color "#A0A0A0")
         (set-cursor-color "#FFFFFF"))
