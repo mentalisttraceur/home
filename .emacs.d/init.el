@@ -6827,6 +6827,7 @@
                     (put-text-property 0 (length text) 'face face text)
                     (overlay-put overlay property text)
                     (overlay-put overlay 'window window)
+                    (set-window-vscroll window 0 t)
                     (push overlay avy--overlays-lead)))))
     (advice-add 'aw--lead-overlay :override 'hack-aw--lead-overlay)
     (defvar window-state nil)
