@@ -587,48 +587,50 @@
             (advice-remove symbol function))))
 
 (defmacro with-advice-1 (advice-add-arguments &rest body)
-    `(let ((--with-advice-1-- (list ,@advice-add-arguments)))
-         (unwind-protect
-             (progn
-                 (condition-case error
-                     (apply 'advice-add --with-advice-1--)
-                     (wrong-number-of-arguments
-                         (setq --with-advice-1-- nil)
-                         (signal (car error) (cdr error))))
-                 ,@body)
-             (when --with-advice-1--
-                 (setcdr --with-advice-1-- (cddr --with-advice-1--))
-                 (setcdr (cdr --with-advice-1--) nil)
-                 (apply 'advice-remove --with-advice-1--)))))
+    (let ((state (make-symbol "--with-advice--")))
+        `(let ((,state (list ,@advice-add-arguments)))
+             (unwind-protect
+                 (progn
+                     (condition-case error
+                         (apply 'advice-add ,state)
+                         (wrong-number-of-arguments
+                             (setq ,state nil)
+                             (signal (car error) (cdr error))))
+                     ,@body)
+                 (when ,state
+                     (setcdr ,state (cddr ,state))
+                     (setcdr (cdr ,state) nil)
+                     (apply 'advice-remove ,state))))))
 
 (defmacro with-advice (advice-list &rest body)
     (declare (indent 1))
     `(apply-split-nest with-advice-1 ,advice-list 1 ,body))
 
 (defmacro without-advice-1 (advice-remove-arguments &rest body)
-    `(let ((--without-advice-1-- (list ,@advice-remove-arguments)))
-         (if-let* ((how (apply 'advice-how --without-advice-1--)))
-             (unwind-protect
-                 (progn
-                     (apply 'advice-remove --without-advice-1--)
-                     ,@body)
-                 (setcdr --without-advice-1--
-                         (cons how (cdr --without-advice-1--)))
-                 (apply 'advice-add --without-advice-1--))
-             ,@body)))
+    (let ((state (make-symbol "--without-advice--")))
+        `(let ((,state (list ,@advice-remove-arguments)))
+             (if-let* ((how (apply 'advice-how ,state)))
+                 (unwind-protect
+                     (progn
+                         (apply 'advice-remove ,state)
+                         ,@body)
+                     (setcdr ,state (cons how (cdr ,state)))
+                     (apply 'advice-add ,state))
+                 ,@body))))
 
 (defmacro without-advice (advice-list &rest body)
     (declare (indent 1))
     `(apply-split-nest without-advice-1 ,advice-list 1 ,body))
 
 (defmacro without-advice-all-1 (symbol &rest body)
-    `(let ((--without-advice-all-1-- (advice-list ,symbol)))
-         (unwind-protect
-             (progn
-                 (advice-remove-all ,symbol)
-                 ,@body)
-             (dolist (advice --without-advice-all-1--)
-                 (apply 'advice-add ,symbol advice)))))
+    (let ((state (make-symbol "--without-advice-all--")))
+        `(let ((,state (advice-list ,symbol)))
+             (unwind-protect
+                 (progn
+                     (advice-remove-all ,symbol)
+                     ,@body)
+                 (dolist (advice ,state)
+                     (apply 'advice-add ,symbol advice))))))
 
 (defmacro without-advice-all (symbol-list &rest body)
     (declare (indent 1))
@@ -636,18 +638,19 @@
 
 
 (defmacro with-hook-1 (add-hook-arguments &rest body)
-    `(let ((--with-hook-1-- (list ,@add-hook-arguments)))
-         (unwind-protect
-             (progn
-                 (condition-case error
-                     (apply 'add-hook --with-hook-1--)
-                     (wrong-number-of-arguments
-                         (setq --with-hook-1-- nil)
-                         (signal (car error) (cdr error))))
-                 ,@body)
-             (when --with-hook-1--
-                 (setcdr (cdr --with-hook-1--) (cdddr --with-hook-1--))
-                 (apply 'remove-hook --with-hook-1--)))))
+    (let ((state (make-symbol "--with-hook--")))
+        `(let ((,state (list ,@add-hook-arguments)))
+             (unwind-protect
+                 (progn
+                     (condition-case error
+                         (apply 'add-hook ,state)
+                         (wrong-number-of-arguments
+                             (setq ,state nil)
+                             (signal (car error) (cdr error))))
+                     ,@body)
+                 (when ,state
+                     (setcdr (cdr ,state) (cdddr ,state))
+                     (apply 'remove-hook ,state))))))
 
 (defmacro with-hook (hook-list &rest body)
     (declare (indent 1))
@@ -655,17 +658,18 @@
 
 
 (defmacro with-variable-watcher-1 (add-variable-watcher-arguments &rest body)
-    `(let ((--with-variable-watcher-1-- (list ,@add-variable-watcher-arguments)))
-         (unwind-protect
-             (progn
-                 (condition-case error
-                     (apply 'add-variable-watcher --with-variable-watcher-1--)
-                     (wrong-number-of-arguments
-                         (setq --with-variable-watcher-1-- nil)
-                         (signal (car error) (cdr error))))
-                 ,@body)
-             (when --with-variable-watcher-1--
-                 (apply 'remove-variable-watcher --with-variable-watcher-1--)))))
+    (let ((state (make-symbol "--with-variable-watcher--")))
+        `(let ((,state (list ,@add-variable-watcher-arguments)))
+             (unwind-protect
+                 (progn
+                     (condition-case error
+                         (apply 'add-variable-watcher ,state)
+                         (wrong-number-of-arguments
+                             (setq ,state nil)
+                             (signal (car error) (cdr error))))
+                     ,@body)
+                 (when ,state
+                     (apply 'remove-variable-watcher ,state))))))
 
 (defmacro with-variable-watcher (watcher-list &rest body)
     (declare (indent 1))
@@ -673,18 +677,19 @@
 
 
 (defmacro without-local-variable-1 (symbol &rest body)
-    `(let ((--without-local-variable-1-- (when (local-variable-p ,symbol)
-                                             (if (boundp ,symbol)
-                                                 (cons t (symbol-value ,symbol))
-                                                 (cons nil nil)))))
-         (unwind-protect
-             (progn
-                 (kill-local-variable ,symbol)
-                 ,@body)
-             (when --without-local-variable-1--
-                 (make-local-variable ,symbol)
-                 (when (car --without-local-variable-1--)
-                     (set ,symbol (cdr --without-local-variable-1--)))))))
+    (let ((state (make-symbol "--without-local-variable--")))
+        `(let ((,state (when (local-variable-p ,symbol)
+                           (if (boundp ,symbol)
+                               (cons t (symbol-value ,symbol))
+                               (cons nil nil)))))
+             (unwind-protect
+                 (progn
+                     (kill-local-variable ,symbol)
+                     ,@body)
+                 (when ,state
+                     (make-local-variable ,symbol)
+                     (when (car ,state)
+                         (set ,symbol (cdr ,state))))))))
 
 (defmacro without-local-variable (symbol-list &rest body)
     (declare (indent 1))
