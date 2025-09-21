@@ -6848,11 +6848,11 @@
         (while window-state--execute-once
             (setq window-state--execute-once window-state--execute-more)
             (seq-let (hint tint dim tag help-string) window-state
-                (with-face-attribute (
-                        'aw-leading-char-face :foreground hint
-                        'aw-background-face   :foreground tint
-                        'line-number          :foreground tint
-                        'default              :background dim)
+                (with-face-attribute
+                        ('aw-leading-char-face :foreground hint
+                         'aw-background-face   :foreground tint
+                         'line-number          :foreground tint
+                         'default              :background dim)
                     (with-override-evil-mode-line-tag tag help-string
                         (fixed-aw-select 'window-state--do-action))))))
     (defun window-state--do-action (window)
