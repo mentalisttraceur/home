@@ -4170,11 +4170,16 @@
         (define-key vertico-map [touchscreen-begin] nil t))
     (setq vertico-resize nil)
     (defun count-vertico-input-lines ()
-        (let ((candidates (overlay-get vertico--candidates-ov 'before-string)))
+        (let ((count (overlay-get vertico--count-ov 'before-string))
+              (candidates (overlay-get vertico--candidates-ov 'before-string)))
             (unwind-protect
                 (progn
                     (overlay-put vertico--candidates-ov 'before-string nil)
-                    (count-screen-lines (point-min) (point-max)))
+                    (+ (count-screen-lines (point-min) (point-max))
+                       (let ((offset (string-width count)))
+                           (if (= (window-width) (+ (current-column) offset))
+                               1
+                               0))))
                 (overlay-put vertico--candidates-ov 'before-string candidates))))
     (defun count-vertico-candidate-lines ()
         (save-excursion
