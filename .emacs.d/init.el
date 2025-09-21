@@ -5817,6 +5817,10 @@
                 (erase-buffer)
                 (when content
                     (insert content)
+                    (remove-list-of-text-properties
+                        1
+                        (buffer-end 1)
+                        '(keymap local-map))
                     (goto-char 1))
                 (setq shred--previous-candidate-content content)))))
 (defun shred-buffer-create ()
