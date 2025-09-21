@@ -607,15 +607,17 @@
     `(apply-split-nest with-advice-1 ,advice-list 1 ,body))
 
 (defmacro without-advice-1 (advice-remove-arguments &rest body)
-    (let ((state (make-symbol "--without-advice--")))
-        `(let ((,state (list ,@advice-remove-arguments)))
-             (if-let* ((how (apply 'advice-how ,state)))
+    (let ((arguments (make-symbol "--without-advice--arguments--"))
+          (how (make-symbol "--without-advice--how--")))
+        `(let* ((,arguments (list ,@advice-remove-arguments))
+                (,how (apply 'advice-how ,arguments)))
+             (if ,how
                  (unwind-protect
                      (progn
-                         (apply 'advice-remove ,state)
+                         (apply 'advice-remove ,arguments)
                          ,@body)
-                     (setcdr ,state (cons how (cdr ,state)))
-                     (apply 'advice-add ,state))
+                     (setcdr ,arguments (cons ,how (cdr ,arguments)))
+                     (apply 'advice-add ,arguments))
                  ,@body))))
 
 (defmacro without-advice (advice-list &rest body)
