@@ -7612,7 +7612,7 @@
         (setq evil-this-register nil)
         (denote)
         (if (or prefix-argument register)
-            (evil-paste-after 1 register)
+            (evil-paste-before 1 register)
             (set-buffer-modified-p nil)
             (evil-insert-state)))
     (define-key space-map "n" 'note)
