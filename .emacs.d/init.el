@@ -5233,7 +5233,31 @@
     (evil-set-register ?R "\n")
     (evil-set-register ?r (propertize (evil-get-register ?r)
         'yank-handler '(evil-yank-line-handler nil t)))
-    (define-key space-map "i" 'insert-char)
+    (defun read-unicode--format (name)
+        (setq name (upcase name))
+        (let ((character (char-from-name name)))
+            (format "%c U+%X %s" character character name)))
+    (defun read-unicode--parse (string)
+        (aref string 0))
+    (defvar read-unicode--candidates nil)
+    (defun read-unicode--candidates ()
+        (setq-if-nil read-unicode--candidates
+            (mapcar
+                #'read-unicode--format
+                (hash-table-keys (ucs-names))))
+        read-unicode--candidates)
+    (defun read-unicode (prompt)
+        (mapcar
+            #'read-unicode--parse
+            (let ((completion-ignore-case t)
+                  (orderless-smart-case nil))
+                (completing-read-multiple
+                    prompt
+                    (read-unicode--candidates)))))
+    (defun insert-unicode ()
+        (interactive)
+        (insert (concat (read-unicode "Insert characters: "))))
+    (define-key space-map "i" 'insert-unicode)
     (define-key space-map "I" (toggle inhibit-read-only))
     (define-key space-map "#" 'display-line-numbers-mode)
     (set-face-foreground 'line-number "#808080")
