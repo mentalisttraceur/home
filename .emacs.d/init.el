@@ -5145,8 +5145,8 @@
     (define-key space-map "y" 'execute-extended-command)
     (define-key space-map "," 'eval-expression)
     (define-key space-map "h" help-map)
-    (evil-define-key 'motion help-mode-map "H" 'help-go-back)
-    (evil-define-key 'motion help-mode-map "L" 'help-go-forward)
+    (evil-define-key* 'motion help-mode-map "H" 'help-go-back)
+    (evil-define-key* 'motion help-mode-map "L" 'help-go-forward)
     (define-key space-map "P" 'list-packages)
     (add-to-list 'evil-motion-state-modes 'package-menu-mode)
     (defun add-evil-repeat (function)
@@ -5744,30 +5744,30 @@
     (define-key space-misc-map "+" 'text-scale-increase)
     (define-key space-misc-map "=" 'text-scale-increase)
     (define-key space-misc-map "-" 'text-scale-decrease)
-    (evil-define-key 'motion doc-view-mode-map "j"
+    (evil-define-key* 'motion doc-view-mode-map "j"
         'doc-view-next-line-or-next-page)
-    (evil-define-key 'motion doc-view-mode-map "k"
+    (evil-define-key* 'motion doc-view-mode-map "k"
         'doc-view-previous-line-or-previous-page)
-    (evil-define-key 'motion doc-view-mode-map "l" 'image-forward-hscroll)
-    (evil-define-key 'motion doc-view-mode-map "h" 'image-backward-hscroll)
-    (evil-define-key 'motion doc-view-mode-map "\C-d"
+    (evil-define-key* 'motion doc-view-mode-map "l" 'image-forward-hscroll)
+    (evil-define-key* 'motion doc-view-mode-map "h" 'image-backward-hscroll)
+    (evil-define-key* 'motion doc-view-mode-map "\C-d"
         'doc-view-scroll-up-or-next-page)
-    (evil-define-key 'motion doc-view-mode-map "\C-u"
+    (evil-define-key* 'motion doc-view-mode-map "\C-u"
         'doc-view-scroll-down-or-previous-page)
-    (evil-define-key 'motion doc-view-mode-map "gg" 'doc-view-first-page)
+    (evil-define-key* 'motion doc-view-mode-map "gg" 'doc-view-first-page)
     (defun evil-doc-view-goto-page (prefix-argument)
         (interactive "P")
         (if prefix-argument
             (doc-view-goto-page prefix-argument)
             (doc-view-last-page)))
-    (evil-define-key 'motion doc-view-mode-map "G" 'evil-doc-view-goto-page)
-    (evil-define-key 'motion doc-view-mode-map "-" 'doc-view-shrink)
-    (evil-define-key 'motion doc-view-mode-map [down]
+    (evil-define-key* 'motion doc-view-mode-map "G" 'evil-doc-view-goto-page)
+    (evil-define-key* 'motion doc-view-mode-map "-" 'doc-view-shrink)
+    (evil-define-key* 'motion doc-view-mode-map [down]
         'doc-view-next-line-or-next-page)
-    (evil-define-key 'motion doc-view-mode-map [up]
+    (evil-define-key* 'motion doc-view-mode-map [up]
         'doc-view-previous-line-or-previous-page)
-    (evil-define-key 'motion doc-view-mode-map [right] 'image-forward-hscroll)
-    (evil-define-key 'motion doc-view-mode-map [left] 'image-backward-hscroll)
+    (evil-define-key* 'motion doc-view-mode-map [right] 'image-forward-hscroll)
+    (evil-define-key* 'motion doc-view-mode-map [left] 'image-backward-hscroll)
     (evil-define-motion evil-minibuffer-next-line (count)
         (setq-if-nil count 1)
         (dotimes (_ count)
@@ -5845,8 +5845,8 @@
 
 (use-packages calendar evil
     :config
-    (evil-define-key 'motion calendar-mode-map "H" 'calendar-scroll-right)
-    (evil-define-key 'motion calendar-mode-map "L" 'calendar-scroll-left)
+    (evil-define-key* 'motion calendar-mode-map "H" 'calendar-scroll-right)
+    (evil-define-key* 'motion calendar-mode-map "L" 'calendar-scroll-left)
     (toggle datetime-read-popup-calendar t))
 
 (define-derived-mode shred-mode nil "shred")
@@ -5879,7 +5879,7 @@
 (define-key shred-mode-map "q" 'quit-window)
 (add-to-list 'evil-motion-state-modes 'shred-mode)
 (defmacro shred-define-key (key def &rest bindings)
-    `(evil-define-key 'motion shred-mode-map ,key ,def ,@bindings))
+    `(evil-define-key* 'motion shred-mode-map ,key ,def ,@bindings))
 (defun shred--paste (register)
     (if (or (not register) (equal register ?\"))
         (setq register ?1))
@@ -5949,7 +5949,7 @@
                 (setq new-switches (delete ?A (delete ?a old-switches))))
             (dired-sort-other new-switches)
             (message "ls %s" new-switches)))
-    (evil-define-key 'motion dired-mode-map "H" 'evil-dired-toggle-hidden))
+    (evil-define-key* 'motion dired-mode-map "H" 'evil-dired-toggle-hidden))
 
 (use-packages dired android-trash evil
     :config
@@ -5979,13 +5979,13 @@
             (goto-char (point-min))
             (forward-line (1- line))
             (move-to-column column)))
-    (evil-define-key 'motion dired-mode-map "d" 'evil-dired-delete)
+    (evil-define-key* 'motion dired-mode-map "d" 'evil-dired-delete)
     (evil-define-operator evil-dired-delete-line (register yank-handler)
         :move-point nil
         :motion nil
         (interactive "<x><y>")
         (evil-dired-delete (pos-bol) (pos-eol) 'line register yank-handler))
-    (evil-define-key 'motion dired-mode-map "D" 'evil-dired-delete-line)
+    (evil-define-key* 'motion dired-mode-map "D" 'evil-dired-delete-line)
     (defun evil-dired--paste-1 (path to-path)
         (if (android-trash-p path)
             (let ((new-path (android-trash-restore path to-path)))
@@ -6030,7 +6030,7 @@
         (evil-save-column
             (dotimes (_ count)
                 (evil-dired--paste register))))
-    (evil-define-key 'motion dired-mode-map "p" 'evil-dired-paste-after)
+    (evil-define-key* 'motion dired-mode-map "p" 'evil-dired-paste-after)
     (evil-define-command evil-dired-paste-before (count register)
         :suppress-operator t
         (interactive "p<x>")
@@ -6043,14 +6043,14 @@
                     (evil-dired--paste register))
                 (goto-char (point-min))
                 (forward-line (1- line)))))
-    (evil-define-key 'motion dired-mode-map "P" 'evil-dired-paste-before)
+    (evil-define-key* 'motion dired-mode-map "P" 'evil-dired-paste-before)
     (evil-define-command evil-dired-replacing-paste-after (count register)
         :suppress-operator t
         (interactive "p<x>")
         (evil-save-column
             (dotimes (_ count)
                 (evil-dired--paste register t))))
-    (evil-define-key 'motion dired-mode-map "gp" 'evil-dired-replacing-paste-after)
+    (evil-define-key* 'motion dired-mode-map "gp" 'evil-dired-replacing-paste-after)
     (evil-define-command evil-dired-replacing-paste-before (count register)
         :suppress-operator t
         (interactive "p<x>")
@@ -6060,8 +6060,8 @@
                     (evil-dired--paste register t))
                 (goto-char (point-min))
                 (forward-line (1- line)))))
-    (evil-define-key 'motion dired-mode-map "gP" 'evil-dired-replacing-paste-before)
-    (evil-define-key 'motion dired-mode-map "." 'evil-repeat))
+    (evil-define-key* 'motion dired-mode-map "gP" 'evil-dired-replacing-paste-before)
+    (evil-define-key* 'motion dired-mode-map "." 'evil-repeat))
 
 (use-packages eshell evil
     :config
@@ -6118,7 +6118,7 @@
             (save-excursion
                 (insert " " (string-join quoted " "))))
         (evil-insert-state))
-    (evil-define-key 'motion dired-mode-map "x" 'evil-dired-eshell))
+    (evil-define-key* 'motion dired-mode-map "x" 'evil-dired-eshell))
 
 (use-packages dired evil undo-tree
     :config
@@ -6131,8 +6131,8 @@
         (interactive)
         (let ((buffer-read-only nil))
             (become-command 'evil-redo)))
-    (evil-define-key 'motion dired-mode-map "u" 'evil-dired-undo)
-    (evil-define-key 'motion dired-mode-map "U" 'evil-dired-redo))
+    (evil-define-key* 'motion dired-mode-map "u" 'evil-dired-undo)
+    (evil-define-key* 'motion dired-mode-map "U" 'evil-dired-redo))
 
 (use-packages display-fill-column-indicator evil
     :config
@@ -6148,14 +6148,14 @@
                (string (string-remove-suffix "\n" string)))
             (process-send-string nil string)))
     (dolist (key '("p" "P"))
-        (evil-define-key 'normal eat-eshell-semi-char-mode-map
+        (evil-define-key* 'normal eat-eshell-semi-char-mode-map
             key 'evil-eat-eshell-paste))
     (evil-define-command evil-eat-eshell-replacing-paste
             (count &optional register)
         (interactive "*P<x>")
         (user-error "replacing paste unsupported for child process"))
     (dolist (key '("gp" "gP"))
-        (evil-define-key 'normal eat-eshell-semi-char-mode-map
+        (evil-define-key* 'normal eat-eshell-semi-char-mode-map
             key 'evil-eat-eshell-replacing-paste))
     (add-hook 'eat-eshell-exec-hook
         (lambda ()
@@ -6195,16 +6195,16 @@
                 (fixed-hexl-self-insert-command (1- count) character))
             (save-point
                 (fixed-hexl-self-insert-command 1 character))))
-    (evil-define-key 'normal hexl-mode-map "r" 'evil-hexl-replace)
+    (evil-define-key* 'normal hexl-mode-map "r" 'evil-hexl-replace)
     (define-key space-map "X" 'hexl-mode))
 
 (use-packages image-mode evil
     :config
     (add-to-list 'evil-motion-state-modes 'image-mode)
-    (evil-define-key 'motion image-mode-map "h" 'image-backward-hscroll)
-    (evil-define-key 'motion image-mode-map "j" 'image-next-line)
-    (evil-define-key 'motion image-mode-map "k" 'image-previous-line)
-    (evil-define-key 'motion image-mode-map "l" 'image-forward-hscroll))
+    (evil-define-key* 'motion image-mode-map "h" 'image-backward-hscroll)
+    (evil-define-key* 'motion image-mode-map "j" 'image-next-line)
+    (evil-define-key* 'motion image-mode-map "k" 'image-previous-line)
+    (evil-define-key* 'motion image-mode-map "l" 'image-forward-hscroll))
 
 (use-packages evil undo-tree
     :config
@@ -6221,36 +6221,36 @@
         (evil-motion-state)
         (undo-tree-visualizer-selection-mode 1))
     (advice-add 'undo-tree-visualize :after 'evil-undo-tree-replace-state)
-    (evil-define-key 'replace undo-tree-visualizer-mode-map
+    (evil-define-key* 'replace undo-tree-visualizer-mode-map
         [escape] 'undo-tree-visualizer-abort)
     (dolist (key '(" " "g" "z"))
-        (evil-define-key 'replace undo-tree-visualizer-mode-map
+        (evil-define-key* 'replace undo-tree-visualizer-mode-map
             key (lookup-key evil-motion-state-map key)))
-    (evil-define-key 'replace undo-tree-visualizer-mode-map
+    (evil-define-key* 'replace undo-tree-visualizer-mode-map
         "i" 'evil-undo-tree-motion-state)
-    (evil-define-key 'motion undo-tree-visualizer-mode-map
+    (evil-define-key* 'motion undo-tree-visualizer-mode-map
         [escape] 'evil-undo-tree-replace-state)
     (define-key undo-tree-visualizer-selection-mode-map
         "q" 'evil-undo-tree-replace-state)
-    (evil-define-key 'replace undo-tree-visualizer-mode-map
+    (evil-define-key* 'replace undo-tree-visualizer-mode-map
         [left] 'undo-tree-visualize-jump-branch-left)
-    (evil-define-key 'replace undo-tree-visualizer-mode-map
+    (evil-define-key* 'replace undo-tree-visualizer-mode-map
         [right] 'undo-tree-visualize-jump-branch-right)
-    (evil-define-key 'replace undo-tree-visualizer-mode-map
+    (evil-define-key* 'replace undo-tree-visualizer-mode-map
         "h" 'undo-tree-visualize-jump-branch-left)
-    (evil-define-key 'replace undo-tree-visualizer-mode-map
+    (evil-define-key* 'replace undo-tree-visualizer-mode-map
         "j" 'undo-tree-visualize-redo)
-    (evil-define-key 'replace undo-tree-visualizer-mode-map
+    (evil-define-key* 'replace undo-tree-visualizer-mode-map
         "k" 'undo-tree-visualize-undo)
-    (evil-define-key 'replace undo-tree-visualizer-mode-map
+    (evil-define-key* 'replace undo-tree-visualizer-mode-map
         "l" 'undo-tree-visualize-jump-branch-right)
-    (evil-define-key 'replace undo-tree-visualizer-mode-map
+    (evil-define-key* 'replace undo-tree-visualizer-mode-map
         [\S-left] 'undo-tree-visualize-switch-branch-left)
-    (evil-define-key 'replace undo-tree-visualizer-mode-map
+    (evil-define-key* 'replace undo-tree-visualizer-mode-map
         [\S-right] 'undo-tree-visualize-switch-branch-right)
-    (evil-define-key 'replace undo-tree-visualizer-mode-map
+    (evil-define-key* 'replace undo-tree-visualizer-mode-map
         "H" 'undo-tree-visualize-switch-branch-left)
-    (evil-define-key 'replace undo-tree-visualizer-mode-map
+    (evil-define-key* 'replace undo-tree-visualizer-mode-map
         "L" 'undo-tree-visualize-switch-branch-right)
     (define-key space-map "u" 'independent-undo-tree))
 
@@ -6348,7 +6348,7 @@
 
 (define-derived-mode histdir-repl-mode eat-mode "HER")
 (defmacro histdir-repl-define-key (state key def &rest bindings)
-    `(evil-define-key ,state histdir-repl-mode-map ,key ,def ,@bindings))
+    `(evil-define-key* ,state histdir-repl-mode-map ,key ,def ,@bindings))
 (histdir-repl-define-key 'normal "q" 'quit-window)
 (histdir-repl-define-key 'normal "\C-m" 'histdir-repl-send-input)
 (histdir-repl-define-key 'insert "\C-m" 'histdir-repl-send-input)
@@ -7156,7 +7156,7 @@
 (use-packages ace-window evil undo-tree
     :config
     (dolist (key '("s" "S"))
-        (evil-define-key 'replace undo-tree-visualizer-mode-map
+        (evil-define-key* 'replace undo-tree-visualizer-mode-map
             key (lookup-key evil-motion-state-map key))))
 
 (use-package with-editor
@@ -7224,7 +7224,7 @@
 
 (use-packages evil markdown-mode
     :config
-    (evil-define-key 'normal markdown-mode-map
+    (evil-define-key* 'normal markdown-mode-map
         "\C-m" 'markdown-follow-thing-at-point))
 
 (use-package denote
@@ -7936,7 +7936,7 @@
          "--idle" "--loop-playlist" "--terminal=no"))
 (define-derived-mode music-mode nil "music")
 (defmacro music-define-key (state key def &rest bindings)
-    `(evil-define-key ,state music-mode-map ,key ,def ,@bindings))
+    `(evil-define-key* ,state music-mode-map ,key ,def ,@bindings))
 (defvar music--socket nil)
 (defun music ()
     (interactive)
@@ -8451,7 +8451,7 @@
         (process-send-region process 1 (buffer-end 1))
         (process-send-eof process)
         process))
-(evil-define-key 'normal markdown-mode-map " a" 'ai)
+(evil-define-key* 'normal markdown-mode-map " a" 'ai)
 
 (defconst russian-vi-letter-pairs
     '(("й" "q")
