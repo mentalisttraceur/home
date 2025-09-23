@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (setq backup-inhibited t)
 (setq create-lockfiles nil)
 (setq auto-save-default nil)
