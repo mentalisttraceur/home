@@ -4342,7 +4342,7 @@
             (insert crm-separator))
         (insert (string-join vertico--candidates crm-separator))
         (insert crm-separator))
-    (defun insert-vertico-candidate-for-crm ()
+    (defun insert-vertico-candidate-for-crm (&optional clear)
         (interactive)
         (let* ((bounds (crm--current-element))
                (start  (car bounds))
@@ -4357,7 +4357,8 @@
                 (delete-char -1)
                 (insert crm-separator))
             (insert crm-separator input)
-            (unless (> count 1)
+            (when (or clear
+                      (< count 1))
                 (delete-region
                     (save-excursion
                         (1+ (search-backward crm-separator nil t)))
@@ -4376,6 +4377,10 @@
                     (lambda ()
                         (interactive)
                         (insert crm-separator)))
+                (local-set-key ";"
+                    (lambda ()
+                        (interactive)
+                        (insert-vertico-candidate-for-crm t)))
                 (local-set-key "\C-m"
                     (lambda ()
                         (interactive)
