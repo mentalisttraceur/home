@@ -896,6 +896,11 @@
     (define-translation ?⅚ 'end))
 
 
+(defun cycle (&rest objects)
+    (setcdr (last objects) objects)
+    objects)
+
+
 (defun dlist-cons (item dlist)
     (let ((entry (cons
                      (cons nil  dlist)
