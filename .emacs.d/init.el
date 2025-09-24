@@ -4301,7 +4301,7 @@
                 (insert crm-separator))
             (insert crm-separator input)
             (when (or clear
-                      (< count 1))
+                      (< count 2))
                 (delete-region
                     (save-excursion
                         (1+ (search-backward crm-separator nil t)))
