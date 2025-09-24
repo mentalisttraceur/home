@@ -6364,7 +6364,7 @@
         (setq environment process-environment))
     (let* ((program       (car command))
            (arguments     (cdr command))
-           (buffer-locals (list default-directory histdir))
+           (buffer-locals (list default-directory))
            (name          (concat "*" (string-join command " ") "*"))
            (buffer        (get-buffer name)))
         (unless buffer
@@ -6373,7 +6373,8 @@
             (histdir-repl-mode))
         (pop-to-buffer buffer)
         (setq buffer-undo-list t)
-        (seq-setq (default-directory histdir) buffer-locals)
+        (setq default-directory (car buffer-locals))
+        (setq-local histdir histdir)
         (unless (get-buffer-process (current-buffer))
             (let ((process-environment environment))
                 (eat-exec buffer name program nil arguments)))
