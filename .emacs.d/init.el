@@ -3936,7 +3936,7 @@
                            (day   (or day 1)))
                         (unless (datetime--valid-month-p month)
                             (setq month 1))
-                        (unless (datetime--valid-day year month day)
+                        (unless (datetime--valid-day-p year month day)
                             (setq day 1))
                         (setq date (list month day year)))
                     (calendar-goto-date date)
