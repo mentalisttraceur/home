@@ -152,9 +152,6 @@
 
 (when (and android (not termux))
     (setq touch-screen-display-keyboard t)
-    (setq android-pass-multimedia-buttons-to-system t)
-    (define-key global-map [XF86Back] 'keyboard-quit)
-    (define-key minibuffer-mode-map [XF86Back] 'abort-minibuffers)
     (setq ls-lisp-use-insert-directory-program t)
     (setq touch-screen-enable-hscroll nil)
     (setq android-use-exec-loader nil)
