@@ -4606,6 +4606,22 @@
     (advice-add 'eat--eshell-adjust-make-process-args
         :around 'fixed-eat--make-process)
     (advice-add 'eat-exec :around 'fixed-eat--make-process)
+    (eval
+        (form-replace
+            '(defun eat--t-write)
+            '(defun fixed-eat--t-write)
+            (form-replace
+                '((+ written wrote))
+                '((+ written max))
+                (form-replace
+                    '((- end e))
+                    '((- max wrote))
+                    (function-lisp 'eat--t-write))))
+        t)
+    (if (native-comp-available-p)
+        (native-compile 'fixed-eat--t-write)
+        (byte-compile 'fixed-eat--t-write))
+    (advice-add 'eat--t-write :override 'fixed-eat--t-write)
     (defun hack-eat-exec (arguments)
         (when (equal (caddr arguments) "/usr/bin/env")
             (setcar (cddr arguments) "env"))
