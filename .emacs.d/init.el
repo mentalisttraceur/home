@@ -69,6 +69,7 @@
 
 
 (set-char-table-range char-width-table ?👁 2)
+(set-char-table-range char-width-table ?⋮ 2)
 (optimize-char-table char-width-table)
 
 (defun fixed-current-column (column)
