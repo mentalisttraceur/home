@@ -566,7 +566,9 @@
                 nil)
             (if (subrp raw)
                 nil
-                raw))))
+                (if (interpreted-function-p raw)
+                    (interpreted-function-lisp raw)
+                    raw)))))
 
 (autoload 'find-function-library "find-func")
 
