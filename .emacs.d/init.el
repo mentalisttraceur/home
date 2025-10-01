@@ -8451,6 +8451,10 @@
         (process-send-eof process)
         process))
 (evil-define-key* 'normal markdown-mode-map " a" 'ai)
+(define-key space-map "A"
+    (lambda ()
+        (interactive)
+        (kill-process)))
 
 (defconst russian-vi-letter-pairs
     '(("й" "q")
