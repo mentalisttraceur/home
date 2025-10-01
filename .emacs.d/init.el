@@ -8418,7 +8418,13 @@
 (add-hook 'markdown-mode-hook 'ai--highlight)
 (defconst ai--python (expand-file-name "~/.ai/venv/bin/python"))
 (defconst ai--script (expand-file-name "~/.ai/ai.py"))
-(defconst ai--command `(,ai--python ,ai--script "-"))
+(defun ai--command (tools)
+    (let ((command '("-")))
+        (when tools
+            (push "--tools" command))
+        (push ai--script command)
+        (push ai--python command)
+        command))
 (defun ai--sentinel (change-group)
     (lambda-let (change-group) (process event-string)
         (unless (process-live-p process)
@@ -8427,8 +8433,8 @@
         (unless (equal event-string "finished\n")
             (internal-default-process-sentinel
                 process event-string))))
-(defun ai ()
-    (interactive)
+(defun ai (prefix-argument)
+    (interactive "P")
     (save-excursion
         (goto-char (buffer-end 1))
         (while (= (char-before) ?\n)
@@ -8438,7 +8444,7 @@
            (process (make-process
                         :name "ai"
                         :buffer (current-buffer)
-                        :command ai--command
+                        :command (ai--command prefix-argument)
                         :sentinel (ai--sentinel change-group))))
         (activate-change-group change-group)
         (process-send-region process 1 (buffer-end 1))
