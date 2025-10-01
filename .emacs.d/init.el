@@ -4709,7 +4709,7 @@
     (evil-declare-not-repeat 'scroll-down-line)
     (evil-declare-not-repeat 'touch-screen-scroll)
     (defun fixed-evil-paste-before (evil-paste-before &rest arguments)
-        (evil-save-column
+        (save-point-line-and-column-with-scroll
             (apply evil-paste-before arguments)))
     (advice-add 'evil-paste-before :around 'fixed-evil-paste-before)
     (defun fixed-evil-yank-line-handler (yank-handler &rest arguments)
