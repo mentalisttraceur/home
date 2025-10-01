@@ -8450,7 +8450,7 @@
         (process-send-region process 1 (buffer-end 1))
         (process-send-eof process)
         process))
-(evil-define-key* 'normal markdown-mode-map " a" 'ai)
+(define-key space-map "a" 'ai)
 (define-key space-map "A"
     (lambda ()
         (interactive)
