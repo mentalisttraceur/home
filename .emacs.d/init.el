@@ -4351,10 +4351,19 @@
                     (lambda ()
                         (interactive)
                         (insert crm-separator)))
-                (local-set-key ";"
-                    (lambda ()
+                (local-set-key "\C-?"
+                    (lambda-let ((original (key-binding "\C-?"))) ()
                         (interactive)
-                        (insert-vertico-candidate-for-crm t)))
+                        (if (and (eq last-command
+                                     'insert-vertico-candidate-for-crm)
+                                 (save-excursion
+                                     (search-backward
+                                         crm-separator
+                                         (minibuffer-prompt-end)
+                                         t))
+                                 (< (match-end 0) (point)))
+                            (delete-region (match-end 0) (point))
+                            (become-command original))))
                 (local-set-key "\C-m"
                     (lambda ()
                         (interactive)
