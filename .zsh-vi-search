@@ -1,9 +1,9 @@
 function _history-search-backward()
-{   
+{
     zle .history-incremental-pattern-search-backward $BUFFER
 }
 function _history-search-forward()
-{   
+{
     zle .history-incremental-pattern-search-forward $BUFFER
 }
 zle -N history-incremental-pattern-search-backward _history-search-backward
