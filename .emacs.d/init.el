@@ -155,7 +155,6 @@
     (setq touch-screen-display-keyboard t)
     (setq android-pass-multimedia-buttons-to-system t)
     (define-key global-map [XF86Back] 'ignore)
-    (setq ls-lisp-use-insert-directory-program t)
     (setq touch-screen-enable-hscroll nil)
     (setq android-use-exec-loader nil)
     (setq exec-path
@@ -7667,6 +7666,7 @@
         (denote-title-prompt nil "Task"))
     (defmacro task--with-filtered-ls (filter-regex &rest body)
         `(let ((insert-directory-program "emacs-task-ls")
+               (ls-lisp-use-insert-directory-program t)
                (process-environment process-environment))
              (when ,filter-regex
                  (push (concat "EMACS_TASK_FILTER=" ,filter-regex)
