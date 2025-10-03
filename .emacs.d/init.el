@@ -4341,6 +4341,17 @@
         (minibuffer-with-setup-hook
             (lambda ()
                 (hide-chosen-crm-completions)
+                (add-hook 'minibuffer-exit-hook
+                    (lambda ()
+                        (set-face-background 'vertico-current nil))
+                    nil t)
+                (add-hook 'post-command-hook
+                    (lambda ()
+                        (set-face-background 'vertico-current
+                            (if (equal #x36E1CA (char-before (point-max)))
+                                "#383800"
+                                nil)))
+                    nil t)
                 (let ((map (make-sparse-keymap)))
                     (set-keymap-parent map (current-local-map))
                     (use-local-map map))
