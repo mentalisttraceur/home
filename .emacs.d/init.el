@@ -6235,7 +6235,11 @@
     (dolist (key '("k" [up]))
         (evil-define-key* 'motion image-mode-map key 'image-previous-line))
     (dolist (key '("l" [right]))
-        (evil-define-key* 'motion image-mode-map key 'image-forward-hscroll)))
+        (evil-define-key* 'motion image-mode-map key 'image-forward-hscroll))
+    (evil-define-key* 'motion image-mode-map "0" 'image-left-edge)
+    (evil-define-key* 'motion image-mode-map "$" 'image-right-edge)
+    (evil-define-key* 'motion image-mode-map "J" 'image-bottom-edge)
+    (evil-define-key* 'motion image-mode-map "K" 'image-top-edge))
 
 (use-packages evil undo-tree
     :config
