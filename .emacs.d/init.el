@@ -6049,12 +6049,16 @@
 
 (use-packages doc-view evil
     :config
-    (evil-define-key* 'motion doc-view-mode-map "j"
-        'doc-view-next-line-or-next-page)
-    (evil-define-key* 'motion doc-view-mode-map "k"
-        'doc-view-previous-line-or-previous-page)
-    (evil-define-key* 'motion doc-view-mode-map "l" 'image-forward-hscroll)
-    (evil-define-key* 'motion doc-view-mode-map "h" 'image-backward-hscroll)
+    (dolist (key '("h" [left]))
+        (evil-define-key* 'motion doc-view-mode-map key 'image-backward-hscroll))
+    (dolist (key '("j" [down]))
+        (evil-define-key* 'motion doc-view-mode-map key
+            'doc-view-next-line-or-next-page))
+    (dolist (key '("k" [up]))
+        (evil-define-key* 'motion doc-view-mode-map key
+            'doc-view-previous-line-or-previous-page))
+    (dolist (key '("l" [right]))
+        (evil-define-key* 'motion doc-view-mode-map key 'image-forward-hscroll))
     (evil-define-key* 'motion doc-view-mode-map "\C-d"
         'doc-view-scroll-up-or-next-page)
     (evil-define-key* 'motion doc-view-mode-map "\C-u"
@@ -6066,13 +6070,7 @@
             (doc-view-goto-page prefix-argument)
             (doc-view-last-page)))
     (evil-define-key* 'motion doc-view-mode-map "G" 'evil-doc-view-goto-page)
-    (evil-define-key* 'motion doc-view-mode-map "-" 'doc-view-shrink)
-    (evil-define-key* 'motion doc-view-mode-map [down]
-        'doc-view-next-line-or-next-page)
-    (evil-define-key* 'motion doc-view-mode-map [up]
-        'doc-view-previous-line-or-previous-page)
-    (evil-define-key* 'motion doc-view-mode-map [right] 'image-forward-hscroll)
-    (evil-define-key* 'motion doc-view-mode-map [left] 'image-backward-hscroll))
+    (evil-define-key* 'motion doc-view-mode-map "-" 'doc-view-shrink))
 
 (use-packages eshell evil
     :config
