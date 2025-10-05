@@ -2892,6 +2892,21 @@
             (image-write-rotation-to-exif)))
     (advice-add 'image-rotate :after 'image-rotate-autosave))
 
+(use-package image-mode
+    :config
+    (defun image-top-edge ()
+        (interactive nil image-mode)
+	(image-set-window-vscroll 0))
+    (defun image-bottom-edge ()
+        (interactive nil image-mode)
+        (image-next-line most-positive-fixnum))
+    (defun image-left-edge ()
+        (interactive nil image-mode)
+        (image-set-window-hscroll 0))
+    (defun image-right-edge ()
+        (interactive nil image-mode)
+        (image-forward-hscroll most-positive-fixnum)))
+
 (when termux
     (use-package image-mode
         :config
