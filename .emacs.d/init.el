@@ -6238,8 +6238,10 @@
         (evil-define-key* 'motion image-mode-map key 'image-forward-hscroll))
     (evil-define-key* 'motion image-mode-map "0" 'image-left-edge)
     (evil-define-key* 'motion image-mode-map "$" 'image-right-edge)
+    (evil-define-key* 'motion image-mode-map "H" 'image-previous-file)
     (evil-define-key* 'motion image-mode-map "J" 'image-bottom-edge)
-    (evil-define-key* 'motion image-mode-map "K" 'image-top-edge))
+    (evil-define-key* 'motion image-mode-map "K" 'image-top-edge)
+    (evil-define-key* 'motion image-mode-map "L" 'image-next-file))
 
 (use-packages evil undo-tree
     :config
