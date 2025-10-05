@@ -6077,6 +6077,8 @@
             'doc-view-previous-line-or-previous-page))
     (dolist (key '("l" [right]))
         (evil-define-key* 'motion doc-view-mode-map key 'image-forward-hscroll))
+    (evil-define-key* 'motion doc-view-mode-map "H" 'doc-view-previous-page)
+    (evil-define-key* 'motion doc-view-mode-map "L" 'doc-view-next-page)
     (evil-define-key* 'motion doc-view-mode-map "\C-d"
         'doc-view-scroll-up-or-next-page)
     (evil-define-key* 'motion doc-view-mode-map "\C-u"
