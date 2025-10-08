@@ -7918,6 +7918,23 @@
     (define-key dired-mode-map "R" 'denote-dired-mode))
 
 
+(use-package change-completion-highlight
+    :config
+    (defface destructive-completion-highlight
+        '((t
+           :inherit highlight
+           :background "#480000"))
+        "")
+    (dolist (command '(kill-process
+                       smoother-kill-buffers
+                       history-remove
+                       history-or-tag-remove))
+        (puthash
+            command
+            'destructive-completion-highlight
+            change-completion-highlight)))
+
+
 (defconst mpv-ipc--server-option "--input-ipc-server=")
 (defun mpv-ipc-socket-path-from-arguments (mpv-arguments)
     (let ((socket nil))
