@@ -4132,18 +4132,6 @@
 (provide 'datetime)
 
 
-(defvar change-completion-highlight
-    (make-hash-table :test 'eq))
-
-(defun change-completion-highlight--setup ()
-    (when-let* ((face (gethash this-command change-completion-highlight)))
-        (face-remap-set-base 'highlight face)))
-
-(add-hook 'minibuffer-setup-hook #'change-completion-highlight--setup)
-
-(provide 'change-completion-highlight)
-
-
 (use-package undo-tree
     :config
     (setq undo-tree-auto-save-history nil)
@@ -7916,23 +7904,6 @@
     :config
     (define-key dired-mode-map "D" 'smoother-delete-file)
     (define-key dired-mode-map "R" 'denote-dired-mode))
-
-
-(use-package change-completion-highlight
-    :config
-    (defface destructive-completion-highlight
-        '((t
-           :inherit highlight
-           :background "#480000"))
-        "")
-    (dolist (command '(kill-process
-                       smoother-kill-buffers
-                       history-remove
-                       history-or-tag-remove))
-        (puthash
-            command
-            'destructive-completion-highlight
-            change-completion-highlight)))
 
 
 (defconst mpv-ipc--server-option "--input-ipc-server=")
