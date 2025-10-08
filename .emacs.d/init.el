@@ -4132,6 +4132,18 @@
 (provide 'datetime)
 
 
+(defvar change-completion-highlight
+    (make-hash-table :test 'eq))
+
+(defun change-completion-highlight--setup ()
+    (when-let* ((face (gethash this-command change-completion-highlight)))
+        (face-remap-set-base 'highlight face)))
+
+(add-hook 'minibuffer-setup-hook #'change-completion-highlight--setup)
+
+(provide 'change-completion-highlight)
+
+
 (use-package undo-tree
     :config
     (setq undo-tree-auto-save-history nil)
