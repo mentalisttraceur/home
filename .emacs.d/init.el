@@ -821,8 +821,14 @@
             0)))
 
 
-(defface modifier-latch-face '((t :inherit escape-glyph)) "")
-(defface modifier-lock-face  '((t :inherit warning)) "")
+(defface modifier-latch-face
+    '((t
+       :inherit escape-glyph))
+    "")
+(defface modifier-lock-face
+    '((t
+       :inherit warning))
+    "")
 (defun modifier--description-1 (latched locked modifier string)
     (cond
         ((memq modifier latched)
@@ -3508,17 +3514,35 @@
 (defvar datetime-parse-two-digit-year-base 2000)
 
 (defface datetime-read-preview-year-face
-    '((t :foreground "#80FFFF" :weight bold)) "")
+    '((t
+       :foreground "#80FFFF"
+       :weight bold))
+    "")
 (defface datetime-read-preview-month-face
-    '((t :foreground "#C040FF" :weight bold)) "")
+    '((t
+       :foreground "#C040FF"
+       :weight bold))
+    "")
 (defface datetime-read-preview-day-face
-    '((t :foreground "#40FF40" :weight bold)) "")
+    '((t
+       :foreground "#40FF40"
+       :weight bold))
+    "")
 (defface datetime-read-preview-hour-face
-    '((t :foreground "#FFA060" :weight bold)) "")
+    '((t
+       :foreground "#FFA060"
+       :weight bold))
+    "")
 (defface datetime-read-preview-minute-face
-    '((t :foreground "#FFFF80" :weight bold)) "")
+    '((t
+       :foreground "#FFFF80"
+       :weight bold))
+    "")
 (defface datetime-read-preview-second-face
-    '((t :foreground "#FF4040" :weight bold)) "")
+    '((t
+       :foreground "#FF4040"
+       :weight bold))
+    "")
 
 (defun datetime-parse (string &optional short now)
     (seq-let* ((parsed _) (datetime-parse--loop string short now)
@@ -7365,11 +7389,20 @@
     (set-face-foreground 'denote-faces-month  "#FFA060")
     (set-face-foreground 'denote-faces-minute "#FFA060")
     (set-face-foreground 'denote-faces-keywords "#8080FF")
-    (defface task-faces-repeat   '((t :inherit default)) "")
-    (defface task-faces-duration '((t :inherit default)) "")
+    (defface task-faces-repeat
+        '((t
+           :inherit default))
+        "")
+    (defface task-faces-duration
+        '((t
+           :inherit default))
+        "")
     (set-face-foreground 'task-faces-repeat   "#FF0000")
     (set-face-foreground 'task-faces-duration "#00FF00")
-    (defface android-trash-face '((t :inherit default)) "")
+    (defface android-trash-face
+        '((t
+           :inherit default))
+        "")
     (set-face-foreground 'android-trash-face "#802020")
     (defun denoted--add-nil-id (path)
         (let ((name (file-name-nondirectory path)))
@@ -8063,9 +8096,15 @@
                        (get-text-property (point) 'mpv-index))))
         (setq music--refresh-next-index (+ current count)))
     (setq music--refresh-next-column (current-column)))
-(defface music-current-entry-face '((t :foreground "#80FFFF")) "")
+(defface music-current-entry-face
+    '((t
+       :foreground "#80FFFF"))
+    "")
 (defface music-current-playing-entry-face
-    '((t :inherit music-current-entry-face :weight bold :foreground "#FF4040"))
+    '((t
+       :inherit music-current-entry-face
+       :weight bold
+       :foreground "#FF4040"))
     "")
 (defun music--insert-playlist (socket)
     (let ((count   (mpv-ipc-expand-integer socket "${playlist-count}"))
@@ -8445,9 +8484,18 @@
 (define-key space-misc-map "u" 'tumblr-pull)
 (define-key space-misc-map "o" 'tumblr-open)
 
-(defface ai-user-divider-face '((t :foreground "#FFFF00")) "")
-(defface ai-assistant-divider-face '((t :foreground "#FF00FF")) "")
-(defface ai-tool-divider-face '((t :foreground "#FF0000")) "")
+(defface ai-user-divider-face
+    '((t
+       :foreground "#FFFF00"))
+    "")
+(defface ai-assistant-divider-face
+    '((t
+       :foreground "#FF00FF"))
+    "")
+(defface ai-tool-divider-face
+    '((t
+       :foreground "#FF0000"))
+    "")
 (defun ai--highlight ()
     (font-lock-add-keywords nil
         '(("^\\(#\\) User Input \\(###########################\\)$"
