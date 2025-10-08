@@ -184,22 +184,6 @@
 (set-face-background 'highlight "#003800")
 
 
-(defface destructive-completion-highlight
-    '((t
-       :inherit highlight
-       :background "#480000"))
-    "")
-(defvar destructive-completion-commands
-    (list
-        'kill-buffer
-        'kill-process))
-(defun destructive-completion-setup ()
-    (when (memq this-command destructive-completion-commands)
-        (face-remap-set-base 'highlight 'destructive-completion-highlight)))
-(add-hook 'minibuffer-setup-hook #'destructive-completion-setup)
-(provide 'destructive-completion)
-
-
 (blink-cursor-mode -1)
 
 
