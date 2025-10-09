@@ -4332,6 +4332,12 @@
         "")
     (put-text-property 0 4 'face 'vertico-counter
         (car vertico-count-format))
+    (defvar vertico-counter-faces
+        (make-hash-table :test 'eq))
+    (defun vertico-counter-faces--setup (&rest _)
+        (when-let* ((face (gethash this-command vertico-counter-faces)))
+            (face-remap-set-base 'vertico-counter face)))
+    (advice-add 'vertico--setup :after 'vertico-counter-faces--setup)
     (set-face-foreground 'vertico-multiline "#FF0000")
     (defvar-local next-vertico-index nil)
     (defvar-local next-vertico-scroll nil)
