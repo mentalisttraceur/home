@@ -4195,7 +4195,7 @@
             (unwind-protect
                 (progn
                     (overlay-put vertico--candidates-ov 'before-string nil)
-                    (+ (count-screen-lines (point-min) (point-max))
+                    (+ (count-screen-lines (point-min) (point-max) t)
                        (let* ((offset (string-width count))
                               (line-width (+ (- (pos-eol) (pos-bol)) offset)))
                            (if (= (% line-width (window-width)) 0)
