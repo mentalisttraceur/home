@@ -4339,6 +4339,45 @@
             (face-remap-set-base 'vertico-counter face)))
     (advice-add 'vertico--setup :after 'vertico-counter-faces--setup)
     (set-face-foreground 'vertico-multiline "#FF0000")
+    (set-face-background 'vertico-counter "#A0E0FF")
+    (set-face-foreground 'vertico-counter "#000000")
+    (set-face-bold 'vertico-counter t)
+    (defface vertico-counter-removal
+        '((t
+           :inherit vertico-counter
+           :background "#FF8000"))
+        "")
+    (defface vertico-counter-replacement
+        '((t
+           :inherit vertico-counter
+           :background "#FFFF00"))
+        "")
+    (defface vertico-counter-execution
+        '((t
+           :inherit vertico-counter
+           :background "#00FF00"))
+        "")
+    (dolist (command '(execute-extended-command
+                       history-execute
+                       history-or-tag-execute-or-add))
+        (puthash
+            command
+            'vertico-counter-execution
+            vertico-counter-faces))
+    (dolist (command '(history-change
+                       music-change))
+        (puthash
+            command
+            'vertico-counter-replacement
+            vertico-counter-faces))
+    (dolist (command '(kill-process
+                       smoother-kill-buffers
+                       history-remove
+                       history-or-tag-remove))
+        (puthash
+            command
+            'vertico-counter-removal
+            vertico-counter-faces))
     (defvar-local next-vertico-index nil)
     (defvar-local next-vertico-scroll nil)
     (defun hack-vertico--recompute (state)
