@@ -4326,6 +4326,12 @@
         (append '(cursor-intangible t) minibuffer-prompt-properties))
     (add-hook 'minibuffer-setup-hook 'cursor-intangible-mode)
     (setq vertico-scroll-margin 0)
+    (defface vertico-counter
+        '((t
+           :inherit minibuffer-prompt))
+        "")
+    (put-text-property 0 4 'face 'vertico-counter
+        (car vertico-count-format))
     (set-face-foreground 'vertico-multiline "#FF0000")
     (defvar-local next-vertico-index nil)
     (defvar-local next-vertico-scroll nil)
