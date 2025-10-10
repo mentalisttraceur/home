@@ -1649,9 +1649,7 @@
     (let* ((history ())
            (choices (completing-read-multiple
                         prompt
-                        (if except
-                            (complete-buffer except default)
-                            (complete-buffer nil default))
+                        (complete-buffer except default)
                         predicate require-match nil 'history default)))
         (prog1
             (mapcar 'get-buffer choices)
