@@ -3047,13 +3047,14 @@
                         (match-beginning 0)
                         (match-end 0)
                         crm-separator-properties)))))
-    (defun crm-separator-properties--setup ()
-        (add-hook 'post-command-hook
-            'crm-separator-properties--add
-            nil t))
     (defun fixed-completing-read-multiple
             (completing-read-multiple &rest arguments)
-        (minibuffer-with-setup-hook 'crm-separator-properties--setup
+        (minibuffer-with-setup-hook
+            (lambda-let ((require-match (nth 3 arguments))) ()
+                (setq-local minibuffer--require-match require-match)
+                (add-hook 'post-command-hook
+                    'crm-separator-properties--add
+                    nil t))
             (apply completing-read-multiple arguments)))
     (advice-add 'completing-read-multiple
         :around 'fixed-completing-read-multiple)
