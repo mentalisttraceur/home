@@ -4412,8 +4412,9 @@
 
 (use-packages crm vertico
     :config
-    (setq crm-separator (propertize "\x36E1CA"
-                            'display (propertize "," 'face 'escape-glyph)))
+    (setq crm-separator "\x36E1CA")
+    (setq crm-separator-properties
+          '(display #("," 0 1 (face escape-glyph))))
     (defun insert-vertico-candidates-for-crm ()
         (interactive)
         (goto-char (point-max))
@@ -4433,10 +4434,6 @@
             (setq next-vertico-index (max 0 (min vertico--index (- count 2))))
             (setq next-vertico-scroll vertico--scroll)
             (vertico-insert)
-            (goto-char (minibuffer-prompt-end))
-            (while (search-forward crm-separator nil 'x)
-                (delete-char -1)
-                (insert crm-separator))
             (insert crm-separator input)
             (when (or clear
                       (< count 2))
