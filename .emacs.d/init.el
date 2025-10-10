@@ -4412,9 +4412,9 @@
 
 (use-packages crm vertico
     :config
-    (setq crm-separator "\x36E1CA")
+    (setq crm-separator "\x36E1CA\n")
     (setq crm-separator-properties
-          '(display #("," 0 1 (face escape-glyph))))
+          '(display #(",\n" 0 1 (face escape-glyph))))
     (defun insert-vertico-candidates-for-crm ()
         (interactive)
         (goto-char (point-max))
