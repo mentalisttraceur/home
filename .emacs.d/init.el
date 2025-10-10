@@ -4418,10 +4418,9 @@
     (defun insert-vertico-candidates-for-crm ()
         (interactive)
         (goto-char (point-max))
-        (search-backward crm-separator (minibuffer-prompt-end) 'x)
+        (when (re-search-backward crm-separator (minibuffer-prompt-end) 'x)
+            (goto-char (match-end 0)))
         (delete-region (point) (point-max))
-        (unless (= (point) (minibuffer-prompt-end))
-            (insert crm-separator))
         (insert (string-join vertico--candidates crm-separator))
         (insert crm-separator))
     (defun insert-vertico-candidate-for-crm (&optional clear)
@@ -4437,9 +4436,13 @@
             (insert crm-separator input)
             (when (or clear
                       (< count 2))
+                (save-excursion
+                    (re-search-backward
+                        crm-separator
+                        (minibuffer-prompt-end)
+                        t))
                 (delete-region
-                    (save-excursion
-                        (1+ (search-backward crm-separator nil t)))
+                    (match-end 0)
                     (point)))))
     (defface vertico-current-inert
         '((t
@@ -4453,7 +4456,12 @@
                 (hide-chosen-crm-completions)
                 (add-hook 'post-command-hook
                     (lambda ()
-                        (if (equal #x36E1CA (char-before (point-max)))
+                        (if (save-excursion
+                                (goto-char (point-max))
+                                (re-search-backward
+                                         (concat crm-separator "\\'")
+                                    (minibuffer-prompt-end)
+                                    t))
                             (face-remap-set-base
                                 'vertico-current
                                 'vertico-current-inert)
@@ -4475,19 +4483,22 @@
                         (if (and (eq last-command
                                      'insert-vertico-candidate-for-crm)
                                  (save-excursion
-                                     (search-backward
-                                         crm-separator
-                                         (minibuffer-prompt-end)
-                                         t))
+                                     (re-search-backward crm-separator nil t))
                                  (< (match-end 0) (point)))
                             (delete-region (match-end 0) (point))
                             (become-command original))))
                 (local-set-key "\C-m"
                     (lambda ()
                         (interactive)
-                        (if (equal #x36E1CA (char-before (point)))
+                        (if (save-excursion
+                                (goto-char (minibuffer-prompt-end))
+                                (re-search-forward
+                                    (concat crm-separator "\\'")
+                                    nil t))
                             (progn
-                                (delete-char -1)
+                                (delete-region
+                                    (match-beginning 0)
+                                    (match-end 0))
                                 (vertico--update)
                                 (vertico-exit-input))
                             (vertico-exit)))))
