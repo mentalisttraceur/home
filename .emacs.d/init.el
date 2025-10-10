@@ -354,6 +354,23 @@
         forms))
 
 
+(defmacro setq-if-nil-1 (symbol value)
+    `(if ,symbol
+         ,symbol
+         (setq ,symbol ,value)))
+
+(defmacro setq-if-nil (&rest symbol-value-pairs)
+    `(apply-split setq-if-nil-1 ,symbol-value-pairs 2))
+
+(defmacro setf-if-nil-1 (place value)
+    `(if ,place
+         ,place
+         (setf ,place ,value)))
+
+(defmacro setf-if-nil (&rest place-value-pairs)
+    `(apply-split setf-if-nil-1 ,place-value-pairs 2))
+
+
 (defmacro apply-split-nest (callable arguments count body)
     (setq arguments (copy-sequence arguments))
     (setq count (1- count))
@@ -1522,23 +1539,6 @@
 
 (defmacro apply-process (&rest command)
     `(apply 'funcall-process ,@command))
-
-
-(defmacro setq-if-nil-1 (symbol value)
-    `(if ,symbol
-         ,symbol
-         (setq ,symbol ,value)))
-
-(defmacro setq-if-nil (&rest symbol-value-pairs)
-    `(apply-split setq-if-nil-1 ,symbol-value-pairs 2))
-
-(defmacro setf-if-nil-1 (place value)
-    `(if ,place
-         ,place
-         (setf ,place ,value)))
-
-(defmacro setf-if-nil (&rest place-value-pairs)
-    `(apply-split setf-if-nil-1 ,place-value-pairs 2))
 
 
 (defun string-to-number-or-nil (string)
