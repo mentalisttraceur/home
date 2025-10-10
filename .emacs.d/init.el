@@ -3039,23 +3039,23 @@
 
 (use-package crm
     :config
-    (defvar crm-separator-display nil)
-    (defun crm-separator-display--propertize ()
-        (when crm-separator-display
+    (defvar crm-separator-text-properties nil)
+    (defun crm-separator-text-properties--add ()
+        (when crm-separator-text-properties
             (save-excursion
                 (goto-char (minibuffer-prompt-end))
                 (while (search-forward crm-separator nil t)
-                    (put-text-property
+                    (add-text-properties
                         (match-beginning 0)
                         (match-end 0)
-                        'display crm-separator-display)))))
-    (defun crm-separator-display--setup ()
+                        crm-separator-text-properties)))))
+    (defun crm-separator-text-properties--setup ()
         (add-hook 'post-command-hook
-            'crm-separator-display--propertize
+            'crm-separator-text-properties--add
             nil t))
     (defun fixed-completing-read-multiple
             (completing-read-multiple &rest arguments)
-        (minibuffer-with-setup-hook 'crm-separator-display--setup
+        (minibuffer-with-setup-hook 'crm-separator-text-properties--setup
             (apply completing-read-multiple arguments)))
     (advice-add 'completing-read-multiple
         :around 'fixed-completing-read-multiple)
