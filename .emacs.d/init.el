@@ -5887,7 +5887,9 @@
         (setq-if-nil count 1)
         (dotimes (_ count)
             (condition-case _error
-                (evil-previous-line)
+                (if (> (count-screen-lines (minibuffer-prompt-end) (point) t) 1)
+                    (evil-previous-line)
+                    (signal 'beginning-of-buffer nil))
                 (beginning-of-buffer
                     (if vertico--input
                         (vertico-previous)
