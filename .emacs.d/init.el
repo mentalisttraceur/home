@@ -3039,6 +3039,26 @@
 
 (use-package crm
     :config
+    (defvar crm-separator-display nil)
+    (defun crm-separator-display--propertize ()
+        (when crm-separator-display
+            (save-excursion
+                (goto-char (minibuffer-prompt-end))
+                (while (search-forward crm-separator nil t)
+                    (put-text-property
+                        (match-beginning 0)
+                        (match-end 0)
+                        'display crm-separator-display)))))
+    (defun crm-separator-display--setup ()
+        (add-hook 'post-command-hook
+            'crm-separator-display--propertize
+            nil t))
+    (defun fixed-completing-read-multiple
+            (completing-read-multiple &rest arguments)
+        (minibuffer-with-setup-hook 'crm-separator-display--setup
+            (apply completing-read-multiple arguments)))
+    (advice-add 'completing-read-multiple
+        :around 'fixed-completing-read-multiple)
     (defun hide-chosen-crm-completions--predicate (candidate)
         (let* ((input (minibuffer-contents-no-properties))
                (already-chosen (butlast (split-string input crm-separator))))
