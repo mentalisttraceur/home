@@ -4205,6 +4205,10 @@
     :config
     (require 'display-line-numbers)
     (vertico-mode 1)
+    (defun fixed-vertico--match-p (vertico--match-p &rest arguments)
+        (with-advice (('minibuffer-message :override 'user-error))
+            (apply vertico--match-p arguments)))
+    (advice-add 'vertico--match-p :around 'fixed-vertico--match-p)
     (when (and android (not termux))
         (define-key vertico-map [touchscreen-begin] nil t))
     (setq vertico-resize nil)
