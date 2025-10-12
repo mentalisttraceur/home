@@ -3031,7 +3031,7 @@
 (use-package crm
     :config
     (defvar crm-separator-properties nil)
-    (defun crm-separator-properties--add ()
+    (defun crm-separator-properties--add (_start _end _old-length)
         (when crm-separator-properties
             (save-excursion
                 (goto-char (minibuffer-prompt-end))
@@ -3045,7 +3045,7 @@
         (minibuffer-with-setup-hook
             (lambda-let ((require-match (nth 3 arguments))) ()
                 (setq-local minibuffer--require-match require-match)
-                (add-hook 'post-command-hook
+                (add-hook 'after-change-functions
                     'crm-separator-properties--add
                     nil t))
             (apply completing-read-multiple arguments)))
