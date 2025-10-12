@@ -161,7 +161,24 @@
             "/data/data/com.termux/files/usr/bin"
             (directory-file-name exec-directory)))
     (setenv "PATH" (concat (car exec-path) ":" (cadr exec-path)))
-    (setq woman-manpath '("~/../usr/share/man")))
+    (setq woman-manpath '("~/../usr/share/man"))
+    (defun fixed-gui--clipboard-selection-unchanged-p (text)
+        (let* ((last gui--last-selected-text-clipboard)
+               (length (length last))
+               (equal t)
+               (index 0)
+               character)
+            (when (length= text length)
+                (while (and equal
+                            (< index length))
+                    (setq character (aref last index))
+                    (when (> character #x10FFFF)
+                        (setq character (logand character #xFFFFF)))
+                    (setq equal (= character (aref text index)))
+                    (setq index (1+ index)))
+                equal)))
+    (advice-add 'gui--clipboard-selection-unchanged-p
+        :override 'fixed-gui--clipboard-selection-unchanged-p))
 
 
 (set-face-background 'highlight "#003800")
