@@ -6,12 +6,11 @@
 
 
 (defconst android (eq system-type 'android))
-(defconst termux (getenv "TERMUX_VERSION"))
 (defconst wsl (getenv "WSL_DISTRO_NAME"))
 
 
 (menu-bar-mode -1)
-(when (and android (not termux))
+(when android
     (defvar initial-frame-width nil))
 (defun initialize-frame (frame)
     (when (display-graphic-p frame)
@@ -151,10 +150,6 @@
     (define-key global-map [XF86AudioRaiseVolume] 'ignore))
 
 (when android
-    (define-key mode-line-buffer-identification-keymap
-        [mode-line mouse-1] 'ignore))
-
-(when (and android (not termux))
     (setq touch-screen-display-keyboard t)
     (setq android-pass-multimedia-buttons-to-system t)
     (define-key global-map [XF86Back] 'ignore)
@@ -165,19 +160,7 @@
             "/data/data/com.termux/files/usr/local/bin"
             "/data/data/com.termux/files/usr/bin"
             (directory-file-name exec-directory)))
-    (setenv "PATH" (concat (car exec-path) ":" (cadr exec-path))))
-
-(when termux
-    (define-key minibuffer-inactive-mode-map [mouse-1] nil)
-    (define-key minibuffer-inactive-mode-map [down-mouse-1] nil)
-    (define-key global-map [wheel-up] 'scroll-down-line)
-    (define-key global-map [wheel-down] 'scroll-up-line)
-    (defun gui-backend-set-selection (_selection-type data)
-        (call-process-region data nil "termux-clipboard-set" nil 0))
-    (defun fixed-browse-url-xdg-open (url &optional _unused)
-        (message "opening %s" url)
-        (browse-url-xdg-open url))
-    (setq browse-url-browser-function 'fixed-browse-url-xdg-open)
+    (setenv "PATH" (concat (car exec-path) ":" (cadr exec-path)))
     (setq woman-manpath '("~/../usr/share/man")))
 
 
@@ -224,7 +207,9 @@
 (setcar (cdr (assq 'vc-mode mode-line-format)) "")
 
 
-(when termux
+(when android
+    (define-key mode-line-buffer-identification-keymap
+        [mode-line mouse-1] 'ignore)
     (define-key mode-line-major-mode-keymap [mode-line down-mouse-1] 'ignore)
     (define-key mode-line-minor-mode-keymap [mode-line down-mouse-1] 'ignore))
 
@@ -926,7 +911,7 @@
 (add-hook 'prefix-command-echo-keystrokes-functions 'modifier-echo-description)
 
 
-(when (and android (not termux))
+(when android
     (defun define-translation (from-event to-event)
         (dolist (modifiers modifier-combinations)
             (define-key input-decode-map
@@ -2910,14 +2895,6 @@
         (interactive nil image-mode)
         (image-forward-hscroll most-positive-fixnum)))
 
-(when termux
-    (use-package image-mode
-        :config
-        (defun hack-image-mode ()
-            (add-single-use-hook 'post-command-hook 'kill-buffer)
-            (browse-url-xdg-open (buffer-file-name)))
-        (advice-add 'image-mode :override 'hack-image-mode)))
-
 (defun git--read-link (path)
     (condition-case _error
         (with-temp-buffer
@@ -4208,7 +4185,7 @@
         (with-advice (('minibuffer-message :override 'user-error))
             (apply vertico--match-p arguments)))
     (advice-add 'vertico--match-p :around 'fixed-vertico--match-p)
-    (when (and android (not termux))
+    (when android
         (define-key vertico-map [touchscreen-begin] nil t))
     (setq vertico-resize nil)
     (defun count-vertico-input-lines ()
@@ -5171,7 +5148,7 @@
         (define-key map "gT" 'evil-find-char-pair-to-backward))
     (when android
         (define-key evil-motion-state-map [down-mouse-1] nil))
-    (when (and android (not termux))
+    (when android
         (defun fancy-input--post-text-conversion ()
             (when (member last-command-event '(?⁰ ?¹))
                 (delete-char -1)
@@ -8745,7 +8722,7 @@
                     (russian-vi-bind map))))))
 
 (defconst syncthing--command '("syncthing" "serve" "--no-browser"))
-(when (and android (not termux))
+(when android
     (pop-to-command syncthing--command)
     (rename-buffer " *synchthing*")
     (evil-normal-state))
