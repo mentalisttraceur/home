@@ -1664,9 +1664,8 @@
 (advice-add 'read-buffer-to-switch :override 'hack-read-buffer-to-switch)
 
 
-(defun smoother-kill-buffer (&optional buffer)
-    (unless buffer
-        (setq buffer (current-buffer)))
+(defun smoother-kill-buffer (buffer)
+    (interactive (list (current-buffer)))
     (set-buffer buffer)
     (add-hook 'kill-buffer-hook
         (lambda ()
