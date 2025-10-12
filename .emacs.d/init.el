@@ -4362,7 +4362,7 @@
     (advice-add 'vertico--setup :after 'vertico-counter-faces--setup)
     (set-face-foreground 'vertico-multiline "#FF0000")
     (set-face-background 'vertico-counter "#A0E0FF")
-    (set-face-foreground 'vertico-counter "#000000")
+    (set-face-foreground 'vertico-counter "#010101")
     (set-face-bold 'vertico-counter t)
     (defface vertico-counter-removal
         '((t
