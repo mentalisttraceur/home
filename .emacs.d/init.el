@@ -4421,21 +4421,31 @@
     (setq crm-separator "\x36E1CA\n")
     (setq crm-separator-properties
           '(display #(",\n" 0 1 (face escape-glyph))))
-    (defun insert-vertico-candidates-for-crm ()
+    (defun vrm-current-element ()
+        (let* ((bounds (crm--current-element))
+               (start  (car bounds))
+               (end    (cdr bounds))
+               (input  (buffer-substring-no-properties start end)))
+            (save-excursion
+                (goto-char start)
+                (search-forward input))
+            input))
+    (defun vrm-insert-all ()
         (interactive)
+        (unless vertico--candidates
+            (user-error "No matches"))
         (goto-char (point-max))
         (when (re-search-backward crm-separator (minibuffer-prompt-end) 'x)
             (goto-char (match-end 0)))
         (delete-region (point) (point-max))
         (insert (string-join vertico--candidates crm-separator))
         (insert crm-separator))
-    (defun insert-vertico-candidate-for-crm (&optional clear)
+    (defun vrm-insert (&optional clear)
         (interactive)
-        (let* ((bounds (crm--current-element))
-               (start  (car bounds))
-               (end    (cdr bounds))
-               (input  (buffer-substring-no-properties start end))
-               (count  (length vertico--candidates)))
+        (let* ((input (vrm-current-element))
+               (count (length vertico--candidates)))
+            (when (< count 1)
+                (vertico--match-p input))
             (setq next-vertico-index (max 0 (min vertico--index (- count 2))))
             (setq next-vertico-scroll vertico--scroll)
             (vertico-insert)
@@ -4450,67 +4460,82 @@
                 (delete-region
                     (match-end 0)
                     (point)))))
-    (defface vertico-current-inert
+    (defun vrm-insert-input ()
+        (interactive)
+        (vertico--match-p (vrm-current-element))
+        (insert crm-separator))
+    (defun vrm--exit-recheck-match-p ()
+        (interactive)
+        (goto-char (minibuffer-prompt-end))
+        (let ((hide-chosen-crm-completions nil)
+              (beginning (point)))
+            (while (re-search-forward crm-separator nil 'x)
+                (goto-char (match-beginning 0))
+                (vertico--match-p
+                    (buffer-substring-no-properties
+                        beginning
+                        (match-beginning 0)))
+                (goto-char (match-end 0))
+                (setq beginning (point)))))
+    (defun vrm-exit ()
+        (interactive)
+        (vrm--exit-recheck-match-p)
+        (if (save-excursion
+                (goto-char (minibuffer-prompt-end))
+                (re-search-forward
+                    (concat crm-separator "\\'")
+                    nil t))
+            (progn
+                (delete-region
+                    (match-beginning 0)
+                    (match-end 0))
+                (vertico--update)
+                (vertico-exit-input))
+            (vertico-exit)))
+    (defun vrm-exit-input ()
+        (interactive)
+        (vrm--exit-recheck-match-p)
+        (vertico-exit-input))
+    (defface vrm-current-inert
         '((t
            :inherit vertico-current
            :background "#383838"))
         "")
-    (defun hack-completing-read-multiple
-            (completing-read-multiple &rest arguments)
+    (defun vrm--face-remap ()
+        (if (save-excursion
+                (goto-char (point-max))
+                (re-search-backward
+                    (concat crm-separator "\\'")
+                    (minibuffer-prompt-end)
+                    t))
+            (face-remap-set-base 'vertico-current 'vrm-current-inert)
+            (face-remap-reset-base 'vertico-current)))
+    (defun vrm--setup (completing-read-multiple &rest arguments)
         (minibuffer-with-setup-hook
             (lambda ()
                 (hide-chosen-crm-completions)
                 (add-hook 'post-command-hook
-                    (lambda ()
-                        (if (save-excursion
-                                (goto-char (point-max))
-                                (re-search-backward
-                                         (concat crm-separator "\\'")
-                                    (minibuffer-prompt-end)
-                                    t))
-                            (face-remap-set-base
-                                'vertico-current
-                                'vertico-current-inert)
-                            (face-remap-reset-base
-                                'vertico-current)))
-                    nil t)
+                    'vrm--face-remap nil t)
                 (let ((map (make-sparse-keymap)))
                     (set-keymap-parent map (current-local-map))
                     (use-local-map map))
-                (local-set-key "\t" 'insert-vertico-candidates-for-crm)
-                (local-set-key "," 'insert-vertico-candidate-for-crm)
-                (local-set-key "\M-,"
-                    (lambda ()
-                        (interactive)
-                        (insert crm-separator)))
+                (local-set-key "\t" 'vrm-insert-all)
+                (local-set-key "," 'vrm-insert)
+                (local-set-key "\M-," 'vrm-insert-input)
+                (local-set-key "\C-m" 'vrm-exit)
+                (local-set-key "\M-\C-m" 'vrm-exit-input)
                 (local-set-key "\C-?"
                     (lambda-let ((original (key-binding "\C-?"))) ()
                         (interactive)
                         (if (and (eq last-command
-                                     'insert-vertico-candidate-for-crm)
+                                     'vrm-insert)
                                  (save-excursion
                                      (re-search-backward crm-separator nil t))
                                  (< (match-end 0) (point)))
                             (delete-region (match-end 0) (point))
-                            (become-command original))))
-                (local-set-key "\C-m"
-                    (lambda ()
-                        (interactive)
-                        (if (save-excursion
-                                (goto-char (minibuffer-prompt-end))
-                                (re-search-forward
-                                    (concat crm-separator "\\'")
-                                    nil t))
-                            (progn
-                                (delete-region
-                                    (match-beginning 0)
-                                    (match-end 0))
-                                (vertico--update)
-                                (vertico-exit-input))
-                            (vertico-exit)))))
+                            (become-command original)))))
             (apply completing-read-multiple arguments)))
-    (advice-add 'completing-read-multiple
-        :around 'hack-completing-read-multiple))
+    (advice-add 'completing-read-multiple :around 'vrm--setup))
 
 (use-packages window vertico
     :config
