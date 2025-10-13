@@ -3057,12 +3057,16 @@
             (apply completing-read-multiple arguments)))
     (advice-add 'completing-read-multiple
         :around 'fixed-completing-read-multiple)
+    (defvar hide-chosen-crm-completions t)
     (defun hide-chosen-crm-completions--predicate (candidate)
-        (let* ((input (minibuffer-contents-no-properties))
-               (already-chosen (butlast (split-string input crm-separator))))
-            (when (consp candidate)
-                (setq candidate (car candidate)))
-            (not (member candidate already-chosen))))
+        (if hide-chosen-crm-completions
+            (let* ((input (minibuffer-contents-no-properties))
+                   (elements (split-string input crm-separator))
+                   (already-chosen (butlast elements)))
+                (when (consp candidate)
+                    (setq candidate (car candidate)))
+                (not (member candidate already-chosen)))
+            t))
     (defun hide-chosen-crm-completions ()
         (setq crm-completion-table
               (apply-partially
