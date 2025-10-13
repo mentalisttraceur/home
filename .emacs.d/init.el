@@ -1658,6 +1658,12 @@
             (while choices
                 (push (pop choices) buffer-name-history)))))
 
+(defun hack-read-buffer (prompt)
+    (completing-read
+        prompt
+        (complete-buffer)
+        nil nil nil 'buffer-name-history))
+(advice-add 'read-buffer :override 'hack-read-buffer)
 (defun hack-read-buffer-to-switch (prompt)
     (completing-read
         prompt
