@@ -2516,16 +2516,20 @@
 (use-package dired
     :config
     (defvar dired-abbreviate-headers t)
-    (defun fixed-dired-readin (&rest arguments)
+    (defun dired-abbreviate-headers (&rest arguments)
         (when dired-abbreviate-headers
             (save-excursion
                 (goto-char 1)
-                (let ((inhibit-read-only t)
-                      (case-fold-search nil)
+                (let ((case-fold-search nil)
                       (home (expand-file-name "~")))
                     (while (search-forward home nil t)
-                        (replace-match "~" t t))))))
-    (advice-add 'dired-readin :after 'fixed-dired-readin)
+                        (let ((overlay (make-overlay
+                                           (match-beginning 0)
+                                           (match-end 0))))
+                            (overlay-put overlay 'evaporate t)
+                            (overlay-put overlay 'display "~")))))))
+    (advice-add 'dired-readin :after 'dired-abbreviate-headers)
+    (advice-add 'dired-rename-subdir-1 :after 'dired-abbreviate-headers)
     (defun hack-dired-readin (dired-readin &rest arguments)
         (combine-change-calls 1 (1+ (buffer-size))
             (let ((cell (cons nil nil))
