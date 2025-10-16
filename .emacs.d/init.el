@@ -3042,10 +3042,17 @@
             (save-excursion
                 (goto-char (minibuffer-prompt-end))
                 (while (search-forward crm-separator nil t)
-                    (add-text-properties
-                        (match-beginning 0)
-                        (match-end 0)
-                        crm-separator-properties)))))
+                    (if (plistp crm-separator-properties)
+                        (add-text-properties
+                            (match-beginning 0)
+                            (match-end 0)
+                            crm-separator-properties)
+                        (dolist (span crm-separator-properties)
+                            (seq-let (beginning end properties) span
+                                (add-text-properties
+                                    (+ (match-beginning 0) beginning)
+                                    (+ (match-beginning 0) end)
+                                    properties))))))))
     (defun fixed-completing-read-multiple
             (completing-read-multiple &rest arguments)
         (minibuffer-with-setup-hook
