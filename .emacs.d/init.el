@@ -7688,9 +7688,12 @@
             (denoted-rename-file path datetime title suffix tags)))
     (defun denoted-tag-sort (tags)
         (sort (copy-sequence tags) #'string-lessp))
-    (defun denoted-tag-prompt (tags)
+    (defun denoted-tag-prompt (tags &optional initial)
         (let ((vertico-sort-function 'vertico-sort-history-alpha))
-            (denoted-tag-slug (denote--keywords-crm tags "File tags"))))
+            (when initial
+                (setq initial (string-join initial crm-separator))
+                (setq initial (concat initial crm-separator)))
+            (denoted-tag-slug (denote--keywords-crm tags "File tags" initial))))
     (defun denoted-tags-in-directory (&optional directory)
         (setq-if-nil directory default-directory)
         (delete-dups
