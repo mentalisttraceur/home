@@ -4431,7 +4431,7 @@
     :config
     (setq crm-separator "\x36E1CA\n")
     (setq crm-separator-properties
-          '(display ",\n" face escape-glyph))
+          '((0 1 (display "," face escape-glyph))))
     (defun vrm-current-element ()
         (let* ((bounds (crm--current-element))
                (start  (car bounds))
