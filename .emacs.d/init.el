@@ -7804,7 +7804,7 @@
                     (set-buffer-modified-p t)
                     (when (confirm-p (format "Kill %s?" (buffer-name)))
                         (with-buffer-modified-p nil
-                            (smoother-kill-buffer))))))
+                            (smoother-kill-buffer (current-buffer)))))))
         nil)
     (defun smoother-delete-file ()
         (interactive)
