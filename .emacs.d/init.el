@@ -3051,6 +3051,10 @@
         (minibuffer-with-setup-hook
             (lambda-let ((require-match (nth 3 arguments))) ()
                 (setq-local minibuffer--require-match require-match)
+                (crm-separator-properties--add
+                    (minibuffer-prompt-end)
+                    (point-max)
+                    0)
                 (add-hook 'after-change-functions
                     'crm-separator-properties--add
                     nil t))
