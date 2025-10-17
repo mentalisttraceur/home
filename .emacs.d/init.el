@@ -2547,6 +2547,14 @@
 
 (use-package dired
     :config
+    (defun fixed-dired-rename-subdir-1 (dired-rename-subdir-1 &rest arguments)
+        (setq default-directory (expand-file-name default-directory))
+        (prog1
+            (apply dired-rename-subdir-1 arguments)
+            (let ((fixed (concat dired-directory "/")))
+                (when (equal fixed default-directory)
+                    (setq dired-directory fixed)))))
+    (advice-add 'dired-rename-subdir-1 :around 'fixed-dired-rename-subdir-1)
     (defvar dired-abbreviate-headers t)
     (defun dired-abbreviate-headers (&rest arguments)
         (when dired-abbreviate-headers
