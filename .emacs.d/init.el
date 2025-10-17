@@ -2108,6 +2108,19 @@
                 (if (listp face)
                     (substring (format "%s" face) 1 -1)
                     face))))
+    (advice-add 'describe-key
+        :around (independent-help "key"
+            (lambda (key-list &rest _)
+                (let ((descriptions ())
+                      (bindings ()))
+                    (dolist (key (reverse key-list))
+                        (setq key (car key))
+                        (push (key-description key) descriptions)
+                        (let ((binding (key-binding key t nil (point))))
+                            (when (symbolp binding)
+                                (push binding bindings))))
+                    (nconc descriptions bindings)
+                    (substring (format "%S" descriptions) 1 -1)))))
     (advice-add 'describe-package
         :around (independent-help "package"
             (lambda (package)
