@@ -2551,6 +2551,10 @@
         (setq default-directory (expand-file-name default-directory))
         (prog1
             (apply dired-rename-subdir-1 arguments)
+            (let ((name (file-name-nondirectory dired-directory)))
+                (unless (equal (buffer-name) name)
+                    (uniquify-rationalize-file-buffer-names
+                        name default-directory (current-buffer))))
             (let ((fixed (concat dired-directory "/")))
                 (when (equal fixed default-directory)
                     (setq dired-directory fixed)))))
