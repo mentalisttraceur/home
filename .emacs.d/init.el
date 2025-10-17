@@ -2074,6 +2074,25 @@
     (advice-add 'help-function-def--button-function
         :after 'fixed-help-view-source)
     (define-key help-mode-map "\C-m" 'help-view-source)
+    (defun hack-describe-function-1 (describe-function-1 &rest arguments)
+        (alter-text-property 1 (buffer-end 1)
+            'help-mode--current-data
+            (lambda (data)
+                (or data t)))
+        (let ((start (pos-bol)))
+            (prog1
+                (apply describe-function-1 arguments)
+                (put-text-property
+                    start
+                    (point)
+                    'help-mode--current-data
+                    help-mode--current-data))))
+    (advice-add 'describe-function-1 :around 'hack-describe-function-1)
+    (defun hack-help-view-source (help-view-source &rest arguments)
+        (let* ((override (get-text-property (point) 'help-mode--current-data))
+               (help-mode--current-data (or override help-mode--current-data)))
+            (apply help-view-source arguments)))
+    (advice-add 'help-view-source :around 'hack-help-view-source)
     (defun fixed-package--print-email-button
             (package--print-email-button recipient)
         (if (consp (car-safe recipient))
