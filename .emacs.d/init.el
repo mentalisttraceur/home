@@ -1870,7 +1870,8 @@
            (fixed-end-of-paragraph-text include-whole-line))))
 
 
-(defvar minimum-fill-column 40)
+(defvar minimum-fill-column 32)
+(defvar soft-minimum-fill-column 40)
 
 (defvar smoother-fill-paragraph-overhang-characters
     '(?. ?, ?? ?! ?\" ?' ?` ?\)))
@@ -1947,6 +1948,8 @@
                 (when (or lines
                           (> longest-without-overhang previous))
                     (max= jaggedness (- longest-without-overhang shortest) 0))))
+        (let ((penalty (- soft-minimum-fill-column fill-column)))
+            (+= jaggedness (max penalty 0)))
         (list longest height jaggedness)))
 
 (defun smoother-fill-paragraph--overhang (string)
