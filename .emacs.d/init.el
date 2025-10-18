@@ -119,6 +119,7 @@
         (if pixel-scroll-align-edge-skip-once
             (setq pixel-scroll-align-edge-skip-once nil)
             (when pixel-scroll-align-edge
+                (redisplay)
                 (seq-let (_ _ top bottom) (pos-visible-in-window-p nil nil t)
                     (if (and top (> top 0))
                         (unless (eq this-command 'touch-screen-scroll)
