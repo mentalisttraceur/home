@@ -7621,7 +7621,7 @@
     (defun denoted--slug (string)
         (string-trim
             (replace-regexp-in-string denoted--exclude-regex ""
-                (replace-regexp-in-string "[ _]+" "-"
+                (replace-regexp-in-string "[ _/]+" "-"
                     (downcase string)))
             "-+" "-+"))
     (defun denoted-title-slug (title)
