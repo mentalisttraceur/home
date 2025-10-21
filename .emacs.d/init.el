@@ -5481,9 +5481,12 @@
                 (completing-read-multiple
                     prompt
                     (read-unicode--candidates)))))
-    (defun insert-unicode ()
-        (interactive)
-        (insert (concat (read-unicode "Insert characters: "))))
+    (defun insert-unicode (&optional ignore-history)
+        (interactive "P")
+        (let ((vertico-sort-function (if ignore-history
+                                         'vertico-sort-alpha
+                                         'vertico-sort-history-alpha)))
+            (insert (concat (read-unicode "Insert characters: ")))))
     (define-key space-map "i" 'insert-unicode)
     (define-key space-map "I" (toggle inhibit-read-only))
     (define-key space-map "#" 'display-line-numbers-mode)
