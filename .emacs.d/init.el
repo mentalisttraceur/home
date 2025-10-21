@@ -2534,6 +2534,10 @@
 
 (defun smoother-eval-last-sexp (prefix-argument)
     (interactive "P")
+    (setq temporary-goal-column
+          (if (equal (char-after) ?\n)
+              most-positive-fixnum
+              (current-column)))
     (condition-case error
         (scan-sexps (1+ (point)) -1)
         (:success
