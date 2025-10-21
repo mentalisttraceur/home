@@ -5463,9 +5463,9 @@
     (defun read-unicode--format (name)
         (setq name (upcase name))
         (let ((character (char-from-name name)))
-            (format "%c U+%X %s" character character name)))
+            (format "U+%05X %c %s" character character name)))
     (defun read-unicode--parse (string)
-        (aref string 0))
+        (aref string 8))
     (defvar read-unicode--candidates nil)
     (defun read-unicode--candidates ()
         (setq-if-nil read-unicode--candidates
