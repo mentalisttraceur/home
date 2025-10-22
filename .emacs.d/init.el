@@ -7908,7 +7908,7 @@
         (denoted-try 'denoted-name-edit))
     (define-key evil-motion-state-map "gC" 'name-change)
     (defun smoother-delete-file--1 (filename)
-        (when (confirm-p (format "Delete %s?" (abbreviate-file-name filename)))
+        (when (y-or-n-p (format "Delete %s?" (abbreviate-file-name filename)))
             (dired-delete-file filename)
             (when-let* ((buffer (find-buffer-visiting filename)))
                 (with-current-buffer buffer
