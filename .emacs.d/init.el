@@ -6468,10 +6468,11 @@
         "\C-r" (toggle image-auto-save-rotation))
     (evil-define-key* 'motion image-mode-map "u" 'evil-undo)
     (evil-define-key* 'motion image-mode-map "U" 'evil-redo)
-    (evil-define-operator evil-image-delete (_start _end _type)
+    (evil-define-operator evil-image-delete
+            (_start _end type register yank-handler)
         :move-point nil
         :type line
-        (interactive "<R>")
+        (interactive "<R><x><y>")
         (let ((path (android-trash buffer-file-name)))
             (condition-case nil
                 (image-next-file 1)
@@ -6483,7 +6484,8 @@
             (dired-fun-in-all-buffers
                 (file-name-directory path)
                 (file-name-nondirectory path)
-                'dired-remove-entry path)))
+                'dired-remove-entry path)
+            (evil-yank-string path register yank-handler)))
     (evil-define-key* 'motion image-mode-map "d" 'evil-image-delete))
 
 (use-packages evil undo-tree
