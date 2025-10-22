@@ -6473,7 +6473,13 @@
         :move-point nil
         :type line
         (interactive "<R><x><y>")
-        (let ((path (android-trash buffer-file-name)))
+        (let ((path buffer-file-name))
+            (if (android-trash-p path)
+                (progn
+                    (dired-delete-file path)
+                    (evil-yank-string "" register yank-handler))
+                (setq path (android-trash path))
+                (evil-yank-string path register yank-handler))
             (condition-case nil
                 (image-next-file 1)
                 (user-error
@@ -6484,8 +6490,7 @@
             (dired-fun-in-all-buffers
                 (file-name-directory path)
                 (file-name-nondirectory path)
-                'dired-remove-entry path)
-            (evil-yank-string path register yank-handler)))
+                'dired-remove-entry path)))
     (evil-define-key* 'motion image-mode-map "d" 'evil-image-delete))
 
 (use-packages evil undo-tree
