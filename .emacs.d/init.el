@@ -2015,6 +2015,12 @@
         (ignore-error 'iter-end-of-sequence
             (iter-next iterator yield-result))))
 
+(defvar save-buffer-requested-hook nil)
+(defun save-buffer-requested-hook (&rest _)
+    (run-hooks 'save-buffer-requested-hook))
+(advice-add 'basic-save-buffer :before 'save-buffer-requested-hook)
+(provide 'save-buffer-requested-hook)
+
 (defvar-local parent-buffer--list nil)
 (defun parent-buffer (&optional buffer)
     (save-current-buffer
