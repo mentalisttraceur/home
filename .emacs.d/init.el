@@ -7913,7 +7913,7 @@
             (when-let* ((buffer (find-buffer-visiting filename)))
                 (with-current-buffer buffer
                     (set-buffer-modified-p t)
-                    (when (confirm-p (format "Kill %s?" (buffer-name)))
+                    (when (y-or-n-p (format "Kill %s?" (buffer-name)))
                         (with-buffer-modified-p nil
                             (smoother-kill-buffer (current-buffer)))))))
         nil)
