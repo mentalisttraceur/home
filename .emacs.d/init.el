@@ -2959,11 +2959,24 @@
             (if angle
                 (setq angle (truncate angle))
                 (setq angle 0))
-            (exif-write-orientation path angle)))
-    (defun image-rotate-autosave (&rest _)
+            (exif-write-orientation path angle))))
+
+(use-packages exif image-mode save-buffer-requested-hook
+    :config
+    (defvar image-auto-save-rotation nil)
+    (defun fixed-image-rotate (&optional degrees)
         (when (derived-mode-p 'image-mode)
-            (image-write-rotation-to-exif)))
-    (advice-add 'image-rotate :after 'image-rotate-autosave))
+            (setq-if-nil degrees 90)
+            (undo-boundary)
+            (push
+                `(apply 'image-rotate ,(- degrees))
+                buffer-undo-list)
+            (add-hook 'save-buffer-requested-hook
+                'image-write-rotation-to-exif
+                nil t)
+            (when image-auto-save-rotation
+                (image-write-rotation-to-exif))))
+    (advice-add 'image-rotate :after 'fixed-image-rotate))
 
 (use-package image-mode
     :config
