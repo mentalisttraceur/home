@@ -6466,7 +6466,40 @@
     (evil-define-key* 'motion image-mode-map "H" 'image-previous-file)
     (evil-define-key* 'motion image-mode-map "J" 'image-bottom-edge)
     (evil-define-key* 'motion image-mode-map "K" 'image-top-edge)
-    (evil-define-key* 'motion image-mode-map "L" 'image-next-file))
+    (evil-define-key* 'motion image-mode-map "L" 'image-next-file)
+    (evil-define-key* 'motion image-mode-map "+" 'image-increase-size)
+    (evil-define-key* 'motion image-mode-map "-" 'image-decrease-size)
+    (defun image-rotate-90-degrees-clockwise (count)
+        (interactive "p")
+        (image-rotate (* count 90)))
+    (defun image-rotate-90-degrees-counterclockwise (count)
+        (interactive "p")
+        (image-rotate (* count -90)))
+    (evil-define-key* 'motion image-mode-map
+        "r" 'image-rotate-90-degrees-clockwise)
+    (evil-define-key* 'motion image-mode-map
+        "R" 'image-rotate-90-degrees-counterclockwise)
+    (evil-define-key* 'motion image-mode-map
+        "\C-r" (toggle image-auto-save-rotation))
+    (evil-define-key* 'motion image-mode-map "u" 'evil-undo)
+    (evil-define-key* 'motion image-mode-map "U" 'evil-redo)
+    (evil-define-operator evil-image-delete (_start _end _type)
+        :move-point nil
+        :type line
+        (interactive "<R>")
+        (let ((path (android-trash buffer-file-name)))
+            (condition-case nil
+                (image-next-file 1)
+                (user-error
+                    (condition-case nil
+                        (image-previous-file 1)
+                        (user-error
+                             (kill-buffer)))))
+            (dired-fun-in-all-buffers
+                (file-name-directory path)
+                (file-name-nondirectory path)
+                'dired-remove-entry path)))
+    (evil-define-key* 'motion image-mode-map "d" 'evil-image-delete))
 
 (use-packages evil undo-tree
     :config
