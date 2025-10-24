@@ -8304,11 +8304,12 @@
                     (setq music--refresh-next-line nil))
                 (when music--refresh-next-index
                     (goto-char 1)
-                    (when-let* ((match (text-property-search-forward
-                                           'mpv-index
-                                           music--refresh-next-index
-                                           'equal)))
-                        (goto-char (prop-match-beginning match)))
+                    (if-let* ((match (text-property-search-forward
+                                         'mpv-index
+                                         music--refresh-next-index
+                                         'equal)))
+                        (goto-char (prop-match-beginning match))
+                        (goto-char (point-max)))
                     (setq music--refresh-next-index nil))
                 (when music--refresh-next-column
                     (move-to-column music--refresh-next-column)
@@ -8321,7 +8322,7 @@
 (defun music--index-move-after-refresh (count)
     (let ((current (if (= (point) (buffer-end 1))
                        (if (= (point) 1)
-                           1
+                           -1
                            (get-text-property (1- (point)) 'mpv-index))
                        (get-text-property (point) 'mpv-index))))
         (setq music--refresh-next-index (+ current count)))
