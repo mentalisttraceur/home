@@ -8467,7 +8467,9 @@
     (let* ((text    (evil-paste-to-string 1 register))
            (indexes (text-property-values nil nil 'mpv-index text)))
         (dolist (index (nreverse indexes))
-            (music-playlist-remove index))))
+            (music-playlist-remove index))
+        (when (>= end (point-max))
+            (evil-previous-line))))
 (music-define-key 'normal "d" 'music-delete)
 (evil-define-operator music-delete-line (register yank-handler)
     :move-point nil
