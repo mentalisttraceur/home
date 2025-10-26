@@ -8679,7 +8679,12 @@
         (if prefix-argument
             (music-loop-all)
             (music-loop))))
-(define-key space-map "p" 'music-pause-toggle)
+(define-key space-map "p"
+    (lambda (prefix-argument)
+        (interactive "P")
+        (if prefix-argument
+            (music-pause)
+            (music-pause-toggle))))
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
 (defconst tumblr--script (expand-file-name "~/.tumblr/tumblr.py"))
