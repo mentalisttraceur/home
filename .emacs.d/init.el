@@ -819,10 +819,10 @@
             (set-visited-file-modtime))))
 
 
-(defvar temporary-goal-column-preserving-commands
+(defvar preserve-temporary-goal-column-commands
     '(next-line previous-line))
 (defun hack-line-move-1 (line-move-1 &rest arguments)
-    (if (memq last-command temporary-goal-column-preserving-commands)
+    (if (memq last-command preserve-temporary-goal-column-commands)
         (let ((last-command 'next-line))
             (apply line-move-1 arguments))
         (apply line-move-1 arguments)))
@@ -2541,7 +2541,7 @@
                     (forward-sexp)
                     (backward-char)
                     (eval-last-sexp prefix-argument))))))
-(add-to-list 'temporary-goal-column-preserving-commands
+(add-to-list 'preserve-temporary-goal-column-commands
     'smoother-eval-last-sexp)
 
 (use-package dired
@@ -5192,7 +5192,7 @@
         (lambda (evil-quit &rest arguments)
             (with-advice (('delete-window :override 'kill-current-buffer))
                 (apply evil-quit arguments))))
-    (add-to-list 'temporary-goal-column-preserving-commands 'evil-repeat)
+    (add-to-list 'preserve-temporary-goal-column-commands 'evil-repeat)
     (defun fixed-evil-repeat (evil-repeat &rest arguments)
         (evil-save-state
             (apply evil-repeat arguments)))
