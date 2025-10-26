@@ -8337,6 +8337,10 @@
        :weight bold
        :foreground "#FF4040"))
     "")
+(defface music-loop
+    '((t
+       :foreground "#FFFF00"))
+    "")
 (defun music--insert-playlist (socket)
     (let ((count   (mpv-ipc-expand-integer socket "${playlist-count}"))
           (current (mpv-ipc-expand-integer socket "${playlist-pos}")))
@@ -8382,7 +8386,7 @@
             ((> (length loop) 1)
                 (setq loop "+")))
         (format "  %s %s"
-            loop
+            (propertize loop 'face 'music-loop)
             (mpv-ipc-expand socket "${time-pos} / ${duration}\n"))))
 (defun music--get-seconds (socket format)
      (let* ((raw (mpv-ipc-expand socket format))
