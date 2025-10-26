@@ -8631,7 +8631,7 @@
                      (if current-prefix-arg
                          (1- (prefix-numeric-value current-prefix-arg))
                          (get-text-property (point) 'mpv-index))))
-    (let ((current (mpv-ipc-expand-integer music--socket "${playlist-pos}")))
+    (let ((current (music-playlist-position)))
         (if (equal target current)
             (music-pause-toggle)
             (mpv-ipc music--socket (list "playlist-play-index" target))
