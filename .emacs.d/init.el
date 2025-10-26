@@ -8307,11 +8307,18 @@
             (unless (or (evil-visual-state-p)
                         (evil-operator-state-p))
                 (save-point-line-and-column-with-scroll
-                    (let ((inhibit-read-only t)
-                          (buffer-undo-list t))
-                        (erase-buffer)
-                        (let ((inhibit-quit nil))
-                            (music--insert-playlist socket))))
+                    (let ((inhibit-quit nil))
+                        (if (equal (mpv-ipc-expand socket "${pause}") "yes")
+                            (face-remap-reset-base
+                                'music-current-entry)
+                            (face-remap-set-base
+                                'music-current-entry
+                                'music-current-playing-entry))
+                        (let ((inhibit-read-only t)
+                              (buffer-undo-list t))
+                            (if music--need-full-refresh
+                                (music--full-refresh socket)
+                                (music--fast-refresh socket)))))
                 (when-let* ((position (next-single-property-change
                                           1 'mpv--position)))
                     (progn
@@ -8333,6 +8340,21 @@
                     (move-to-column music--refresh-next-column)
                     (setq music--refresh-next-column nil)
                     (setq temporary-goal-column (current-column)))))))
+(defun music--full-refresh (socket)
+    (erase-buffer)
+    (music--insert-playlist socket)
+    (setq music--need-full-refresh nil))
+(defun music--fast-refresh (socket)
+    (goto-char 1)
+    (when (text-property-search-forward 'field 'seek-bar 'equal)
+        (delete-field))
+    (move-overlay music--current-entry-overlay 1 1)
+    (overlay-put music--current-entry-overlay 'after-string nil)
+    (let ((current (mpv-ipc-expand-integer socket "${playlist-pos}")))
+        (when (>= current 0)
+            (goto-char 1)
+            (text-property-search-forward 'mpv-index current 'equal)
+            (music--insert-playing-info socket))))
 (defun music--line-move-after-refresh (count)
     (let ((current (line-number-at-pos (point))))
         (setq music--refresh-next-line (+ current count)))
@@ -8348,27 +8370,22 @@
 (defun music--insert-playlist (socket)
     (let ((count   (mpv-ipc-expand-integer socket "${playlist-count}"))
           (current (mpv-ipc-expand-integer socket "${playlist-pos}")))
-        (if (equal (mpv-ipc-expand socket "${pause}") "yes")
-            (face-remap-reset-base
-                'music-current-entry)
-            (face-remap-set-base
-                'music-current-entry
-                'music-current-playing-entry))
         (dotimes (index count)
             (when (= index current)
                 (evil-set-marker ?^))
             (let ((file-line (music--file-line socket index)))
                 (insert file-line)
                 (when (= index current)
-                    (let* ((start (pos-bol 0))
-                           (end   (pos-bol 1))
-                           (playing-line (music--playing-line socket))
-                           (seek-lines   (music--seek-lines socket)))
-                        (move-overlay music--current-entry-overlay start end)
-                        (overlay-put music--current-entry-overlay
-                            'after-string playing-line)
-                        (when seek-lines
-                            (insert seek-lines))))))))
+                    (music--insert-playing-info socket))))))
+(defun music--insert-playing-info (socket)
+    (let* ((playing-line (music--playing-line socket))
+           (seek-lines   (music--seek-lines socket)))
+        (move-overlay music--current-entry-overlay
+            (pos-bol 0) (pos-bol 1))
+        (overlay-put music--current-entry-overlay
+            'after-string playing-line)
+        (when seek-lines
+            (insert seek-lines))))
 (defun music--file-line (socket index)
     (let* ((format (format "${playlist/%d/filename}" index))
            (path (mpv-ipc-expand socket format))
@@ -8431,6 +8448,7 @@
 (defun music-playlist-count ()
     (mpv-ipc-expand-integer music--socket "${playlist-count}"))
 (defun music-playlist-add (path target &optional play)
+    (setq music--need-full-refresh t)
     (setq path (expand-file-name path))
     (let ((action)
           (command))
@@ -8448,6 +8466,7 @@
             (setq command (list "loadfile" path action target)))
         (mpv-ipc music--socket command)))
 (defun music-playlist-remove (target)
+    (setq music--need-full-refresh t)
     (cond
         ((eq target 'all)
             (mpv-ipc music--socket (list "playlist-clear"))
