@@ -8242,6 +8242,21 @@
 (defmacro music-define-key (state key def &rest bindings)
     `(evil-define-key* ,state music-mode-map ,key ,def ,@bindings))
 (defvar music--socket nil)
+(defface music-current-entry
+    '((t
+       :foreground "#80FFFF"))
+    "")
+(defface music-current-playing-entry
+    '((t
+       :inherit music-current-entry
+       :weight bold
+       :foreground "#FF4040"))
+    "")
+(defface music-loop
+    '((t
+       :foreground "#FFFF00"))
+    "")
+(defvar-local music--current-entry-overlay nil)
 (defun music ()
     (interactive)
     (if-let* ((buffer  (get-buffer "*Music*"))
@@ -8278,8 +8293,11 @@
                         (cancel-timer timer)
                         (delete-file socket-path))
                     nil t)))
+        (setq music--current-entry-overlay (make-overlay 1 1))
+        (overlay-put music--current-entry-overlay 'face 'music-current-entry)
         (add-hook 'post-command-hook 'music--post-command-seek nil t)
         (pop-to-buffer buffer)))
+(defvar music--need-full-refresh nil)
 (defvar music--refresh-next-line nil)
 (defvar music--refresh-next-index nil)
 (defvar music--refresh-next-column nil)
@@ -8327,20 +8345,6 @@
                        (get-text-property (point) 'mpv-index))))
         (setq music--refresh-next-index (+ current count)))
     (setq music--refresh-next-column (current-column)))
-(defface music-current-entry
-    '((t
-       :foreground "#80FFFF"))
-    "")
-(defface music-current-playing-entry
-    '((t
-       :inherit music-current-entry
-       :weight bold
-       :foreground "#FF4040"))
-    "")
-(defface music-loop
-    '((t
-       :foreground "#FFFF00"))
-    "")
 (defun music--insert-playlist (socket)
     (let ((count   (mpv-ipc-expand-integer socket "${playlist-count}"))
           (current (mpv-ipc-expand-integer socket "${playlist-pos}")))
@@ -8353,27 +8357,24 @@
         (dotimes (index count)
             (when (= index current)
                 (evil-set-marker ?^))
-            (insert (music--playlist-entry socket index current)))))
-(defun music--propertize (index path text)
-    (propertize text 'mpv-index index 'full-path path))
-(defun music--playlist-entry (socket index current)
+            (let ((file-line (music--file-line socket index)))
+                (insert file-line)
+                (when (= index current)
+                    (let* ((start (pos-bol 0))
+                           (end   (pos-bol 1))
+                           (playing-line (music--playing-line socket))
+                           (seek-lines   (music--seek-lines socket)))
+                        (move-overlay music--current-entry-overlay start end)
+                        (overlay-put music--current-entry-overlay
+                            'after-string playing-line)
+                        (when seek-lines
+                            (insert seek-lines))))))))
+(defun music--file-line (socket index)
     (let* ((format (format "${playlist/%d/filename}" index))
            (path (mpv-ipc-expand socket format))
            (file (file-name-nondirectory path))
            (file-line (format "%d. %s\n" (1+ index) file)))
-        (music--propertize index path
-            (if (= index current)
-                (music--playlist-current-entry socket file-line)
-                file-line))))
-(defun music--playlist-current-entry (socket file-line)
-    (let ((playing-line (music--playing-line socket))
-          (seek-lines   (music--seek-lines socket)))
-        (setq file-line (propertize file-line 'face 'music-current-entry))
-        (when (evil-motion-state-p)
-            (unless (next-single-property-change
-                        0 'mpv--position seek-lines)
-                (put-text-property 0 1 'mpv--position t file-line)))
-        (concat file-line playing-line seek-lines)))
+        (propertize file-line 'mpv-index index 'full-path path)))
 (defun music--playing-line (socket)
     (let ((loop (mpv-ipc-expand socket "${loop}")))
         (cond
