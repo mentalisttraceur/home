@@ -8327,13 +8327,13 @@
                        (get-text-property (point) 'mpv-index))))
         (setq music--refresh-next-index (+ current count)))
     (setq music--refresh-next-column (current-column)))
-(defface music-current-entry-face
+(defface music-current-entry
     '((t
        :foreground "#80FFFF"))
     "")
-(defface music-current-playing-entry-face
+(defface music-current-playing-entry
     '((t
-       :inherit music-current-entry-face
+       :inherit music-current-entry
        :weight bold
        :foreground "#FF4040"))
     "")
@@ -8342,10 +8342,10 @@
           (current (mpv-ipc-expand-integer socket "${playlist-pos}")))
         (if (equal (mpv-ipc-expand socket "${pause}") "yes")
             (face-remap-reset-base
-                'music-current-entry-face)
+                'music-current-entry)
             (face-remap-set-base
-                'music-current-entry-face
-                'music-current-playing-entry-face))
+                'music-current-entry
+                'music-current-playing-entry))
         (dotimes (index count)
             (when (= index current)
                 (evil-set-marker ?^))
@@ -8364,7 +8364,7 @@
 (defun music--playlist-current-entry (socket file-line)
     (let ((playing-line (music--playing-line socket))
           (seek-lines   (music--seek-lines socket)))
-        (setq file-line (propertize file-line 'face 'music-current-entry-face))
+        (setq file-line (propertize file-line 'face 'music-current-entry))
         (when (evil-motion-state-p)
             (unless (next-single-property-change
                         0 'mpv--position seek-lines)
