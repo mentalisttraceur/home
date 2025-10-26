@@ -8374,8 +8374,6 @@
                         0 'mpv--position seek-lines)
                 (put-text-property 0 1 'mpv--position t file-line)))
         (concat file-line playing-line seek-lines)))
-(defconst music--seek-bar
-    "%04dm---- 10sss---- 20sss---- 30sss---- 40sss---- 50sss----")
 (defun music--playing-line (socket)
     (let ((loop (mpv-ipc-expand socket "${loop}")))
         (cond
@@ -8388,6 +8386,8 @@
         (format "  %s %s"
             (propertize loop 'face 'music-loop)
             (mpv-ipc-expand socket "${time-pos} / ${duration}\n"))))
+(defconst music--seek-bar
+    "%04dm---- 10sss---- 20sss---- 30sss---- 40sss---- 50sss----")
 (defun music--get-seconds (socket format)
      (let* ((raw (mpv-ipc-expand socket format))
             (parts (split-string raw "\\.")))
