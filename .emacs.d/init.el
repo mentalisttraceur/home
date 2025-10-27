@@ -8372,8 +8372,8 @@
                 (when (= index current)
                     (music--insert-playing-info socket))))))
 (defun music--insert-playing-info (socket)
-    (let* ((playing-line (music--playing-line socket))
-           (seek-lines   (music--seek-lines socket)))
+    (let ((playing-line (music--playing-line socket))
+          (seek-lines   (music--seek-lines socket)))
         (move-overlay music--current-entry-overlay
             (pos-bol 0) (pos-bol 1))
         (overlay-put music--current-entry-overlay
