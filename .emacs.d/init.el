@@ -8499,7 +8499,10 @@
         (dolist (index (nreverse indexes))
             (music-playlist-remove index))
         (when (>= end (point-max))
-            (evil-previous-line))))
+            (evil-save-column
+                (condition-case nil
+                    (goto-char (1- start))
+                    (beginning-of-buffer))))))
 (music-define-key 'normal "d" 'music-delete)
 (evil-define-operator music-delete-line (register yank-handler)
     :move-point nil
