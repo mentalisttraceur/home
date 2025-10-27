@@ -8254,6 +8254,10 @@
     '((t
        :foreground "#FFFF00"))
     "")
+(defface music-time
+    '((t
+       :foreground "#8080FF"))
+    "")
 (defvar-local music--current-entry-overlay nil)
 (defun music ()
     (interactive)
@@ -8397,7 +8401,8 @@
            (file-line (format "%d. %s\n" (1+ index) file)))
         (propertize file-line 'mpv-index index 'full-path path)))
 (defun music--playing-line (socket)
-    (let ((loop (mpv-ipc-expand socket "${loop}")))
+    (let ((loop (mpv-ipc-expand socket "${loop}"))
+          (time (mpv-ipc-expand socket "${time-pos} / ${duration}")))
         (cond
             ((equal loop "no")
                 (setq loop " "))
@@ -8405,9 +8410,9 @@
                 (setq loop "∞"))
             ((> (length loop) 1)
                 (setq loop "+")))
-        (format "  %s %s"
+        (format "  %s %s\n"
             (propertize loop 'face 'music-loop)
-            (mpv-ipc-expand socket "${time-pos} / ${duration}\n"))))
+            (propertize time 'face 'music-time))))
 (defconst music--seek-bar
     "%04dm---- 10sss---- 20sss---- 30sss---- 40sss---- 50sss----")
 (defun music--get-seconds (socket format)
