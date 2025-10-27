@@ -8292,7 +8292,6 @@
                         (delete-file socket-path))
                     nil t)))
         (setq music--current-entry-overlay (make-overlay 1 1))
-        (overlay-put music--current-entry-overlay 'face 'music-current-entry)
         (add-hook 'post-command-hook 'music--post-command-seek nil t)
         (pop-to-buffer buffer)))
 (defvar music--need-full-refresh nil)
@@ -8374,6 +8373,8 @@
 (defun music--insert-playing-info (socket)
     (let ((playing-line (music--playing-line socket))
           (seek-lines   (music--seek-lines socket)))
+        (put-text-property (pos-bol 0) (pos-eol 0)
+            'face 'music-current-entry)
         (move-overlay music--current-entry-overlay
             (pos-bol 0) (pos-bol 1))
         (overlay-put music--current-entry-overlay
@@ -8381,7 +8382,10 @@
         (when seek-lines
             (insert seek-lines))))
 (defun music--delete-playing-info ()
-    (goto-char 1)
+    (let ((start (overlay-start music--current-entry-overlay))
+          (end   (overlay-end   music--current-entry-overlay)))
+        (remove-list-of-text-properties start end '(face))
+        (goto-char end))
     (when (text-property-search-forward 'field 'seek-bar 'equal)
         (delete-field))
     (move-overlay music--current-entry-overlay 1 1)
