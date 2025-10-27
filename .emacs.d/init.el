@@ -8505,13 +8505,9 @@
     :move-point nil
     :motion nil
     (interactive "<x><y>")
-    (let ((start (line-beginning-position))
-          (end   (line-end-position))
-          (evil-was-yanked-without-register nil))
-        (evil-yank start end 'line register yank-handler))
-    (let* ((text (evil-paste-to-string 1 register))
-           (index (car (text-property-values nil nil 'mpv-index text))))
-        (music-playlist-remove index)))
+    (let ((start (pos-bol 1))
+          (end   (pos-bol 2)))
+        (music-delete start end 'line register yank-handler)))
 (music-define-key 'normal "D" 'music-delete-line)
 (defun music--index-for-point (offset)
     (if-let* ((index (get-text-property (point) 'mpv-index)))
