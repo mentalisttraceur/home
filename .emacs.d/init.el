@@ -8494,12 +8494,12 @@
     (let* ((text    (evil-paste-to-string 1 register))
            (indexes (text-property-values nil nil 'mpv-index text)))
         (dolist (index (nreverse indexes))
-            (music-playlist-remove index))
-        (when (>= end (point-max))
-            (evil-save-column
-                (condition-case nil
-                    (goto-char (1- start))
-                    (beginning-of-buffer))))))
+            (music-playlist-remove index)))
+    (when (>= end (point-max))
+        (evil-save-column
+            (condition-case nil
+                (goto-char (1- start))
+                (beginning-of-buffer)))))
 (music-define-key 'normal "d" 'music-delete)
 (evil-define-operator music-delete-line (register yank-handler)
     :move-point nil
