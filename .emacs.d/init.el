@@ -8303,8 +8303,8 @@
         (overlay-put music--current-entry-overlay 'face 'music-current-entry)
         (add-hook 'post-command-hook 'music--post-command-seek nil t)
         (pop-to-buffer buffer)))
-(defvar music--refresh-next-index nil)
-(defvar music--refresh-next-column nil)
+(defvar-local music--refresh-next-index nil)
+(defvar-local music--refresh-next-column nil)
 (defun music--refresh (socket buffer)
     (when (get-buffer-window buffer 'visible)
         (with-current-buffer buffer
