@@ -8407,9 +8407,9 @@
 (defconst music--seek-bar
     "%04dm---- 10sss---- 20sss---- 30sss---- 40sss---- 50sss----")
 (defun music--get-seconds (socket format)
-     (let* ((raw (mpv-ipc-expand socket format))
-            (parts (split-string raw "\\.")))
-         (string-to-number (car parts))))
+    (let* ((raw (mpv-ipc-expand socket format))
+           (parts (split-string raw "\\.")))
+        (string-to-number (car parts))))
 (defun music--seek-lines (socket)
     (when (evil-motion-state-p)
         (let* ((duration (music--get-seconds socket "${=duration}"))
