@@ -8303,6 +8303,7 @@
         (overlay-put music--current-entry-overlay 'face 'music-current-entry)
         (add-hook 'post-command-hook 'music--post-command-seek nil t)
         (pop-to-buffer buffer)))
+(defvar-local music--position-in-seek-bar nil)
 (defvar-local music--refresh-next-index nil)
 (defvar-local music--refresh-next-column nil)
 (defun music--refresh (socket buffer)
@@ -8327,6 +8328,7 @@
                                           1 'mpv--position)))
                     (progn
                         (goto-char position)
+                        (setq music--position-in-seek-bar position)
                         (setq temporary-goal-column (current-column))))
                 (when music--refresh-next-index
                     (goto-char 1)
@@ -8434,9 +8436,9 @@
     (when (and (evil-motion-state-p)
                (not (get-text-property (point) 'mpv--position))
                (eq (get-text-property (point) 'field) 'seek-bar))
-        (let ((seconds-from-start (- (point) (field-beginning)))
+        (let ((jump (- (point) music--position-in-seek-bar))
               (inhibit-quit nil))
-            (mpv-ipc music--socket `("seek" ,seconds-from-start "absolute")))))
+            (mpv-ipc music--socket `("seek" ,jump)))))
 (define-key music-mode-map "q" 'quit-window)
 (defun music-eval ()
     (interactive)
