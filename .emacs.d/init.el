@@ -8512,6 +8512,9 @@
         (dolist (index (nreverse indexes))
             (music-playlist-remove index))
         (push
+            `(apply set music--refresh-next-index ,index)
+            buffer-undo-list)
+        (push
             `(apply music--open 1 ,paths ,index)
             buffer-undo-list))
     (when (>= end (point-max))
@@ -8540,6 +8543,9 @@
             (dolist (path paths)
                 (music-playlist-add path index))))
     (push
+        `(apply set music--refresh-next-index ,index)
+        buffer-undo-list)
+    (push
         `(apply music--undo-open ,count ,paths ,index)
         buffer-undo-list)
     (* count (length paths)))
@@ -8547,6 +8553,9 @@
     (let ((count (* count (length paths))))
         (dotimes (_ count)
             (music-playlist-remove index)))
+    (push
+        `(apply set music--refresh-next-index ,index)
+        buffer-undo-list)
     (push
         `(apply music--open ,count ,paths ,index)
         buffer-undo-list))
@@ -8576,6 +8585,9 @@
            (index     (car indexes)))
         (dolist (index (nreverse indexes))
             (music-playlist-remove index))
+        (push
+            `(apply set music--refresh-next-index ,index)
+            buffer-undo-list)
         (push
             `(apply music--open 1 ,old-paths ,index)
             buffer-undo-list)
