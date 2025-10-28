@@ -8258,6 +8258,9 @@
     '((t
        :foreground "#8080FF"))
     "")
+(defvar music--need-full-refresh nil)
+(defun music--revert-buffer (&rest _)
+    (setq music--need-full-refresh t))
 (defvar-local music--current-entry-overlay nil)
 (defun music ()
     (interactive)
@@ -8269,6 +8272,7 @@
         (setq buffer-read-only t)
         (setq default-directory music-directory)
         (music-mode)
+        (setq-local revert-buffer-function 'music--revert-buffer)
         (setq process (make-process
                           :name "music"
                           :command music--command
@@ -8299,7 +8303,6 @@
         (overlay-put music--current-entry-overlay 'face 'music-current-entry)
         (add-hook 'post-command-hook 'music--post-command-seek nil t)
         (pop-to-buffer buffer)))
-(defvar music--need-full-refresh nil)
 (defvar music--refresh-next-index nil)
 (defvar music--refresh-next-column nil)
 (defun music--refresh (socket buffer)
