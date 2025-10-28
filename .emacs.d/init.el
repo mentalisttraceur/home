@@ -8299,7 +8299,6 @@
         (add-hook 'post-command-hook 'music--post-command-seek nil t)
         (pop-to-buffer buffer)))
 (defvar music--need-full-refresh nil)
-(defvar music--refresh-next-line nil)
 (defvar music--refresh-next-index nil)
 (defvar music--refresh-next-column nil)
 (defun music--refresh (socket buffer)
@@ -8325,9 +8324,6 @@
                     (progn
                         (goto-char position)
                         (setq temporary-goal-column (current-column))))
-                (when music--refresh-next-line
-                    (goto-line music--refresh-next-line)
-                    (setq music--refresh-next-line nil))
                 (when music--refresh-next-index
                     (goto-char 1)
                     (if-let* ((match (text-property-search-forward
@@ -8352,10 +8348,6 @@
             (goto-char 1)
             (text-property-search-forward 'mpv-index current 'equal)
             (music--insert-playing-info socket))))
-(defun music--line-move-after-refresh (count)
-    (let ((current (line-number-at-pos (point))))
-        (setq music--refresh-next-line (+ current count)))
-    (setq music--refresh-next-column (current-column)))
 (defun music--index-move-after-refresh (count)
     (let ((current (if (= (point) (buffer-end 1))
                        (if (= (point) 1)
