@@ -8385,7 +8385,9 @@
         (move-overlay music--current-entry-overlay
             (pos-bol 0) (pos-bol 1))
         (overlay-put music--current-entry-overlay
-            'after-string playing-line)
+            'after-string
+            (propertize playing-line
+                'keymap music--playing-line-map))
         (when seek-lines
             (insert seek-lines))))
 (defun music--delete-playing-info ()
@@ -8400,6 +8402,14 @@
            (file (file-name-nondirectory path))
            (file-line (format "%d. %s\n" (1+ index) file)))
         (propertize file-line 'mpv-index index 'full-path path)))
+(defvar music--playing-line-map (make-sparse-keymap))
+(defun music--playing-line-fix-point (event)
+    (interactive "e")
+    (let* ((position (event-start event))
+           (column (car (posn-col-row position))))
+        (goto-char (pos-bol 0))
+        (move-to-column column)))
+(define-key music--playing-line-map [mouse-1] 'music--playing-line-fix-point)
 (defun music--playing-line (socket)
     (let ((loop (mpv-ipc-expand socket "${loop}"))
           (time (mpv-ipc-expand socket "${time-pos} / ${duration}")))
