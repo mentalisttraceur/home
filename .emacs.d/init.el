@@ -8239,7 +8239,6 @@
 (define-derived-mode music-mode nil "music")
 (defmacro music-define-key (state key def &rest bindings)
     `(evil-define-key* ,state music-mode-map ,key ,def ,@bindings))
-(defvar music--socket nil)
 (defface music-current-entry
     '((t
        :foreground "#80FFFF"))
@@ -8258,6 +8257,7 @@
     '((t
        :foreground "#8080FF"))
     "")
+(defvar music--socket nil)
 (defvar music--want-full-refresh nil)
 (defvar music--need-full-refresh nil)
 (defun music--revert-buffer (&rest _)
