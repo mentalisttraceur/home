@@ -8809,15 +8809,14 @@
             output
             (error "tumblr error: %s" output))))
 (defun tumblr-get (field path)
-    (if-let* ((buffer (find-buffer-visiting path)))
-        (with-current-buffer buffer
-            (tumblr "get" field "-"
-                :stdin
-                (cons
-                    1
-                    (save-excursion
-                        (goto-char 1)
-                        (pos-bol 8)))))
+    (if (eq (find-buffer-visiting path) (current-buffer))
+        (tumblr "get" field "-"
+            :stdin
+            (cons
+                1
+                (save-excursion
+                    (goto-char 1)
+                    (pos-bol 8))))
         (tumblr "get" field path)))
 (defmacro tumblr--ensure-file (&rest body)
     `(let ((already-existed (file-exists-p buffer-file-name)))
