@@ -1545,14 +1545,25 @@
 
 
 (defun funcall-process (program &rest arguments)
-    (let ((stdin))
+    (let ((stdin nil)
+          (start nil)
+          (end   nil))
         (when-let* ((stdin-cell (memq :stdin arguments)))
             (setq stdin (cadr stdin-cell))
             (setcdr stdin-cell (cddr stdin-cell))
             (setq arguments (delq :stdin arguments)))
+        (when (consp stdin)
+            (setq start (car stdin))
+            (setq end (cdr stdin)))
+        (when (integerp start)
+            (let ((marker (make-marker)))
+                (set-marker marker start (current-buffer))
+                (setq start marker)))
         (with-temp-buffer
-            (let* ((result (apply 'call-process-string
-                               stdin program t nil arguments))
+            (let* ((result (apply 'call-process-region
+                               start end program
+                               nil t nil
+                               arguments))
                    (output (string-remove-suffix "\n" (buffer-string))))
                 (list result output)))))
 
