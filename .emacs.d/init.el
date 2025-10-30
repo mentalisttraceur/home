@@ -1540,10 +1540,6 @@
 (advice-add 'call-process-region :around 'fixed-call-process-region)
 
 
-(defun call-process-string (string program &optional buffer display &rest args)
-    (apply 'call-process-region string nil program nil buffer display args))
-
-
 (defun funcall-process (program &rest arguments)
     (let ((stdin nil)
           (start nil)
