@@ -8805,9 +8805,9 @@
 (defun tumblr (&rest arguments)
     (seq-let (status output) (apply-process tumblr--python
                                      tumblr--script arguments)
-         (if (equal status 0)
-             output
-             (error "tumblr error: %s" output))))
+        (if (equal status 0)
+            output
+            (error "tumblr error: %s" output))))
 (defmacro tumblr--ensure-file (&rest body)
     `(let ((already-existed (file-exists-p buffer-file-name)))
          (basic-save-buffer)
@@ -8837,7 +8837,7 @@
            (file (tumblr "pull" url)))
         (when-let* ((buffer (find-buffer-visiting file)))
             (refresh-modified-state buffer))
-                (find-file file)))
+        (find-file file)))
 (defun tumblr-link (path)
     (let ((blog (tumblr "get" "blog" path))
           (post (tumblr "get" "post" path)))
