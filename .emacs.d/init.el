@@ -1524,6 +1524,22 @@
             (replace-field new-command position))))
 
 
+(defun fixed-call-process-region
+        (call-process-region start end program
+         &optional delete buffer display
+         &rest arguments)
+    (when (eq buffer t)
+        (setq buffer (current-buffer)))
+    (save-current-buffer
+        (when (markerp start)
+            (set-buffer (marker-buffer start)))
+        (apply call-process-region
+            start end program
+            delete buffer display
+            arguments)))
+(advice-add 'call-process-region :around 'fixed-call-process-region)
+
+
 (defun call-process-string (string program &optional buffer display &rest args)
     (apply 'call-process-region string nil program nil buffer display args))
 
