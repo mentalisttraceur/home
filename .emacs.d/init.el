@@ -2425,21 +2425,22 @@
     (advice-add 'eshell :around 'latest-eshell--add)
     (defun latest-eshell--find-p (entry)
         (let ((buffer (car entry)))
-            (memq buffer latest-eshell)))
+            (and (memq buffer latest-eshell)
+                 (not (eq buffer (current-buffer))))))
     (defun latest-eshell (&optional prefix-argument)
         (interactive "P")
         (if prefix-argument
             (if (equal prefix-argument 1)
                 (eshell)
                 (eshell prefix-argument))
-            (if latest-eshell
+            (if-let* ((previous (remq (current-buffer) latest-eshell)))
                 (let ((entries (window-prev-buffers)))
                     (if-let* ((entry (seq-find 'latest-eshell--find-p entries)))
                         (seq-let (buffer start point) entry
                             (set-window-buffer-start-and-point
-                                (selected-window) buffer start point)
-                            (latest-eshell--update (current-buffer)))
-                        (pop-to-buffer (car latest-eshell))))
+                                (selected-window) buffer start point))
+                        (pop-to-buffer (car previous)))
+                    (latest-eshell--update (current-buffer)))
                 (eshell))))
     (setq eshell-history-size 0)
     (advice-add 'eshell-hist-initialize
