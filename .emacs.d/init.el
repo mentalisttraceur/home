@@ -8808,6 +8808,17 @@
         (if (equal status 0)
             output
             (error "tumblr error: %s" output))))
+(defun tumblr-get (field path)
+    (if-let* ((buffer (find-buffer-visiting path)))
+        (with-current-buffer buffer
+            (tumblr "get" field "-"
+                :stdin
+                (cons
+                    1
+                    (save-excursion
+                        (goto-char 1)
+                        (pos-bol 8)))))
+        (tumblr "get" field path)))
 (defmacro tumblr--ensure-file (&rest body)
     `(let ((already-existed (file-exists-p buffer-file-name)))
          (basic-save-buffer)
@@ -8839,8 +8850,8 @@
             (refresh-modified-state buffer))
         (find-file file)))
 (defun tumblr-link (path)
-    (let ((blog (tumblr "get" "blog" path))
-          (post (tumblr "get" "post" path)))
+    (let ((blog (tumblr-get "blog" path))
+          (post (tumblr-get "post" path)))
         (when (or (equal blog "") (equal post ""))
             (user-error "%s is not a Tumblr post" path))
         (format "https://%s.tumblr.com/post/%s" blog post)))
