@@ -841,21 +841,21 @@
             0)))
 
 
-(defface modifier-latch-face
+(defface modifier-latch
     '((t
        :inherit escape-glyph))
     "")
-(defface modifier-lock-face
+(defface modifier-lock
     '((t
        :inherit warning))
     "")
 (defun modifier--description-1 (latched locked modifier string)
     (cond
         ((memq modifier latched)
-            (put-text-property 0 1 'face 'modifier-latch-face string)
+            (put-text-property 0 1 'face 'modifier-latch string)
             string)
         ((memq modifier locked)
-            (put-text-property 0 1 'face 'modifier-lock-face string)
+            (put-text-property 0 1 'face 'modifier-lock string)
             string)
         (t
             nil)))
