@@ -7718,7 +7718,7 @@
                     (replace-regexp-in-string "[- _]" "="
                         (upcase suffix))))
             "=+" "=+"))
-    (advice-add 'denote-sluggify-keywords :override 'identity)
+    (setcdr (assoc 'keyword denote-file-name-slug-functions) 'identity)
     (defun denoted-rename-file-prompt (old-path new-path)
         (y-or-n-p
             (format "Rename %s to %s?"
