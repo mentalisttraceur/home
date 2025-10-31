@@ -1433,12 +1433,13 @@
 
 
 (defun text-property-values (start end property &optional object)
-    (unless start
-        (if (stringp object)
-            (setq start 0)
-            (setq start 1)))
+    (if (stringp object)
+        (setq-if-nil start 0
+                     end (length object))
+        (setq-if-nil start 1
+                     end (buffer-size object)))
     (let ((values ()))
-        (while (and start (or (not end) (< start end)))
+        (while (and start (< start end))
             (let ((value (get-text-property
                              start property object)))
                 (when value
