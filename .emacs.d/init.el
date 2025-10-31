@@ -8764,6 +8764,8 @@
     (let ((current (music-playlist-position)))
         (if (equal target current)
             (music-pause-toggle)
+            (when (not target)
+                (setq target -1))
             (mpv-ipc music--socket (list "playlist-play-index" target))
             (mpv-ipc-set music--socket "pause" "no"))))
 (define-key music-mode-map "\C-m" 'music-play)
