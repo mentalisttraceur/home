@@ -868,6 +868,7 @@
         (modifier--description-1 latched locked 'shift   "S-")
         (modifier--description-1 latched locked 'super   "s-")))
 (defvar modifier--stack ())
+(defvar modifier--prefix nil)
 (defun modifier--apply (prompt)
     (with-text-conversion-style nil
         (internal-echo-keystrokes-prefix)
@@ -875,6 +876,9 @@
                (description (concat
                                 prefix-command--last-echo
                                 (when prefix-command--last-echo
+                                    " ")
+                                (key-description modifier--prefix)
+                                (when (length> modifier--prefix 0)
                                     " ")
                                 (modifier--description
                                     modifier--stack
@@ -908,13 +912,19 @@
              (defun ,modifier-lock (prompt)
                  (modifier-lock-toggle ',modifier)
                  (setq modifier--stack (delq ',modifier modifier--stack))
-                 (if modifier--stack
+                 (if (or modifier--stack modifier--prefix)
                      (modifier--apply prompt)
                      (internal-echo-keystrokes-prefix)
                      (message prefix-command--last-echo)
                      []))
              (defun ,modifier (prompt)
-                 (let ((modifier--stack (cons ',modifier modifier--stack)))
+                 (let ((modifier--stack modifier--stack)
+                       (modifier--prefix modifier--prefix))
+                     (unless (or modifier--stack modifier--prefix)
+                         (let ((prefix (substring (this-command-keys) 0 -1)))
+                             (when (length> prefix 0)
+                                 (setq modifier--prefix prefix))))
+                     (push ',modifier modifier--stack)
                      (modifier--apply prompt))))))
 (modifier--define super)
 (modifier--define shift)
@@ -923,10 +933,11 @@
 (modifier--define control)
 (modifier--define alt)
 (defun modifier-echo-description ()
-    (unless modifier--stack
+    (unless (or modifier--stack modifier--prefix)
         (when-let* ((locked (extra-keyboard-modifiers)))
             (modifier--description nil locked))))
-(add-hook 'prefix-command-echo-keystrokes-functions 'modifier-echo-description)
+(add-hook 'prefix-command-echo-keystrokes-functions
+    'modifier-echo-description -99)
 
 
 (when android
