@@ -8572,6 +8572,8 @@
               (paths  (full-path-property-split nil nil text)))
             (music--undo-as
                 (music--add paths 1 index column 0 move paired))))
+    (evil-save-column
+        (goto-char start))
     (when (>= end (point-max))
         (evil-save-column
             (condition-case nil
