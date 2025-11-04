@@ -6215,13 +6215,16 @@
             (goto-char start)
             (forward-line lines)
             (setq end (point))
-            (if evil-dired-delete-keep-entries
+            (if (or evil-dired-delete-keep-entries
+                    (>= start (point-max)))
                 (let ((evil-was-yanked-without-register nil))
                     (evil-yank start end type register yank-handler))
                 (let ((buffer-read-only nil))
                     (evil-delete start end type register yank-handler)))
             (goto-char (point-min))
             (forward-line (1- line))
+            (when (>= (point) (point-max))
+                (forward-line -1))
             (move-to-column column)))
     (evil-define-key* 'motion dired-mode-map "d" 'evil-dired-delete)
     (evil-define-operator evil-dired-delete-line (register yank-handler)
