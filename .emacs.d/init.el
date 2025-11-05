@@ -8293,11 +8293,11 @@
 
 
 (defconst music-directory "~/Music")
-(defun music-select ()
+(defun music-read (prompt)
     (let ((vertico-sort-function 'vertico-sort-alpha)
           (files (directory-files music-directory nil "^[^.]" t)))
         (let ((chosen (save-point-line-and-column-with-scroll
-                          (completing-read-multiple "Music: " files)))
+                          (completing-read-multiple prompt files)))
               (directory (file-name-as-directory music-directory)))
         (mapcar (apply-partially 'concat directory) chosen))))
 (defconst music--command
@@ -8694,17 +8694,17 @@
     (music--add paths count index column offset move paired)))
 (defun music-open-below (count)
     (interactive "p")
-    (music--open (music-select) count 1 0))
+    (music--open (music-read "Open: ") count 1 0))
 (music-define-key 'normal "o" 'music-open-below)
 (defun music-open-above (count)
     (interactive "p")
-    (music--open (music-select) count 0 nil))
+    (music--open (music-read "Open: ") count 0 nil))
 (music-define-key 'normal "O" 'music-open-above)
 (evil-define-operator music-change (start end type register yank-handler)
     :move-point nil
     :type line
     (interactive "<R><x><y>")
-    (let ((paths (music-select)))
+    (let ((paths (music-read "Change to: ")))
         (music--delete start end type register yank-handler t)
         (music--open paths 1 0 nil t)))
 (music-define-key 'normal "c" 'music-change)
@@ -8712,7 +8712,7 @@
     :move-point nil
     :motion nil
     (interactive "<x><y>")
-    (let ((paths (music-select))
+    (let ((paths (music-read "Change to: "))
           (start (pos-bol 1))
           (end   (pos-bol 2)))
         (music--delete start end 'line register yank-handler t)
