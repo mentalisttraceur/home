@@ -2800,7 +2800,7 @@
                          (let ((,after (pulsed-dired-revert--view)))
                              (unless (equal ,before ,after)
                                  (pulse-momentary-highlight-region
-                                     (pos-bol) (pos-eol)))))))))
+                                     (pos-bol 1) (pos-bol 2)))))))))
     (defun pulsed-dired-revert--advice (dired-revert &rest arguments)
         (with-pulsed-dired-revert
             (apply dired-revert arguments)))
@@ -2858,7 +2858,7 @@
             (dired-goto-file path)
             (recenter)
             (scroll-to-fill-window)
-            (pulse-momentary-highlight-region (pos-bol) (pos-eol)))))
+            (pulse-momentary-highlight-region (pos-bol 1) (pos-bol 2)))))
 
 (add-to-list 'text-property-default-nonsticky
     (cons 'full-path t))
