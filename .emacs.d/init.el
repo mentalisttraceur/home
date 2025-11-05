@@ -6308,6 +6308,34 @@
                 (goto-char (point-min))
                 (forward-line (1- line)))))
     (evil-define-key* 'motion dired-mode-map "gP" 'evil-dired-replacing-paste-before)
+    (defun evil-dired-open--candidate (name)
+        (when (length> name 0)
+            (if (file-exists-p name)
+                (progn
+                    (evil-echo "file exists")
+                    nil)
+                (list name))))
+    (defun evil-dired-open--read-file-names (prompt)
+        (completing-read-multiple
+            prompt
+            (completion-table-dynamic
+                'evil-dired-open--candidate)
+            nil t))
+    (defun evil-dired-create-below (names)
+        (interactive (list (evil-dired-open--read-file-names "Create: ")))
+        (evil-save-column
+            (dolist (name names)
+                (forward-line 1)
+                (dired-create name)))
+        names)
+    (evil-define-key* 'motion dired-mode-map "o" 'evil-dired-create-below)
+    (defun evil-dired-create-above (names)
+        (interactive (list (evil-dired-open--read-file-names "Create: ")))
+        (evil-save-column
+            (dolist (name (reverse names))
+                (dired-create name)))
+        names)
+    (evil-define-key* 'motion dired-mode-map "O" 'evil-dired-create-above)
     (evil-define-key* 'motion dired-mode-map "." 'evil-repeat))
 
 (use-packages doc-view evil
