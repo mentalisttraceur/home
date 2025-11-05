@@ -2837,6 +2837,10 @@
                 (rename-buffer name))
             buffer)))
 
+(use-package pulse
+    :config
+    (set-face-extend 'pulse-highlight-start-face t))
+
 (use-packages dired parent-buffer
     :config
     (defun smoother-dired (&optional path)
