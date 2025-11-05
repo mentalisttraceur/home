@@ -3071,6 +3071,11 @@
         (error "vc-dir called"))
     (advice-add 'vc-dir :override 'hack-vc-dir))
 
+(use-package vc-annotate
+    :config
+    (define-key vc-annotate-mode-map
+        "c" 'vc-annotate-show-log-revision-at-line))
+
 (use-packages vc parent-buffer
     :config
     (add-hook 'vc-annotate-mode-hook
