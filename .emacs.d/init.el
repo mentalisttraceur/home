@@ -6258,7 +6258,7 @@
                 (forward-line))
             (setq start (pos-bol))
             (dolist (path paths)
-                (when (funcall paste-1 path dired-directory)
+                (when (funcall paste-1 path default-directory)
                     (setq moved t))
                 (forward-line))
             (when moved
