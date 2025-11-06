@@ -2550,7 +2550,8 @@
 
 (defun smoother-eval-last-sexp (prefix-argument)
     (interactive "P")
-    (unless (>= temporary-goal-column most-positive-fixnum)
+    (unless (and (integerp temporary-goal-column)
+                 (>= temporary-goal-column most-positive-fixnum))
         (setq temporary-goal-column (current-column)))
     (condition-case error
         (scan-sexps (1+ (point)) -1)
