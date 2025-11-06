@@ -1197,13 +1197,17 @@
 
 (defun fixed-line-move-visual (count &optional no-error to-end try-vscroll)
     (let ((line-move-visual t)
+          (start (line-number-at-pos))
           step)
         (if (> count 0)
             (setq step 1)
             (setq step -1)
             (setq count (- count)))
-        (dotimes (_ count)
-            (line-move step no-error to-end try-vscroll))))
+        (save-excursion
+            (dotimes (_ count)
+                (line-move step no-error to-end try-vscroll))
+            (setq count (- (line-number-at-pos) start)))
+        (line-move count no-error to-end try-vscroll)))
 
 
 (defun delete-forward-in-line (start count)
