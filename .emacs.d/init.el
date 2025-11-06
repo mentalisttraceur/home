@@ -2536,6 +2536,13 @@
     :config
     (set-face-foreground 'eshell-prompt nil)
     (set-face-bold 'eshell-prompt nil))
+(when android
+    (use-package em-tramp
+        :defer t
+        :config
+        (defun eshell/sudo (&rest args)
+            (throw 'eshell-replace-command
+                `(eshell-named-command ',(car args) ',(cdr args))))))
 
 (use-package tramp
     :config
