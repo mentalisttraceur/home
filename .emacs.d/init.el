@@ -2524,13 +2524,6 @@
                 (let ((default-directory default-directory-when-invoked))
                     (find-file path)))))
     (put 'eshell/vi 'eshell-no-numeric-conversions t)
-    (defun eshell/vo (&rest paths)
-        (let ((default-directory-when-invoked default-directory))
-            (dolist (path (flatten-list paths))
-                (let ((default-directory default-directory-when-invoked))
-                    (other-window-prefix)
-                    (find-file path)))))
-    (put 'eshell/vo 'eshell-no-numeric-conversions t)
     (add-to-list 'eshell-modules-list 'eshell-tramp))
 (use-package esh-mode
     :config
