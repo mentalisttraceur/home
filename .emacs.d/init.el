@@ -1195,21 +1195,6 @@
     (bihash-count (aref table 2)))
 
 
-(defun fixed-line-move-visual (count &optional no-error to-end try-vscroll)
-    (let ((line-move-visual t)
-          (start (line-number-at-pos))
-          step)
-        (if (> count 0)
-            (setq step 1)
-            (setq step -1)
-            (setq count (- count)))
-        (save-excursion
-            (dotimes (_ count)
-                (line-move step no-error to-end try-vscroll))
-            (setq count (- (line-number-at-pos) start)))
-        (line-move count no-error to-end try-vscroll)))
-
-
 (defun delete-forward-in-line (start count)
     (delete-region start (save-excursion
         (goto-char start)
@@ -5155,20 +5140,6 @@
     (setq evil-shift-round nil)
     (define-key evil-replace-state-map [escape] 'evil-insert-state)
     (define-key evil-motion-state-map "\C-m" nil)
-    (evil-define-motion fixed-evil-next-visual-line (count)
-        :type exclusive
-        (interactive "p")
-        (evil-signal-without-movement
-            (fixed-line-move-visual count)))
-    (advice-add 'evil-next-visual-line
-        :override 'fixed-evil-next-visual-line)
-    (evil-define-motion fixed-evil-previous-visual-line (count)
-        :type exclusive
-        (interactive "p")
-        (evil-signal-without-movement
-            (fixed-line-move-visual (- count))))
-    (advice-add 'evil-previous-visual-line
-        :override 'fixed-evil-previous-visual-line)
     (defun fixed-newline ()
         (interactive)
         (when (memq evil-state '(insert replace emacs))
