@@ -8366,6 +8366,7 @@
             (revert-buffer))
         (setq music--current-entry-overlay (make-overlay 1 1))
         (overlay-put music--current-entry-overlay 'face 'music-current-entry)
+        (overlay-put music--current-entry-overlay 'evaporate t)
         (add-hook 'pre-command-hook 'music--pre-command-undo-boundary nil t)
         (add-hook 'post-command-hook 'music--post-command-seek nil t)
         (pop-to-buffer buffer)))
