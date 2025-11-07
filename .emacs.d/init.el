@@ -55,6 +55,9 @@
       file-name-handler-alist nil)
 
 
+(setenv "TZ" "UTC")
+
+
 (defun fixed-native--compile-async-skip-p
         (native--compile-async-skip-p file load selector)
     (let* ((naive-elc-file (file-name-with-extension file "elc"))
