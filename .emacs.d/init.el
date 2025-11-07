@@ -312,12 +312,12 @@
          symbol))
 
 
-(defvar multiple-values--rest)
+(defvar multiple-values--rest t)
 
 (defun values (&rest objects)
     (prog1
         (pop objects)
-        (when (boundp 'multiple-values--rest)
+        (unless (eq multiple-values--rest t)
             (setq multiple-values--rest objects))))
 
 (defun multiple-values--call (form rest)
