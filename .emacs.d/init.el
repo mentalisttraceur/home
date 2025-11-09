@@ -3238,6 +3238,7 @@
             (if (equal (point) ascii-position)
                 (hexl-goto-address (hexl-current-address))
                 (goto-char ascii-position))))
+    (define-key hexl-mode-map "\t" 'hexl-switch-column)
     (defun fixed-hexl-save-buffer ()
         (let ((scratch (get-buffer-create (concat " hexl " (buffer-name)) t))
               (buffer  (current-buffer))
