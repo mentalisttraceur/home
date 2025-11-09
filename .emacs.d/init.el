@@ -6477,7 +6477,11 @@
             (save-point
                 (fixed-hexl-self-insert-command 1 character))))
     (evil-define-key* 'normal hexl-mode-map "r" 'evil-hexl-replace)
-    (define-key space-map "X" 'hexl-mode))
+    (define-key space-map "X"
+        (lambda () (interactive)
+            (if (eq major-mode 'hexl-mode)
+                (hexl-mode-exit)
+                (hexl-mode)))))
 
 (use-packages image-mode evil
     :config
