@@ -7884,7 +7884,6 @@
         (delete-dups
             (sort
                 (mapcan 'denote-extract-keywords-from-path
-
                     (directory-files default-directory nil "__" t))
                 'string-lessp)))
     (defun denoted-tag-edit (path)
