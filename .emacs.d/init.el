@@ -8857,14 +8857,10 @@
 
 (defconst tumblr--python (expand-file-name "~/.tumblr/venv/bin/python"))
 (defconst tumblr--script (expand-file-name "~/.tumblr/tumblr.py"))
-(defvar tumblr-blogs '(
-    "mentalisttraceur"
-    "mentalisttraceur-humor"
-    "mentalisttraceur-incomplete"
-    "mentalisttraceur-long"
-    "mentalisttraceur-process"
-    "mentalisttraceur-reactions"
-    "mentalisttraceur-software"))
+(defcustom tumblr-blogs ()
+    ""
+    :type '(repeat string)
+    :group 'tumblr)
 (defun tumblr-prompt-for-blog ()
     (completing-read "Tumblr blog: " tumblr-blogs nil 'confirm))
 (defun tumblr (&rest arguments)
