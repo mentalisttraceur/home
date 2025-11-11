@@ -1385,6 +1385,15 @@
         (call-interactively command)))
 
 
+(defun set-point-or (command)
+    (lambda-let (command) (event)
+        (interactive "e")
+        (let ((start (point)))
+            (mouse-set-point event)
+            (when (= (point) start)
+                (become-command command)))))
+
+
 (defun identity+ignore (value &rest _)
     value)
 
