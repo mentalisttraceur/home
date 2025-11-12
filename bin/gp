@@ -5,7 +5,7 @@ cleanup()
 }
 output=${3-"$1"}
 directory=`mktemp -d` &&
-trap cleanup EXIT TERM INT HUP &&
+trap cleanup EXIT &&
 (cd "$directory" && git init --quiet) &&
 name=${1##*/} &&
 cp "$1" "$directory/$name" &&
