@@ -7599,6 +7599,9 @@
                 'markdown-directive-block-end)
             nil)
         markdown-fenced-block-pairs)
+    (define-key markdown-mode-mouse-map
+        [touchscreen-begin]
+        (set-point-or 'markdown-follow-thing-at-point))
     (define-key markdown-mode-map [backtab] nil))
 
 (use-packages evil markdown-mode
