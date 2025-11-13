@@ -26,5 +26,6 @@ case ${TERMUX_VERSION+x} in x)
 esac
 
 case ${WSL_DISTRO_NAME+x} in x)
+    export COLORTERM=truecolor
     source ~/.gwsl
 esac
