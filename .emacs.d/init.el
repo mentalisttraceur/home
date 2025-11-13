@@ -4912,7 +4912,10 @@
         arguments)
     (defun fixed-eat--make-process (function &rest arguments)
         (with-advice (('make-process :filter-args 'hack-make-process))
-            (apply function arguments)))
+            (let ((process-environment process-environment))
+                (when (equal (eat-term-name) "eat-truecolor")
+                    (push "COLORTERM=truecolor" process-environment))
+                (apply function arguments))))
     (advice-add 'eat--eshell-adjust-make-process-args
         :around 'fixed-eat--make-process)
     (advice-add 'eat-exec :around 'fixed-eat--make-process)
