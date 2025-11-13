@@ -7611,8 +7611,7 @@
                 'markdown-directive-block-end)
             nil)
         markdown-fenced-block-pairs)
-    (define-key markdown-mode-mouse-map
-        [mouse-2]
+    (define-key markdown-mode-mouse-map [mouse-2]
         (set-point-or 'markdown-follow-thing-at-point))
     (define-key markdown-mode-map [backtab] nil))
 
