@@ -3204,6 +3204,10 @@
     :config
     (setq comp-log-buffer-name " *Native-compile-Log*")
     (setq comp-async-buffer-name " *Async-native-compile-log*"))
+(defun best-compile (function)
+    (if (native-comp-available-p)
+        (native-compile function)
+        (byte-compile function)))
 
 (use-package hexl
     :config
