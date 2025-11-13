@@ -37,7 +37,7 @@
     plus-emph-style = syntax "#006000"
     map-styles = \
         bold purple => syntax "#400060", \
-        bold cyan => syntax "#004060", \
+        bold cyan => syntax "#004040", \
         bold blue => syntax "#503050", \
         bold yellow => syntax "#305050"
 [delta "interactive"]
