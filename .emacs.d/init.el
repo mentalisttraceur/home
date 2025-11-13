@@ -1385,15 +1385,6 @@
         (call-interactively command)))
 
 
-(defun set-point-or (command)
-    (lambda-let (command) (event)
-        (interactive "e")
-        (let ((start (point)))
-            (mouse-set-point event)
-            (when (= (point) start)
-                (become-command command)))))
-
-
 (defun identity+ignore (value &rest _)
     value)
 
@@ -2168,8 +2159,7 @@
 
 (use-package button
     :config
-    (define-key button-map [touchscreen-begin]
-        (set-point-or 'push-button)))
+    (define-key button-map [mouse-2] 'mouse-set-point))
 
 (defun make-histdir-history ()
     (let ((table (make-sorted-hash-table 'string-greaterp :test 'equal))
@@ -2632,8 +2622,7 @@
     (advice-add 'dired-readin :around 'hack-dired-readin)
     (setq dired-dwim-target t)
     (define-key dired-mode-map "I" 'dired-kill-subdir)
-    (define-key dired-mode-map [touchscreen-begin]
-        (set-point-or 'dired-find-file))
+    (define-key dired-mode-map [mouse-2] 'mouse-set-point)
     (define-key dired-mode-map "a" 'dired-hide-details-mode)
     (add-hook 'dired-mode-hook 'dired-hide-details-mode)
     (define-key dired-mode-map "r" 'dired-do-rename)
@@ -7614,8 +7603,7 @@
                 'markdown-directive-block-end)
             nil)
         markdown-fenced-block-pairs)
-    (define-key markdown-mode-mouse-map [touchscreen-begin]
-        (set-point-or 'markdown-follow-thing-at-point))
+    (define-key markdown-mode-mouse-map [mouse-2] 'mouse-set-point)
     (define-key markdown-mode-map [backtab] nil))
 
 (use-packages evil markdown-mode
