@@ -6484,24 +6484,24 @@
     (dolist (key '("gp" "gP"))
         (evil-define-key* 'normal eat-eshell-semi-char-mode-map
             key 'evil-eat-eshell-replacing-paste))
-    (add-hook 'eat-eshell-exec-hook
-        (lambda ()
-            (evil-local-set-key 'insert "\C-u" 'eat-self-input)
-            (evil-local-set-key 'insert [?\C-г]
-                (lambda (count)
-                    (interactive "p")
-                    (eat-self-input count ?\C-u)))
-            (evil-local-set-key 'insert "\C-v" 'eat-self-input)
-            (evil-local-set-key 'insert [?\C-м]
-                (lambda (count)
-                    (interactive "p")
-                    (eat-self-input count ?\C-v)))
-            (dolist (key `("\C-q" [?\C-й]))
-                (evil-local-set-key 'insert key 'eat-quoted-input))))
-    (add-hook 'eat-eshell-exit-hook
-        (lambda ()
-            (dolist (key `("\C-v" [?\C-м] "\C-q" [?\C-й]))
-                (evil-local-set-key 'insert key nil)))))
+    (defun evil-eat-eshell-setup ()
+        (evil-local-set-key 'insert "\C-u" 'eat-self-input)
+        (evil-local-set-key 'insert [?\C-г]
+            (lambda (count)
+                (interactive "p")
+                (eat-self-input count ?\C-u)))
+        (evil-local-set-key 'insert "\C-v" 'eat-self-input)
+        (evil-local-set-key 'insert [?\C-м]
+            (lambda (count)
+                (interactive "p")
+                (eat-self-input count ?\C-v)))
+        (dolist (key `("\C-q" [?\C-й]))
+            (evil-local-set-key 'insert key 'eat-quoted-input)))
+    (add-hook 'eat-eshell-exec-hook 'evil-eat-eshell-setup)
+    (defun evil-eat-eshell-exit ()
+        (dolist (key `("\C-v" [?\C-м] "\C-q" [?\C-й]))
+            (evil-local-set-key 'insert key nil)))
+    (add-hook 'eat-eshell-exit-hook 'evil-eat-eshell-exit))
 
 (use-packages help evil
     :config
