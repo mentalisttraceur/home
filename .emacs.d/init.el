@@ -2166,6 +2166,11 @@
                     (package-desc-name package)
                     package)))))
 
+(use-package button
+    :config
+    (define-key button-map [touchscreen-begin]
+        (set-point-or 'push-button)))
+
 (defun make-histdir-history ()
     (let ((table (make-sorted-hash-table 'string-greaterp :test 'equal))
           (calls (make-hash-table :test 'equal)))
