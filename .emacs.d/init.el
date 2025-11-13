@@ -6486,6 +6486,11 @@
             key 'evil-eat-eshell-replacing-paste))
     (add-hook 'eat-eshell-exec-hook
         (lambda ()
+            (evil-local-set-key 'insert "\C-u" 'eat-self-input)
+            (evil-local-set-key 'insert [?\C-г]
+                (lambda (count)
+                    (interactive "p")
+                    (eat-self-input count ?\C-u)))
             (evil-local-set-key 'insert "\C-v" 'eat-self-input)
             (evil-local-set-key 'insert [?\C-м]
                 (lambda (count)
