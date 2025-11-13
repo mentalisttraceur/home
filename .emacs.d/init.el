@@ -2631,8 +2631,8 @@
     (advice-add 'dired-readin :around 'hack-dired-readin)
     (setq dired-dwim-target t)
     (define-key dired-mode-map "I" 'dired-kill-subdir)
-    (when android
-        (define-key dired-mode-map [mouse-2] 'mouse-set-point))
+    (define-key dired-mode-map [mouse-2]
+        (set-point-or 'dired-find-file))
     (define-key dired-mode-map "a" 'dired-hide-details-mode)
     (add-hook 'dired-mode-hook 'dired-hide-details-mode)
     (define-key dired-mode-map "r" 'dired-do-rename)
