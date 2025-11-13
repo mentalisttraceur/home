@@ -1385,13 +1385,17 @@
         (call-interactively command)))
 
 
+(defvar-local set-point-or--point 0)
+(defun set-point-or--save-point (&rest _)
+    (let ((event-type (car (aref (this-single-command-raw-keys) 0))))
+        (when (memq event-type '(down-mouse-1 touchscreen-begin))
+            (setq set-point-or--point (point)))))
+(advice-add 'mouse-set-point :before 'set-point-or--save-point)
 (defun set-point-or (command)
-    (lambda-let (command) (event)
-        (interactive "e")
-        (let ((start (point)))
-            (mouse-set-point event)
-            (when (= (point) start)
-                (become-command command)))))
+    (lambda-let (command) ()
+        (interactive)
+        (when (= (point) set-point-or--point)
+            (become-command command))))
 
 
 (defun identity+ignore (value &rest _)
@@ -7608,7 +7612,7 @@
             nil)
         markdown-fenced-block-pairs)
     (define-key markdown-mode-mouse-map
-        [touchscreen-begin]
+        [mouse-2]
         (set-point-or 'markdown-follow-thing-at-point))
     (define-key markdown-mode-map [backtab] nil))
 
