@@ -5658,7 +5658,7 @@
                         (lambda-let (directory) ()
                             (setq default-directory directory)))
                     (pop-to-command
-                        (list "gd" file-name unsaved-name)
+                        (list "git" "diff" "--no-index" file-name unsaved-name)
                         (buffer-name)
                         "Diff unsaved"
                         (apply-partially 'diff-unsaved-changes--finish
@@ -5703,7 +5703,7 @@
                     (lambda-let (directory) ()
                         (setq default-directory directory)))
                 (pop-to-command
-                    (list "gd" name-1 name-2)
+                    (list "git" "diff" "--no-index" name-1 name-2)
                     (concat name-1 " -> " name-2)
                     "Diff buffer"
                     (apply-partially 'diff-buffer--finish
@@ -6666,7 +6666,7 @@
                         (setq default-directory directory)))
                 (pop-to-command
                     (list "*env" "PAGER=cat"
-                        "gd" name-1 name-2)
+                        "git" "diff" "--no-index" name-1 name-2)
                     (buffer-name)
                     "undo-tree Diff"
                     (apply-partially 'hack-undo-tree-diff--finish
