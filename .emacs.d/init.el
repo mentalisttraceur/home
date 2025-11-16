@@ -4348,7 +4348,9 @@
         (interactive)
         (setq-local undo-tree-visualizer-buffer-name
             (independent-undo-tree-name))
-        (call-interactively 'undo-tree-visualize)))
+        (prog1
+            (call-interactively 'undo-tree-visualize)
+            (setq undo-tree-visualizer-buffer-name (buffer-name)))))
 
 (use-packages undo-tree parent-buffer
     :config
