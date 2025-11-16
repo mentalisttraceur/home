@@ -7165,7 +7165,7 @@
         (setq face-remap-selected-window--tagged t))
     (set-window-parameter face-remap-selected-window--window
         'face-remap-selected-window t))
-(setq after-focus-change-function 'face-remap-selected-window)
+(add-function :after after-focus-change-function 'face-remap-selected-window)
 (add-hook 'window-configuration-change-hook 'face-remap-selected-window)
 (add-hook 'buffer-list-update-hook 'face-remap-selected-window)
 (setq redisplay-skip-initial-frame nil)
