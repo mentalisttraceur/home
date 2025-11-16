@@ -7170,6 +7170,7 @@
 (add-function :after after-focus-change-function 'face-remap-selected-window)
 (add-hook 'window-configuration-change-hook 'face-remap-selected-window)
 (add-hook 'buffer-list-update-hook 'face-remap-selected-window)
+(advice-add 'kill-all-local-variables :after 'face-remap-selected-window)
 (setq redisplay-skip-initial-frame nil)
 
 (defvar norecord-override nil)
