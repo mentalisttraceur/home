@@ -8444,7 +8444,7 @@
         (when (>= current 0)
             (goto-char 1)
             (text-property-search-forward 'mpv-index current 'equal)
-            (music--insert-playing-info socket))))
+            (music--insert-playing-info socket current))))
 (defun music--insert-playlist (socket)
     (let ((count   (mpv-ipc-expand-integer socket "${playlist-count}"))
           (current (mpv-ipc-expand-integer socket "${playlist-pos}")))
@@ -8454,10 +8454,10 @@
             (let ((file-line (music--file-line socket index)))
                 (insert file-line)
                 (when (= index current)
-                    (music--insert-playing-info socket))))))
-(defun music--insert-playing-info (socket)
+                    (music--insert-playing-info socket index))))))
+(defun music--insert-playing-info (socket index)
     (let ((playing-line (music--playing-line socket))
-          (seek-lines   (music--seek-lines socket)))
+          (seek-lines   (music--seek-lines socket index)))
         (move-overlay music--current-entry-overlay
             (pos-bol 0) (pos-bol 1))
         (overlay-put music--current-entry-overlay
@@ -8505,7 +8505,7 @@
     (let* ((raw (mpv-ipc-expand socket format))
            (parts (split-string raw "\\.")))
         (string-to-number (car parts))))
-(defun music--seek-lines (socket)
+(defun music--seek-lines (socket index)
     (when (evil-motion-state-p)
         (let* ((duration (music--get-seconds socket "${=duration}"))
                (duration-minutes (floor duration 60))
@@ -8523,6 +8523,7 @@
                   (start position))
                 (put-text-property start (1+ start) 'mpv--position t seek-bar)
                 (propertize seek-bar
+                    'mpv-index index
                     'field 'seek-bar
                     'front-sticky '(field))))))
 (defun music--post-command-seek ()
