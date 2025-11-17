@@ -65,7 +65,6 @@
                                "\\.el\\.elc$" ".elc" naive-elc-file)))
         (or (gethash elc-file comp--no-native-compile)
             (funcall native--compile-async-skip-p file load selector))))
-
 (advice-add 'native--compile-async-skip-p
     :around 'fixed-native--compile-async-skip-p)
 
@@ -108,7 +107,6 @@
             (apply function arguments)
             (when (> (count-screen-lines (window-start) (point) t) 1)
                 (set-window-vscroll (selected-window) offset t)))))
-
 (advice-add 'line-move :around 'fixed-line-move)
 
 
