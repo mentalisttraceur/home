@@ -6192,6 +6192,9 @@
             (message "ls %s" new-switches)))
     (evil-define-key* 'motion dired-mode-map "H" 'evil-dired-toggle-hidden))
 
+(defun time-greater-p (a b)
+    (time-less-p b a))
+
 (use-packages dired android-trash evil
     :config
     (defvar evil-dired-delete-keep-entries nil)
