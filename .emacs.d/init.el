@@ -6195,6 +6195,8 @@
 (defun time-greater-p (a b)
     (time-less-p b a))
 
+(defconst cpu-ticks-per-second (cdr (current-cpu-time)))
+
 (use-packages dired android-trash evil
     :config
     (defvar evil-dired-delete-keep-entries nil)
