@@ -8288,7 +8288,7 @@
                 (signal 'mpv-ipc-permission-denied (list path)))
             (file-error
                 (signal 'mpv-ipc-connection-refused (list path))))))
-(defun mpv-ipc--consume (socket)
+(defun mpv-ipc--receive (socket)
     (with-current-buffer (process-buffer socket)
         (goto-char (point-max))
         (while (not (search-backward "\n" nil t))
@@ -8301,11 +8301,10 @@
     (let* ((message `("command" ,command))
            (message (json-encode-plist message))
            (message (concat message "\n"))
-           (output  (process-buffer socket))
-           (reply   nil))
+           reply)
         (process-send-string socket message)
         (while (gethash "event"
-                   (setq reply (mpv-ipc--consume socket))))
+                   (setq reply (mpv-ipc--receive socket))))
         (let ((ipc-error (gethash "error" reply)))
             (unless (equal ipc-error "success")
                 (signal 'mpv-ipc-error (list ipc-error))))
