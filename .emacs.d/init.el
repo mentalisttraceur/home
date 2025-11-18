@@ -7155,7 +7155,7 @@
 
 (defvar face-remap-selected-window--window (selected-window))
 (defvar-local face-remap-selected-window--tagged nil)
-(defun face-remap-selected-window ()
+(defun face-remap-selected-window (&rest _)
     (set-window-parameter face-remap-selected-window--window
         'face-remap-selected-window nil)
     (setq face-remap-selected-window--window (selected-window))
