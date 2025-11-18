@@ -6270,11 +6270,9 @@
     (defun evil-dired--replacing-paste-1 (path to-path)
         (let ((new-path (dired-get-filename nil t)))
             (if new-path
-                (if (equal new-path path)
-                    nil
-                    (dired-delete-file new-path 'always)
-                    (evil-dired--paste-1 path new-path))
-                (evil-dired--paste-1 path to-path))))
+                (dired-delete-file new-path 'always)
+                (setq new-path to-path))
+            (evil-dired--paste-1 path new-path)))
     (defun evil-dired--paste (register &optional replace)
         (let* ((text (evil-paste-to-string 1 register))
                (paths (full-path-property-split nil nil text))
