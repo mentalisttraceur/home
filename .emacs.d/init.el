@@ -6220,7 +6220,7 @@
             (funcall action counter))))
 (provide 'occasional)
 
-(use-packages dired android-trash evil
+(use-packages dired android-trash evil occasional
     :config
     (defvar evil-dired-delete-keep-entries nil)
     (evil-define-operator evil-dired-delete
@@ -6228,15 +6228,19 @@
         :move-point nil
         :type line
         (interactive "<R><x><y>")
-        (let ((paths (full-path-property-split start end))
-              (lines 0)
-              (line (line-number-at-pos))
-              (column (current-column)))
+        (let* ((paths (full-path-property-split start end))
+               (lines 0)
+               (line (line-number-at-pos))
+               (column (current-column))
+               (progress (occasional-progress-counter
+                             (format "Deleting %%d/%d" (length paths)))))
             (dolist (path paths)
                 (if (android-trash-p path)
                     (dired-delete-file path 'always)
                     (android-trash path)
-                    (setq lines (1+ lines))))
+                    (setq lines (1+ lines)))
+                (funcall progress))
+            (message nil)
             (goto-char start)
             (forward-line lines)
             (setq end (point))
@@ -6273,21 +6277,25 @@
                 (dired-delete-file new-path 'always)
                 (setq new-path to-path))
             (evil-dired--paste-1 path new-path)))
-    (defun evil-dired--paste (register &optional replace)
+    (defun evil-dired--paste (count register &optional replace)
         (let* ((text (evil-paste-to-string 1 register))
                (paths (full-path-property-split nil nil text))
                (paste-1 (if replace
                             'evil-dired--replacing-paste-1
                             'evil-dired--paste-1))
                start end yank-handler
-               (moved nil))
-            (unless replace
-                (forward-line))
+               (moved nil)
+               (progress (occasional-progress-counter
+                             (format "Pasting %%d/%d"
+                                 (* (length paths) count)))))
             (setq start (pos-bol))
-            (dolist (path paths)
-                (when (funcall paste-1 path default-directory)
-                    (setq moved t))
-                (forward-line))
+            (dotimes (_ count)
+                (dolist (path paths)
+                    (when (funcall paste-1 path default-directory)
+                        (setq moved t))
+                    (forward-line)
+                    (funcall progress)))
+            (message nil)
             (when moved
                 (setq end (pos-bol))
                 (setq yank-handler (get-text-property 0 'yank-handler text))
@@ -6296,25 +6304,24 @@
                 (if register
                     (setq register (downcase register))
                     (setq register ?1))
-                (evil-set-register register text)))
-        (forward-line -1))
+                (evil-set-register register text))))
     (evil-define-command evil-dired-paste-after (count register)
         :suppress-operator t
         (interactive "p<x>")
         (evil-save-column
-            (dotimes (_ count)
-                (evil-dired--paste register))))
+            (forward-line)
+            (evil-dired--paste count register)
+            (forward-line -1)))
     (evil-define-key* 'motion dired-mode-map "p" 'evil-dired-paste-after)
     (evil-define-command evil-dired-paste-before (count register)
         :suppress-operator t
         (interactive "p<x>")
         (evil-save-column
             (let ((line (line-number-at-pos)))
-                (if (= line 1)
-                    (setq line 2)
-                    (forward-line -1))
-                (dotimes (_ count)
-                    (evil-dired--paste register))
+                (when (= line 1)
+                    (forward-line)
+                    (+= line 1))
+                (evil-dired--paste count register)
                 (goto-char (point-min))
                 (forward-line (1- line)))))
     (evil-define-key* 'motion dired-mode-map "P" 'evil-dired-paste-before)
@@ -6322,16 +6329,19 @@
         :suppress-operator t
         (interactive "p<x>")
         (evil-save-column
-            (dotimes (_ count)
-                (evil-dired--paste register t))))
+            (when (= (line-number-at-pos) 1)
+                (forward-line))
+            (evil-dired--paste count register t)))
     (evil-define-key* 'motion dired-mode-map "gp" 'evil-dired-replacing-paste-after)
     (evil-define-command evil-dired-replacing-paste-before (count register)
         :suppress-operator t
         (interactive "p<x>")
         (evil-save-column
             (let ((line (line-number-at-pos)))
-                (dotimes (_ count)
-                    (evil-dired--paste register t))
+                (when (= line 1)
+                    (forward-line)
+                    (+= line 1))
+                (evil-dired--paste count register t)
                 (goto-char (point-min))
                 (forward-line (1- line)))))
     (evil-define-key* 'motion dired-mode-map "gP" 'evil-dired-replacing-paste-before)
@@ -8633,8 +8643,7 @@
     (let* ((text    (evil-paste-to-string 1 register))
            (indexes (text-property-values nil nil 'mpv-index text))
            (index   (or (car indexes) 0)))
-        (dolist (_ indexes)
-            (music-playlist-remove index))
+        (music--delete-loop index (length indexes))
         (let ((column (current-column))
               (move   (if (< index (music--index-for-point! 0))
                           0
@@ -8651,6 +8660,13 @@
                 (beginning-of-buffer))))
     (unless paired
         (revert-buffer)))
+(defun music--delete-loop (index count)
+    (let ((progress (occasional-progress-counter
+                        (format "Unloading %%d/%d" count))))
+        (dotimes (_ count)
+            (music-playlist-remove index)
+            (funcall progress))
+        (message nil)))
 (evil-define-operator music-delete (start end type register yank-handler)
     :move-point nil
     :type line
@@ -8668,21 +8684,30 @@
 (defun music--paths-for-paste (register)
     (full-path-property-split nil nil (evil-paste-to-string 1 register)))
 (defun music--add (paths count index column offset move &optional paired)
-    (let ((paths (reverse paths)))
-        (dotimes (_ count)
-            (dolist (path paths)
-                (music-playlist-add path index))))
-    (music--undo-as
-        (music--undo-add paths count index column offset move paired))
-    (when move
-        (+= index -1 move (* count (length paths))))
+    (let ((total (* (length paths) count)))
+        (let ((paths (reverse paths))
+              (progress (occasional-progress-counter
+                            (format "Loading %%d/%d" total))))
+            (dotimes (_ count)
+                (dolist (path paths)
+                    (music-playlist-add path index)
+                    (funcall progress)))
+            (message nil))
+        (music--undo-as
+            (music--undo-add paths count index column offset move paired))
+        (when move
+            (+= index -1 move total)))
     (setq music--refresh-next-index index)
     (setq music--refresh-next-column column)
     (revert-buffer))
 (defun music--undo-add (paths count index column offset move &optional paired)
-    (let ((count (* count (length paths))))
+    (let* ((count (* count (length paths)))
+           (progress (occasional-progress-counter
+                         (format "Unloading %%d/%d" count))))
         (dotimes (_ count)
-            (music-playlist-remove index)))
+            (music-playlist-remove index)
+            (funcall progress))
+        (message nil))
     (music--undo-as
         (music--add paths count index column offset move paired))
     (setq music--refresh-next-index (- index offset))
@@ -8712,8 +8737,7 @@
            (indexes  (text-property-values start end 'mpv-index))
            (index    (or (car indexes) 0))
            (column   (current-column)))
-        (dolist (_ indexes)
-            (music-playlist-remove index))
+        (music--delete-loop index (length indexes))
         (music--undo-as
             (music--add replaced 1 index column 0 nil t))
         (music--add inserted count index column 0 move t)))
