@@ -6199,6 +6199,17 @@
 (defun seconds-to-cpu-ticks (seconds)
     (cons (truncate (* seconds cpu-ticks-per-second)) cpu-ticks-per-second))
 
+(defun occasional (action &optional interval)
+    (setq-if-nil interval 0.1)
+    (setq interval (seconds-to-cpu-ticks interval))
+    (lambda-let ((threshold (time-add (current-cpu-time) interval)))
+            (&rest arguments)
+        (when (time-greater-p (current-cpu-time) threshold)
+            (prog1
+                (apply action arguments)
+                (setq threshold (time-add (current-cpu-time) interval))))))
+(provide 'occasional)
+
 (use-packages dired android-trash evil
     :config
     (defvar evil-dired-delete-keep-entries nil)
