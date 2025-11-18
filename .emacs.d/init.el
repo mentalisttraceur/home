@@ -8304,9 +8304,9 @@
             (delete-region 1 (1+ (point))))))
 (defun mpv-ipc (socket command)
     (mpv-ipc--send socket command)
-    (let (reply)
-        (while (gethash "event"
-                   (setq reply (mpv-ipc--receive socket))))
+    (let ((reply (mpv-ipc--receive socket)))
+        (while (gethash "event" reply)
+            (setq reply (mpv-ipc--receive socket)))
         (let ((ipc-error (gethash "error" reply)))
             (unless (equal ipc-error "success")
                 (signal 'mpv-ipc-error (list ipc-error))))
