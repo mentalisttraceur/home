@@ -6208,6 +6208,16 @@
             (prog1
                 (apply action arguments)
                 (setq threshold (time-add (current-cpu-time) interval))))))
+(defun occasional--echo (format-string &rest arguments)
+    (let ((message-log-max nil))
+        (apply #'message format-string arguments)))
+(defun occasional-progress-counter (format-string)
+    (let ((echo (apply-partially #'occasional--echo format-string)))
+        (lambda-let ((action (occasional echo))
+                     (counter 0))
+                ()
+            (+= counter 1)
+            (funcall action counter))))
 (provide 'occasional)
 
 (use-packages dired android-trash evil
