@@ -8382,7 +8382,7 @@
     (unwind-protect
         (progn
             (music--refresh-cancel)
-            (music--refresh (current-buffer) t))
+            (music--refresh-raw t))
         (setq music--refresh-timer
               (run-with-timer 0.1 0.1 'music--refresh (current-buffer)))))
 (defvar-local music--current-entry-overlay nil)
@@ -8433,44 +8433,46 @@
 (defvar-local music--position-in-seek-bar nil)
 (defvar-local music--refresh-next-index nil)
 (defvar-local music--refresh-next-column nil)
-(defun music--refresh (buffer &optional full-redraw)
+(defun music--refresh (buffer)
     (when (get-buffer-window buffer 'visible)
         (with-current-buffer buffer
             (unless (or (evil-visual-state-p)
                         (evil-operator-state-p))
-                (save-point-line-and-column-with-scroll
-                    (let ((socket music--refresh-socket)
-                          (inhibit-quit nil))
-                        (if (equal (mpv-ipc-expand socket "${pause}") "yes")
-                            (face-remap-reset-base
-                                'music-current-entry)
-                            (face-remap-set-base
-                                'music-current-entry
-                                'music-current-playing-entry))
-                        (let ((inhibit-read-only t)
-                              (buffer-undo-list t))
-                            (if full-redraw
-                                (music--full-refresh socket)
-                                (music--fast-refresh socket)))))
-                (when-let* ((position (next-single-property-change
-                                          1 'mpv--position)))
-                    (progn
-                        (goto-char position)
-                        (setq music--position-in-seek-bar position)
-                        (setq temporary-goal-column (current-column))))
-                (when music--refresh-next-index
-                    (goto-char 1)
-                    (if-let* ((match (text-property-search-forward
-                                         'mpv-index
-                                         music--refresh-next-index
-                                         'equal)))
-                        (goto-char (prop-match-beginning match))
-                        (goto-char (point-max)))
-                    (setq music--refresh-next-index nil))
-                (when music--refresh-next-column
-                    (move-to-column music--refresh-next-column)
-                    (setq music--refresh-next-column nil)
-                    (setq temporary-goal-column (current-column)))))))
+                (music--refresh-raw nil)))))
+(defun music--refresh-raw (full-redraw)
+    (save-point-line-and-column-with-scroll
+        (let ((socket music--refresh-socket)
+              (inhibit-quit nil))
+            (if (equal (mpv-ipc-expand socket "${pause}") "yes")
+                (face-remap-reset-base
+                    'music-current-entry)
+                (face-remap-set-base
+                    'music-current-entry
+                    'music-current-playing-entry))
+            (let ((inhibit-read-only t)
+                  (buffer-undo-list t))
+                (if full-redraw
+                    (music--full-refresh socket)
+                    (music--fast-refresh socket)))))
+    (when-let* ((position (next-single-property-change
+                              1 'mpv--position)))
+        (progn
+            (goto-char position)
+            (setq music--position-in-seek-bar position)
+            (setq temporary-goal-column (current-column))))
+    (when music--refresh-next-index
+        (goto-char 1)
+        (if-let* ((match (text-property-search-forward
+                             'mpv-index
+                             music--refresh-next-index
+                             'equal)))
+            (goto-char (prop-match-beginning match))
+            (goto-char (point-max)))
+        (setq music--refresh-next-index nil))
+    (when music--refresh-next-column
+        (move-to-column music--refresh-next-column)
+        (setq music--refresh-next-column nil)
+        (setq temporary-goal-column (current-column))))
 (defun music--full-refresh (socket)
     (erase-buffer)
     (music--insert-playlist socket))
