@@ -6196,6 +6196,8 @@
     (time-less-p b a))
 
 (defconst cpu-ticks-per-second (cdr (current-cpu-time)))
+(defun seconds-to-cpu-ticks (seconds)
+    (cons (truncate (* seconds cpu-ticks-per-second)) cpu-ticks-per-second))
 
 (use-packages dired android-trash evil
     :config
