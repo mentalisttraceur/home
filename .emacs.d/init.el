@@ -5324,7 +5324,7 @@
         (add-hook 'evil-visual-state-entry-hook   'fancy-input-off)
         (add-hook 'evil-replace-state-entry-hook  'fancy-input-off)
         (add-hook 'evil-insert-state-entry-hook   'fancy-input-off)
-        (add-hook 'evil-emacs-state-entry-hook   'fancy-input-on))
+        (add-hook 'evil-emacs-state-entry-hook    'fancy-input-on))
     (define-prefix-command 'space-map)
     (define-key evil-motion-state-map " " 'space-map)
     (dolist (map (list evil-motion-state-map evil-insert-state-map
