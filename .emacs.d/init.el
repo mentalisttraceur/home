@@ -7586,41 +7586,6 @@
 
 (use-package markdown-mode
     :config
-    (defun make-backtick-fence-regex (length &optional end-of-line)
-        (string-replace "~" "`"
-            (markdown-make-tilde-fence-regex length end-of-line)))
-    (setcar
-        (nth 1 (nth 2 markdown-fenced-block-pairs))
-        'make-backtick-fence-regex)
-    (defconst backtick-code-fence-start-regex
-        (concat
-            "^[[:blank:]]*"
-            "\\(?1:```+\\)"
-            "\\(?2:[[:blank:]]*\\)"
-            "\\(?3:[^`{}[:space:]]+?\\)?"
-            "\\(?:[[:blank:]]+\\(?4:.+?\\)\\)?"
-            "\\(?5:[[:blank:]]*\\)$"))
-    (defconst backtick-directive-fence-start-regex
-        (concat
-            "^[[:blank:]]*"
-            "\\(?1:```+\\)"
-            "\\(?2:[[:blank:]]*{[[:blank:]]*\\)"
-            "\\(?3:[^`[:space:]]+?\\)?"
-            "\\(?:[[:blank:]]+\\(?4:.+?\\)\\)?"
-            "\\(?5:[[:blank:]]*}[[:blank:]]*\\)$"))
-    (setcar
-        (nth 0 (nth 2 markdown-fenced-block-pairs))
-        backtick-code-fence-start-regex)
-    (push
-        (list
-            (list
-                backtick-directive-fence-start-regex
-                'markdown-directive-block-begin)
-            (list
-                (car (nth 1 (nth 2 markdown-fenced-block-pairs)))
-                'markdown-directive-block-end)
-            nil)
-        markdown-fenced-block-pairs)
     (define-key markdown-mode-mouse-map [mouse-2] 'mouse-set-point)
     (define-key markdown-mode-map [backtab] nil))
 
