@@ -7765,7 +7765,7 @@
     (setcdr (assoc 'keyword denote-file-name-slug-functions) 'identity)
     (defun denoted-rename-file-prompt (old-path new-path)
         (y-or-n-p
-            (format "Rename %s to %s?"
+            (format "Rename?\n%s\n%s"
                 (propertize (file-name-nondirectory old-path)
                     'face 'denote-faces-prompt-old-name)
                 (propertize (file-name-nondirectory new-path)
