@@ -2534,9 +2534,9 @@
     (use-package em-tramp
         :defer t
         :config
-        (defun eshell/sudo (&rest args)
+        (defun eshell/sudo (&rest arguments)
             (throw 'eshell-replace-command
-                `(eshell-named-command ',(car args) ',(cdr args))))))
+                `(eshell-named-command ',(car arguments) ',(cdr arguments))))))
 
 (use-package tramp
     :config
