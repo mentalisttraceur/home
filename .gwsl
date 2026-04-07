@@ -1,3 +1,9 @@
-windows_ip=`ip route show default | cut -d' ' -f3`
+case `wslinfo --networking-mode` in
+mirrored)
+    windows_ip='localhost'
+;;
+*)
+    windows_ip=`ip route show default | cut -d' ' -f3`
+esac
 export DISPLAY="$windows_ip:0.0"
 export PULSE_SERVER="tcp:$windows_ip"
