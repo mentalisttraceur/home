@@ -10,8 +10,6 @@
 
 
 (menu-bar-mode -1)
-(when android
-    (defvar initial-frame-width nil))
 (defun initialize-frame (frame)
     (when (display-graphic-p frame)
         (tool-bar-mode -1)
@@ -25,12 +23,9 @@
                         "DejaVu Sans Mono"))
             (set-fontset-font t (cons 0 (max-char)) font nil 'prepend))
         (set-face-attribute 'fixed-pitch nil :family "DejaVu Sans Mono")
-        (set-frame-font "DejaVu Sans Mono-11.5")
-        (when android
-            (unless initial-frame-width
-                (setq initial-frame-width (frame-width)))
-            (when (member initial-frame-width '(47 82))
-                (set-frame-font "DejaVu Sans Mono-11.0")))
+        (if android
+            (set-frame-font "DejaVu Sans Mono-11.0")
+            (set-frame-font "DejaVu Sans Mono-11.5"))
         (set-foreground-color "#A0A0A0")
         (set-cursor-color "#FFFFFF"))
     (if android
