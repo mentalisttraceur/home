@@ -2234,7 +2234,7 @@
             (when (equal (char-before) ?\n)
                 (delete-char -1))
             (prog1
-                (string-replace "\0" "" (buffer-string))
+                (buffer-string)
                 (erase-buffer)))
         (file-missing)))
 (defconst histdir--datetime-regex "^[0-9]\\{8\\}T[0-9]\\{6\\},[0-9]\\{9\\}Z$")
