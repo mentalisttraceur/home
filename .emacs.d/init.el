@@ -5071,56 +5071,37 @@
     (setq evil-mode-line-format nil)
     (setq evil-want-minibuffer t)
     (evil-select-search-module 'evil-search-module 'evil-search)
-    (setq mode-line (if (facep 'mode-line-active) 'mode-line-active 'mode-line))
-    (defvar-local color-code-vi-state--cookie-active nil)
-    (defvar-local color-code-vi-state--cookie-inactive nil)
-    (defvar-local color-code-vi-state--cookie-minibuffer nil)
-    (defun color-code-vi-state ()
-        (when color-code-vi-state--cookie-active
-            (face-remap-remove-relative color-code-vi-state--cookie-active))
-        (when color-code-vi-state--cookie-inactive
-            (face-remap-remove-relative color-code-vi-state--cookie-inactive))
-        (when color-code-vi-state--cookie-minibuffer
-            (face-remap-remove-relative color-code-vi-state--cookie-minibuffer))
-        (when (minibufferp)
-            (setq color-code-vi-state--cookie-minibuffer
-                (face-remap-add-relative 'minibuffer-prompt :foreground (cond
-                    ((evil-normal-state-p)   "#FF0000")
-                    ((evil-operator-state-p) "#FF8000")
-                    ((evil-insert-state-p)   "#00FF00")
-                    ((evil-replace-state-p)  "#FFFF00")
-                    ((evil-visual-state-p)   "#8080FF")
-                    ((evil-emacs-state-p)    "#A020FF")
-                    ((evil-motion-state-p)   "#A0E0FF")
-                    (t                       "#FFFFFF")))))
-        (setq color-code-vi-state--cookie-active
-            (face-remap-add-relative mode-line :background (cond
-                ((evil-normal-state-p)   "#FF4040")
-                ((evil-operator-state-p) "#FFA060")
-                ((evil-insert-state-p)   "#40FF40")
-                ((evil-replace-state-p)  "#FFFF80")
-                ((evil-visual-state-p)   "#C0C0FF")
-                ((evil-emacs-state-p)    "#C040FF")
-                ((evil-motion-state-p)   "#80FFFF")
-                (t                       "#FFFFFF"))))
-        (setq color-code-vi-state--cookie-inactive
-            (face-remap-add-relative 'mode-line-inactive :background (cond
-                ((evil-normal-state-p)   "#6C2424")
-                ((evil-operator-state-p) "#6C4824")
-                ((evil-insert-state-p)   "#246C24")
-                ((evil-replace-state-p)  "#6C6C36")
-                ((evil-visual-state-p)   "#24246C")
-                ((evil-emacs-state-p)    "#48006C")
-                ((evil-motion-state-p)   "#366C6C")
-                (t                       "#303030")))))
-    (add-hook 'evil-normal-state-entry-hook   'color-code-vi-state)
-    (add-hook 'evil-operator-state-entry-hook 'color-code-vi-state)
-    (add-hook 'evil-insert-state-entry-hook   'color-code-vi-state)
-    (add-hook 'evil-replace-state-entry-hook  'color-code-vi-state)
-    (add-hook 'evil-visual-state-entry-hook   'color-code-vi-state)
-    (add-hook 'evil-emacs-state-entry-hook    'color-code-vi-state)
-    (add-hook 'evil-motion-state-entry-hook   'color-code-vi-state)
-    (set-face-foreground 'mode-line "#010101")
+    (defmacro colorize-evil-state (minibuffer active inactive)
+        (let ((mode-line (if (facep 'mode-line-active)
+                             'mode-line-active
+                             'mode-line)))
+            `(lambda ()
+                 (when (minibufferp)
+                     (face-remap-set-base 'minibuffer-prompt
+                         '(:foreground ,minibuffer)))
+                 (face-remap-set-base ',mode-line
+                     '(:foreground "#010101"
+                       :background ,active))
+                 (face-remap-set-base 'mode-line-inactive
+                     '(:foreground "#D0D0D0"
+                       :background ,inactive)))))
+    (add-hook 'evil-normal-state-entry-hook
+        (colorize-evil-state "#FF0000" "#FF4040" "#6C2424"))
+    (add-hook 'evil-operator-state-entry-hook
+        (colorize-evil-state "#FF8000" "#FFA060" "#6C4824"))
+    (add-hook 'evil-insert-state-entry-hook
+        (colorize-evil-state "#00FF00" "#40FF40" "#246C24"))
+    (add-hook 'evil-replace-state-entry-hook
+        (colorize-evil-state "#FFFF00" "#FFFF80" "#6C6C36"))
+    (add-hook 'evil-visual-state-entry-hook
+        (colorize-evil-state "#8080FF" "#C0C0FF" "#24246C"))
+    (add-hook 'evil-emacs-state-entry-hook
+        (colorize-evil-state "#A020FF" "#C040FF" "#48006C"))
+    (add-hook 'evil-motion-state-entry-hook
+        (colorize-evil-state "#A0E0FF" "#80FFFF" "#366C6C"))
+    (set-face-foreground 'minibuffer-prompt "#FFFFFF")
+    (set-face-background 'mode-line "#FFFFFF")
+    (set-face-background 'mode-line-inactive "#303030")
     (setq evil-insert-state-cursor '(bar . 3))
     (setq evil-cross-lines t)
     (defun fixed-evil-goto-line (evil-goto-count &optional count)
