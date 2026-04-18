@@ -5109,7 +5109,7 @@
                     ((evil-visual-state-p)   "#24246C")
                     ((evil-emacs-state-p)    "#48006C")
                     ((evil-motion-state-p)   "#366C6C")
-                    (t                       "#202020"))))))
+                    (t                       "#303030"))))))
     (add-hook 'evil-normal-state-entry-hook   'color-code-vi-state)
     (add-hook 'evil-operator-state-entry-hook 'color-code-vi-state)
     (add-hook 'evil-insert-state-entry-hook   'color-code-vi-state)
