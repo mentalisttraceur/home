@@ -7150,16 +7150,16 @@
 (put 'eshell/ro 'eshell-no-numeric-conversions t)
 
 (defvar face-remap-selected-window--window (selected-window))
-(defvar-local face-remap-selected-window--tagged nil)
+(defvar-local face-remap-selected-window--initialized nil)
 (defun face-remap-selected-window (&rest _)
     (set-window-parameter face-remap-selected-window--window
         'face-remap-selected-window nil)
     (setq face-remap-selected-window--window (selected-window))
-    (unless face-remap-selected-window--tagged
+    (unless face-remap-selected-window--initialized
         (face-remap-add-relative 'default
             '(:filtered (:window face-remap-selected-window t)
                  (:background "#010101")))
-        (setq face-remap-selected-window--tagged t))
+        (setq face-remap-selected-window--initialized t))
     (set-window-parameter face-remap-selected-window--window
         'face-remap-selected-window t))
 (add-function :after after-focus-change-function 'face-remap-selected-window)
