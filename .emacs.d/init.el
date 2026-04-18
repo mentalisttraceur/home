@@ -5072,15 +5072,18 @@
     (setq evil-want-minibuffer t)
     (evil-select-search-module 'evil-search-module 'evil-search)
     (setq mode-line (if (facep 'mode-line-active) 'mode-line-active 'mode-line))
-    (defvar-local color-code-vi-state--cookie-1 nil)
-    (defvar-local color-code-vi-state--cookie-2 nil)
+    (defvar-local color-code-vi-state--cookie-active nil)
+    (defvar-local color-code-vi-state--cookie-inactive nil)
+    (defvar-local color-code-vi-state--cookie-minibuffer nil)
     (defun color-code-vi-state ()
-        (when color-code-vi-state--cookie-1
-            (face-remap-remove-relative color-code-vi-state--cookie-1))
-        (when color-code-vi-state--cookie-2
-            (face-remap-remove-relative color-code-vi-state--cookie-2))
-        (if (minibufferp)
-            (setq color-code-vi-state--cookie-1
+        (when color-code-vi-state--cookie-active
+            (face-remap-remove-relative color-code-vi-state--cookie-active))
+        (when color-code-vi-state--cookie-inactive
+            (face-remap-remove-relative color-code-vi-state--cookie-inactive))
+        (when color-code-vi-state--cookie-minibuffer
+            (face-remap-remove-relative color-code-vi-state--cookie-minibuffer))
+        (when (minibufferp)
+            (setq color-code-vi-state--cookie-minibuffer
                 (face-remap-add-relative 'minibuffer-prompt :foreground (cond
                     ((evil-normal-state-p)   "#FF0000")
                     ((evil-operator-state-p) "#FF8000")
@@ -5089,27 +5092,27 @@
                     ((evil-visual-state-p)   "#8080FF")
                     ((evil-emacs-state-p)    "#A020FF")
                     ((evil-motion-state-p)   "#A0E0FF")
-                    (t                       "#FFFFFF"))))
-            (setq color-code-vi-state--cookie-1
-                (face-remap-add-relative mode-line :background (cond
-                    ((evil-normal-state-p)   "#FF4040")
-                    ((evil-operator-state-p) "#FFA060")
-                    ((evil-insert-state-p)   "#40FF40")
-                    ((evil-replace-state-p)  "#FFFF80")
-                    ((evil-visual-state-p)   "#C0C0FF")
-                    ((evil-emacs-state-p)    "#C040FF")
-                    ((evil-motion-state-p)   "#80FFFF")
-                    (t                       "#FFFFFF"))))
-            (setq color-code-vi-state--cookie-2
-                (face-remap-add-relative 'mode-line-inactive :background (cond
-                    ((evil-normal-state-p)   "#6C2424")
-                    ((evil-operator-state-p) "#6C4824")
-                    ((evil-insert-state-p)   "#246C24")
-                    ((evil-replace-state-p)  "#6C6C36")
-                    ((evil-visual-state-p)   "#24246C")
-                    ((evil-emacs-state-p)    "#48006C")
-                    ((evil-motion-state-p)   "#366C6C")
-                    (t                       "#303030"))))))
+                    (t                       "#FFFFFF")))))
+        (setq color-code-vi-state--cookie-active
+            (face-remap-add-relative mode-line :background (cond
+                ((evil-normal-state-p)   "#FF4040")
+                ((evil-operator-state-p) "#FFA060")
+                ((evil-insert-state-p)   "#40FF40")
+                ((evil-replace-state-p)  "#FFFF80")
+                ((evil-visual-state-p)   "#C0C0FF")
+                ((evil-emacs-state-p)    "#C040FF")
+                ((evil-motion-state-p)   "#80FFFF")
+                (t                       "#FFFFFF"))))
+        (setq color-code-vi-state--cookie-inactive
+            (face-remap-add-relative 'mode-line-inactive :background (cond
+                ((evil-normal-state-p)   "#6C2424")
+                ((evil-operator-state-p) "#6C4824")
+                ((evil-insert-state-p)   "#246C24")
+                ((evil-replace-state-p)  "#6C6C36")
+                ((evil-visual-state-p)   "#24246C")
+                ((evil-emacs-state-p)    "#48006C")
+                ((evil-motion-state-p)   "#366C6C")
+                (t                       "#303030")))))
     (add-hook 'evil-normal-state-entry-hook   'color-code-vi-state)
     (add-hook 'evil-operator-state-entry-hook 'color-code-vi-state)
     (add-hook 'evil-insert-state-entry-hook   'color-code-vi-state)
