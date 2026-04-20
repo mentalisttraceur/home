@@ -5311,7 +5311,7 @@
         (defun fancy-input--post-text-conversion ()
             (when (member last-command-event '(?⁰ ?¹))
                 (delete-char -1)
-                (evil-force-normal-state)
+                (evil-exit-emacs-state)
                 t))
         (setq-default post-text-conversion-hook
             '(fancy-input--post-text-conversion))
