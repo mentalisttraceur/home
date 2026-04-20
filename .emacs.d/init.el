@@ -5071,11 +5071,12 @@
     (setq evil-mode-line-format nil)
     (setq evil-want-minibuffer t)
     (evil-select-search-module 'evil-search-module 'evil-search)
-    (defmacro colorize-evil-state (minibuffer active inactive)
-        (let ((mode-line (if (facep 'mode-line-active)
+    (defmacro evil-color (state minibuffer active inactive)
+        (let ((function (intern (format "evil-color-%s-state" state)))
+              (mode-line (if (facep 'mode-line-active)
                              'mode-line-active
                              'mode-line)))
-            `(lambda ()
+            `(defun ,function ()
                  (when (minibufferp)
                      (face-remap-set-base 'minibuffer-prompt
                          '(:foreground ,minibuffer)))
@@ -5086,19 +5087,19 @@
                      '(:foreground "#D0D0D0"
                        :background ,inactive)))))
     (add-hook 'evil-normal-state-entry-hook
-        (colorize-evil-state "#FF0000" "#FF4040" "#6C2424"))
+        (evil-color normal   "#FF0000" "#FF4040" "#6C2424"))
     (add-hook 'evil-operator-state-entry-hook
-        (colorize-evil-state "#FF8000" "#FFA060" "#6C4824"))
+        (evil-color operator "#FF8000" "#FFA060" "#6C4824"))
     (add-hook 'evil-insert-state-entry-hook
-        (colorize-evil-state "#00FF00" "#40FF40" "#246C24"))
+        (evil-color insert   "#00FF00" "#40FF40" "#246C24"))
     (add-hook 'evil-replace-state-entry-hook
-        (colorize-evil-state "#FFFF00" "#FFFF80" "#6C6C36"))
+        (evil-color replace  "#FFFF00" "#FFFF80" "#6C6C36"))
     (add-hook 'evil-visual-state-entry-hook
-        (colorize-evil-state "#8080FF" "#C0C0FF" "#24246C"))
+        (evil-color visual   "#8080FF" "#C0C0FF" "#24246C"))
     (add-hook 'evil-emacs-state-entry-hook
-        (colorize-evil-state "#A020FF" "#C040FF" "#48006C"))
+        (evil-color emacs    "#A020FF" "#C040FF" "#48006C"))
     (add-hook 'evil-motion-state-entry-hook
-        (colorize-evil-state "#A0E0FF" "#80FFFF" "#366C6C"))
+        (evil-color motion   "#A0E0FF" "#80FFFF" "#366C6C"))
     (set-face-foreground 'minibuffer-prompt "#FFFFFF")
     (set-face-background 'mode-line "#FFFFFF")
     (set-face-background 'mode-line-inactive "#303030")
