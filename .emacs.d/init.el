@@ -5066,7 +5066,9 @@
         (if override-evil-mode-line-tag
             override-evil-mode-line-tag
             (if (boundp 'evil-mode-line-tag)
-                (substring evil-mode-line-tag 2 3)
+                (if (stringp evil-mode-line-tag)
+                    (substring evil-mode-line-tag 2 3)
+                    "?")
                 " "))))
     (setq evil-mode-line-format nil)
     (setq evil-want-minibuffer t)
