@@ -5039,6 +5039,7 @@
                 (evil-get-register register)
                 (current-kill 0))
             (prefix-numeric-value count)))
+    (define-key evil-replace-state-map "\C-z" 'evil-emacs-state)
     (define-key evil-motion-state-map "\"" 'evil-use-register)
     (define-key evil-motion-state-map "ga" 'what-cursor-position)
     (define-key evil-motion-state-map "gA" 'describe-char)
