@@ -5145,6 +5145,8 @@
     (define-key evil-motion-state-map "\t" nil)
     (define-key evil-normal-state-map "\C-?" 'evil-delete-backward-char)
     (define-key evil-normal-state-map "\C-r" nil)
+    (define-key evil-replace-state-map "\C-r" nil)
+    (define-key evil-insert-state-map "\C-r" nil)
     (define-key evil-motion-state-map [escape] 'quit-window)
     (define-key evil-operator-state-map [escape] 'evil-force-normal-state)
     (evil-define-command evil-replacing-paste-before (count &optional register)
