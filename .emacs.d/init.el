@@ -5051,8 +5051,6 @@
     (define-key evil-motion-state-map "K" 'evil-window-top)
     (define-key evil-motion-state-map "L" nil)
     (define-key evil-normal-state-map "q" nil)
-    (define-key evil-visual-state-map "q" 'evil-exit-visual-state)
-    (define-key evil-operator-state-map "q" 'evil-force-normal-state)
     (defvar override-evil-mode-line-tag nil)
     (defmacro with-override-evil-mode-line-tag (tag help-string &rest body)
         (declare (indent 2))
@@ -5318,7 +5316,6 @@
         (dolist (key '([?\C- ] "\C-@"))
             (define-key map key 'evil-execute-in-normal-state)))
     (define-key space-map [escape] 'ignore)
-    (define-key space-map "q" 'ignore)
     (define-key space-map "Q" 'delete-frame)
     (define-key space-map "!" 'save-buffers-kill-emacs)
     (define-key universal-argument-map [escape] 'ignore)
@@ -6019,18 +6016,16 @@
             (evil-local-set-key 'normal key 'evil-minibuffer-next-line))
         (dolist (key '([up] "k" "л"))
             (evil-local-set-key 'normal key 'evil-minibuffer-previous-line))
-        (let ((quit (cond
-                        ((memq this-command '(history-execute history-change))
-                            'history-quit)
-                        ((eq this-command 'consult-line)
-                            'consult-line-quit)
-                        ((eq this-command 'consult-completion-in-region)
-                            'vertico-exit)
-                        (t
-                            'abort-minibuffers))))
-            (dolist (key '([escape] "q" "й"))
-                (evil-local-set-key 'normal   key quit)
-                (evil-local-set-key 'operator key quit))))
+        (evil-local-set-key 'normal [escape]
+            (cond
+                ((memq this-command '(history-execute history-change))
+                    'history-quit)
+                ((eq this-command 'consult-line)
+                    'consult-line-quit)
+                ((eq this-command 'consult-completion-in-region)
+                    'vertico-exit)
+                (t
+                    'abort-minibuffers))))
     (add-hook 'minibuffer-setup-hook 'misc-minibuffer-setup)
     (defun wrap-evil-undo-step (function &rest arguments)
         (evil-end-undo-step)
@@ -6614,8 +6609,6 @@
         "i" 'evil-undo-tree-motion-state)
     (evil-define-key* 'motion undo-tree-visualizer-mode-map
         [escape] 'evil-undo-tree-replace-state)
-    (define-key undo-tree-visualizer-selection-mode-map
-        "q" 'evil-undo-tree-replace-state)
     (evil-define-key* 'replace undo-tree-visualizer-mode-map
         [left] 'undo-tree-visualize-jump-branch-left)
     (evil-define-key* 'replace undo-tree-visualizer-mode-map
@@ -7518,14 +7511,12 @@
     (define-key window-state-map "W" 'window-state-swap-operator)
     (define-key window-state-map "\"" 'window-state-use-register)
     (define-key window-state-map "s" 'window-state-send-operator)
-    (define-key window-state-map "q" 'window-state-quit)
     (define-key window-state-map [escape] 'window-state-quit)
     (define-key window-state-map "\C-g" 'window-state-quit)
     (define-prefix-command 'window-state-g-map)
     (define-key window-state-map "g" 'window-state-g-map)
     (define-key window-state-g-map "p" 'window-state-fast-paste-move-operator)
     (define-key window-state-g-map "P" 'window-state-fast-paste-operator)
-    (define-key window-state-g-map "q" 'window-state-quit)
     (define-key window-state-g-map [escape] 'window-state-quit)
     (define-key window-state-g-map "\C-g" 'window-state-quit)
     (setq aw-dispatch-function
