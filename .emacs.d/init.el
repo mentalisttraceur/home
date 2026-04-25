@@ -407,6 +407,11 @@
     `(apply-split-nest let-uncons-1 ,uncons-list 3 ,body))
 
 
+(defmacro gv-letplace* (gv-letplace-list &rest body)
+    (declare (indent 1))
+    `(apply-split-nest gv-letplace ,gv-letplace-list 2 ,body))
+
+
 (defmacro augmented-assignment (operator place &rest operands)
     (gv-get place
         (lambda-let (operator operands) (getter setter)
