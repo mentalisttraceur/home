@@ -412,6 +412,16 @@
     `(apply-split-nest gv-letplace ,gv-letplace-list 2 ,body))
 
 
+(defmacro swap (place1 place2)
+    (let ((--swap-- (make-symbol "--swap--")))
+        (gv-letplace* ((getter1 setter1) place1
+                       (getter2 setter2) place2)
+            `(let ((,--swap-- ,getter1))
+                 (prog1
+                     ,(funcall setter1 getter2)
+                     ,(funcall setter2 --swap--))))))
+
+
 (defmacro augmented-assignment (operator place &rest operands)
     (gv-get place
         (lambda-let (operator operands) (getter setter)
