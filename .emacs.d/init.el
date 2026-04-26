@@ -5245,6 +5245,7 @@
         (with-advice (('evil-emacs-state-p :override 'ignore))
             (apply evil-esc arguments)))
     (advice-add 'evil-esc :around 'fixed-evil-esc)
+    (define-key evil-emacs-state-map [escape] 'evil-force-normal-state)
     (defun lookup-evil-key (state keymap key &optional accept-default)
         (when state
             (setq keymap (evil-get-auxiliary-keymap keymap state)))
