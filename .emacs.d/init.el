@@ -5603,235 +5603,12 @@
             (evil-initialize-state)
             (dolist (key '([escape] "q" "й"))
                 (evil-local-set-key 'normal key 'quit-window))))
-    (defun pop-to-command--not-a-file (name)
-        (pop-to-command
-            (list "echo" (concat (buffer-name) " is not visiting a file"))
-            (buffer-name)
-            name))
-    (defun diff-unsaved-changes ()
-        (interactive)
-        (when (not buffer-file-name)
-            (when-let* ((buffer (parent-buffer-search 'buffer-file-name)))
-                (set-buffer buffer)))
-        (add-single-use-hook 'pop-to-command-setup-hook
-            (parent-buffer-setter))
-        (if (not buffer-file-name)
-            (pop-to-command--not-a-file "Diff unsaved")
-            (with-temporary-directory directory
-                (let* ((file-name    (file-name-nondirectory buffer-file-name))
-                       (file         (concat directory "/" file-name))
-                       (unsaved-name (concat "unsaved " file-name))
-                       (unsaved      (concat directory "/" unsaved-name))
-                       (source-directory default-directory)
-                       (default-directory "~"))
-                    (if (file-exists-p buffer-file-name)
-                        (copy-file buffer-file-name file)
-                        (write-region 1 1 file))
-                    (write-file-no-visit unsaved)
-                    (when-let* ((mode (file-modes file)))
-                        (set-file-modes unsaved mode))
-                    (add-single-use-hook 'eshell-exec-hook
-                        (lambda-let (source-directory) (_process)
-                            (setq default-directory source-directory)))
-                    (add-single-use-hook 'pop-to-command-setup-hook
-                        (lambda-let (directory) ()
-                            (setq default-directory directory)))
-                    (pop-to-command
-                        (list "git" "diff" "--no-index" file-name unsaved-name)
-                        (buffer-name)
-                        "Diff unsaved"
-                        (apply-partially 'diff-unsaved-changes--finish
-                            (current-buffer) directory source-directory)))
-                (setq directory nil))))
-    (defun diff-unsaved-changes--finish (buffer directory source-directory)
-        (unwind-protect
-            (refresh-modified-state buffer)
-            (delete-directory directory t)
-            (setq default-directory source-directory)))
-    (defun diff-buffer--pick (prompt)
-        (if-let* ((window (next-window-other-buffer nil 'never)))
-            (window-buffer window)
-            (read-other-buffer prompt)))
-    (defun diff-buffer (buffer-1 buffer-2)
-        (interactive (list
-                         (diff-buffer--pick "Diff from buffer: ")
-                         (current-buffer)))
-        (setq buffer-1 (get-buffer buffer-1))
-        (setq buffer-2 (get-buffer buffer-2))
-        (with-temporary-directory directory
-            (let* ((name-1 (file-name-nondirectory (buffer-name buffer-1)))
-                   (file-1 (concat directory "/" name-1))
-                   (name-2 (file-name-nondirectory (buffer-name buffer-2)))
-                   (file-2 (concat directory "/" name-2))
-                   (source-directory default-directory)
-                   (default-directory "~"))
-                (when (equal name-1 name-2)
-                    (setq name-2 (concat "(2) " name-2))
-                    (setq file-2 (concat directory "/" name-2)))
-                (let ((jka-compr-inhibit t))
-                    (with-current-buffer buffer-1
-                        (write-file-no-visit file-1))
-                    (with-current-buffer buffer-2
-                        (write-file-no-visit file-2)))
-                (add-single-use-hook 'pop-to-command-setup-hook
-                    (parent-buffer-setter))
-                (add-single-use-hook 'eshell-exec-hook
-                    (lambda-let (source-directory) (_process)
-                        (setq default-directory source-directory)))
-                (add-single-use-hook 'pop-to-command-setup-hook
-                    (lambda-let (directory) ()
-                        (setq default-directory directory)))
-                (pop-to-command
-                    (list "git" "diff" "--no-index" name-1 name-2)
-                    (concat name-1 " -> " name-2)
-                    "Diff buffer"
-                    (apply-partially 'diff-buffer--finish
-                        directory source-directory)))
-            (setq directory nil)))
-    (defun diff-buffer--finish (directory source-directory)
-        (delete-directory directory t)
-        (setq default-directory source-directory))
     (define-key space-map "c"
         (lambda (prefix-argument)
             (interactive "P")
             (if prefix-argument
                 (become-command 'diff-buffer)
                 (become-command 'diff-unsaved-changes))))
-    (defun partial-save ()
-        (interactive)
-        (when (not buffer-file-name)
-            (when-let* ((buffer (parent-buffer-search 'buffer-file-name)))
-                (set-buffer buffer)))
-        (add-single-use-hook 'pop-to-command-setup-hook
-            (parent-buffer-setter))
-        (if (not buffer-file-name)
-            (pop-to-command--not-a-file "Partial save")
-            (with-temporary-directory directory
-                (let* ((file-name (file-name-nondirectory buffer-file-name))
-                       (file      (concat directory "/" file-name))
-                       (unsaved   (concat directory "/unsaved " file-name))
-                       (source-directory default-directory)
-                       (default-directory "~"))
-                    (if (file-exists-p buffer-file-name)
-                        (copy-file buffer-file-name file)
-                        (write-region 1 1 file))
-                    (write-file-no-visit unsaved)
-                    (add-single-use-hook 'eshell-exec-hook
-                        (lambda-let (source-directory) (_process)
-                            (setq default-directory source-directory)))
-                    (pop-to-command
-                        (list "gp" file unsaved)
-                        (buffer-name)
-                        "Partial save"
-                        (apply-partially 'partial-save--finish
-                            (current-buffer) directory source-directory file)))
-                (setq directory nil))))
-    (defun partial-save--finish (buffer directory source-directory file)
-        (unwind-protect
-            (with-current-buffer buffer
-                (when (or (file-exists-p buffer-file-name)
-                          (> (file-size file) 0))
-                    (copy-file file buffer-file-name t))
-                (refresh-modified-state buffer))
-            (delete-directory directory t)
-            (setq default-directory source-directory)))
-    (defun partial-revert ()
-        (interactive)
-        (when (not buffer-file-name)
-            (when-let* ((buffer (parent-buffer-search 'buffer-file-name)))
-                (set-buffer buffer)))
-        (if (not buffer-file-name)
-            (call-interactively 'revert-buffer)
-            (with-temporary-directory directory
-                (let* ((file-name (file-name-nondirectory buffer-file-name))
-                       (file      (concat directory "/" file-name))
-                       (unsaved   (concat directory "/unsaved " file-name))
-                       (source-directory default-directory)
-                       (default-directory "~"))
-                    (if (file-exists-p buffer-file-name)
-                        (copy-file buffer-file-name file)
-                        (write-region 1 1 file))
-                    (write-file-no-visit unsaved)
-                    (add-single-use-hook 'pop-to-command-setup-hook
-                        (parent-buffer-setter))
-                    (add-single-use-hook 'eshell-exec-hook
-                        (lambda-let (source-directory) (_process)
-                            (setq default-directory source-directory)))
-                    (pop-to-command
-                        (list "gp" unsaved file)
-                        (buffer-name)
-                        "Partial revert"
-                        (apply-partially 'partial-revert--finish
-                            (current-buffer)
-                            directory
-                            source-directory
-                            unsaved)))
-                (setq directory nil))))
-    (defun partial-revert--finish (buffer directory source-directory unsaved)
-        (unwind-protect
-            (with-current-buffer buffer
-                (let ((buffer-file-name unsaved))
-                    (revert-buffer t t t))
-                (setq buffer-file-truename
-                    (abbreviate-file-name (file-truename buffer-file-name)))
-                (refresh-modified-state buffer))
-            (delete-directory directory t)
-            (setq default-directory source-directory)))
-    (defvar partial-copy-from-current-to-target nil)
-    (defun partial-copy (buffer-1 buffer-2)
-        (interactive (if partial-copy-from-current-to-target
-                         (list
-                             (current-buffer)
-                             (diff-buffer--pick "Copy to buffer: "))
-                         (list
-                             (diff-buffer--pick "Copy from buffer: ")
-                             (current-buffer))))
-        (setq buffer-1 (get-buffer buffer-1))
-        (setq buffer-2 (get-buffer buffer-2))
-        (add-single-use-hook 'pop-to-command-setup-hook
-            (parent-buffer-setter))
-        (if (not (or (derived-mode-p 'text-mode 'prog-mode)
-                     (eq major-mode 'fundamental-mode)))
-            (pop-to-command
-                (list "echo" (concat (buffer-name buffer-2) " is special"))
-                (buffer-name)
-                "Partial copy")
-            (add-single-use-hook 'eshell-exec-hook
-                (lambda-let ((directory default-directory)) (_process)
-                    (setq default-directory directory)))
-            (with-temporary-directory directory
-                (let* ((name-1 (file-name-nondirectory (buffer-name buffer-1)))
-                       (file-1 (concat directory "/" name-1))
-                       (name-2 (file-name-nondirectory (buffer-name buffer-2)))
-                       (file-2 (concat directory "/" name-2))
-                       (source-directory default-directory)
-                       (default-directory "~"))
-                    (when (equal name-1 name-2)
-                        (setq name-2 (concat "(2) " name-2))
-                        (setq file-2 (concat directory "/" name-2)))
-                    (let ((jka-compr-inhibit t))
-                        (with-current-buffer buffer-1
-                            (write-file-no-visit file-1)))
-                    (with-current-buffer buffer-2
-                        (write-file-no-visit file-2))
-                    (pop-to-command
-                        (list "gp" file-2 file-1)
-                        (concat name-1 " -> " name-2)
-                        "Partial copy"
-                        (apply-partially 'partial-copy--finish
-                            buffer-2 directory source-directory file-2)))
-                (setq directory nil))))
-    (defun partial-copy--finish (buffer-2 directory source-directory file-2)
-        (unwind-protect
-            (with-current-buffer buffer-2
-                (let ((buffer-file-name file-2))
-                    (revert-buffer t t t))
-                (when buffer-file-name
-                    (setq buffer-file-truename
-                        (abbreviate-file-name (file-truename buffer-file-name)))
-                    (refresh-modified-state buffer-2)))
-            (delete-directory directory t)
-            (setq default-directory source-directory)))
     (define-key space-map "w"
         (lambda (prefix-argument)
             (interactive "P")
@@ -7570,6 +7347,232 @@
         :override 'fixed-with-editor-kill-buffer)
     (add-hook 'eshell-mode-hook 'with-editor-export-editor)
     (shell-command-with-editor-mode 1))
+
+(use-package pop-to-command
+    :config
+    (defun pop-to-command--not-a-file (name)
+        (pop-to-command
+            (list "echo" (concat (buffer-name) " is not visiting a file"))
+            (buffer-name)
+            name))
+    (defun diff-unsaved-changes ()
+        (interactive)
+        (when (not buffer-file-name)
+            (when-let* ((buffer (parent-buffer-search 'buffer-file-name)))
+                (set-buffer buffer)))
+        (add-single-use-hook 'pop-to-command-setup-hook
+            (parent-buffer-setter))
+        (if (not buffer-file-name)
+            (pop-to-command--not-a-file "Diff unsaved")
+            (with-temporary-directory directory
+                (let* ((file-name    (file-name-nondirectory buffer-file-name))
+                       (file         (concat directory "/" file-name))
+                       (unsaved-name (concat "unsaved " file-name))
+                       (unsaved      (concat directory "/" unsaved-name))
+                       (source-directory default-directory)
+                       (default-directory "~"))
+                    (if (file-exists-p buffer-file-name)
+                        (copy-file buffer-file-name file)
+                        (write-region 1 1 file))
+                    (write-file-no-visit unsaved)
+                    (when-let* ((mode (file-modes file)))
+                        (set-file-modes unsaved mode))
+                    (add-single-use-hook 'eshell-exec-hook
+                        (lambda-let (source-directory) (_process)
+                            (setq default-directory source-directory)))
+                    (add-single-use-hook 'pop-to-command-setup-hook
+                        (lambda-let (directory) ()
+                            (setq default-directory directory)))
+                    (pop-to-command
+                        (list "git" "diff" "--no-index" file-name unsaved-name)
+                        (buffer-name)
+                        "Diff unsaved"
+                        (apply-partially 'diff-unsaved-changes--finish
+                            (current-buffer) directory source-directory)))
+                (setq directory nil))))
+    (defun diff-unsaved-changes--finish (buffer directory source-directory)
+        (unwind-protect
+            (refresh-modified-state buffer)
+            (delete-directory directory t)
+            (setq default-directory source-directory)))
+    (defun diff-buffer--pick (prompt)
+        (if-let* ((window (next-window-other-buffer nil 'never)))
+            (window-buffer window)
+            (read-other-buffer prompt)))
+    (defun diff-buffer (buffer-1 buffer-2)
+        (interactive (list
+                         (diff-buffer--pick "Diff from buffer: ")
+                         (current-buffer)))
+        (setq buffer-1 (get-buffer buffer-1))
+        (setq buffer-2 (get-buffer buffer-2))
+        (with-temporary-directory directory
+            (let* ((name-1 (file-name-nondirectory (buffer-name buffer-1)))
+                   (file-1 (concat directory "/" name-1))
+                   (name-2 (file-name-nondirectory (buffer-name buffer-2)))
+                   (file-2 (concat directory "/" name-2))
+                   (source-directory default-directory)
+                   (default-directory "~"))
+                (when (equal name-1 name-2)
+                    (setq name-2 (concat "(2) " name-2))
+                    (setq file-2 (concat directory "/" name-2)))
+                (let ((jka-compr-inhibit t))
+                    (with-current-buffer buffer-1
+                        (write-file-no-visit file-1))
+                    (with-current-buffer buffer-2
+                        (write-file-no-visit file-2)))
+                (add-single-use-hook 'pop-to-command-setup-hook
+                    (parent-buffer-setter))
+                (add-single-use-hook 'eshell-exec-hook
+                    (lambda-let (source-directory) (_process)
+                        (setq default-directory source-directory)))
+                (add-single-use-hook 'pop-to-command-setup-hook
+                    (lambda-let (directory) ()
+                        (setq default-directory directory)))
+                (pop-to-command
+                    (list "git" "diff" "--no-index" name-1 name-2)
+                    (concat name-1 " -> " name-2)
+                    "Diff buffer"
+                    (apply-partially 'diff-buffer--finish
+                        directory source-directory)))
+            (setq directory nil)))
+    (defun diff-buffer--finish (directory source-directory)
+        (delete-directory directory t)
+        (setq default-directory source-directory))
+    (defun partial-save ()
+        (interactive)
+        (when (not buffer-file-name)
+            (when-let* ((buffer (parent-buffer-search 'buffer-file-name)))
+                (set-buffer buffer)))
+        (add-single-use-hook 'pop-to-command-setup-hook
+            (parent-buffer-setter))
+        (if (not buffer-file-name)
+            (pop-to-command--not-a-file "Partial save")
+            (with-temporary-directory directory
+                (let* ((file-name (file-name-nondirectory buffer-file-name))
+                       (file      (concat directory "/" file-name))
+                       (unsaved   (concat directory "/unsaved " file-name))
+                       (source-directory default-directory)
+                       (default-directory "~"))
+                    (if (file-exists-p buffer-file-name)
+                        (copy-file buffer-file-name file)
+                        (write-region 1 1 file))
+                    (write-file-no-visit unsaved)
+                    (add-single-use-hook 'eshell-exec-hook
+                        (lambda-let (source-directory) (_process)
+                            (setq default-directory source-directory)))
+                    (pop-to-command
+                        (list "gp" file unsaved)
+                        (buffer-name)
+                        "Partial save"
+                        (apply-partially 'partial-save--finish
+                            (current-buffer) directory source-directory file)))
+                (setq directory nil))))
+    (defun partial-save--finish (buffer directory source-directory file)
+        (unwind-protect
+            (with-current-buffer buffer
+                (when (or (file-exists-p buffer-file-name)
+                          (> (file-size file) 0))
+                    (copy-file file buffer-file-name t))
+                (refresh-modified-state buffer))
+            (delete-directory directory t)
+            (setq default-directory source-directory)))
+    (defun partial-revert ()
+        (interactive)
+        (when (not buffer-file-name)
+            (when-let* ((buffer (parent-buffer-search 'buffer-file-name)))
+                (set-buffer buffer)))
+        (if (not buffer-file-name)
+            (call-interactively 'revert-buffer)
+            (with-temporary-directory directory
+                (let* ((file-name (file-name-nondirectory buffer-file-name))
+                       (file      (concat directory "/" file-name))
+                       (unsaved   (concat directory "/unsaved " file-name))
+                       (source-directory default-directory)
+                       (default-directory "~"))
+                    (if (file-exists-p buffer-file-name)
+                        (copy-file buffer-file-name file)
+                        (write-region 1 1 file))
+                    (write-file-no-visit unsaved)
+                    (add-single-use-hook 'pop-to-command-setup-hook
+                        (parent-buffer-setter))
+                    (add-single-use-hook 'eshell-exec-hook
+                        (lambda-let (source-directory) (_process)
+                            (setq default-directory source-directory)))
+                    (pop-to-command
+                        (list "gp" unsaved file)
+                        (buffer-name)
+                        "Partial revert"
+                        (apply-partially 'partial-revert--finish
+                            (current-buffer)
+                            directory
+                            source-directory
+                            unsaved)))
+                (setq directory nil))))
+    (defun partial-revert--finish (buffer directory source-directory unsaved)
+        (unwind-protect
+            (with-current-buffer buffer
+                (let ((buffer-file-name unsaved))
+                    (revert-buffer t t t))
+                (setq buffer-file-truename
+                    (abbreviate-file-name (file-truename buffer-file-name)))
+                (refresh-modified-state buffer))
+            (delete-directory directory t)
+            (setq default-directory source-directory)))
+    (defvar partial-copy-from-current-to-target nil)
+    (defun partial-copy (buffer-1 buffer-2)
+        (interactive (if partial-copy-from-current-to-target
+                         (list
+                             (current-buffer)
+                             (diff-buffer--pick "Copy to buffer: "))
+                         (list
+                             (diff-buffer--pick "Copy from buffer: ")
+                             (current-buffer))))
+        (setq buffer-1 (get-buffer buffer-1))
+        (setq buffer-2 (get-buffer buffer-2))
+        (add-single-use-hook 'pop-to-command-setup-hook
+            (parent-buffer-setter))
+        (if (not (or (derived-mode-p 'text-mode 'prog-mode)
+                     (eq major-mode 'fundamental-mode)))
+            (pop-to-command
+                (list "echo" (concat (buffer-name buffer-2) " is special"))
+                (buffer-name)
+                "Partial copy")
+            (add-single-use-hook 'eshell-exec-hook
+                (lambda-let ((directory default-directory)) (_process)
+                    (setq default-directory directory)))
+            (with-temporary-directory directory
+                (let* ((name-1 (file-name-nondirectory (buffer-name buffer-1)))
+                       (file-1 (concat directory "/" name-1))
+                       (name-2 (file-name-nondirectory (buffer-name buffer-2)))
+                       (file-2 (concat directory "/" name-2))
+                       (source-directory default-directory)
+                       (default-directory "~"))
+                    (when (equal name-1 name-2)
+                        (setq name-2 (concat "(2) " name-2))
+                        (setq file-2 (concat directory "/" name-2)))
+                    (let ((jka-compr-inhibit t))
+                        (with-current-buffer buffer-1
+                            (write-file-no-visit file-1)))
+                    (with-current-buffer buffer-2
+                        (write-file-no-visit file-2))
+                    (pop-to-command
+                        (list "gp" file-2 file-1)
+                        (concat name-1 " -> " name-2)
+                        "Partial copy"
+                        (apply-partially 'partial-copy--finish
+                            buffer-2 directory source-directory file-2)))
+                (setq directory nil))))
+    (defun partial-copy--finish (buffer-2 directory source-directory file-2)
+        (unwind-protect
+            (with-current-buffer buffer-2
+                (let ((buffer-file-name file-2))
+                    (revert-buffer t t t))
+                (when buffer-file-name
+                    (setq buffer-file-truename
+                        (abbreviate-file-name (file-truename buffer-file-name)))
+                    (refresh-modified-state buffer-2)))
+            (delete-directory directory t)
+            (setq default-directory source-directory))))
 
 (use-package rainbow-mode
     :config
