@@ -5598,190 +5598,6 @@
         (lambda ()
             (interactive)
             (consult-fd "~/storage/shared" "\\.trashed -- -H")))
-    (add-hook 'pop-to-command-setup-hook
-        (lambda ()
-            (evil-initialize-state)
-            (dolist (key '([escape] "q" "й"))
-                (evil-local-set-key 'normal key 'quit-window))))
-    (define-key space-map "c"
-        (lambda (prefix-argument)
-            (interactive "P")
-            (if prefix-argument
-                (become-command 'diff-buffer)
-                (become-command 'diff-unsaved-changes))))
-    (define-key space-map "w"
-        (lambda (prefix-argument)
-            (interactive "P")
-            (if prefix-argument
-                (let ((partial-copy-from-current-to-target t))
-                    (become-command 'partial-copy))
-                (become-command 'partial-save))))
-    (define-key space-map "W" 'save-buffer)
-    (define-key space-map "r"
-        (lambda (prefix-argument)
-            (interactive "P")
-            (if prefix-argument
-                (become-command 'partial-copy)
-                (become-command 'partial-revert))))
-    (define-key space-map "R" 'revert-buffer)
-    (defun pop-to-command--not-in-a-git-repository (name)
-        (pop-to-command
-            (list "echo" (concat (buffer-name) " is not in a git repository"))
-            nil
-            name))
-    (defun git-pop-to-command (command &optional use-visited)
-        (add-single-use-hook 'pop-to-command-setup-hook
-            (parent-buffer-setter))
-        (if-let* ((root (git-worktree-root)))
-            (let ((default-directory root)
-                  (path (git--target-path use-visited)))
-                (when path
-                    (setq path (file-relative-name path root))
-                    (nconc command (list path)))
-                (pop-to-command command default-directory))
-            (pop-to-command--not-in-a-git-repository
-                (string-join command " "))))
-    (defun git--target-path (use-visited)
-        (if use-visited
-            (or (buffer-file-or-directory)
-                (parent-buffer-file-or-directory)
-                default-directory)
-            nil))
-    (defmacro git (&rest arguments)
-        (let ((command (cons "git" (mapcar 'symbol-name arguments))))
-            `(lambda (prefix-argument)
-                 (interactive "P")
-                 (let ((command (list ,@command)))
-                     (git-pop-to-command command prefix-argument)))))
-    (defun git--commit-ish (prefix-argument prompt)
-        (if prefix-argument
-            (if (integerp prefix-argument)
-                (if (>= prefix-argument 0)
-                    (format "HEAD~%d" prefix-argument)
-                    (format "HEAD@{%d}" (- prefix-argument)))
-                (read-string prompt))
-            "HEAD"))
-    (define-prefix-command 'git-map)
-    (define-key space-map "v" 'git-map)
-    (define-key git-map "v" (git status))
-    (define-key git-map "l" (git log))
-    (define-key git-map "L" (git log -p))
-    (define-key git-map "o" (git reflog))
-    (define-key git-map "f" (git stash list -p))
-    (define-key git-map "d" (git diff))
-    (define-key git-map "s" (git diff --staged))
-    (define-key git-map "a" (git add -p))
-    (defun git-add-new (prefix-argument)
-        (interactive "P")
-        (let ((command (list "git add")))
-            (when prefix-argument
-                (nconc command (list "--force")))
-            (git-pop-to-command command t)))
-    (define-key git-map "A" 'git-add-new)
-    (define-key git-map "q" (git checkout -p))
-    (define-key git-map "w" (git reset -p))
-    (define-key git-map "e" (git stash push -p))
-    (defun git-pop (prefix-argument)
-        (interactive "P")
-        (let ((command (list "git" "pop")))
-            (when prefix-argument
-                (nconc command (list (format "stash@{%d}" prefix-argument))))
-            (git-pop-to-command command)))
-    (define-key git-map "r" 'git-pop)
-    (defun git-stash-drop (prefix-argument)
-        (interactive "P")
-        (let ((command (list "git" "stash" "drop")))
-            (when prefix-argument
-                (nconc command (list (format "stash@{%d}" prefix-argument))))
-            (git-pop-to-command command)))
-    (define-key git-map "R" 'git-stash-drop)
-    (define-key git-map "u" (git pull))
-    (defun git-p (prefix-argument &optional force)
-        (interactive "P")
-        (let* ((commit-ish (git--commit-ish prefix-argument "git push head: "))
-               (command (list "git")))
-            (if (equal commit-ish "HEAD")
-                (push "push" command)
-                (push "p" command)
-                (push commit-ish command))
-            (when force
-                (push "--force" command))
-            (setq command (nreverse command))
-            (git-pop-to-command command)))
-    (define-key git-map "y" 'git-p)
-    (define-key git-map "Y"
-        (lambda (prefix-argument)
-            (interactive "P")
-            (git-p prefix-argument t)))
-    (define-key git-map "t" (git push --tags))
-    (define-key git-map "T" (git push --tags --force))
-    (define-key git-map "c" (git commit))
-    (defun git-amend--commit-or-rebase (prefix-argument)
-        (if (and prefix-argument
-                 (not (equal prefix-argument 0)))
-            (list "git" "rebase" "--interactive"
-                (git--commit-ish prefix-argument "git rebase from: "))
-            (list "git" "commit" "--amend")))
-    (defun git-amend (prefix-argument)
-        (interactive "P")
-        (let ((command (git-amend--commit-or-rebase prefix-argument)))
-            (git-pop-to-command command)))
-    (define-key git-map "C" 'git-amend)
-    (defun git-reset (prefix-argument)
-        (interactive "P")
-        (let* ((commit-ish (git--commit-ish prefix-argument "git reset to: "))
-               (command (list "git" "reset" commit-ish)))
-            (git-pop-to-command command)))
-    (define-key git-map "h" 'git-reset)
-    (defun git-annotate ()
-        (interactive)
-        (if (git-worktree-root)
-            (if (or dired-directory buffer-file-name)
-                (call-interactively 'vc-annotate)
-                (if-let* ((buffer (parent-buffer-search 'buffer-file-name)))
-                    (with-current-buffer buffer
-                        (call-interactively 'vc-annotate))
-                    (pop-to-command--not-a-file "Annotate")))
-            (pop-to-command--not-in-a-git-repository "Annotate")))
-    (define-key git-map "b" 'git-annotate)
-    (define-universal-argument-space-keys git-map " v")
-    (define-key git-map [escape] 'ignore)
-    (define-prefix-command 'space-misc-map)
-    (define-key space-map "z" 'space-misc-map)
-    (define-universal-argument-space-keys space-misc-map " z")
-    (defun yt-dlp ()
-        (interactive)
-        (let ((default-directory "~/Downloads")
-              (url (evil-paste-to-string 1)))
-            (pop-to-command
-                `("yt-dlp"
-                     "-f" "bestaudio"
-                     "--no-playlist"
-                     "--windows-filenames"
-                     "--print" "after_move:filename"
-                     "--no-quiet"
-                     "--no-simulate"
-                     ,url)
-                url
-                "yt-dlp"
-                'yt-dlp--finish)))
-    (defun yt-dlp--finish ()
-        (save-excursion
-            (goto-char (point-max))
-            (forward-line -3)
-            (let* ((file (filter-buffer-substring (pos-bol) (pos-eol)))
-                   (path (concat default-directory file)))
-                (evil-local-set-key 'motion " d"
-                    (lambda-let (path) ()
-                        (interactive)
-                        (smoother-dired path))))))
-    (define-key space-misc-map "y" 'yt-dlp)
-    (define-key space-misc-map "m"
-        (lambda ()
-            (interactive)
-            (let ((default-directory "~"))
-                (pop-to-command
-                    '("termux-media-scan" "/storage/emulated/0")))))
     (evil-define-motion evil-minibuffer-next-line (count)
         (setq-if-nil count 1)
         (dotimes (_ count)
@@ -7573,6 +7389,193 @@
                     (refresh-modified-state buffer-2)))
             (delete-directory directory t)
             (setq default-directory source-directory))))
+
+(use-packages evil pop-to-command
+    :config
+    (add-hook 'pop-to-command-setup-hook
+        (lambda ()
+            (evil-initialize-state)
+            (dolist (key '([escape] "q" "й"))
+                (evil-local-set-key 'normal key 'quit-window))))
+    (define-key space-map "c"
+        (lambda (prefix-argument)
+            (interactive "P")
+            (if prefix-argument
+                (become-command 'diff-buffer)
+                (become-command 'diff-unsaved-changes))))
+    (define-key space-map "w"
+        (lambda (prefix-argument)
+            (interactive "P")
+            (if prefix-argument
+                (let ((partial-copy-from-current-to-target t))
+                    (become-command 'partial-copy))
+                (become-command 'partial-save))))
+    (define-key space-map "W" 'save-buffer)
+    (define-key space-map "r"
+        (lambda (prefix-argument)
+            (interactive "P")
+            (if prefix-argument
+                (become-command 'partial-copy)
+                (become-command 'partial-revert))))
+    (define-key space-map "R" 'revert-buffer)
+    (defun pop-to-command--not-in-a-git-repository (name)
+        (pop-to-command
+            (list "echo" (concat (buffer-name) " is not in a git repository"))
+            nil
+            name))
+    (defun git-pop-to-command (command &optional use-visited)
+        (add-single-use-hook 'pop-to-command-setup-hook
+            (parent-buffer-setter))
+        (if-let* ((root (git-worktree-root)))
+            (let ((default-directory root)
+                  (path (git--target-path use-visited)))
+                (when path
+                    (setq path (file-relative-name path root))
+                    (nconc command (list path)))
+                (pop-to-command command default-directory))
+            (pop-to-command--not-in-a-git-repository
+                (string-join command " "))))
+    (defun git--target-path (use-visited)
+        (if use-visited
+            (or (buffer-file-or-directory)
+                (parent-buffer-file-or-directory)
+                default-directory)
+            nil))
+    (defmacro git (&rest arguments)
+        (let ((command (cons "git" (mapcar 'symbol-name arguments))))
+            `(lambda (prefix-argument)
+                 (interactive "P")
+                 (let ((command (list ,@command)))
+                     (git-pop-to-command command prefix-argument)))))
+    (defun git--commit-ish (prefix-argument prompt)
+        (if prefix-argument
+            (if (integerp prefix-argument)
+                (if (>= prefix-argument 0)
+                    (format "HEAD~%d" prefix-argument)
+                    (format "HEAD@{%d}" (- prefix-argument)))
+                (read-string prompt))
+            "HEAD"))
+    (define-prefix-command 'git-map)
+    (define-key space-map "v" 'git-map)
+    (define-key git-map "v" (git status))
+    (define-key git-map "l" (git log))
+    (define-key git-map "L" (git log -p))
+    (define-key git-map "o" (git reflog))
+    (define-key git-map "f" (git stash list -p))
+    (define-key git-map "d" (git diff))
+    (define-key git-map "s" (git diff --staged))
+    (define-key git-map "a" (git add -p))
+    (defun git-add-new (prefix-argument)
+        (interactive "P")
+        (let ((command (list "git add")))
+            (when prefix-argument
+                (nconc command (list "--force")))
+            (git-pop-to-command command t)))
+    (define-key git-map "A" 'git-add-new)
+    (define-key git-map "q" (git checkout -p))
+    (define-key git-map "w" (git reset -p))
+    (define-key git-map "e" (git stash push -p))
+    (defun git-pop (prefix-argument)
+        (interactive "P")
+        (let ((command (list "git" "pop")))
+            (when prefix-argument
+                (nconc command (list (format "stash@{%d}" prefix-argument))))
+            (git-pop-to-command command)))
+    (define-key git-map "r" 'git-pop)
+    (defun git-stash-drop (prefix-argument)
+        (interactive "P")
+        (let ((command (list "git" "stash" "drop")))
+            (when prefix-argument
+                (nconc command (list (format "stash@{%d}" prefix-argument))))
+            (git-pop-to-command command)))
+    (define-key git-map "R" 'git-stash-drop)
+    (define-key git-map "u" (git pull))
+    (defun git-p (prefix-argument &optional force)
+        (interactive "P")
+        (let* ((commit-ish (git--commit-ish prefix-argument "git push head: "))
+               (command (list "git")))
+            (if (equal commit-ish "HEAD")
+                (push "push" command)
+                (push "p" command)
+                (push commit-ish command))
+            (when force
+                (push "--force" command))
+            (setq command (nreverse command))
+            (git-pop-to-command command)))
+    (define-key git-map "y" 'git-p)
+    (define-key git-map "Y"
+        (lambda (prefix-argument)
+            (interactive "P")
+            (git-p prefix-argument t)))
+    (define-key git-map "t" (git push --tags))
+    (define-key git-map "T" (git push --tags --force))
+    (define-key git-map "c" (git commit))
+    (defun git-amend--commit-or-rebase (prefix-argument)
+        (if (and prefix-argument
+                 (not (equal prefix-argument 0)))
+            (list "git" "rebase" "--interactive"
+                (git--commit-ish prefix-argument "git rebase from: "))
+            (list "git" "commit" "--amend")))
+    (defun git-amend (prefix-argument)
+        (interactive "P")
+        (let ((command (git-amend--commit-or-rebase prefix-argument)))
+            (git-pop-to-command command)))
+    (define-key git-map "C" 'git-amend)
+    (defun git-reset (prefix-argument)
+        (interactive "P")
+        (let* ((commit-ish (git--commit-ish prefix-argument "git reset to: "))
+               (command (list "git" "reset" commit-ish)))
+            (git-pop-to-command command)))
+    (define-key git-map "h" 'git-reset)
+    (defun git-annotate ()
+        (interactive)
+        (if (git-worktree-root)
+            (if (or dired-directory buffer-file-name)
+                (call-interactively 'vc-annotate)
+                (if-let* ((buffer (parent-buffer-search 'buffer-file-name)))
+                    (with-current-buffer buffer
+                        (call-interactively 'vc-annotate))
+                    (pop-to-command--not-a-file "Annotate")))
+            (pop-to-command--not-in-a-git-repository "Annotate")))
+    (define-key git-map "b" 'git-annotate)
+    (define-universal-argument-space-keys git-map " v")
+    (define-key git-map [escape] 'ignore)
+    (define-prefix-command 'space-misc-map)
+    (define-key space-map "z" 'space-misc-map)
+    (define-universal-argument-space-keys space-misc-map " z")
+    (defun yt-dlp ()
+        (interactive)
+        (let ((default-directory "~/Downloads")
+              (url (evil-paste-to-string 1)))
+            (pop-to-command
+                `("yt-dlp"
+                     "-f" "bestaudio"
+                     "--no-playlist"
+                     "--windows-filenames"
+                     "--print" "after_move:filename"
+                     "--no-quiet"
+                     "--no-simulate"
+                     ,url)
+                url
+                "yt-dlp"
+                'yt-dlp--finish)))
+    (defun yt-dlp--finish ()
+        (save-excursion
+            (goto-char (point-max))
+            (forward-line -3)
+            (let* ((file (filter-buffer-substring (pos-bol) (pos-eol)))
+                   (path (concat default-directory file)))
+                (evil-local-set-key 'motion " d"
+                    (lambda-let (path) ()
+                        (interactive)
+                        (smoother-dired path))))))
+    (define-key space-misc-map "y" 'yt-dlp)
+    (define-key space-misc-map "m"
+        (lambda ()
+            (interactive)
+            (let ((default-directory "~"))
+                (pop-to-command
+                    '("termux-media-scan" "/storage/emulated/0"))))))
 
 (use-package rainbow-mode
     :config
