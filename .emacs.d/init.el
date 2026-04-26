@@ -6005,9 +6005,6 @@
             (let ((default-directory "~"))
                 (pop-to-command
                     '("termux-media-scan" "/storage/emulated/0")))))
-    (define-key space-misc-map "+" 'text-scale-increase)
-    (define-key space-misc-map "=" 'text-scale-increase)
-    (define-key space-misc-map "-" 'text-scale-decrease)
     (evil-define-motion evil-minibuffer-next-line (count)
         (setq-if-nil count 1)
         (dotimes (_ count)
