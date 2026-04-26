@@ -5241,6 +5241,10 @@
         (pop kill-buffer-hook))
     (advice-add 'evil-execute-repeat-info-with-count
         :before 'fixed-evil-execute-repeat-info-with-count)
+    (defun fixed-evil-esc (evil-esc &rest arguments)
+        (with-advice (('evil-emacs-state-p :override 'ignore))
+            (apply evil-esc arguments)))
+    (advice-add 'evil-esc :around 'fixed-evil-esc)
     (defun lookup-evil-key (state keymap key &optional accept-default)
         (when state
             (setq keymap (evil-get-auxiliary-keymap keymap state)))
