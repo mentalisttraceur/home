@@ -6193,6 +6193,35 @@
                 'dired-remove-entry path)))
     (evil-define-key* 'motion image-mode-map "d" 'evil-image-delete))
 
+(use-packages term/xterm evil
+    :config
+    (defun evil-xterm-paste--as-keys (text)
+        (let ((keys (listify-key-sequence text)))
+            (setq unread-command-events (append unread-command-events keys))))
+    (defun evil-xterm-paste--replace (text)
+        (when (length> text 0)
+            (let ((last-index (1- (length text)))
+                  (line-feeds (seq-count (apply-partially 'equal ?\n) text)))
+                (if (< line-feeds 1)
+                    (let ((end (min (pos-eol) (+ (point) (length text)))))
+                        (delete-region (point) end))
+                    (unless (equal (aref text last-index) ?\n)
+                        (setq line-feeds (1+ line-feeds))
+                        (setq text (concat text "\n")))
+                    (delete-lines (pos-bol) line-feeds))
+                (insert-for-yank text))))
+    (defun evil-xterm-paste (xterm-paste event)
+        (cond
+            ((or (evil-insert-state-p) (evil-emacs-state-p))
+                (funcall xterm-paste event))
+            ((evil-replace-state-p)
+                (let ((text (nth 1 event)))
+                    (evil-xterm-paste--replace text)))
+            (t
+                (let ((text (nth 1 event)))
+                    (evil-xterm-paste--as-keys text)))))
+    (advice-add 'xterm-paste :around 'evil-xterm-paste))
+
 (use-packages evil undo-tree
     :config
     (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
@@ -6301,35 +6330,6 @@
             (quit-window nil window)))
     (advice-add 'undo-tree-visualizer-hide-diff
         :override 'hack-undo-tree-visualizer-hide-diff))
-
-(use-packages term/xterm evil
-    :config
-    (defun evil-xterm-paste--as-keys (text)
-        (let ((keys (listify-key-sequence text)))
-            (setq unread-command-events (append unread-command-events keys))))
-    (defun evil-xterm-paste--replace (text)
-        (when (length> text 0)
-            (let ((last-index (1- (length text)))
-                  (line-feeds (seq-count (apply-partially 'equal ?\n) text)))
-                (if (< line-feeds 1)
-                    (let ((end (min (pos-eol) (+ (point) (length text)))))
-                        (delete-region (point) end))
-                    (unless (equal (aref text last-index) ?\n)
-                        (setq line-feeds (1+ line-feeds))
-                        (setq text (concat text "\n")))
-                    (delete-lines (pos-bol) line-feeds))
-                (insert-for-yank text))))
-    (defun evil-xterm-paste (xterm-paste event)
-        (cond
-            ((or (evil-insert-state-p) (evil-emacs-state-p))
-                (funcall xterm-paste event))
-            ((evil-replace-state-p)
-                (let ((text (nth 1 event)))
-                    (evil-xterm-paste--replace text)))
-            (t
-                (let ((text (nth 1 event)))
-                    (evil-xterm-paste--as-keys text)))))
-    (advice-add 'xterm-paste :around 'evil-xterm-paste))
 
 (define-derived-mode histdir-repl-mode eat-mode "HER")
 (defmacro histdir-repl-define-key (state key def &rest bindings)
