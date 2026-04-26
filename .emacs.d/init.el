@@ -8103,7 +8103,7 @@
     (define-key space-search-map "h" 'task-tag-search)
     (defun task-datetime-search (datetime)
         (interactive (list (datetime-read "Task date+time: " nil t)))
-        (let ((regex (concat "^" datetime))
+        (let ((regex (concat " " datetime "[^ ]*$"))
               (title (format "*Tasks (%s)*" (datetime-expand datetime t))))
             (task--buffer title regex)
             (setq-local task-list--datetime datetime)))
