@@ -5555,49 +5555,6 @@
         (recenter))
     (evil-declare-not-repeat 'goto-random-char)
     (define-key space-map "%" 'goto-random-char)
-    (define-key space-map "l" 'consult-line)
-    (define-key space-map "L" 'consult-line-resume)
-    (defvar evil-consult--consult-is-last-search nil)
-    (defun evil-consult--evil-start (&rest _)
-        (setq evil-consult--consult-is-last-search nil))
-    (advice-add 'evil-ex-start-search :after 'evil-consult--evil-start)
-    (advice-add 'evil-ex-start-word-search :after 'evil-consult--evil-start)
-    (defun evil-consult--consult-start (&rest _)
-        (setq evil-consult--consult-is-last-search t)
-        (evil-ex-nohighlight))
-    (advice-add 'consult-line :after 'evil-consult--consult-start)
-    (defun evil-consult--clear (&rest _)
-        (setq evil-consult--consult-is-last-search nil))
-    (advice-add 'evil-ex-nosearch :after 'evil-consult--clear)
-    (defun evil-ex-search-or-consult-line-next (count)
-        (interactive "p")
-        (if evil-consult--consult-is-last-search
-            (consult-line-next count)
-            (if evil-ex-search-pattern
-                (evil-ex-search-next count)
-                (user-error "No search to resume"))))
-    (evil-declare-not-repeat 'evil-ex-search-or-consult-line-next)
-    (defun evil-ex-search-or-consult-line-previous (count)
-        (interactive "p")
-        (if evil-consult--consult-is-last-search
-            (consult-line-previous count)
-            (if evil-ex-search-pattern
-                (evil-ex-search-previous count)
-                (user-error "No search to resume"))))
-    (evil-declare-not-repeat 'evil-ex-search-or-consult-line-previous)
-    (define-key evil-motion-state-map "n"
-        'evil-ex-search-or-consult-line-next)
-    (define-key evil-motion-state-map "N"
-        'evil-ex-search-or-consult-line-previous)
-    (define-prefix-command 'space-search-map)
-    (define-key space-map "s" 'space-search-map)
-    (define-universal-argument-space-keys space-search-map " s")
-    (define-key space-search-map "l" 'consult-ripgrep)
-    (define-key space-search-map "f" 'consult-fd)
-    (define-key space-search-map "t"
-        (lambda ()
-            (interactive)
-            (consult-fd "~/storage/shared" "\\.trashed -- -H")))
     (evil-define-motion evil-minibuffer-next-line (count)
         (setq-if-nil count 1)
         (dotimes (_ count)
@@ -6221,6 +6178,52 @@
                 (let ((text (nth 1 event)))
                     (evil-xterm-paste--as-keys text)))))
     (advice-add 'xterm-paste :around 'evil-xterm-paste))
+
+(use-packages consult evil
+    :config
+    (define-key space-map "l" 'consult-line)
+    (define-key space-map "L" 'consult-line-resume)
+    (defvar evil-consult--consult-is-last-search nil)
+    (defun evil-consult--evil-start (&rest _)
+        (setq evil-consult--consult-is-last-search nil))
+    (advice-add 'evil-ex-start-search :after 'evil-consult--evil-start)
+    (advice-add 'evil-ex-start-word-search :after 'evil-consult--evil-start)
+    (defun evil-consult--consult-start (&rest _)
+        (setq evil-consult--consult-is-last-search t)
+        (evil-ex-nohighlight))
+    (advice-add 'consult-line :after 'evil-consult--consult-start)
+    (defun evil-consult--clear (&rest _)
+        (setq evil-consult--consult-is-last-search nil))
+    (advice-add 'evil-ex-nosearch :after 'evil-consult--clear)
+    (defun evil-ex-search-or-consult-line-next (count)
+        (interactive "p")
+        (if evil-consult--consult-is-last-search
+            (consult-line-next count)
+            (if evil-ex-search-pattern
+                (evil-ex-search-next count)
+                (user-error "No search to resume"))))
+    (evil-declare-not-repeat 'evil-ex-search-or-consult-line-next)
+    (defun evil-ex-search-or-consult-line-previous (count)
+        (interactive "p")
+        (if evil-consult--consult-is-last-search
+            (consult-line-previous count)
+            (if evil-ex-search-pattern
+                (evil-ex-search-previous count)
+                (user-error "No search to resume"))))
+    (evil-declare-not-repeat 'evil-ex-search-or-consult-line-previous)
+    (define-key evil-motion-state-map "n"
+        'evil-ex-search-or-consult-line-next)
+    (define-key evil-motion-state-map "N"
+        'evil-ex-search-or-consult-line-previous)
+    (define-prefix-command 'space-search-map)
+    (define-key space-map "s" 'space-search-map)
+    (define-universal-argument-space-keys space-search-map " s")
+    (define-key space-search-map "l" 'consult-ripgrep)
+    (define-key space-search-map "f" 'consult-fd)
+    (define-key space-search-map "t"
+        (lambda ()
+            (interactive)
+            (consult-fd "~/storage/shared" "\\.trashed -- -H"))))
 
 (use-packages evil undo-tree
     :config
