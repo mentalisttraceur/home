@@ -5120,8 +5120,6 @@
     (add-hook 'evil-motion-state-entry-hook
         (evil-color motion   "#A0E0FF" "#80FFFF" "#366C6C"))
     (set-face-foreground 'minibuffer-prompt "#FFFFFF")
-    (set-face-background 'mode-line "#FFFFFF")
-    (set-face-background 'mode-line-inactive "#303030")
     (setq evil-insert-state-cursor '(bar . 3))
     (setq evil-cross-lines t)
     (defun fixed-evil-goto-line (evil-goto-count &optional count)
