@@ -980,6 +980,15 @@
     objects)
 
 
+(defmacro define-plus-minus-equal-keys (define+ define- define=)
+    (unless android
+        (swap (last define+) (last define=)))
+    `(progn
+         ,define+
+         ,define-
+         ,define=))
+
+
 (defun text-scale-reset ()
     (interactive)
     (text-scale-set 0))
