@@ -992,9 +992,11 @@
 (defun text-scale-reset ()
     (interactive)
     (text-scale-set 0))
-(define-key global-map [?\C-+] 'text-scale-increase)
-(define-key global-map [?\C-=] 'text-scale-increase)
-(define-key global-map [?\C--] 'text-scale-decrease)
+
+(define-plus-minus-equal-keys
+    (define-key global-map [?\C-+] 'text-scale-increase)
+    (define-key global-map [?\C--] 'text-scale-decrease)
+    (define-key global-map [?\C-=] 'text-scale-reset))
 
 
 (defun dlist-cons (item dlist)
@@ -3056,7 +3058,18 @@
     (add-hook 'image-mode-hook 'image-scale--setup)
     (define-key image-mode-map [down-mouse-1] 'mouse-select-window)
     (define-key image-mode-map [drag-mouse-1] 'ignore)
-    (define-key image-mode-map [mouse-1] 'ignore))
+    (define-key image-mode-map [mouse-1] 'ignore)
+    (define-plus-minus-equal-keys
+        (define-key image-mode-map [?\C-+] 'image-scale-increase)
+        (define-key image-mode-map [?\C--] 'image-scale-decrease)
+        (define-key image-mode-map [?\C-=] 'image-scale-reset)))
+
+(use-packages doc-view
+    :config
+    (define-plus-minus-equal-keys
+        (define-key doc-view-mode-map [?\C-+] 'doc-view-enlarge)
+        (define-key doc-view-mode-map [?\C--] 'doc-view-shrink)
+        (define-key doc-view-mode-map [?\C-=] 'doc-view-fit-width-to-window)))
 
 (defun git--read-link (path)
     (condition-case _error
@@ -5995,7 +6008,13 @@
             (doc-view-goto-page prefix-argument)
             (doc-view-last-page)))
     (evil-define-key* 'motion doc-view-mode-map "G" 'evil-doc-view-goto-page)
-    (evil-define-key* 'motion doc-view-mode-map "-" 'doc-view-shrink))
+    (define-plus-minus-equal-keys
+        (evil-define-key* 'motion doc-view-mode-map
+            "+" 'doc-view-enlarge)
+        (evil-define-key* 'motion doc-view-mode-map
+            "-" 'doc-view-shrink)
+        (evil-define-key* 'motion doc-view-mode-map
+            "=" 'doc-view-fit-width-to-window)))
 
 (use-packages eshell evil
     :config
@@ -6158,8 +6177,10 @@
     (evil-define-key* 'motion image-mode-map "J" 'image-bottom-edge)
     (evil-define-key* 'motion image-mode-map "K" 'image-top-edge)
     (evil-define-key* 'motion image-mode-map "L" 'image-next-file)
-    (evil-define-key* 'motion image-mode-map "+" 'image-increase-size)
-    (evil-define-key* 'motion image-mode-map "-" 'image-decrease-size)
+    (define-plus-minus-equal-keys
+        (evil-define-key* 'motion image-mode-map "+" 'image-scale-increase)
+        (evil-define-key* 'motion image-mode-map "-" 'image-scale-decrease)
+        (evil-define-key* 'motion image-mode-map "=" 'image-scale-reset))
     (defun image-rotate-90-degrees-clockwise (count)
         (interactive "p")
         (image-rotate (* count 90)))
