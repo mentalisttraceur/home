@@ -201,12 +201,6 @@
     (lambda ()
         (local-set-key [\C-tab] 'other-window)))
 
-(defun text-scale-reset ()
-    (interactive)
-    (text-scale-set 0))
-(define-key global-map [?\C-+] 'text-scale-increase)
-(define-key global-map [?\C-=] 'text-scale-increase)
-(define-key global-map [?\C--] 'text-scale-decrease)
 
 (defun fixed-mouse-set-point (&rest _)
     (setq temporary-goal-column
@@ -984,6 +978,14 @@
 (defun cycle (&rest objects)
     (setcdr (last objects) objects)
     objects)
+
+
+(defun text-scale-reset ()
+    (interactive)
+    (text-scale-set 0))
+(define-key global-map [?\C-+] 'text-scale-increase)
+(define-key global-map [?\C-=] 'text-scale-increase)
+(define-key global-map [?\C--] 'text-scale-decrease)
 
 
 (defun dlist-cons (item dlist)
