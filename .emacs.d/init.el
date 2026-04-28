@@ -3012,7 +3012,10 @@
         (image-set-window-hscroll 0))
     (defun image-right-edge ()
         (interactive nil image-mode)
-        (image-forward-hscroll most-positive-fixnum)))
+        (image-forward-hscroll most-positive-fixnum))
+    (define-key image-mode-map [down-mouse-1] 'mouse-select-window)
+    (define-key image-mode-map [drag-mouse-1] 'ignore)
+    (define-key image-mode-map [mouse-1] 'ignore))
 
 (defun git--read-link (path)
     (condition-case _error
