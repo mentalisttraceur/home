@@ -3066,6 +3066,17 @@
 
 (use-packages doc-view
     :config
+    (defun fixed-doc-view-resize (function &rest arguments)
+        (let ((initial-vscroll (window-vscroll nil t))
+              (initial-hscroll (window-hscroll)))
+            (apply function arguments)
+            (image-bottom-edge)
+            (unless (< (window-vscroll nil t) initial-vscroll)
+                (image-set-window-vscroll initial-vscroll))
+            (image-right-edge)
+            (unless (< (window-hscroll) initial-hscroll)
+                (image-set-window-hscroll initial-hscroll))))
+    (advice-add 'doc-view-enlarge :around 'fixed-doc-view-resize)
     (define-plus-minus-equal-keys
         (define-key doc-view-mode-map [?\C-+] 'doc-view-enlarge)
         (define-key doc-view-mode-map [?\C--] 'doc-view-shrink)
