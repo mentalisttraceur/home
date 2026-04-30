@@ -980,15 +980,6 @@
     objects)
 
 
-(defmacro define-plus-minus-equal-keys (define+ define- define=)
-    (unless android
-        (swap (car (last define+)) (car (last define=))))
-    `(progn
-         ,define+
-         ,define-
-         ,define=))
-
-
 (defun dlist-cons (item dlist)
     (let ((entry (cons
                      (cons nil  dlist)
@@ -1211,6 +1202,15 @@
 
 (defun sorted-hash-table-count (table)
     (bihash-count (aref table 2)))
+
+
+(defmacro define-plus-minus-equal-keys (define+ define- define=)
+    (unless android
+        (swap (car (last define+)) (car (last define=))))
+    `(progn
+         ,define+
+         ,define-
+         ,define=))
 
 
 (defun text-scale-reset ()
