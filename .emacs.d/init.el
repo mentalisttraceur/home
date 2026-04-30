@@ -2010,6 +2010,17 @@
 (setq sentence-end-double-space nil)
 
 
+(when android
+    (defun pop-keyboard ()
+        (interactive)
+        (android-toggle-on-screen-keyboard nil nil)))
+(when wsl
+    (defun pop-keyboard ()
+        (interactive)
+        (funcall-process "cmd.exe" "/c" "start" "osk.exe")))
+(provide 'pop-keyboard)
+
+
 (defmacro use-packages (&rest packages-:config-body)
     (let ((head (cons 'use-package packages-:config-body))
           (tail packages-:config-body))
