@@ -3067,7 +3067,11 @@
     (defun image-scale--setup (&rest _)
         (setq image-scale--initial (image-scale--normalize 1)))
     (add-hook 'image-mode-hook 'image-scale--setup)
-    (define-key image-mode-map [down-mouse-1] 'mouse-select-window)
+    (defun image-mouse-select-window (click)
+        (interactive "e")
+        (mouse-select-window click)
+        (goto-char 1))
+    (define-key image-mode-map [down-mouse-1] 'image-mouse-select-window)
     (define-key image-mode-map [drag-mouse-1] 'ignore)
     (define-key image-mode-map [mouse-1] 'ignore)
     (define-plus-minus-equal-keys
