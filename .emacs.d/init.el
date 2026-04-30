@@ -989,16 +989,6 @@
          ,define=))
 
 
-(defun text-scale-reset ()
-    (interactive)
-    (text-scale-set 0))
-
-(define-plus-minus-equal-keys
-    (define-key global-map [?\C-+] 'text-scale-increase)
-    (define-key global-map [?\C--] 'text-scale-decrease)
-    (define-key global-map [?\C-=] 'text-scale-reset))
-
-
 (defun dlist-cons (item dlist)
     (let ((entry (cons
                      (cons nil  dlist)
@@ -1221,6 +1211,16 @@
 
 (defun sorted-hash-table-count (table)
     (bihash-count (aref table 2)))
+
+
+(defun text-scale-reset ()
+    (interactive)
+    (text-scale-set 0))
+
+(define-plus-minus-equal-keys
+    (define-key global-map [?\C-+] 'text-scale-increase)
+    (define-key global-map [?\C--] 'text-scale-decrease)
+    (define-key global-map [?\C-=] 'text-scale-reset))
 
 
 (defun delete-forward-in-line (start count)
