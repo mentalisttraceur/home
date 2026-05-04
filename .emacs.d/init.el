@@ -982,7 +982,7 @@
 
 (defmacro define-plus-minus-equal-keys (define+ define- define=)
     (unless android
-        (swap (last define+) (last define=)))
+        (swap (car (last define+)) (car (last define=))))
     `(progn
          ,define+
          ,define-
