@@ -2599,6 +2599,13 @@
 (add-to-list 'preserve-temporary-goal-column-commands
     'smoother-eval-last-sexp)
 
+(defvar insert-missing-directory-as-empty nil)
+(defun hack-insert-directory (insert-directory file &rest arguments)
+    (unless (and insert-missing-directory-as-empty
+                 (not (file-exists-p file)))
+        (apply insert-directory file arguments)))
+(advice-add 'insert-directory :around 'hack-insert-directory)
+
 (use-package dired
     :config
     (defun fixed-dired-rename-subdir-1 (dired-rename-subdir-1 &rest arguments)
