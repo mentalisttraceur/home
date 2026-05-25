@@ -4437,6 +4437,7 @@
 (use-package vertico
     :config
     (require 'display-line-numbers)
+    (eval (function-lisp 'vertico--arrange-candidates))
     (vertico-mode 1)
     (defun fixed-vertico--match-p (vertico--match-p &rest arguments)
         (with-advice (('minibuffer-message :override 'user-error))
