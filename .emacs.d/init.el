@@ -4383,6 +4383,7 @@
 
 
 (use-package undo-tree
+    :ensure t
     :config
     (setq undo-tree-auto-save-history nil)
     (add-to-list 'undo-tree-incompatible-major-modes
@@ -4435,6 +4436,7 @@
             (set-parent-buffer undo-tree-visualizer-parent-buffer))))
 
 (use-package vertico
+    :ensure t
     :config
     (require 'display-line-numbers)
     (eval (function-lisp 'vertico--arrange-candidates))
@@ -4841,6 +4843,7 @@
         (switch-to-buffer-next (- count))))
 
 (use-package consult
+    :ensure t
     :config
     (defun fixed-consult-completion-in-region
             (start end table &optional predicate)
@@ -4964,6 +4967,7 @@
         (abort-minibuffers)))
 
 (use-package orderless
+    :ensure t
     :config
     (add-to-list 'completion-styles 'orderless)
     (setq orderless-matching-styles '(orderless-regexp))
@@ -4994,6 +4998,7 @@
     (add-to-list 'orderless-style-dispatchers '$-suffix-dispatcher))
 
 (use-package eat
+    :ensure t
     :config
     (defun hack-make-process (arguments)
         (let* ((cell (cdr (plist-member arguments :command)))
@@ -5101,6 +5106,7 @@
 (provide 'pop-to-command)
 
 (use-package evil
+    :ensure t
     :init
     (setq evil-undo-system 'undo-tree)
     (setq evil-want-C-u-scroll t)
@@ -6891,6 +6897,7 @@
 (advice-add 'set-frame-selected-window :around 'norecord-override--2)
 
 (use-package ace-window
+    :ensure t
     :config
     (setq aw-dispatch-when-more-than 1)
     (setq aw-scope 'frame)
@@ -7261,6 +7268,7 @@
             key (lookup-key evil-motion-state-map key))))
 
 (use-package with-editor
+    :ensure t
     :config
     (defun fixed-with-editor-return (with-editor-return cancel)
         (with-advice (('delete-file :override 'ignore)
@@ -7694,10 +7702,12 @@
                     '("termux-media-scan" "/storage/emulated/0"))))))
 
 (use-package rainbow-mode
+    :ensure t
     :config
     (define-key space-map "C" 'rainbow-mode))
 
 (use-package markdown-mode
+    :ensure t
     :config
     (define-key markdown-mode-mouse-map [mouse-2] 'mouse-set-point)
     (define-key markdown-mode-map [backtab] nil))
@@ -7708,6 +7718,7 @@
         "\C-m" 'markdown-follow-thing-at-point))
 
 (use-package denote
+    :ensure t
     :config
     (setq denote-file-type 'markdown-yaml)
     (setq denote-known-keywords '())
