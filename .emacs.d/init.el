@@ -3420,6 +3420,16 @@
 
 (use-package woman
     :config
+    (defvar WoMan-Log-name " *WoMan-Log*")
+    (defun fixed-WoMan-log (function &rest arguments)
+        (with-advice (('get-buffer-create :filter-args 'fixed-WoMan-log--1))
+            (apply function arguments)))
+    (defun fixed-WoMan-log--1 (arguments)
+        (when (equal (car arguments) "*WoMan-Log*")
+            (setcar arguments WoMan-Log-name))
+        arguments)
+    (advice-add 'WoMan-log-begin :around 'fixed-WoMan-log)
+    (advice-add 'WoMan-log-1 :around 'fixed-WoMan-log)
     (when android
         (setq woman-manpath '("~/../usr/share/man"))))
 
