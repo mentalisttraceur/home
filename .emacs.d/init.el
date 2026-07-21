@@ -159,7 +159,6 @@
             "/data/data/com.termux/files/usr/bin"
             (directory-file-name exec-directory)))
     (setenv "PATH" (concat (car exec-path) ":" (cadr exec-path)))
-    (setq woman-manpath '("~/../usr/share/man"))
     (defun fixed-gui--clipboard-selection-unchanged-p (text)
         (let* ((last gui--last-selected-text-clipboard)
                (length (length last))
@@ -3418,6 +3417,11 @@
 (use-package man
     :config
     (setq Man-notify-method 'pushy))
+
+(use-package woman
+    :config
+    (when android
+        (setq woman-manpath '("~/../usr/share/man"))))
 
 (use-package debug
     :config
