@@ -960,7 +960,7 @@
                     (vector (tool-bar-apply-modifiers to-event modifiers))))))
     (define-translation ?¹ 'escape)
     (define-translation ?² 'control)
-    (define-translation ?³ ?\C-i)
+    (define-translation ?³ 'tab)
     (define-translation ?⁴ 'left)
     (define-translation ?⁵ 'down)
     (define-translation ?⁶ 'up)
