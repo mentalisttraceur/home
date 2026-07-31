@@ -8657,6 +8657,7 @@
     (let* ((format (format "${playlist/%d/filename}" index))
            (path (mpv-ipc-expand socket format))
            (file (file-name-nondirectory path))
+           (path (expand-file-name path))
            (file-line (format "%d. %s\n" (1+ index) file)))
         (propertize file-line 'mpv-index index 'full-path path)))
 (defvar music--playing-line-map (make-sparse-keymap))
