@@ -9106,10 +9106,11 @@
         (find-file file)))
 (defun tumblr-link (path)
     (let ((blog (tumblr-get "blog" path))
-          (post (tumblr-get "post" path)))
+          (post (tumblr-get "post" path))
+          (title (denoted-title-slug (denoted-title-get path))))
         (when (or (equal blog "") (equal post ""))
             (user-error "%s is not a Tumblr post" path))
-        (format "https://%s.tumblr.com/post/%s" blog post)))
+        (format "https://%s.tumblr.com/post/%s/%s" blog post title)))
 (evil-define-command tumblr-open (prefix-argument register)
     (interactive "P<x>")
     (denoted-try
