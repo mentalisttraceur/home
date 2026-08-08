@@ -8931,7 +8931,7 @@
           (start (pos-bol 1))
           (end   (pos-bol 2)))
         (music--delete start end 'line register yank-handler t)
-        (music--open 1 0 nil t)))
+        (music--open paths 1 0 nil t)))
 (music-define-key 'normal "C" 'music-change-line)
 (defun music-pause-toggle ()
     (interactive)
