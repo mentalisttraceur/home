@@ -8816,12 +8816,12 @@
                 (music--add paths 1 index column 0 move paired))))
     (evil-save-column
         (goto-char start))
-    (when (>= end (point-max))
-        (evil-save-column
-            (condition-case nil
-                (goto-char (1- start))
-                (beginning-of-buffer))))
     (unless paired
+        (when (>= end (point-max))
+            (evil-save-column
+                (condition-case nil
+                    (goto-char (1- start))
+                    (beginning-of-buffer))))
         (revert-buffer)))
 (evil-define-operator music-delete (start end type register yank-handler)
     :move-point nil
