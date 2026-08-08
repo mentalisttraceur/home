@@ -3430,6 +3430,9 @@
         arguments)
     (advice-add 'WoMan-log-begin :around 'fixed-WoMan-log)
     (advice-add 'WoMan-log-1 :around 'fixed-WoMan-log)
+    (add-hook 'woman-mode-hook
+        (lambda ()
+            (setq truncate-lines nil)))
     (when android
         (setq woman-manpath '("~/../usr/share/man"))))
 
