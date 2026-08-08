@@ -1,0 +1,17 @@
+#!/bin/sh -
+banner=-hide_banner
+for argument
+do
+    shift
+    case $argument in
+    -show_banner)
+        banner=
+    ;;
+    -hide_banner)
+        banner=-hide_banner
+    ;;
+    *)
+        set -- "$@" "$argument"
+    esac
+done
+exec /usr/bin/ffprobe $banner "$@"
