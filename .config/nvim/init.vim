@@ -7,6 +7,7 @@ noremap K H
 noremap L <nop>
 
 set virtualedit=onemore
+autocmd InsertLeave * :normal! `^
 
 set shada=
 
