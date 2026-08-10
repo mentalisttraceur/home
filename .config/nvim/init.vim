@@ -9,6 +9,8 @@ noremap L <nop>
 set virtualedit=onemore
 autocmd InsertLeave * :normal! `^
 
+inoremap <expr> <Esc> mode(1) =~# '^R' ? "\<Insert>" : "\<Esc>"
+
 set shada=
 
 function! NoSearch()
