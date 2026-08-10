@@ -6,6 +6,7 @@ noremap J L
 noremap K H
 noremap L <nop>
 
+set whichwrap+=h,l,<,>
 set virtualedit=onemore
 autocmd InsertLeave * :normal! `^
 
