@@ -455,7 +455,7 @@
                                (t
                                    --wait-while--interval--))))
              (sleep-for --wait-while--seconds--))
-           --wait-while--result--))
+         --wait-while--result--))
 
 (defmacro wait-until (test check-interval)
     `(let ((--wait-until-- nil))
