@@ -12,6 +12,8 @@ autocmd InsertLeave * :normal! `^
 
 inoremap <expr> <Esc> mode(1) =~# '^R' ? "\<Insert>" : "\<Esc>"
 
+call setreg('r', repeat('1234567890', 8), 'V')
+
 set shada=
 
 function! NoSearch()
