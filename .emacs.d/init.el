@@ -9113,7 +9113,7 @@
 (defun tumblr-link (path)
     (let ((blog (tumblr-get "blog" path))
           (post (tumblr-get "post" path))
-          (title (denoted-title-slug (denoted-title-get path))))
+          (title (denoted-title-get path t)))
         (when (or (equal blog "") (equal post ""))
             (user-error "%s is not a Tumblr post" path))
         (format "https://%s.tumblr.com/post/%s/%s" blog post title)))
