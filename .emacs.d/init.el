@@ -7869,17 +7869,17 @@
                     ""
                     "--")
                 name)))
-    (defun denoted-title-get (path)
-        (let ((note-type (denote-file-note-type path)))
-            (if note-type
-                (denote-retrieve-title-value path note-type)
-                (let ((name (file-name-nondirectory path)))
-                    (when (string-prefix-p "." name)
-                        (setq path (substring name 1))))
-                (if (denote-file-has-identifier-p path)
-                    (denote-retrieve-filename-title path)
-                    (denote-retrieve-filename-title
-                        (denoted--add-nil-id path))))))
+    (defun denoted-title-get (path &optional filename-only)
+        (if-let* ((_ filename-only)
+                  (note-type (denote-file-note-type path)))
+            (denote-retrieve-title-value path note-type)
+            (let ((name (file-name-nondirectory path)))
+                (when (string-prefix-p "." name)
+                    (setq path (substring name 1))))
+            (if (denote-file-has-identifier-p path)
+                (denote-retrieve-filename-title path)
+                (denote-retrieve-filename-title
+                    (denoted--add-nil-id path)))))
     (defun denoted-tag-get (path)
         (denote-extract-keywords-from-path path))
     (defun denoted-suffix-get (path)
