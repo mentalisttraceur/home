@@ -7745,6 +7745,9 @@
 (use-package denote
     :ensure t
     :config
+    (plist-put
+        (alist-get 'markdown-yaml denote-file-types)
+        :title-value-reverse-function 'json-parse-string)
     (setq denote-file-type 'markdown-yaml)
     (setq denote-known-keywords '())
     (setq denote-history-completion-in-prompts nil)
