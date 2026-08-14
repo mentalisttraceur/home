@@ -1,3 +1,4 @@
 #!/bin/sh -
 . ~/.gwsl
-exec emacsclient --alternate-editor= "$@"
+path=`wslpath "$1"`
+exec emacsclient --alternate-editor= "$path"
