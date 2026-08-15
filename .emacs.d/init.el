@@ -2566,6 +2566,9 @@
     :config
     (set-face-foreground 'eshell-prompt nil)
     (set-face-bold 'eshell-prompt nil))
+(use-package em-unix
+    :config
+    (fmakunbound 'eshell/grep))
 (when android
     (use-package em-tramp
         :defer t
