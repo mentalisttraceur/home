@@ -5655,8 +5655,10 @@
     (defun read-unicode (prompt)
         (mapcar
             #'read-unicode--parse
-            (let ((completion-ignore-case t)
-                  (orderless-smart-case nil))
+            (minibuffer-with-setup-hook
+                (lambda ()
+                    (setq-local completion-ignore-case t)
+                    (setq-local orderless-smart-case nil))
                 (completing-read-multiple
                     prompt
                     (read-unicode--candidates)))))
