@@ -8495,9 +8495,21 @@
 
 
 (defconst music-directory "~/Music")
+(defun music--files (path)
+    (let* ((names (directory-files path t "^[^.]" t))
+           (files (mapcan 'music--files-recurse names)))
+        (flatten-tree files)))
+(defun music--files-recurse (name)
+    (if (file-directory-p name)
+        (music--files name)
+        (cons name nil)))
+(defun music-files ()
+    (let ((files (music--files music-directory))
+          (default-directory music-directory))
+        (mapcar 'file-relative-name files)))
 (defun music-read (prompt)
     (let ((vertico-sort-function 'vertico-sort-alpha)
-          (files (directory-files music-directory nil "^[^.]" t)))
+          (files (music-files)))
         (let ((chosen (save-point-line-and-column-with-scroll
                           (completing-read-multiple prompt files)))
               (directory (file-name-as-directory music-directory)))
