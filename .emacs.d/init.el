@@ -3450,7 +3450,8 @@
     (defun fixed-debug--kill ()
         (if (not fixed-debug--parent-depths)
             t
-            (when (y-or-n-p "Debugged execution paused; kill anyway?")
+            (when (or (eq (current-buffer) (window-buffer))
+                      (y-or-n-p "Debugged execution paused; kill anyway?"))
                 (add-single-use-hook 'post-command-hook
                     (apply-partially 'kill-buffer (current-buffer)))
                 (add-single-use-hook 'post-command-hook 'debug-top-level))
