@@ -5251,7 +5251,7 @@
     (add-hook 'evil-replace-state-entry-hook
         (evil-color replace  "#FFFF00" "#FFFF80" "#6C6C36"))
     (add-hook 'evil-visual-state-entry-hook
-        (evil-color visual   "#8080FF" "#60A0FF" "#24366C"))
+        (evil-color visual   "#8080FF" "#C0C0FF" "#24246C"))
     (add-hook 'evil-emacs-state-entry-hook
         (evil-color emacs    "#A020FF" "#C040FF" "#48006C"))
     (add-hook 'evil-motion-state-entry-hook
