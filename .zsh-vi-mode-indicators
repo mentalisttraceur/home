@@ -1,7 +1,7 @@
 function _vi_mode_indicators_update
 {
     local mode_indicators=?
-    case "$KEYMAP" in
+    case $KEYMAP in
     'vicmd')
         mode_indicators=-
     ;;
