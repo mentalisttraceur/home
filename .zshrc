@@ -1,6 +1,6 @@
 PS1='%(!.#.$) '
 bindkey -v
-source ~/.zsh-vi-ps1
+source ~/.zsh-vi-mode-indicators
 source ~/.zsh-vi-search
 source ~/.zsh-vi-P
 source ~/.zsh-standard-keys

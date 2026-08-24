@@ -1,42 +1,42 @@
-function _vi_ps1_update
+function _vi_mode_indicators_update
 {
-    local mode_indicator=?
+    local mode_indicators=?
     case "$KEYMAP" in
     'vicmd')
-        mode_indicator=-
+        mode_indicators=-
     ;;
     'main')
         case $(bindkey -lL main) in
         'bindkey -A viins main')
-            mode_indicator=I
+            mode_indicators=I
         ;;
         'bindkey -A emacs main')
-            mode_indicator=E
+            mode_indicators=E
         esac
     esac
-    PS1=$mode_indicator${PS1#?}
-    PS2=$mode_indicator${PS2#?}
-    PS3=$mode_indicator${PS3#?}
+    PS1=$mode_indicators${PS1#?}
+    PS2=$mode_indicators${PS2#?}
+    PS3=$mode_indicators${PS3#?}
 }
 
-_vi_ps1_need_init=1
+_vi_mode_indicators_need_init=1
 
 function zle-line-init
 {
-    case $_vi_ps1_need_init in 1)
+    case $_vi_mode_indicators_need_init in 1)
         PS1=?$PS1
         PS2=?$PS2
         PS3=?$PS3
-        _vi_ps1_need_init=0
+        _vi_mode_indicators_need_init=0
     esac
-    _vi_ps1_update
+    _vi_mode_indicators_update
     zle reset-prompt
 }
 zle -N zle-line-init
 
 function zle-keymap-select
 {
-    _vi_ps1_update
+    _vi_mode_indicators_update
     zle reset-prompt
 }
 zle -N zle-keymap-select
@@ -46,7 +46,7 @@ function zle-line-finish
     PS1=${PS1#?}
     PS2=${PS2#?}
     PS3=${PS3#?}
-    _vi_ps1_need_init=1
+    _vi_mode_indicators_need_init=1
     zle reset-prompt
 }
 zle -N zle-line-finish
