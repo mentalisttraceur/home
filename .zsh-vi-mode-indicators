@@ -9,12 +9,13 @@ function _vi_mode_indicators_update
     'main')
         case $(bindkey -lL main) in
         'bindkey -A viins main')
-            mode_indicators=I
             case $ZLE_STATE in
             *overwrite*)
+                mode_indicators=R
                 printf '\e[4 q'
             ;;
             *)
+                mode_indicators=I
                 printf '\e[6 q'
             esac
         ;;
