@@ -4,14 +4,23 @@ function _vi_mode_indicators_update
     case $KEYMAP in
     'vicmd')
         mode_indicators=-
+        printf '\e[2 q'
     ;;
     'main')
         case $(bindkey -lL main) in
         'bindkey -A viins main')
             mode_indicators=I
+            case $ZLE_STATE in
+            *overwrite*)
+                printf '\e[4 q'
+            ;;
+            *)
+                printf '\e[6 q'
+            esac
         ;;
         'bindkey -A emacs main')
             mode_indicators=E
+            printf '\e[0 q'
         esac
     esac
     PS1=$mode_indicators${PS1#?}
@@ -46,7 +55,16 @@ function zle-line-finish
     PS1=${PS1#?}
     PS2=${PS2#?}
     PS3=${PS3#?}
+    printf '\e[0 q'
     _vi_mode_indicators_need_init=1
     zle reset-prompt
 }
 zle -N zle-line-finish
+
+function vi-replace-chars()
+{
+    printf '\e[4 q'
+    zle .vi-replace-chars
+    printf '\e[2 q'
+}
+zle -N vi-replace-chars
