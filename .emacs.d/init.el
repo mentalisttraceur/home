@@ -5398,7 +5398,7 @@
     (add-to-list 'evil-ex-commands '("nos" . "nosearch"))
     (defun evil-find-char-pair-1 (direction char1 char2)
         (let ((point (point))
-              (evil-last-find))
+              evil-last-find)
             (condition-case _error
                 (while (progn
                            (evil-find-char direction char1)
