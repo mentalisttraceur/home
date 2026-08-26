@@ -26,6 +26,7 @@
         && exec delta --color-only --features=interactive
 [delta]
     line-numbers = true
+    line-numbers-left-format = "{nm:^4}❘"
     line-numbers-minus-style = "#A00000"
     line-numbers-plus-style = "#008000"
     line-numbers-zero-style = black
