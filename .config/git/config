@@ -26,6 +26,8 @@
         && exec delta --color-only --features=interactive
 [delta]
     line-numbers = true
+    line-numbers-minus-style = "#A00000"
+    line-numbers-plus-style = "#008000"
     line-numbers-zero-style = black
     file-modified-label = "file modified:"
     file-added-label = "file added:"
