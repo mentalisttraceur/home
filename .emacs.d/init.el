@@ -5424,7 +5424,7 @@
         (when (> count 0)
             (backward-char 2)))
     (evil-define-motion evil-find-char-pair-backward (count char1 char2)
-        :type inclusive
+        :type exclusive
         (interactive "p<C><C>")
         (when (and (equal (char-before (point)) char1)
                    (equal (char-after (point)) char2))
