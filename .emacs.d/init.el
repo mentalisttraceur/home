@@ -3815,27 +3815,27 @@
 
 (defface datetime-read-preview-year-face
     '((t
-       :foreground "#80FFFF"
+       :foreground "#00E8FF"
        :weight bold))
     "")
 (defface datetime-read-preview-month-face
     '((t
-       :foreground "#C040FF"
+       :foreground "#FF80FF"
        :weight bold))
     "")
 (defface datetime-read-preview-day-face
     '((t
-       :foreground "#40FF40"
+       :foreground "#50E800"
        :weight bold))
     "")
 (defface datetime-read-preview-hour-face
     '((t
-       :foreground "#FFA060"
+       :foreground "#FF9000"
        :weight bold))
     "")
 (defface datetime-read-preview-minute-face
     '((t
-       :foreground "#FFFF80"
+       :foreground "#FFE800"
        :weight bold))
     "")
 (defface datetime-read-preview-second-face
@@ -4627,23 +4627,23 @@
             (face-remap-set-base 'vertico-counter face)))
     (advice-add 'vertico--setup :after 'vertico-counter-faces--setup)
     (set-face-foreground 'vertico-multiline "#FF0000")
-    (set-face-background 'vertico-counter "#A0E0FF")
+    (set-face-background 'vertico-counter "#00E8FF")
     (set-face-foreground 'vertico-counter "#010101")
     (set-face-bold 'vertico-counter t)
     (defface vertico-counter-removal
         '((t
            :inherit vertico-counter
-           :background "#FF8000"))
+           :background "#FF9000"))
         "")
     (defface vertico-counter-replacement
         '((t
            :inherit vertico-counter
-           :background "#FFFF00"))
+           :background "#FFE800"))
         "")
     (defface vertico-counter-execution
         '((t
            :inherit vertico-counter
-           :background "#00FF00"))
+           :background "#50E800"))
         "")
     (dolist (command '(execute-extended-command
                        history-execute
@@ -5243,19 +5243,19 @@
                      '(:foreground "#D0D0D0"
                        :background ,inactive)))))
     (add-hook 'evil-normal-state-entry-hook
-        (evil-color normal   "#FF0000" "#FF4040" "#6C2424"))
+        (evil-color normal   "#FF4040" "#FF4040" "#6C2424"))
     (add-hook 'evil-operator-state-entry-hook
-        (evil-color operator "#FF8000" "#FFA060" "#6C4824"))
+        (evil-color operator "#FF9000" "#FF9000" "#6C4824"))
     (add-hook 'evil-insert-state-entry-hook
-        (evil-color insert   "#00FF00" "#40FF40" "#246C24"))
+        (evil-color insert   "#50E800" "#50E800" "#244800"))
     (add-hook 'evil-replace-state-entry-hook
-        (evil-color replace  "#FFFF00" "#FFFF80" "#6C6C36"))
+        (evil-color replace  "#FFE800" "#FFE800" "#6C5A36"))
     (add-hook 'evil-visual-state-entry-hook
-        (evil-color visual   "#8080FF" "#C0C0FF" "#24246C"))
+        (evil-color visual   "#8898FF" "#8898FF" "#36366C"))
     (add-hook 'evil-emacs-state-entry-hook
-        (evil-color emacs    "#A020FF" "#C040FF" "#48006C"))
+        (evil-color emacs    "#FF80FF" "#FF80FF" "#5A366C"))
     (add-hook 'evil-motion-state-entry-hook
-        (evil-color motion   "#A0E0FF" "#80FFFF" "#366C6C"))
+        (evil-color motion   "#00E8FF" "#00E8FF" "#245A6C"))
     (set-face-foreground 'minibuffer-prompt "#FFFFFF")
     (setq evil-insert-state-cursor '(bar . 3))
     (setq evil-cross-lines t)
@@ -7882,9 +7882,9 @@
                   (goto-char (match-end 0))
                   (1 'denote-faces-delimiter)
                   (2 'denote-faces-keywords)))))
-    (set-face-foreground 'denote-faces-month  "#FFA060")
-    (set-face-foreground 'denote-faces-minute "#FFA060")
-    (set-face-foreground 'denote-faces-keywords "#8080FF")
+    (set-face-foreground 'denote-faces-month  "#FF9000")
+    (set-face-foreground 'denote-faces-minute "#FF9000")
+    (set-face-foreground 'denote-faces-keywords "#8898FF")
     (defface task-faces-repeat
         '((t
            :inherit default))
@@ -7893,8 +7893,8 @@
         '((t
            :inherit default))
         "")
-    (set-face-foreground 'task-faces-repeat   "#FF0000")
-    (set-face-foreground 'task-faces-duration "#00FF00")
+    (set-face-foreground 'task-faces-repeat   "#FF4040")
+    (set-face-foreground 'task-faces-duration "#50E800")
     (defface android-trash-face
         '((t
            :inherit default))
@@ -8558,7 +8558,7 @@
     `(evil-define-key* ,state music-mode-map ,key ,def ,@bindings))
 (defface music-current-entry
     '((t
-       :foreground "#80FFFF"))
+       :foreground "#00E8FF"))
     "")
 (defface music-current-playing-entry
     '((t
@@ -8568,11 +8568,11 @@
     "")
 (defface music-loop
     '((t
-       :foreground "#FFFF00"))
+       :foreground "#FFE800"))
     "")
 (defface music-time
     '((t
-       :foreground "#8080FF"))
+       :foreground "#8898FF"))
     "")
 (defvar music--socket nil)
 (defvar-local music--refresh-socket nil)
@@ -9186,15 +9186,15 @@
 
 (defface ai-user-divider-face
     '((t
-       :foreground "#FFFF00"))
+       :foreground "#FFE800"))
     "")
 (defface ai-assistant-divider-face
     '((t
-       :foreground "#FF00FF"))
+       :foreground "#FF80FF"))
     "")
 (defface ai-tool-divider-face
     '((t
-       :foreground "#FF0000"))
+       :foreground "#FF4040"))
     "")
 (defun ai--highlight ()
     (font-lock-add-keywords nil
