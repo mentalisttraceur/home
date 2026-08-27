@@ -2,6 +2,7 @@ PS1='%(!.#.$) '
 bindkey -v
 source ~/.zsh-vi-mode
 source ~/.zsh-vi-search
+source ~/.zsh-vi-clipboard
 source ~/.zsh-vi-P
 source ~/.zsh-standard-keys
 KEYTIMEOUT=1

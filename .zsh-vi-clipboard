@@ -1,0 +1,66 @@
+function _vi-clipboard-copy()
+{
+    printf '\e]52;c;'
+    base64 -w0
+    printf '\a'
+}
+
+
+function vi-yank()
+{
+    zle .vi-yank &&
+    printf '%s' "$CUTBUFFER" | _vi-clipboard-copy
+}
+zle -N vi-yank
+
+function vi-yank-whole-line()
+{
+    zle .vi-yank-whole-line &&
+    printf '%s' "$CUTBUFFER" | _vi-clipboard-copy
+}
+zle -N vi-yank-whole-line
+
+
+function vi-delete()
+{
+    zle .vi-delete &&
+    printf '%s' "$CUTBUFFER" | _vi-clipboard-copy
+}
+zle -N vi-delete
+
+function vi-delete-eol()
+{
+    zle .vi-delete-eol &&
+    printf '%s' "$CUTBUFFER" | _vi-clipboard-copy
+}
+zle -N vi-delete-eol
+
+
+function vi-change()
+{
+    zle .vi-change &&
+    printf '%s' "$CUTBUFFER" | _vi-clipboard-copy
+}
+zle -N vi-change
+
+function vi-change-eol()
+{
+    zle .vi-change-eol &&
+    printf '%s' "$CUTBUFFER" | _vi-clipboard-copy
+}
+zle -N vi-change-eol
+
+
+function vi-delete-char()
+{
+    zle .vi-delete-char &&
+    printf '%s' "$CUTBUFFER" | _vi-clipboard-copy
+}
+zle -N vi-delete-char
+
+function vi-backward-delete-char()
+{
+    zle .vi-backward-delete-char &&
+    printf '%s' "$CUTBUFFER" | _vi-clipboard-copy
+}
+zle -N vi-backward-delete-char
