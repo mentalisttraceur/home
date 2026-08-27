@@ -1,9 +1,9 @@
 function _vi_mode_indicators_update
 {
-    local mode_indicators=?
+    local mode_indicator=?
     case $KEYMAP in
     'vicmd')
-        mode_indicators=-
+        mode_indicator=-
         printf '\e[2 q'
     ;;
     'main')
@@ -11,22 +11,22 @@ function _vi_mode_indicators_update
         'bindkey -A viins main')
             case $ZLE_STATE in
             *overwrite*)
-                mode_indicators=R
+                mode_indicator=R
                 printf '\e[4 q'
             ;;
             *)
-                mode_indicators=I
+                mode_indicator=I
                 printf '\e[6 q'
             esac
         ;;
         'bindkey -A emacs main')
-            mode_indicators=E
+            mode_indicator=E
             printf '\e[0 q'
         esac
     esac
-    PS1=$mode_indicators${PS1#?}
-    PS2=$mode_indicators${PS2#?}
-    PS3=$mode_indicators${PS3#?}
+    PS1=$mode_indicator${PS1#?}
+    PS2=$mode_indicator${PS2#?}
+    PS3=$mode_indicator${PS3#?}
 }
 
 _vi_mode_indicators_need_init=1
