@@ -30,6 +30,7 @@ function _vi_mode_indicators_update
 }
 
 _vi_mode_indicators_need_init=1
+_vi_mode_previous_keymap=vicmd
 
 function zle-line-init
 {
@@ -38,6 +39,9 @@ function zle-line-init
         PS2=?$PS2
         PS3=?$PS3
         _vi_mode_indicators_need_init=0
+    esac
+    case $_vi_mode_previous_keymap in vicmd)
+         zle vi-cmd-mode
     esac
     _vi_mode_indicators_update
     zle reset-prompt
@@ -58,6 +62,7 @@ function zle-line-finish
     PS3=${PS3#?}
     printf '\e[0 q'
     _vi_mode_indicators_need_init=1
+    _vi_mode_previous_keymap=$KEYMAP
     zle reset-prompt
 }
 zle -N zle-line-finish
