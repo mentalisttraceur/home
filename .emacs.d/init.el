@@ -5405,7 +5405,10 @@
               evil-last-find)
             (when (< count 0)
                 (setq direction -1)
-                (-= count))
+                (-= count)
+                (when (and (equal (char-before (point)) char1)
+                           (equal (char-after (point)) char2))
+                    (+= count 1)))
             (condition-case _error
                 (while (> count 0)
                     (evil-find-char direction char1)
@@ -5415,25 +5418,46 @@
                     (goto-char point)
                     (user-error "Can't find %c%c" char1 char2))))
         (when (> count 0)
-            (forward-char)))
+            (forward-char))
+        (setq evil-last-find
+            (list
+                #'evil-find-char-pair--repeat
+                (list #'evil-find-char-pair char1 char2)
+                (> count 0))))
     (evil-define-motion evil-find-char-pair-to (count char1 char2)
         :type inclusive
         (interactive "p<C><C>")
         (evil-find-char-pair count char1 char2)
-        (when (> count 0)
-            (backward-char 2)))
+        (cond
+            ((> count 0)
+                (backward-char 2))
+            ((< count 0)
+                (forward-char 2)))
+        (setcar
+            (cadr evil-last-find)
+            #'evil-find-char-pair-to))
     (evil-define-motion evil-find-char-pair-backward (count char1 char2)
         :type exclusive
         (interactive "p<C><C>")
-        (when (and (equal (char-before (point)) char1)
-                   (equal (char-after (point)) char2))
-            (+= count 1))
         (evil-find-char-pair (- count) char1 char2))
     (evil-define-motion evil-find-char-pair-to-backward (count char1 char2)
         :type exclusive
         (interactive "p<C><C>")
-        (evil-find-char-pair (- count) char1 char2)
-        (forward-char 2))
+        (evil-find-char-pair-to (- count) char1 char2))
+    (defun evil-find-char-pair--repeat (count state)
+        (seq-let (function char1 char2) state
+            (when (and (eq function #'evil-find-char-pair-to)
+                       evil-repeat-find-to-skip-next)
+                (cond
+                    ((and (= count 1)
+                          (equal (char-after (+ (point) 1)) char1)
+                          (equal (char-after (+ (point) 2)) char2))
+                        (+= count 1))
+                    ((and (= count -1)
+                          (equal (char-after (- (point) 2)) char1)
+                          (equal (char-after (- (point) 1)) char2))
+                        (-= count 1))))
+            (funcall function count char1 char2)))
     (dolist (map (list evil-motion-state-map
                        evil-normal-state-map
                        evil-visual-state-map))
