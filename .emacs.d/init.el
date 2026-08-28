@@ -5355,11 +5355,10 @@
     (setq evil-motion-state-modes (append
         evil-motion-state-modes evil-emacs-state-modes))
     (setq evil-emacs-state-modes nil)
-    (advice-add 'evil-quit
-        :around
-        (lambda (evil-quit &rest arguments)
-            (with-advice (('delete-window :override 'kill-current-buffer))
-                (apply evil-quit arguments))))
+    (defun fixed-evil-quit (evil-quit &rest arguments)
+        (with-advice (('delete-window :override 'kill-current-buffer))
+            (apply evil-quit arguments)))
+    (advice-add 'evil-quit :around 'fixed-evil-quit)
     (add-to-list 'preserve-temporary-goal-column-commands 'evil-repeat)
     (defun fixed-evil-repeat (evil-repeat &rest arguments)
         (evil-save-state
@@ -6135,10 +6134,10 @@
 (use-packages eshell evil
     :config
     (defvar-local evil-eshell-state-for-next-input 'normal)
+    (defun evil-eshell-state-for-next-input (&rest _)
+        (setq evil-eshell-state-for-next-input evil-state))
     (advice-add 'eshell-send-input
-        :before
-        (lambda (&rest _)
-            (setq evil-eshell-state-for-next-input evil-state)))
+        :before 'evil-eshell-state-for-next-input)
     (defun evil-eshell-force-normal-state ()
         (interactive)
         (evil-force-normal-state)
