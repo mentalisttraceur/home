@@ -1,14 +1,14 @@
-function _history-search-backward()
+function history-incremental-pattern-search-backward-continue()
 {
-    zle .history-incremental-pattern-search-backward $BUFFER
+    zle history-incremental-pattern-search-backward $BUFFER
 }
-function _history-search-forward()
+function history-incremental-pattern-search-forward-continue()
 {
-    zle .history-incremental-pattern-search-forward $BUFFER
+    zle history-incremental-pattern-search-forward $BUFFER
 }
-zle -N history-incremental-pattern-search-backward _history-search-backward
-zle -N history-incremental-pattern-search-backward _history-search-forward
-bindkey -M vicmd "?" .history-incremental-pattern-search-backward
-bindkey -M vicmd "/" .history-incremental-pattern-search-forward
-bindkey -M vicmd "N" history-incremental-pattern-search-backward
-bindkey -M vicmd "n" history-incremental-pattern-search-forward
+zle -N history-incremental-pattern-search-backward-continue
+zle -N history-incremental-pattern-search-forward-continue
+bindkey -M vicmd "?" history-incremental-pattern-search-backward
+bindkey -M vicmd "/" history-incremental-pattern-search-forward
+bindkey -M vicmd "N" history-incremental-pattern-search-backward-continue
+bindkey -M vicmd "n" history-incremental-pattern-search-forward-continue
