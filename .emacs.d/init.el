@@ -5446,17 +5446,30 @@
         (evil-find-char-pair-to (- count) char1 char2))
     (defun evil-find-char-pair--repeat (count state)
         (seq-let (function char1 char2) state
-            (when (and (eq function #'evil-find-char-pair-to)
-                       evil-repeat-find-to-skip-next)
-                (cond
-                    ((and (= count 1)
-                          (equal (char-after (+ (point) 1)) char1)
-                          (equal (char-after (+ (point) 2)) char2))
-                        (+= count 1))
-                    ((and (= count -1)
-                          (equal (char-after (- (point) 2)) char1)
-                          (equal (char-after (- (point) 1)) char2))
-                        (-= count 1))))
+            (cond
+                ((eq function #'evil-find-char-pair)
+                    (cond
+                        ((and (> count 0)
+                              (equal (char-after     (point) ) char1)
+                              (equal (char-after (1+ (point))) char2))
+                            (forward-char)
+                            (-= count 1))
+                        ((and (< count 0)
+                              (equal (char-before (point)) char1)
+                              (equal (char-after  (point)) char2))
+                            (backward-char)
+                            (+= count 1))))
+                ((and (eq function #'evil-find-char-pair-to)
+                      evil-repeat-find-to-skip-next)
+                    (cond
+                        ((and (= count 1)
+                              (equal (char-after (+ (point) 1)) char1)
+                              (equal (char-after (+ (point) 2)) char2))
+                            (+= count 1))
+                        ((and (= count -1)
+                              (equal (char-after (- (point) 2)) char1)
+                              (equal (char-after (- (point) 1)) char2))
+                            (-= count 1)))))
             (funcall function count char1 char2)))
     (dolist (map (list evil-motion-state-map
                        evil-normal-state-map
