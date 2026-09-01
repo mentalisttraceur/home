@@ -2472,7 +2472,9 @@
                                 (selected-window) buffer start point))
                         (pop-to-buffer (car previous)))
                     (latest-eshell--update (current-buffer)))
-                (eshell))))
+            (if latest-eshell
+                (pop-to-buffer (car latest-eshell))
+                (eshell)))))
     (setq eshell-history-size 0)
     (advice-add 'eshell-hist-initialize
         :before
