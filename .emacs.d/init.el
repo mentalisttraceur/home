@@ -8734,9 +8734,13 @@
 (defun music--file-line (socket index)
     (let* ((format (format "${playlist/%d/filename}" index))
            (path (mpv-ipc-expand socket format))
-           (file (file-relative-name path music-directory))
-           (path (expand-file-name path))
+           (url-type (url-type (url-generic-parse-url path)))
+           (file (if url-type
+                     path
+                     (file-relative-name path music-directory)))
            (file-line (concat file "\n")))
+        (unless url-type
+            (setq path (expand-file-name path)))
         (propertize file-line 'mpv-index index 'full-path path)))
 (defvar music--playing-line-map (make-sparse-keymap))
 (defun music--playing-line-fix-point (event)
