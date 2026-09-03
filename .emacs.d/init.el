@@ -8734,7 +8734,7 @@
 (defun music--file-line (socket index)
     (let* ((format (format "${playlist/%d/filename}" index))
            (path (mpv-ipc-expand socket format))
-           (file (file-name-nondirectory path))
+           (file (file-relative-name path music-directory))
            (path (expand-file-name path))
            (file-line (concat file "\n")))
         (propertize file-line 'mpv-index index 'full-path path)))
