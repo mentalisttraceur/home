@@ -7755,12 +7755,18 @@
         (save-excursion
             (goto-char (point-max))
             (forward-line -3)
-            (let* ((file (filter-buffer-substring (pos-bol) (pos-eol)))
-                   (path (concat default-directory file)))
-                (evil-local-set-key 'motion " d"
-                    (lambda-let (path) ()
-                        (interactive)
-                        (smoother-dired path))))))
+            (let ((file (filter-buffer-substring (pos-bol) (pos-eol))))
+                (when (string-suffix-p ".webm" file)
+                    (let ((new (file-name-with-extension file "mka")))
+                        (rename-file file new t)
+                        (setq file new))
+                    (delete-line)
+                    (insert file "\n"))
+                (let ((path (concat default-directory file)))
+                    (evil-local-set-key 'motion " d"
+                        (lambda-let (path) ()
+                            (interactive)
+                            (smoother-dired path)))))))
     (define-key space-misc-map "y" 'yt-dlp)
     (define-key space-misc-map "m"
         (lambda ()
