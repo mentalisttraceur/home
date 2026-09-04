@@ -8869,8 +8869,8 @@
 (defun music--delete (start end type register yank-handler &optional paired)
     (let ((evil-was-yanked-without-register nil))
         (evil-yank start end type register yank-handler))
-    (let* ((text    (evil-paste-to-string 1 register))
-           (indexes (text-property-values nil nil 'mpv-index text))
+    (let* ((paths   (full-path-property-split start end))
+           (indexes (text-property-values start end 'mpv-index))
            (index (or (car indexes) 0))
            (command (list "playlist-remove" index))
            (commands (make-list (length indexes) command)))
@@ -8878,8 +8878,7 @@
         (let ((column (current-column))
               (move   (if (< index (music--index-for-point! 0))
                           0
-                          nil))
-              (paths  (full-path-property-split nil nil text)))
+                          nil)))
             (music--undo-as
                 (music--add paths 1 index column 0 move paired))))
     (evil-save-column
