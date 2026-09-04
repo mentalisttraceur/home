@@ -2511,7 +2511,7 @@
             (while (and (not found-foreground-process)
                         processes)
                 (let ((entry (pop processes)))
-                    (setq found-foregroung-process (not (cdr entry)))))
+                    (setq found-foreground-process (not (cdr entry)))))
             found-foreground-process))
     (defun fixed-eshell-interrupt-process (&rest _)
         (unless (foreground-process-in-eshell-p)
