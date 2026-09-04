@@ -8871,7 +8871,7 @@
         (evil-yank start end type register yank-handler))
     (let* ((text    (evil-paste-to-string 1 register))
            (indexes (text-property-values nil nil 'mpv-index text))
-           (index   (or (car indexes) 0))
+           (index (or (car indexes) 0))
            (command (list "playlist-remove" index))
            (commands (make-list (length indexes) command)))
         (mpv-ipc-batch music--socket commands)
