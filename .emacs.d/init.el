@@ -8652,9 +8652,8 @@
                 (music--refresh-raw nil)))))
 (defun music--refresh-raw (full-redraw)
     (save-point-line-and-column-with-scroll
-        (let ((socket music--refresh-socket)
-              (inhibit-quit nil))
-            (if (equal (mpv-ipc-expand socket "${pause}") "yes")
+        (let ((inhibit-quit nil))
+            (if (equal (mpv-ipc-expand music--refresh-socket "${pause}") "yes")
                 (face-remap-reset-base
                     'music-current-entry)
                 (face-remap-set-base
@@ -8663,14 +8662,13 @@
             (let ((inhibit-read-only t)
                   (buffer-undo-list t))
                 (if full-redraw
-                    (music--full-refresh socket)
-                    (music--fast-refresh socket)))))
+                    (music--full-refresh music--refresh-socket)
+                    (music--fast-refresh music--refresh-socket)))))
     (when-let* ((position (next-single-property-change
                               1 'mpv--position)))
-        (progn
-            (goto-char position)
-            (setq music--position-in-seek-bar position)
-            (setq temporary-goal-column (current-column))))
+        (goto-char position)
+        (setq music--position-in-seek-bar position)
+        (setq temporary-goal-column (current-column)))
     (when music--refresh-next-index
         (goto-char 1)
         (if-let* ((match (text-property-search-forward
@@ -8921,7 +8919,7 @@
     (setq music--refresh-next-column column)
     (revert-buffer))
 (defun music--undo-add (paths count index column offset move &optional paired)
-    (let* ((count (* count (length paths)))
+    (let* ((count   (* count (length paths)))
            (command (list "playlist-remove" index))
            (commands (make-list count command)))
         (mpv-ipc-batch music--socket commands))
@@ -8948,8 +8946,8 @@
 (music-define-key 'normal "P" 'music-paste-before)
 (defun music--replacing-paste (count register move)
     (let* ((inserted (music--paths-for-paste register))
-           (start    (point))
-           (end      (pos-eol (* count (length inserted))))
+           (start (point))
+           (end   (pos-eol (* count (length inserted))))
            (replaced (full-path-property-split start end))
            (indexes  (text-property-values start end 'mpv-index))
            (index    (or (car indexes) 0))
