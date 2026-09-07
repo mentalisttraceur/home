@@ -8861,8 +8861,7 @@
 (defmacro music--index-for-point! (offset)
     `(if-let* ((index (get-text-property (point) 'mpv-index)))
          (+ index ,offset)
-         ,(when (symbolp offset)
-             `(setq ,offset 0))
+         (setq ,offset 0)
          (music-playlist-count)))
 (defun music--delete (start end type register yank-handler &optional paired)
     (let ((evil-was-yanked-without-register nil))
@@ -8874,7 +8873,8 @@
            (commands (make-list (length indexes) command)))
         (mpv-ipc-batch music--socket commands)
         (let ((column (current-column))
-              (move   (if (< index (music--index-for-point! 0))
+              (move   (if (< index (or (get-text-property (point) 'mpv-index)
+                                       (music-playlist-count)))
                           0
                           nil)))
             (music--undo-as
