@@ -8858,11 +8858,6 @@
         `(push
              (list 'apply ',function ,@arguments)
              buffer-undo-list)))
-(defmacro music--index-for-point! (offset)
-    `(if-let* ((index (get-text-property (point) 'mpv-index)))
-         (+ index ,offset)
-         (setq ,offset 0)
-         (music-playlist-count)))
 (defun music--delete (start end type register yank-handler &optional paired)
     (let ((evil-was-yanked-without-register nil))
         (evil-yank start end type register yank-handler))
@@ -8929,6 +8924,11 @@
     (setq music--refresh-next-column column)
     (unless paired
         (revert-buffer)))
+(defmacro music--index-for-point! (offset)
+    `(if-let* ((index (get-text-property (point) 'mpv-index)))
+         (+ index ,offset)
+         (setq ,offset 0)
+         (music-playlist-count)))
 (defun music--paste (count register offset move)
     (let* ((paths  (music--paths-for-paste register))
            (index  (music--index-for-point! offset))
