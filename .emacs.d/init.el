@@ -7701,7 +7701,13 @@
             (git-p prefix-argument t)))
     (define-key git-map "t" (git push --tags))
     (define-key git-map "T" (git push --tags --force))
-    (define-key git-map "c" (git commit))
+    (defun git-commit (allow-empty)
+        (interactive "P")
+        (git-pop-to-command
+            (if allow-empty
+                (list "git" "commit" "--allow-empty")
+                (list "git" "commit"))))
+    (define-key git-map "c" 'git-commit)
     (defun git-amend--commit-or-rebase (prefix-argument)
         (if (and prefix-argument
                  (not (equal prefix-argument 0)))
