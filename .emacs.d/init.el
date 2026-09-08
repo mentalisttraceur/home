@@ -8806,32 +8806,6 @@
     (mpv-ipc-expand-integer music--socket "${playlist-pos}"))
 (defun music-playlist-count ()
     (mpv-ipc-expand-integer music--socket "${playlist-count}"))
-(defun music-playlist-add (path target &optional play)
-    (setq path (expand-file-name path))
-    (let ((action)
-          (command))
-        (cond
-            ((eq target 'last)
-                (setq action "append"))
-            ((eq target 'next)
-                (setq action "insert-next"))
-            (t
-                (setq action "insert-at")))
-        (when play
-            (setq action (concat action "-play")))
-        (if (memq target '(last next))
-            (setq command (list "loadfile" path action))
-            (setq command (list "loadfile" path action target)))
-        (mpv-ipc music--socket command)))
-(defun music-playlist-remove (target)
-    (cond
-        ((eq target 'all)
-            (mpv-ipc music--socket (list "playlist-clear"))
-            (mpv-ipc music--socket (list "playlist-remove" "current")))
-        ((eq target 'all-except-current)
-            (mpv-ipc music--socket (list "playlist-clear")))
-        (t
-            (mpv-ipc music--socket (list "playlist-remove" target)))))
 (defun music--goto-current ()
     (let ((index (music-playlist-position)))
         (when (>= index 0)
