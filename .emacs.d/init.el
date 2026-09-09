@@ -8855,7 +8855,7 @@
         (mpv-ipc-batch music--socket commands)
         (let ((column (current-column))
               (move   (if (< index (music-index-at (point)))
-                          0
+                          t
                           nil)))
             (music--undo-as
                 (music--add paths 1 index column 0 move))))
@@ -8893,7 +8893,7 @@
         (music--undo-as
             (music--undo-add paths count index column offset move))
         (when move
-            (+= index -1 move total)))
+            (+= index -1 total)))
     (setq music--refresh-next-index index)
     (setq music--refresh-next-column column)
     (revert-buffer))
@@ -8918,7 +8918,7 @@
 (evil-define-command music-paste-after (count register)
     :suppress-operator t
     (interactive "p<x>")
-    (music--paste count register 1 0))
+    (music--paste count register 1 t))
 (music-define-key 'normal "p" 'music-paste-after)
 (evil-define-command music-paste-before (count register)
     :suppress-operator t
@@ -8992,7 +8992,7 @@
     (music--add paths count index column offset move)))
 (defun music-open-below (count)
     (interactive "p")
-    (music--open (music-read "Open: ") count 1 0))
+    (music--open (music-read "Open: ") count 1 t))
 (music-define-key 'normal "o" 'music-open-below)
 (defun music-open-above (count)
     (interactive "p")
