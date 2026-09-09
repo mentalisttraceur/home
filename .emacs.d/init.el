@@ -8898,9 +8898,9 @@
     (setq music--refresh-next-column column)
     (revert-buffer))
 (defun music--undo-add (paths count index column offset move)
-    (let* ((count   (* count (length paths)))
+    (let* ((total   (* count (length paths)))
            (command (list "playlist-remove" index))
-           (commands (make-list count command)))
+           (commands (make-list total command)))
         (mpv-ipc-batch music--socket commands))
     (music--undo-as
         (music--add paths count index column offset move))
