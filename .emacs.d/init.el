@@ -8844,7 +8844,7 @@
 (defun music-index-at (position)
     (or (get-text-property position 'mpv-index)
         (music-playlist-count)))
-(defun music--delete (start end type register yank-handler &optional paired)
+(defun music--delete (start end type register yank-handler)
     (let ((evil-was-yanked-without-register nil))
         (evil-yank start end type register yank-handler))
     (let* ((paths   (full-path-property-split start end))
@@ -8858,16 +8858,15 @@
                           0
                           nil)))
             (music--undo-as
-                (music--add paths 1 index column 0 move paired))))
+                (music--add paths 1 index column 0 move))))
     (evil-save-column
         (goto-char start))
-    (unless paired
-        (when (>= end (point-max))
-            (evil-save-column
-                (condition-case nil
-                    (goto-char (1- start))
-                    (beginning-of-buffer))))
-        (revert-buffer)))
+    (when (>= end (point-max))
+        (evil-save-column
+            (condition-case nil
+                (goto-char (1- start))
+                (beginning-of-buffer))))
+    (revert-buffer))
 (evil-define-operator music-delete (start end type register yank-handler)
     :move-point nil
     :type line
@@ -8884,7 +8883,7 @@
 (music-define-key 'normal "D" 'music-delete-line)
 (defun music--paths-for-paste (register)
     (full-path-property-split nil nil (evil-paste-to-string 1 register)))
-(defun music--add (paths count index column offset move &optional paired)
+(defun music--add (paths count index column offset move)
     (let ((total (* count (length paths)))
           (commands ()))
         (dotimes (_ count)
@@ -8892,23 +8891,22 @@
                 (push (list "loadfile" path "insert-at" index) commands)))
         (mpv-ipc-batch music--socket commands)
         (music--undo-as
-            (music--undo-add paths count index column offset move paired))
+            (music--undo-add paths count index column offset move))
         (when move
             (+= index -1 move total)))
     (setq music--refresh-next-index index)
     (setq music--refresh-next-column column)
     (revert-buffer))
-(defun music--undo-add (paths count index column offset move &optional paired)
+(defun music--undo-add (paths count index column offset move)
     (let* ((count   (* count (length paths)))
            (command (list "playlist-remove" index))
            (commands (make-list count command)))
         (mpv-ipc-batch music--socket commands))
     (music--undo-as
-        (music--add paths count index column offset move paired))
+        (music--add paths count index column offset move))
     (setq music--refresh-next-index (- index offset))
     (setq music--refresh-next-column column)
-    (unless paired
-        (revert-buffer)))
+    (revert-buffer))
 (defun music--paste (count register offset move)
     (let ((paths  (music--paths-for-paste register))
           (index  (music-index-at (point)))
@@ -8985,13 +8983,13 @@
     (music--replacing-paste count register t))
 (music-define-key 'normal "gp" 'music-replacing-paste-after)
 (music-define-key 'normal "gP" 'music-replacing-paste-before)
-(defun music--open (paths count offset move &optional paired)
+(defun music--open (paths count offset move)
     (let ((index  (music-index-at (point)))
           (column (current-column)))
         (if (< (point) (point-max))
             (+= index offset)
             (setq offset 0))
-    (music--add paths count index column offset move paired)))
+    (music--add paths count index column offset move)))
 (defun music-open-below (count)
     (interactive "p")
     (music--open (music-read "Open: ") count 1 0))
