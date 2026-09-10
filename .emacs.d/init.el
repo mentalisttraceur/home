@@ -5245,19 +5245,19 @@
                      '(:foreground "#D0D0D0"
                        :background ,inactive)))))
     (add-hook 'evil-normal-state-entry-hook
-        (evil-color normal   "#FF4040" "#FF4040" "#6C2424"))
+        (evil-color normal   "#FF4040" "#FF4040" "#802020"))
     (add-hook 'evil-operator-state-entry-hook
-        (evil-color operator "#FF9000" "#FF9000" "#6C4824"))
+        (evil-color operator "#FF80FF" "#FF80FF" "#804080"))
     (add-hook 'evil-insert-state-entry-hook
-        (evil-color insert   "#50E800" "#50E800" "#244800"))
+        (evil-color insert   "#50E800" "#50E800" "#287400"))
     (add-hook 'evil-replace-state-entry-hook
-        (evil-color replace  "#FFE800" "#FFE800" "#6C5A36"))
+        (evil-color replace  "#FFE800" "#FFE800" "#807400"))
     (add-hook 'evil-visual-state-entry-hook
-        (evil-color visual   "#8898FF" "#8898FF" "#36366C"))
+        (evil-color visual   "#8898FF" "#8898FF" "#444C80"))
     (add-hook 'evil-emacs-state-entry-hook
-        (evil-color emacs    "#FF80FF" "#FF80FF" "#5A366C"))
+        (evil-color emacs    "#FFFFFF" "#A0A0A0" "#505050"))
     (add-hook 'evil-motion-state-entry-hook
-        (evil-color motion   "#00E8FF" "#00E8FF" "#245A6C"))
+        (evil-color motion   "#00E8FF" "#00E8FF" "#007480"))
     (set-face-foreground 'minibuffer-prompt "#FFFFFF")
     (setq evil-insert-state-cursor '(bar . 3))
     (setq evil-cross-lines t)
