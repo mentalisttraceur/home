@@ -41,7 +41,7 @@ function zle-line-init
         _vi_mode_indicators_need_init=0
     esac
     case $_vi_mode_previous_keymap in vicmd)
-         zle vi-cmd-mode
+         zle .vi-cmd-mode
     esac
     _vi_mode_indicators_update
     zle reset-prompt
@@ -74,3 +74,14 @@ function vi-replace-chars()
     printf '\e[2 q'
 }
 zle -N vi-replace-chars
+
+
+function vi-cmd-mode() {
+    case $ZLE_STATE in *overwrite*)
+         zle vi-insert
+         zle zle-keymap-select
+         return
+    esac
+    zle .vi-cmd-mode
+}
+zle -N vi-cmd-mode
