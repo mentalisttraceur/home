@@ -83,5 +83,6 @@ function vi-cmd-mode() {
          return
     esac
     zle .vi-cmd-mode
+    CURSOR=$((CURSOR + 1))
 }
 zle -N vi-cmd-mode
