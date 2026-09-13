@@ -5249,11 +5249,11 @@
     (add-hook 'evil-operator-state-entry-hook
         (evil-color operator "#FF80FF" "#FF80FF" "#804080"))
     (add-hook 'evil-insert-state-entry-hook
-        (evil-color insert   "#50E800" "#50E800" "#287400"))
+        (evil-color insert   "#50E800" "#50E800" "#326A00"))
     (add-hook 'evil-replace-state-entry-hook
         (evil-color replace  "#FFE800" "#FFE800" "#807400"))
     (add-hook 'evil-visual-state-entry-hook
-        (evil-color visual   "#8898FF" "#8898FF" "#444C80"))
+        (evil-color visual   "#8898FF" "#8898FF" "#444CA0"))
     (add-hook 'evil-emacs-state-entry-hook
         (evil-color emacs    "#FFFFFF" "#A0A0A0" "#505050"))
     (add-hook 'evil-motion-state-entry-hook
