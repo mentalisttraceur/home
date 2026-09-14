@@ -7057,12 +7057,16 @@
     (advice-add 'aw--lead-overlay :override 'hack-aw--lead-overlay)
     (defvar window-state nil)
     (defconst window-state-normal
-        '("#00FF00" "#808080" "#141414" "W" "Window state"))
+        '("#00FF00" "#808080" "#0A0A0A" "#141414"
+          "W" "Window state"))
     (defconst window-state-target-pending
-        '("#00FF00" "#A060A0" "#201020" "T" "Target-pending window state"))
+        '("#00FF00" "#A060A0" "#100810" "#201020"
+          "T" "Target-pending window state"))
     (when android
-        (setcar (nthcdr 2 window-state-normal) "#202020")
-        (setcar (nthcdr 2 window-state-target-pending) "#301830"))
+        (setcar (nthcdr 2 window-state-normal) "#101010")
+        (setcar (nthcdr 3 window-state-normal) "#202020")
+        (setcar (nthcdr 2 window-state-target-pending) "#180C18")
+        (setcar (nthcdr 3 window-state-target-pending) "#301830"))
     (defvar window-state-this-register nil)
     (defvar window-state--action nil)
     (defvar window-state--execute-once nil)
@@ -7072,12 +7076,14 @@
         (setq window-state-this-register evil-this-register)
         (while window-state--execute-once
             (setq window-state--execute-once window-state--execute-more)
-            (seq-let (hint tint dim tag help-string) window-state
+            (seq-let (hint tint active-dim inactive-dim tag help-string)
+                    window-state
                 (with-face-attribute
                         ('aw-leading-char-face :foreground hint
                          'aw-background-face   :foreground tint
                          'line-number          :foreground tint
-                         'default              :background dim)
+                         'default-active       :background active-dim
+                         'default              :background inactive-dim)
                     (with-override-evil-mode-line-tag tag help-string
                         (fixed-aw-select 'window-state--do-action))))))
     (defun window-state--do-action (window)
