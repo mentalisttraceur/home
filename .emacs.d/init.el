@@ -6930,6 +6930,11 @@
     (apply 'eshell/r command))
 (put 'eshell/ro 'eshell-no-numeric-conversions t)
 
+(defface default-active
+    '((t
+       :background "#010101"
+       :inherit default))
+    "")
 (defvar face-remap-selected-window--window (selected-window))
 (defvar-local face-remap-selected-window--initialized nil)
 (defun face-remap-selected-window (&rest _)
@@ -6939,7 +6944,7 @@
     (unless face-remap-selected-window--initialized
         (face-remap-add-relative 'default
             '(:filtered (:window face-remap-selected-window t)
-                 (:background "#010101")))
+                 default-active))
         (setq face-remap-selected-window--initialized t))
     (set-window-parameter face-remap-selected-window--window
         'face-remap-selected-window t))
