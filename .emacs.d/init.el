@@ -6931,17 +6931,9 @@
         (setq face-remap-selected-window--initialized t))
     (set-window-parameter face-remap-selected-window--window
         'face-remap-selected-window t))
-(defvar face-remap-selected-window--timer nil)
-(defun face-remap-selected-window--delayed (&rest _)
-    (when face-remap-selected-window--timer
-        (cancel-timer face-remap-selected-window--timer))
-    (setq face-remap-selected-window--timer
-        (run-with-idle-timer 0.005 nil
-            'face-remap-selected-window)))
 (add-function :after after-focus-change-function 'face-remap-selected-window)
 (add-hook 'window-configuration-change-hook 'face-remap-selected-window)
 (add-hook 'window-state-change-hook 'face-remap-selected-window)
-(add-hook 'buffer-list-update-hook 'face-remap-selected-window--delayed)
 (advice-add 'kill-all-local-variables :after 'face-remap-selected-window)
 (setq redisplay-skip-initial-frame nil)
 
