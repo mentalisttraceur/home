@@ -4953,40 +4953,23 @@
                         'consult--line-history)))))
     (defun consult-line-next (count)
         (interactive "p")
-        (let ((consult-after-jump-hook nil))
-            (add-single-use-hook 'post-command-hook
-                (lambda ()
-                    (vertico--update)
-                    (when (< vertico--index 0)
-                        (push 'fail unread-command-events))))
-            (add-single-use-hook 'consult-after-jump-hook
-                (lambda-let ((count)
-                             (start (line-number-at-pos))
-                             (direction 'previous))
-                        ()
-                    (if (< count 0)
-                        (setq count (- count))
-                        (setq direction 'next)
-                        (unless (equal (line-number-at-pos) start)
-                            (setq count (1- count))))
-                    (push 'done unread-command-events)
-                    (dotimes (_ count)
-                        (push direction unread-command-events))))
-            (let ((vertico-count 0))
-                (defer-input
-                    (define-key defer-input-map "\C-g" 'abort-minibuffers)
-                    (define-key defer-input-map [next] 'vertico-next)
-                    (define-key defer-input-map [previous] 'vertico-previous)
-                    (define-key defer-input-map [done] 'vertico-exit)
-                    (define-key defer-input-map [fail]
-                        (lambda ()
-                            (interactive)
-                            (throw 'exit
-                                (lambda-let ((query (minibuffer-contents))) ()
-                                    (user-error "Search failed: %S" query)))))
-                    (with-nested-command-state
-                        (consult-line-resume nil))))
-        (pulse-momentary-highlight-one-line)))
+        (when (> count 0)
+            (setq count (1- count)))
+        (let* ((query (nth 0 consult--line-history))
+               (start (line-number-at-pos (point) consult-line-numbers-widen))
+               (start (if (< count 0)
+                          start
+                          (1+ start)))
+               (candidates (consult--slow-operation "Collecting lines..."
+                               (consult--line-candidates nil start)))
+               (matches (consult--completion-filter
+                            query candidates 'consult-location nil)))
+            (unless matches
+                (user-error "Search failed: %S" query))
+            (let* ((n (mod count (length matches)))
+                   (match (nth n matches)))
+                (consult--jump (consult--line-match match candidates query))))
+        (pulse-momentary-highlight-one-line))
     (defun consult-line-previous (count)
         (interactive "p")
         (consult-line-next (- count)))
