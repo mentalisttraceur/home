@@ -6913,29 +6913,34 @@
     (apply 'eshell/r command))
 (put 'eshell/ro 'eshell-no-numeric-conversions t)
 
+(defvar selected-window-parameter--last (selected-window))
+(set-window-parameter selected-window-parameter--last 'selected t)
+(defun selected-window-parameter--move (&rest _)
+    (set-window-parameter selected-window-parameter--last
+        'selected nil)
+    (setq selected-window-parameter--last (selected-window))
+    (set-window-parameter selected-window-parameter--last
+        'selected t))
+(add-function :after after-focus-change-function
+    'selected-window-parameter--move)
+(add-hook 'window-configuration-change-hook
+    'selected-window-parameter--move)
+(add-hook 'window-state-change-hook
+    'selected-window-parameter--move)
+(advice-add 'kill-all-local-variables
+    :after 'selected-window-parameter--move)
+(provide 'selected-window-parameter)
+
 (defface default-active
     '((t
        :background "#010101"
        :inherit default))
     "")
-(defvar face-remap-selected-window--window (selected-window))
-(defvar-local face-remap-selected-window--initialized nil)
-(defun face-remap-selected-window (&rest _)
-    (set-window-parameter face-remap-selected-window--window
-        'face-remap-selected-window nil)
-    (setq face-remap-selected-window--window (selected-window))
-    (unless face-remap-selected-window--initialized
-        (face-remap-add-relative 'default
-            '(:filtered (:window face-remap-selected-window t)
-                 default-active))
-        (setq face-remap-selected-window--initialized t))
-    (set-window-parameter face-remap-selected-window--window
-        'face-remap-selected-window t))
-(add-function :after after-focus-change-function 'face-remap-selected-window)
-(add-hook 'window-configuration-change-hook 'face-remap-selected-window)
-(add-hook 'window-state-change-hook 'face-remap-selected-window)
-(advice-add 'kill-all-local-variables :after 'face-remap-selected-window)
-(setq redisplay-skip-initial-frame nil)
+(push
+    '(default
+         (:filtered (:window selected t)
+             default-active))
+    face-remapping-alist)
 
 (defvar norecord-override nil)
 (defun norecord-override--1 (function window-or-frame &optional norecord)
