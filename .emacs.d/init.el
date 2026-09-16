@@ -1839,6 +1839,38 @@
     (recursive-exit count 'abort-recursive-edit))
 
 
+(defmacro global-face-remap--1 (&rest forms)
+    `(progn
+         (setf (default-value 'face-remapping-alist)
+             (with-temp-buffer
+                 ,@forms
+                 face-remapping-alist))
+         (dolist (buffer (buffer-list))
+             (when (local-variable-p 'face-remapping-alist buffer)
+                 (with-current-buffer buffer
+                     ,@forms)))))
+
+(defun global-face-remap-set-base (face &rest specs)
+    (global-face-remap--1
+        (apply 'face-remap-set-base face specs)))
+
+(defun global-face-remap-reset-base (face)
+    (global-face-remap--1
+        (face-remap-reset-base face)))
+
+(defun global-face-remap-add-relative (face &rest specs)
+    (let (cookie)
+        (global-face-remap--1
+            (setq cookie (apply 'face-remap-add-relative face specs)))
+        cookie))
+
+(defun global-face-remap-remove-relative (cookie)
+    (global-face-remap--1
+        (face-remap-remove-relative cookie)))
+
+(provide 'global-face-remap)
+
+
 (defun hack-save-buffers-kill-emacs (save-buffers-kill-emacs &rest arguments)
     (with-advice (('save-some-buffers :override 'ignore))
         (apply save-buffers-kill-emacs arguments)))
