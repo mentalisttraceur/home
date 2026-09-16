@@ -7075,13 +7075,12 @@
     (advice-add 'aw--lead-overlay :override 'hack-aw--lead-overlay)
     (defvar window-state nil)
     (defconst window-state-normal
-        '("#00FF00" "#808080" "#0A0A0A" "#141414"
+        '("#00FF00" "#808080" "#010101" "#141414"
           "W" "Window state"))
     (defconst window-state-target-pending
         '("#00FF00" "#C060C0" "#100810" "#201020"
           "T" "Target-pending window state"))
     (when android
-        (setcar (nthcdr 2 window-state-normal) "#101010")
         (setcar (nthcdr 3 window-state-normal) "#202020")
         (setcar (nthcdr 2 window-state-target-pending) "#180C18")
         (setcar (nthcdr 3 window-state-target-pending) "#301830"))
