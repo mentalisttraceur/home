@@ -7078,11 +7078,11 @@
         '("#00FF00" "#808080" "#010101" "#141414"
           "W" "Window state"))
     (defconst window-state-target-pending
-        '("#00FF00" "#C060C0" "#100810" "#201020"
+        '("#00FF00" "#C060C0" "#100010" "#201020"
           "T" "Target-pending window state"))
     (when android
         (setcar (nthcdr 3 window-state-normal) "#202020")
-        (setcar (nthcdr 2 window-state-target-pending) "#180C18")
+        (setcar (nthcdr 2 window-state-target-pending) "#180018")
         (setcar (nthcdr 3 window-state-target-pending) "#301830"))
     (defvar window-state-this-register nil)
     (defvar window-state--action nil)
