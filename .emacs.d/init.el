@@ -6968,11 +6968,9 @@
        :background "#010101"
        :inherit default))
     "")
-(push
-    '(default
-         (:filtered (:window selected t)
-             default-active))
-    face-remapping-alist)
+(global-face-remap-add-relative 'default
+    '(:filtered (:window selected t)
+      default-active))
 
 (defvar norecord-override nil)
 (defun norecord-override--1 (function window-or-frame &optional norecord)
