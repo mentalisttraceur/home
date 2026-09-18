@@ -26,8 +26,8 @@
         (if android
             (set-frame-font "DejaVu Sans Mono-11.0")
             (set-frame-font "DejaVu Sans Mono-11.5"))
-        (set-foreground-color "#A0A0A0")
         (set-cursor-color "#FFFFFF"))
+    (set-face-foreground 'default "#A0A0A0")
     (if android
         (set-face-background 'default "#202020")
         (set-face-background 'default "#141414")))
