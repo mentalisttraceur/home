@@ -7073,17 +7073,18 @@
                     (set-window-vscroll window 0 t)
                     (push overlay avy--overlays-lead)))))
     (advice-add 'aw--lead-overlay :override 'hack-aw--lead-overlay)
+    (set-face-foreground 'aw-leading-char-face "#00FF00")
     (defvar window-state nil)
     (defconst window-state-normal
-        '("#00FF00" "#808080" "#010101" "#141414"
+        '("#808080" "#010101" "#141414"
           "W" "Window state"))
     (defconst window-state-target-pending
-        '("#00FF00" "#C060C0" "#100010" "#201020"
+        '("#C060C0" "#100010" "#201020"
           "T" "Target-pending window state"))
     (when android
-        (setcar (nthcdr 3 window-state-normal) "#202020")
-        (setcar (nthcdr 2 window-state-target-pending) "#180018")
-        (setcar (nthcdr 3 window-state-target-pending) "#301830"))
+        (setcar (nthcdr 2 window-state-normal) "#202020")
+        (setcar (nthcdr 1 window-state-target-pending) "#180018")
+        (setcar (nthcdr 2 window-state-target-pending) "#301830"))
     (defvar window-state-this-register nil)
     (defvar window-state--action nil)
     (defvar window-state--execute-once nil)
@@ -7093,11 +7094,10 @@
         (setq window-state-this-register evil-this-register)
         (while window-state--execute-once
             (setq window-state--execute-once window-state--execute-more)
-            (seq-let (hint tint active-dim inactive-dim tag help-string)
+            (seq-let (tint active-dim inactive-dim tag help-string)
                     window-state
                 (with-face-attribute
-                        ('aw-leading-char-face :foreground hint
-                         'aw-background-face   :foreground tint
+                        ('aw-background-face   :foreground tint
                          'line-number          :foreground tint
                          'default-active       :background active-dim
                          'default              :background inactive-dim)
