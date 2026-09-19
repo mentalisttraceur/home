@@ -4671,7 +4671,7 @@
     (advice-add 'vertico--setup :after 'vertico-counter-faces--setup)
     (set-face-foreground 'vertico-multiline "#FF0000")
     (set-face-background 'vertico-counter "#00E8FF")
-    (set-face-foreground 'vertico-counter "#010101")
+    (set-face-foreground 'vertico-counter "#000000")
     (set-face-bold 'vertico-counter t)
     (defface vertico-counter-removal
         '((t
@@ -5263,7 +5263,7 @@
                      (face-remap-set-base 'minibuffer-prompt
                          '(:foreground ,minibuffer)))
                  (face-remap-set-base ',mode-line
-                     '(:foreground "#010101"
+                     '(:foreground "#000000"
                        :background ,active))
                  (face-remap-set-base 'mode-line-inactive
                      '(:foreground "#D0D0D0"
@@ -6974,7 +6974,7 @@
 
 (defface default-active
     '((t
-       :background "#010101"
+       :background "#000000"
        :inherit default))
     "")
 (global-face-remap-add-relative 'default
@@ -7085,7 +7085,7 @@
     (set-face-foreground 'aw-leading-char-face "#00FF00")
     (defvar window-state nil)
     (defconst window-state-normal
-        '("#808080" "#010101" "#141414"
+        '("#808080" "#000000" "#141414"
           "W" "Window state"))
     (defconst window-state-target-pending
         '("#C060C0" "#100010" "#201020"
