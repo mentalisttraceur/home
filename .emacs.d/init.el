@@ -94,6 +94,34 @@
 (advice-add 'move-to-column :around 'fixed-move-to-column)
 
 
+(setq visible-cursor nil)
+(defun fix-terminal-cursor (window)
+    (let ((frame (window-frame window))
+          (type (window-cursor-type window)))
+        (when (and (not (display-graphic-p frame))
+                   (eq window (frame-selected-window frame)))
+            (when (eq type t)
+                (setq type cursor-type))
+            (when (eq type t)
+                (setq type (frame-parameter frame 'cursor-type)))
+            (when (consp type)
+                (setq type (car type)))
+            (let ((code (cond
+                            ((eq type 'bar)
+                                "\e[6 q")
+                            ((eq type 'hbar)
+                                "\e[4 q")
+                            (t
+                                "\e[2 q")))
+                  (last (terminal-parameter frame
+                            'fix-terminal-cursor--last)))
+                (unless (equal code last)
+                    (send-string-to-terminal code frame)
+                    (set-terminal-parameter frame
+                        'fix-terminal-cursor--last code))))))
+(add-hook 'pre-redisplay-functions 'fix-terminal-cursor)
+
+
 (pixel-scroll-precision-mode 1)
 (setq touch-screen-precision-scroll t)
 
