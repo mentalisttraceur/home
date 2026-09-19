@@ -5281,36 +5281,6 @@
     (setq evil-mode-line-format nil)
     (setq evil-want-minibuffer t)
     (evil-select-search-module 'evil-search-module 'evil-search)
-    (defmacro evil-color (state minibuffer active inactive)
-        (let ((function (intern (format "evil-color-%s-state" state)))
-              (mode-line (if (facep 'mode-line-active)
-                             'mode-line-active
-                             'mode-line)))
-            `(defun ,function ()
-                 (when (minibufferp)
-                     (face-remap-set-base 'minibuffer-prompt
-                         '(:foreground ,minibuffer)))
-                 (face-remap-set-base ',mode-line
-                     '(:foreground "#000000"
-                       :background ,active))
-                 (face-remap-set-base 'mode-line-inactive
-                     '(:foreground "#D0D0D0"
-                       :background ,inactive)))))
-    (add-hook 'evil-normal-state-entry-hook
-        (evil-color normal   "#FF4040" "#FF4040" "#802020"))
-    (add-hook 'evil-operator-state-entry-hook
-        (evil-color operator "#FF80FF" "#FF80FF" "#804080"))
-    (add-hook 'evil-insert-state-entry-hook
-        (evil-color insert   "#50E800" "#50E800" "#326A00"))
-    (add-hook 'evil-replace-state-entry-hook
-        (evil-color replace  "#FFE800" "#FFE800" "#807400"))
-    (add-hook 'evil-visual-state-entry-hook
-        (evil-color visual   "#8898FF" "#8898FF" "#444CA0"))
-    (add-hook 'evil-emacs-state-entry-hook
-        (evil-color emacs    "#FFFFFF" "#A0A0A0" "#505050"))
-    (add-hook 'evil-motion-state-entry-hook
-        (evil-color motion   "#00E8FF" "#00E8FF" "#007480"))
-    (set-face-foreground 'minibuffer-prompt "#FFFFFF")
     (setq evil-insert-state-cursor '(bar . 3))
     (setq evil-cross-lines t)
     (defun fixed-evil-goto-line (evil-goto-count &optional count)
@@ -5860,6 +5830,186 @@
     (add-to-list 'evil-motion-state-modes 'messages-buffer-mode)
     (with-current-buffer (messages-buffer)
         (evil-motion-state)))
+
+(set-face-foreground 'mode-line-active "#000000")
+(set-face-foreground 'mode-line-inactive "#D0D0D0")
+(set-face-foreground 'minibuffer-prompt "#FFFFFF")
+(defface evil-normal-state-mode-line-active
+    '((t
+       :inherit mode-line-active
+       :background "#FF4040"))
+    "")
+(defface evil-normal-state-mode-line-inactive
+    '((t
+       :inherit mode-line-inactive
+       :background "#802020"))
+    "")
+(defface evil-normal-state-minibuffer-prompt
+    '((t
+       :inherit minibuffer-prompt
+       :foreground "#FF4040"))
+    "")
+(defface evil-operator-state-mode-line-active
+    '((t
+       :inherit mode-line-active
+       :background "#FF80FF"))
+    "")
+(defface evil-operator-state-mode-line-inactive
+    '((t
+       :inherit mode-line-inactive
+       :background "#804080"))
+    "")
+(defface evil-operator-state-minibuffer-prompt
+    '((t
+       :inherit minibuffer-prompt
+       :foreground "#FF80FF"))
+    "")
+(defface evil-insert-state-mode-line-active
+    '((t
+       :inherit mode-line-active
+       :background "#50E800"))
+    "")
+(defface evil-insert-state-mode-line-inactive
+    '((t
+       :inherit mode-line-inactive
+       :background "#326A00"))
+    "")
+(defface evil-insert-state-minibuffer-prompt
+    '((t
+       :inherit minibuffer-prompt
+       :foreground "#50E800"))
+    "")
+(defface evil-replace-state-mode-line-active
+    '((t
+       :inherit mode-line-active
+       :background "#FFE800"))
+    "")
+(defface evil-replace-state-mode-line-inactive
+    '((t
+       :inherit mode-line-inactive
+       :background "#807400"))
+    "")
+(defface evil-replace-state-minibuffer-prompt
+    '((t
+       :inherit minibuffer-prompt
+       :foreground "#FFE800"))
+    "")
+(defface evil-visual-state-mode-line-active
+    '((t
+       :inherit mode-line-active
+       :background "#8898FF"))
+    "")
+(defface evil-visual-state-mode-line-inactive
+    '((t
+       :inherit mode-line-inactive
+       :background "#444CA0"))
+    "")
+(defface evil-visual-state-minibuffer-prompt
+    '((t
+       :inherit minibuffer-prompt
+       :foreground "#8898FF"))
+    "")
+(defface evil-emacs-state-mode-line-active
+    '((t
+       :inherit mode-line-active
+       :background "#A0A0A0"))
+    "")
+(defface evil-emacs-state-mode-line-inactive
+    '((t
+       :inherit mode-line-inactive
+       :background "#505050"))
+    "")
+(defface evil-emacs-state-minibuffer-prompt
+    '((t
+       :inherit minibuffer-prompt
+       :foreground "#FFFFFF"))
+    "")
+(defface evil-motion-state-mode-line-active
+    '((t
+       :inherit mode-line-active
+       :background "#00E8FF"))
+    "")
+(defface evil-motion-state-mode-line-inactive
+    '((t
+       :inherit mode-line-inactive
+       :background "#007480"))
+    "")
+(defface evil-motion-state-minibuffer-prompt
+    '((t
+       :inherit minibuffer-prompt
+       :foreground "#00E8FF"))
+    "")
+(defun evil-color-normal-state ()
+    (if (minibufferp)
+        (face-remap-set-base 'minibuffer-prompt
+            'evil-normal-state-minibuffer-prompt)
+        (face-remap-set-base 'mode-line-active
+            'evil-normal-state-mode-line-active)
+        (face-remap-set-base 'mode-line-inactive
+            'evil-normal-state-mode-line-inactive)))
+(defun evil-color-operator-state ()
+    (if (minibufferp)
+        (face-remap-set-base 'minibuffer-prompt
+            'evil-operator-state-minibuffer-prompt)
+        (face-remap-set-base 'mode-line-active
+            'evil-operator-state-mode-line-active)
+        (face-remap-set-base 'mode-line-inactive
+            'evil-operator-state-mode-line-inactive)))
+(defun evil-color-insert-state ()
+    (if (minibufferp)
+        (face-remap-set-base 'minibuffer-prompt
+            'evil-insert-state-minibuffer-prompt)
+        (face-remap-set-base 'mode-line-active
+            'evil-insert-state-mode-line-active)
+        (face-remap-set-base 'mode-line-inactive
+            'evil-insert-state-mode-line-inactive)))
+(defun evil-color-replace-state ()
+    (if (minibufferp)
+        (face-remap-set-base 'minibuffer-prompt
+            'evil-replace-state-minibuffer-prompt)
+        (face-remap-set-base 'mode-line-active
+            'evil-replace-state-mode-line-active)
+        (face-remap-set-base 'mode-line-inactive
+            'evil-replace-state-mode-line-inactive)))
+(defun evil-color-visual-state ()
+    (if (minibufferp)
+        (face-remap-set-base 'minibuffer-prompt
+            'evil-visual-state-minibuffer-prompt)
+        (face-remap-set-base 'mode-line-active
+            'evil-visual-state-mode-line-active)
+        (face-remap-set-base 'mode-line-inactive
+            'evil-visual-state-mode-line-inactive)))
+(defun evil-color-emacs-state ()
+    (if (minibufferp)
+        (face-remap-set-base 'minibuffer-prompt
+            'evil-emacs-state-minibuffer-prompt)
+        (face-remap-set-base 'mode-line-active
+            'evil-emacs-state-mode-line-active)
+        (face-remap-set-base 'mode-line-inactive
+            'evil-emacs-state-mode-line-inactive)))
+(defun evil-color-motion-state ()
+    (if (minibufferp)
+        (face-remap-set-base 'minibuffer-prompt
+            'evil-motion-state-minibuffer-prompt)
+        (face-remap-set-base 'mode-line-active
+            'evil-motion-state-mode-line-active)
+        (face-remap-set-base 'mode-line-inactive
+            'evil-motion-state-mode-line-inactive)))
+(add-hook 'evil-normal-state-entry-hook
+    'evil-color-normal-state)
+(add-hook 'evil-operator-state-entry-hook
+    'evil-color-operator-state)
+(add-hook 'evil-insert-state-entry-hook
+    'evil-color-insert-state)
+(add-hook 'evil-replace-state-entry-hook
+    'evil-color-replace-state)
+(add-hook 'evil-visual-state-entry-hook
+    'evil-color-visual-state)
+(add-hook 'evil-emacs-state-entry-hook
+    'evil-color-emacs-state)
+(add-hook 'evil-motion-state-entry-hook
+    'evil-color-motion-state)
+(provide 'evil-color)
 
 (use-packages calendar evil
     :config
