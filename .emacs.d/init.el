@@ -2063,6 +2063,15 @@
                     (setq tail next))))
         head))
 
+(use-package term/tty-colors
+    :config
+    (defun fixed-tty-color-24bit (color)
+        (if (and color (< color 8))
+            (logior color #x010000)
+            color))
+    (advice-add 'tty-color-24bit
+        :filter-return 'fixed-tty-color-24bit))
+
 (use-package generator
     :config
     (defun fixed-cps-generate-evaluator (generator)
