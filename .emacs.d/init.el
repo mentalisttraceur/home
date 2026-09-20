@@ -28,9 +28,7 @@
             (set-frame-font "DejaVu Sans Mono-11.5"))
         (set-cursor-color "#FFFFFF"))
     (set-face-foreground 'default "#A0A0A0")
-    (if android
-        (set-face-background 'default "#202020")
-        (set-face-background 'default "#141414")))
+    (set-face-background 'default "#1C1C1C"))
 (initialize-frame (selected-frame))
 (add-hook 'after-make-frame-functions 'initialize-frame)
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
@@ -7263,15 +7261,11 @@
     (set-face-foreground 'aw-leading-char-face "#00FF00")
     (defvar window-state nil)
     (defconst window-state-normal
-        '("#808080" "#000000" "#141414"
+        '("#808080" "#000000" "#1C1C1C"
           "W" "Window state"))
     (defconst window-state-target-pending
-        '("#C060C0" "#100010" "#201020"
+        '("#C060C0" "#180018" "#2C142C"
           "T" "Target-pending window state"))
-    (when android
-        (setcar (nthcdr 2 window-state-normal) "#202020")
-        (setcar (nthcdr 1 window-state-target-pending) "#180018")
-        (setcar (nthcdr 2 window-state-target-pending) "#301830"))
     (defvar window-state-this-register nil)
     (defvar window-state--action nil)
     (defvar window-state--execute-once nil)
