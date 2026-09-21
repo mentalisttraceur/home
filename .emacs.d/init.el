@@ -3884,7 +3884,7 @@
 
 (defface datetime-read-preview-year-face
     '((t
-       :foreground "#00E8FF"
+       :foreground "#00C0FF"
        :weight bold))
     "")
 (defface datetime-read-preview-month-face
@@ -4696,7 +4696,7 @@
             (face-remap-set-base 'vertico-counter face)))
     (advice-add 'vertico--setup :after 'vertico-counter-faces--setup)
     (set-face-foreground 'vertico-multiline "#FF0000")
-    (set-face-background 'vertico-counter "#00E8FF")
+    (set-face-background 'vertico-counter "#00C0FF")
     (set-face-foreground 'vertico-counter "#000000")
     (set-face-bold 'vertico-counter t)
     (defface vertico-counter-removal
@@ -5122,20 +5122,20 @@
                 (eat-term-display-cursor eat-terminal))))
     (setq eat-enable-shell-prompt-annotation nil)
     (set-face-foreground 'eat-term-color-0  "#505050")
-    (set-face-foreground 'eat-term-color-1  "#D00000")
+    (set-face-foreground 'eat-term-color-1  "#C03030")
     (set-face-foreground 'eat-term-color-2  "#3CAE00")
     (set-face-foreground 'eat-term-color-3  "#C0AE00")
-    (set-face-foreground 'eat-term-color-4  "#6672C0")
+    (set-face-foreground 'eat-term-color-4  "#7860C0")
     (set-face-foreground 'eat-term-color-5  "#C060C0")
-    (set-face-foreground 'eat-term-color-6  "#00AEC0")
+    (set-face-foreground 'eat-term-color-6  "#0090C0")
     (set-face-foreground 'eat-term-color-7  "#D0D0D0")
     (set-face-foreground 'eat-term-color-8  "#707070")
     (set-face-foreground 'eat-term-color-9  "#FF4040")
     (set-face-foreground 'eat-term-color-10 "#50E800")
     (set-face-foreground 'eat-term-color-11 "#FFE800")
-    (set-face-foreground 'eat-term-color-12 "#8898FF")
+    (set-face-foreground 'eat-term-color-12 "#A080FF")
     (set-face-foreground 'eat-term-color-13 "#FF80FF")
-    (set-face-foreground 'eat-term-color-14 "#00E8FF")
+    (set-face-foreground 'eat-term-color-14 "#00C0FF")
     (set-face-foreground 'eat-term-color-15 "#FFFFFF")
     (eat-eshell-mode 1)
     (eat-eshell-visual-command-mode 1))
@@ -5895,17 +5895,17 @@
 (defface evil-visual-state-mode-line-active
     '((t
        :inherit mode-line-active
-       :background "#8898FF"))
+       :background "#A080FF"))
     "")
 (defface evil-visual-state-mode-line-inactive
     '((t
        :inherit mode-line-inactive
-       :background "#444CA0"))
+       :background "#5040A0"))
     "")
 (defface evil-visual-state-minibuffer-prompt
     '((t
        :inherit minibuffer-prompt
-       :foreground "#8898FF"))
+       :foreground "#A080FF"))
     "")
 (defface evil-emacs-state-mode-line-active
     '((t
@@ -5925,17 +5925,17 @@
 (defface evil-motion-state-mode-line-active
     '((t
        :inherit mode-line-active
-       :background "#00E8FF"))
+       :background "#00C0FF"))
     "")
 (defface evil-motion-state-mode-line-inactive
     '((t
        :inherit mode-line-inactive
-       :background "#007480"))
+       :background "#006080"))
     "")
 (defface evil-motion-state-minibuffer-prompt
     '((t
        :inherit minibuffer-prompt
-       :foreground "#00E8FF"))
+       :foreground "#00C0FF"))
     "")
 (defun evil-color-normal-state ()
     (if (minibufferp)
@@ -8110,7 +8110,7 @@
                   (2 'denote-faces-keywords)))))
     (set-face-foreground 'denote-faces-month  "#FF9000")
     (set-face-foreground 'denote-faces-minute "#FF9000")
-    (set-face-foreground 'denote-faces-keywords "#8898FF")
+    (set-face-foreground 'denote-faces-keywords "#A080FF")
     (defface task-faces-repeat
         '((t
            :inherit default))
@@ -8784,7 +8784,7 @@
     `(evil-define-key* ,state music-mode-map ,key ,def ,@bindings))
 (defface music-current-entry
     '((t
-       :foreground "#00E8FF"))
+       :foreground "#00C0FF"))
     "")
 (defface music-current-playing-entry
     '((t
@@ -8798,7 +8798,7 @@
     "")
 (defface music-time
     '((t
-       :foreground "#8898FF"))
+       :foreground "#A080FF"))
     "")
 (defvar music--socket nil)
 (defvar-local music--refresh-socket nil)
