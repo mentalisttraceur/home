@@ -5825,9 +5825,7 @@
             (evil-local-set-key 'motion " " 'space-map)))
     (evil-declare-not-repeat 'ignore)
     (add-to-list 'evil-motion-state-modes 'shortdoc-mode)
-    (add-to-list 'evil-motion-state-modes 'messages-buffer-mode)
-    (with-current-buffer (messages-buffer)
-        (evil-motion-state)))
+    (add-to-list 'evil-motion-state-modes 'messages-buffer-mode))
 
 (set-face-foreground 'mode-line-active "#000000")
 (set-face-foreground 'mode-line-inactive "#D0D0D0")
@@ -6008,6 +6006,11 @@
 (add-hook 'evil-motion-state-entry-hook
     'evil-color-motion-state)
 (provide 'evil-color)
+
+(use-packages evil evil-color
+    :config
+    (with-current-buffer (messages-buffer)
+        (evil-motion-state)))
 
 (use-packages calendar evil
     :config
