@@ -9429,32 +9429,32 @@
 (define-key space-misc-map "u" 'tumblr-pull)
 (define-key space-misc-map "o" 'tumblr-open)
 
-(defface ai-user-divider-face
+(defface ai-user-divider
     '((t
        :foreground "#F0C000"))
     "")
-(defface ai-assistant-divider-face
+(defface ai-assistant-divider
     '((t
        :foreground "#FF80FF"))
     "")
-(defface ai-tool-divider-face
+(defface ai-tool-divider
     '((t
        :foreground "#FF4040"))
     "")
 (defun ai--highlight ()
     (font-lock-add-keywords nil
         '(("^\\(#\\) User Input \\(###########################\\)$"
-              (1 'ai-user-divider-face t)
-              (2 'ai-user-divider-face t))
+              (1 'ai-user-divider t)
+              (2 'ai-user-divider t))
           ("^\\(#\\) `AI Reply` \\(###########################\\)$"
-              (1 'ai-assistant-divider-face t)
-              (2 'ai-assistant-divider-face t))
+              (1 'ai-assistant-divider t)
+              (2 'ai-assistant-divider t))
           ("^\\(##\\) Tool Calls \\(##########################\\)$"
-              (1 'ai-tool-divider-face t)
-              (2 'ai-tool-divider-face t))
+              (1 'ai-tool-divider t)
+              (2 'ai-tool-divider t))
           ("^\\(#\\) Tool Reply \\(###########################\\)$"
-              (1 'ai-tool-divider-face t)
-              (2 'ai-tool-divider-face t)))
+              (1 'ai-tool-divider t)
+              (2 'ai-tool-divider t)))
         'append))
 (add-hook 'markdown-mode-hook 'ai--highlight)
 (defconst ai--python (expand-file-name "~/.ai/venv/bin/python"))
