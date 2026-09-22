@@ -3904,7 +3904,7 @@
     "")
 (defface datetime-read-preview-minute-face
     '((t
-       :foreground "#FFE800"
+       :foreground "#F0C000"
        :weight bold))
     "")
 (defface datetime-read-preview-second-face
@@ -4707,7 +4707,7 @@
     (defface vertico-counter-replacement
         '((t
            :inherit vertico-counter
-           :background "#FFE800"))
+           :background "#F0C000"))
         "")
     (defface vertico-counter-execution
         '((t
@@ -5124,7 +5124,7 @@
     (set-face-foreground 'eat-term-color-0  "#505050")
     (set-face-foreground 'eat-term-color-1  "#C03030")
     (set-face-foreground 'eat-term-color-2  "#3CAE00")
-    (set-face-foreground 'eat-term-color-3  "#C0AE00")
+    (set-face-foreground 'eat-term-color-3  "#B49000")
     (set-face-foreground 'eat-term-color-4  "#7860C0")
     (set-face-foreground 'eat-term-color-5  "#C060C0")
     (set-face-foreground 'eat-term-color-6  "#0090C0")
@@ -5132,7 +5132,7 @@
     (set-face-foreground 'eat-term-color-8  "#707070")
     (set-face-foreground 'eat-term-color-9  "#FF4040")
     (set-face-foreground 'eat-term-color-10 "#50E800")
-    (set-face-foreground 'eat-term-color-11 "#FFE800")
+    (set-face-foreground 'eat-term-color-11 "#F0C000")
     (set-face-foreground 'eat-term-color-12 "#A080FF")
     (set-face-foreground 'eat-term-color-13 "#FF80FF")
     (set-face-foreground 'eat-term-color-14 "#00C0FF")
@@ -5878,17 +5878,17 @@
 (defface evil-replace-state-mode-line-active
     '((t
        :inherit mode-line-active
-       :background "#FFE800"))
+       :background "#F0C000"))
     "")
 (defface evil-replace-state-mode-line-inactive
     '((t
        :inherit mode-line-inactive
-       :background "#807400"))
+       :background "#786000"))
     "")
 (defface evil-replace-state-minibuffer-prompt
     '((t
        :inherit minibuffer-prompt
-       :foreground "#FFE800"))
+       :foreground "#F0C000"))
     "")
 (defface evil-visual-state-mode-line-active
     '((t
@@ -8797,7 +8797,7 @@
     "")
 (defface music-loop
     '((t
-       :foreground "#FFE800"))
+       :foreground "#F0C000"))
     "")
 (defface music-time
     '((t
@@ -9431,7 +9431,7 @@
 
 (defface ai-user-divider-face
     '((t
-       :foreground "#FFE800"))
+       :foreground "#F0C000"))
     "")
 (defface ai-assistant-divider-face
     '((t
