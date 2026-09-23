@@ -3894,7 +3894,7 @@
     "")
 (defface datetime-read-preview-day
     '((t
-       :foreground "#50E800"
+       :foreground "#50E000"
        :weight bold))
     "")
 (defface datetime-read-preview-hour
@@ -4712,7 +4712,7 @@
     (defface vertico-counter-execution
         '((t
            :inherit vertico-counter
-           :background "#50E800"))
+           :background "#50E000"))
         "")
     (dolist (command '(execute-extended-command
                        history-execute
@@ -5123,7 +5123,7 @@
     (setq eat-enable-shell-prompt-annotation nil)
     (set-face-foreground 'eat-term-color-0  "#505050")
     (set-face-foreground 'eat-term-color-1  "#C03030")
-    (set-face-foreground 'eat-term-color-2  "#3CAE00")
+    (set-face-foreground 'eat-term-color-2  "#3CA800")
     (set-face-foreground 'eat-term-color-3  "#B49000")
     (set-face-foreground 'eat-term-color-4  "#7860C0")
     (set-face-foreground 'eat-term-color-5  "#C060C0")
@@ -5131,7 +5131,7 @@
     (set-face-foreground 'eat-term-color-7  "#D0D0D0")
     (set-face-foreground 'eat-term-color-8  "#707070")
     (set-face-foreground 'eat-term-color-9  "#FF4040")
-    (set-face-foreground 'eat-term-color-10 "#50E800")
+    (set-face-foreground 'eat-term-color-10 "#50E000")
     (set-face-foreground 'eat-term-color-11 "#F0C000")
     (set-face-foreground 'eat-term-color-12 "#A080FF")
     (set-face-foreground 'eat-term-color-13 "#FF80FF")
@@ -5863,17 +5863,17 @@
 (defface evil-insert-state-mode-line-active
     '((t
        :inherit mode-line-active
-       :background "#50E800"))
+       :background "#50E000"))
     "")
 (defface evil-insert-state-mode-line-inactive
     '((t
        :inherit mode-line-inactive
-       :background "#326A00"))
+       :background "#306800"))
     "")
 (defface evil-insert-state-minibuffer-prompt
     '((t
        :inherit minibuffer-prompt
-       :foreground "#50E800"))
+       :foreground "#50E000"))
     "")
 (defface evil-replace-state-mode-line-active
     '((t
@@ -8123,7 +8123,7 @@
            :inherit default))
         "")
     (set-face-foreground 'task-faces-repeat   "#FF4040")
-    (set-face-foreground 'task-faces-duration "#50E800")
+    (set-face-foreground 'task-faces-duration "#50E000")
     (defface android-trash-face
         '((t
            :inherit default))
