@@ -3882,32 +3882,32 @@
 
 (defvar datetime-parse-two-digit-year-base 2000)
 
-(defface datetime-read-preview-year-face
+(defface datetime-read-preview-year
     '((t
        :foreground "#00C0FF"
        :weight bold))
     "")
-(defface datetime-read-preview-month-face
+(defface datetime-read-preview-month
     '((t
        :foreground "#FF80FF"
        :weight bold))
     "")
-(defface datetime-read-preview-day-face
+(defface datetime-read-preview-day
     '((t
        :foreground "#50E800"
        :weight bold))
     "")
-(defface datetime-read-preview-hour-face
+(defface datetime-read-preview-hour
     '((t
        :foreground "#FF9000"
        :weight bold))
     "")
-(defface datetime-read-preview-minute-face
+(defface datetime-read-preview-minute
     '((t
        :foreground "#F0C000"
        :weight bold))
     "")
-(defface datetime-read-preview-second-face
+(defface datetime-read-preview-second
     '((t
        :foreground "#FF4040"
        :weight bold))
@@ -4159,7 +4159,7 @@
 (defmacro datetime-parse--bind-1 (slot &rest body)
     (let* ((name (symbol-name slot))
            (decoded-time-slot (intern (concat "decoded-time-" name)))
-           (face (intern (concat "datetime-read-preview-" name "-face"))))
+           (face (intern (concat "datetime-read-preview-" name))))
         `(unless (eq slot ',slot)
              (unless (,decoded-time-slot parsed)
                  (when-let* ((cell (pop integers)))
@@ -4392,7 +4392,7 @@
     (let* ((format-string (if (eq slot 'year) "%04d" "%02d"))
            (name (symbol-name slot))
            (getter (intern (concat "decoded-time-" name)))
-           (face (intern (concat "datetime-read-preview-" name "-face")))
+           (face (intern (concat "datetime-read-preview-" name)))
            (final-value (funcall getter parsed))
            (prior-value (funcall getter previous-parsed))
            (bound-value (funcall getter bindings))
