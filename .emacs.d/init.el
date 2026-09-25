@@ -8629,10 +8629,6 @@
     :config
     (define-key dired-mode-map "D" 'smoother-delete-file)
     (define-key dired-mode-map "R" 'denote-dired-mode))
-(use-packages denote evil
-    :config
-    (set-face-foreground 'denote-faces-prompt-new-name "#A0E0FF"))
-
 
 (defconst mpv-ipc--server-option "--input-ipc-server=")
 (defun mpv-ipc-socket-path-from-arguments (mpv-arguments)
