@@ -5097,28 +5097,28 @@
     (advice-add 'eat--eshell-adjust-make-process-args
         :around 'fixed-eat--make-process)
     (advice-add 'eat-exec :around 'fixed-eat--make-process)
+    (defvar eat--face-cache (make-hash-table :test 'equal))
+    (defun fixed-eat--t-face-face (face)
+        (or (gethash face eat--face-cache nil)
+            (puthash face face eat--face-cache)))
     (eval
         (form-replace
             '(defun eat--t-write)
             '(defun fixed-eat--t-write)
             (form-replace
-                '((+ written wrote))
-                '((+ written max))
+                '((eat--t-face-face (eat--t-term-face eat--t-term)))
+                '((fixed-eat--t-face-face
+                     (eat--t-face-face (eat--t-term-face eat--t-term))))
                 (form-replace
-                    '((- end e))
-                    '((- max wrote))
-                    (function-lisp 'eat--t-write))))
+                    '((+ written wrote))
+                    '((+ written max))
+                    (form-replace
+                        '((- end e))
+                        '((- max wrote))
+                        (function-lisp 'eat--t-write)))))
         t)
     (best-compile 'fixed-eat--t-write)
     (advice-add 'eat--t-write :override 'fixed-eat--t-write)
-    (defvar eat--face-cache (make-hash-table :test 'equal))
-    (defun fixed-eat--t-set-sgr-params (face)
-        (if-let* ((cached (gethash face eat--face-cache nil)))
-            (setq face cached)
-            (puthash face face eat--face-cache))
-        (setf (eat--t-face-face (eat--t-term-face eat--t-term)) face))
-    (advice-add 'eat--t-set-sgr-params
-        :filter-return 'fixed-eat--t-set-sgr-params)
     (defun hack-eat-exec (arguments)
         (when (equal (caddr arguments) "/usr/bin/env")
             (setcar (cddr arguments) "env"))
