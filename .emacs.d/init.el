@@ -5133,15 +5133,15 @@
     (set-face-foreground 'eat-term-color-1  "#C03030")
     (set-face-foreground 'eat-term-color-2  "#3CA800")
     (set-face-foreground 'eat-term-color-3  "#B49000")
-    (set-face-foreground 'eat-term-color-4  "#7860C0")
+    (set-face-foreground 'eat-term-color-4  "#7854C0")
     (set-face-foreground 'eat-term-color-5  "#C060C0")
     (set-face-foreground 'eat-term-color-6  "#0090C0")
     (set-face-foreground 'eat-term-color-7  "#D0D0D0")
-    (set-face-foreground 'eat-term-color-8  "#707070")
+    (set-face-foreground 'eat-term-color-8  "#747474")
     (set-face-foreground 'eat-term-color-9  "#FF4040")
     (set-face-foreground 'eat-term-color-10 "#50E000")
     (set-face-foreground 'eat-term-color-11 "#F0C000")
-    (set-face-foreground 'eat-term-color-12 "#A080FF")
+    (set-face-foreground 'eat-term-color-12 "#A070FF")
     (set-face-foreground 'eat-term-color-13 "#FF80FF")
     (set-face-foreground 'eat-term-color-14 "#00C0FF")
     (set-face-foreground 'eat-term-color-15 "#FFFFFF")
@@ -5901,17 +5901,17 @@
 (defface evil-visual-state-mode-line-active
     '((t
        :inherit mode-line-active
-       :background "#A080FF"))
+       :background "#A070FF"))
     "")
 (defface evil-visual-state-mode-line-inactive
     '((t
        :inherit mode-line-inactive
-       :background "#5040A0"))
+       :background "#5038A0"))
     "")
 (defface evil-visual-state-minibuffer-prompt
     '((t
        :inherit minibuffer-prompt
-       :foreground "#A080FF"))
+       :foreground "#A070FF"))
     "")
 (defface evil-emacs-state-mode-line-active
     '((t
@@ -8121,7 +8121,7 @@
                   (2 'denote-faces-keywords)))))
     (set-face-foreground 'denote-faces-month  "#FF9000")
     (set-face-foreground 'denote-faces-minute "#FF9000")
-    (set-face-foreground 'denote-faces-keywords "#A080FF")
+    (set-face-foreground 'denote-faces-keywords "#A070FF")
     (defface task-faces-repeat
         '((t
            :inherit default))
@@ -8805,7 +8805,7 @@
     "")
 (defface music-time
     '((t
-       :foreground "#A080FF"))
+       :foreground "#A070FF"))
     "")
 (defvar music--socket nil)
 (defvar-local music--refresh-socket nil)
