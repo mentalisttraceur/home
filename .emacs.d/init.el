@@ -1424,8 +1424,8 @@
 
 (defun add-single-use-hook (hook function &optional depth local)
     (let* ((remove-arguments (list hook nil local))
-           (wrapper          (apply-partially 'add-single-use-hook--wrapper
-                                 remove-arguments function)))
+           (wrapper (apply-partially 'add-single-use-hook--wrapper
+                        remove-arguments function)))
         (setcar (cdr remove-arguments) wrapper)
         (add-hook hook wrapper depth local)))
 
