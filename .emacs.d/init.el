@@ -1430,6 +1430,19 @@
         (add-hook hook wrapper depth local)))
 
 
+(defun add-single-use-advice--wrapper (remove-arguments function &rest arguments)
+    (unwind-protect
+        (apply function arguments)
+        (apply 'advice-remove remove-arguments)))
+
+(defun add-single-use-advice (symbol how function &optional properties)
+    (let* ((remove-arguments (list symbol nil))
+           (wrapper (apply-partially 'add-single-use-advice--wrapper
+                        remove-arguments function)))
+        (setcar (cdr remove-arguments) wrapper)
+        (advice-add symbol how wrapper properties)))
+
+
 (defun become-command (command)
     (let ((this-command command))
         (call-interactively command)))
