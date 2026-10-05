@@ -3902,17 +3902,17 @@
     "")
 (defface datetime-read-preview-month
     '((t
-       :foreground "#FF80FF"
+       :foreground "#FF90C0"
        :weight bold))
     "")
 (defface datetime-read-preview-day
     '((t
-       :foreground "#50E000"
+       :foreground "#50D000"
        :weight bold))
     "")
 (defface datetime-read-preview-hour
     '((t
-       :foreground "#FF9000"
+       :foreground "#C078FF"
        :weight bold))
     "")
 (defface datetime-read-preview-minute
@@ -3922,7 +3922,7 @@
     "")
 (defface datetime-read-preview-second
     '((t
-       :foreground "#FF4040"
+       :foreground "#FF5048"
        :weight bold))
     "")
 
@@ -4725,7 +4725,7 @@
     (defface vertico-counter-execution
         '((t
            :inherit vertico-counter
-           :background "#50E000"))
+           :background "#50D000"))
         "")
     (dolist (command '(execute-extended-command
                        history-execute
@@ -5143,19 +5143,19 @@
                 (eat-term-display-cursor eat-terminal))))
     (setq eat-enable-shell-prompt-annotation nil)
     (set-face-foreground 'eat-term-color-0  "#505050")
-    (set-face-foreground 'eat-term-color-1  "#C03030")
-    (set-face-foreground 'eat-term-color-2  "#3CA800")
+    (set-face-foreground 'eat-term-color-1  "#C03C36")
+    (set-face-foreground 'eat-term-color-2  "#3C9C00")
     (set-face-foreground 'eat-term-color-3  "#B49000")
-    (set-face-foreground 'eat-term-color-4  "#7854C0")
-    (set-face-foreground 'eat-term-color-5  "#C060C0")
+    (set-face-foreground 'eat-term-color-4  "#905AC0")
+    (set-face-foreground 'eat-term-color-5  "#C06C90")
     (set-face-foreground 'eat-term-color-6  "#0090C0")
     (set-face-foreground 'eat-term-color-7  "#D0D0D0")
     (set-face-foreground 'eat-term-color-8  "#747474")
-    (set-face-foreground 'eat-term-color-9  "#FF4040")
-    (set-face-foreground 'eat-term-color-10 "#50E000")
+    (set-face-foreground 'eat-term-color-9  "#FF5048")
+    (set-face-foreground 'eat-term-color-10 "#50D000")
     (set-face-foreground 'eat-term-color-11 "#F0C000")
-    (set-face-foreground 'eat-term-color-12 "#A070FF")
-    (set-face-foreground 'eat-term-color-13 "#FF80FF")
+    (set-face-foreground 'eat-term-color-12 "#C078FF")
+    (set-face-foreground 'eat-term-color-13 "#FF90C0")
     (set-face-foreground 'eat-term-color-14 "#00C0FF")
     (set-face-foreground 'eat-term-color-15 "#FFFFFF")
     (eat-eshell-mode 1)
@@ -5854,47 +5854,47 @@
 (defface evil-normal-state-mode-line-active
     '((t
        :inherit mode-line-active
-       :background "#FF4040"))
+       :background "#FF5048"))
     "")
 (defface evil-normal-state-mode-line-inactive
     '((t
        :inherit mode-line-inactive
-       :background "#802020"))
+       :background "#802824"))
     "")
 (defface evil-normal-state-minibuffer-prompt
     '((t
        :inherit minibuffer-prompt
-       :foreground "#FF4040"))
+       :foreground "#FF5048"))
     "")
 (defface evil-operator-state-mode-line-active
     '((t
        :inherit mode-line-active
-       :background "#FF80FF"))
+       :background "#FF90C0"))
     "")
 (defface evil-operator-state-mode-line-inactive
     '((t
        :inherit mode-line-inactive
-       :background "#804080"))
+       :background "#804860"))
     "")
 (defface evil-operator-state-minibuffer-prompt
     '((t
        :inherit minibuffer-prompt
-       :foreground "#FF80FF"))
+       :foreground "#FF90C0"))
     "")
 (defface evil-insert-state-mode-line-active
     '((t
        :inherit mode-line-active
-       :background "#50E000"))
+       :background "#50D000"))
     "")
 (defface evil-insert-state-mode-line-inactive
     '((t
        :inherit mode-line-inactive
-       :background "#306800"))
+       :background "#306400"))
     "")
 (defface evil-insert-state-minibuffer-prompt
     '((t
        :inherit minibuffer-prompt
-       :foreground "#50E000"))
+       :foreground "#50D000"))
     "")
 (defface evil-replace-state-mode-line-active
     '((t
@@ -5914,17 +5914,17 @@
 (defface evil-visual-state-mode-line-active
     '((t
        :inherit mode-line-active
-       :background "#A070FF"))
+       :background "#C078FF"))
     "")
 (defface evil-visual-state-mode-line-inactive
     '((t
        :inherit mode-line-inactive
-       :background "#5038A0"))
+       :background "#603C80"))
     "")
 (defface evil-visual-state-minibuffer-prompt
     '((t
        :inherit minibuffer-prompt
-       :foreground "#A070FF"))
+       :foreground "#C078FF"))
     "")
 (defface evil-emacs-state-mode-line-active
     '((t
@@ -7288,7 +7288,7 @@
         '("#808080" "#000000" "#1C1C1C"
           "W" "Window state"))
     (defconst window-state-target-pending
-        '("#C060C0" "#180018" "#2C142C"
+        '("#C06C90" "#180012" "#2C1426"
           "T" "Target-pending window state"))
     (defvar window-state-this-register nil)
     (defvar window-state--action nil)
@@ -8132,9 +8132,9 @@
                   (goto-char (match-end 0))
                   (1 'denote-faces-delimiter)
                   (2 'denote-faces-keywords)))))
-    (set-face-foreground 'denote-faces-month  "#FF9000")
-    (set-face-foreground 'denote-faces-minute "#FF9000")
-    (set-face-foreground 'denote-faces-keywords "#A070FF")
+    (set-face-foreground 'denote-faces-month  "#FF90C0")
+    (set-face-foreground 'denote-faces-minute "#FF90C0")
+    (set-face-foreground 'denote-faces-keywords "#C078FF")
     (defface task-faces-repeat
         '((t
            :inherit default))
@@ -8143,13 +8143,13 @@
         '((t
            :inherit default))
         "")
-    (set-face-foreground 'task-faces-repeat   "#FF4040")
-    (set-face-foreground 'task-faces-duration "#50E000")
+    (set-face-foreground 'task-faces-repeat   "#FF5048")
+    (set-face-foreground 'task-faces-duration "#50D000")
     (defface android-trash-face
         '((t
            :inherit default))
         "")
-    (set-face-foreground 'android-trash-face "#802020")
+    (set-face-foreground 'android-trash-face "#802824")
     (defun denoted--add-nil-id (path)
         (let ((name (file-name-nondirectory path)))
             (concat
@@ -8810,7 +8810,7 @@
     '((t
        :inherit music-current-entry
        :weight bold
-       :foreground "#FF4040"))
+       :foreground "#FF5048"))
     "")
 (defface music-loop
     '((t
@@ -8818,7 +8818,7 @@
     "")
 (defface music-time
     '((t
-       :foreground "#A070FF"))
+       :foreground "#C078FF"))
     "")
 (defvar music--socket nil)
 (defvar-local music--refresh-socket nil)
@@ -9452,11 +9452,11 @@
     "")
 (defface ai-assistant-divider
     '((t
-       :foreground "#FF80FF"))
+       :foreground "#FF90C0"))
     "")
 (defface ai-tool-divider
     '((t
-       :foreground "#FF4040"))
+       :foreground "#FF5048"))
     "")
 (defun ai--highlight ()
     (font-lock-add-keywords nil
