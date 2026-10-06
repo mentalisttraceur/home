@@ -9629,7 +9629,7 @@
 (defconst syncthing--command '("syncthing" "serve" "--no-browser"))
 (when android
     (pop-to-command syncthing--command)
-    (rename-buffer " *synchthing*")
+    (rename-buffer " *syncthing*")
     (evil-normal-state))
 
 (setq gc-cons-threshold initial-gc-cons-threshold
