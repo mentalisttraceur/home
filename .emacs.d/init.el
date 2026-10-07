@@ -1000,6 +1000,13 @@
     (define-translation ?⅚ 'end))
 
 
+(defun overlay-format (overlay property format-string &rest arguments)
+    (let ((string nil))
+        (when format-string
+            (setq string (apply #'format format-string arguments)))
+        (overlay-put overlay property string)))
+
+
 (defun cycle (&rest objects)
     (setcdr (last objects) objects)
     objects)
