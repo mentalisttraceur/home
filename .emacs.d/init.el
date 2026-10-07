@@ -3589,6 +3589,27 @@
             (quit-window)))
     (define-key debugger-mode-map "q" 'smoother-debugger-exit))
 
+(use-package eldoc
+    :config
+    (defvar-local fixed-eldoc--overlay nil)
+    (defun fixed-eldoc-minibuffer-message (format-string &rest arguments)
+        (if (not (minibufferp))
+            (apply #'message format-string arguments)
+            (unless fixed-eldoc--overlay
+                (setq fixed-eldoc--overlay (make-overlay 1 1)))
+            (overlay-put fixed-eldoc--overlay
+                'before-string
+                (when format-string
+                    (apply #'format
+                        (format
+                            (propertize "%s\n"
+                                'face 'default)
+                            format-string)
+                        arguments)))))
+    (setq eldoc-message-function
+        #'fixed-eldoc-minibuffer-message)
+    (set-face-foreground 'eldoc-highlight-function-argument "#D0D0D0"))
+
 (use-package calendar
     :config
     (defvar calendar-months-before-current (if android 0 1))
