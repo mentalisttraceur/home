@@ -7305,12 +7305,39 @@
     (advice-add 'aw--lead-overlay :override 'hack-aw--lead-overlay)
     (set-face-foreground 'aw-leading-char-face "#00FF00")
     (defvar window-state nil)
-    (defconst window-state-normal
-        '("#808080" "#000000" "#1C1C1C"
-          "W" "Window state"))
-    (defconst window-state-target-pending
-        '("#C06C90" "#180012" "#2C1426"
-          "T" "Target-pending window state"))
+    (defconst window-state--info
+        '((normal
+           "W" "Window state")
+          (target-pending
+           "T" "Target-pending window state")))
+    (defface window-state-normal
+        '((t
+           :foreground "#808080"
+           :background "#1C1C1C"))
+        "")
+    (global-face-remap-add-relative 'default
+        '(:filtered (:window window-state normal)
+             window-state-normal))
+    (global-face-remap-add-relative 'line-number
+        '(:filtered (:window window-state normal)
+             window-state-normal))
+    (global-face-remap-add-relative 'aw-background-face
+        '(:filtered (:window window-state normal)
+             window-state-normal))
+    (defface window-state-target-pending
+        '((t
+           :foreground "#C06C90"
+           :background "#2C1426"))
+        "")
+    (global-face-remap-add-relative 'default
+        '(:filtered (:window window-state target-pending)
+             window-state-target-pending))
+    (global-face-remap-add-relative 'line-number
+        '(:filtered (:window window-state target-pending)
+             window-state-target-pending))
+    (global-face-remap-add-relative 'aw-background-face
+        '(:filtered (:window window-state target-pending)
+             window-state-target-pending))
     (defvar window-state-this-register nil)
     (defvar window-state--action nil)
     (defvar window-state--execute-once nil)
@@ -7318,23 +7345,23 @@
     (defun window-state--execute ()
         (evil-echo "-- WINDOW --")
         (setq window-state-this-register evil-this-register)
-        (while window-state--execute-once
-            (setq window-state--execute-once window-state--execute-more)
-            (seq-let (tint active-dim inactive-dim tag help-string)
-                    window-state
-                (with-face-attribute
-                        ('aw-background-face   :foreground tint
-                         'line-number          :foreground tint
-                         'default-active       :background active-dim
-                         'default              :background inactive-dim)
+        (unwind-protect
+            (while window-state--execute-once
+                (setq window-state--execute-once window-state--execute-more)
+                (dolist (window (window-list nil t))
+                    (set-window-parameter window 'window-state window-state))
+                (seq-let (_ tag help-string)
+                        (assq window-state window-state--info)
                     (with-override-evil-mode-line-tag tag help-string
-                        (fixed-aw-select 'window-state--do-action))))))
+                        (fixed-aw-select 'window-state--do-action))))
+            (dolist (window (window-list nil t))
+                (set-window-parameter window 'window-state nil))))
     (defun window-state--do-action (window)
         (funcall window-state--action window)
         (setq window-state-this-register nil))
     (defun window-state--normal ()
         (setq window-state--action 'aw-switch-to-window)
-        (setq window-state window-state-normal))
+        (setq window-state 'normal))
     (defun window-state--enter (repeat)
         (setq window-state--execute-once t)
         (if window-state
@@ -7352,7 +7379,7 @@
         (window-state--enter t))
     (defun window-state-quit ()
         (interactive)
-        (if (eq window-state window-state-normal)
+        (if (eq window-state 'normal)
             (setq window-state--execute-once nil)
             (window-state--normal)
             (setq window-state--execute-once t)))
@@ -7418,7 +7445,7 @@
                              (,name))
                          ((eq window-state--action 'aw-switch-to-window)
                              (setq window-state--action ',name)
-                             (setq window-state window-state-target-pending)
+                             (setq window-state 'target-pending)
                              (setq window-state--execute-once t))
                          (t
                              (keyboard-quit)))))))
@@ -7582,6 +7609,23 @@
     (define-key evil-normal-state-map "s" nil)
     (define-key evil-motion-state-map "S" 'window-state)
     (define-key evil-normal-state-map "S" nil))
+
+(defface window-state-normal-active
+    '((t
+       :background "#000000"
+       :inherit window-state-normal))
+    "")
+(global-face-remap-add-relative 'window-state-normal
+    '(:filtered (:window selected t)
+         window-state-normal-active))
+(defface window-state-target-pending-active
+    '((t
+       :background "#180012"
+       :inherit window-state-target-pending))
+    "")
+(global-face-remap-add-relative 'window-state-target-pending
+    '(:filtered (:window selected t)
+         window-state-target-pending-active))
 
 (use-packages ace-window evil undo-tree
     :config
